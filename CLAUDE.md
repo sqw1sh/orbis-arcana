@@ -34,6 +34,10 @@
 - НЕ менять attachments в `PlayerEvent.Clone`: NeoForge копирует их своим Clone-листенером и может перезаписать. Пост-смертные правки — в `PlayerEvent.PlayerRespawnEvent`.
 - Датапак-реестры: `NewDatapackRegistryEvent#worldRegistry(key, codec, networkCodec)`. Путь JSON: `data/<ns>/orbisarcana/spell/`.
 - Рабочая папка JUnit под MDG — не корень проекта; путь к ресурсам — системное свойство `orbisarcana.resources`.
+- Ввод на SDL: `InputConstants.Type.KEYBOARD` + `InputConstants.KEY_V` (сканкоды), GLFW нет. Экран: `mc.gui.screen()`. Категория клавиш: `new KeyMapping.Category(id)` + `registerCategory`, lang `key.category.<ns>.<path>`.
+- Скорость игроку: `entity.syncVelocity = true` (бывший hurtMarked); `needsSync` — только для трекинга.
+- Клиентские хендлеры пакетов: `RegisterClientPayloadHandlersEvent`; сервер регистрирует `playToClient(type, codec)` без хендлера. Отправка с клиента: `ClientPacketDistributor.sendToServer`.
+- Сущности: `DeferredRegister.createEntities` + `registerEntityType(name, factory, category, builder -> ...)`.
 - В Bash нет python — для JSON-скриптов использовать node.
 
 ## Архитектура (§15)

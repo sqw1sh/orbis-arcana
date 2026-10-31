@@ -1,0 +1,14 @@
+{
+  "values": [
+    "orbisarcana:fire_magic",
+    "orbisarcana:earth_magic",
+    "orbisarcana:water_magic",
+    "orbisarcana:air_magic",
+    "orbisarcana:ice_magic",
+    "orbisarcana:lightning_magic",
+    "orbisarcana:nature_magic",
+    "orbisarcana:light_magic",
+    "orbisarcana:dark_magic",
+    "orbisarcana:astral_magic"
+  ]
+}
