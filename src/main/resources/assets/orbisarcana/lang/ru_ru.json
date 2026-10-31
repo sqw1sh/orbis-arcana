@@ -56,5 +56,17 @@
   "cast.orbisarcana.denied.no_target": "Нет цели",
   "cast.orbisarcana.denied.out_of_range": "Вне досягаемости",
   "hud.orbisarcana.no_spell": "Заклинание не выбрано (изучите: /orbis spell learn)",
-  "entity.orbisarcana.spell_projectile": "Магический снаряд"
+  "entity.orbisarcana.spell_projectile": "Магический снаряд",
+  "commands.orbisarcana.circles.spawned": "Создано демо-кругов: %s (только у вас). Замер FPS 10 с...",
+  "commands.orbisarcana.circles.fps": "%s кругов: в среднем %s FPS",
+  "orbisarcana.configuration.circles": "Магические круги",
+  "orbisarcana.configuration.enabled": "Рисовать круги",
+  "orbisarcana.configuration.particleFallback": "Частицы вместо мешей (для шейдеров)",
+  "orbisarcana.configuration.rimOnly": "Только обод",
+  "orbisarcana.configuration.opacity": "Прозрачность",
+  "orbisarcana.configuration.ownOpacity": "Прозрачность своего круга (1-е лицо)",
+  "orbisarcana.configuration.ownScale": "Размер своего круга (1-е лицо)",
+  "orbisarcana.configuration.rimOnlyDistance": "Дальность «только обод»",
+  "orbisarcana.configuration.hideDistance": "Дальность отрисовки",
+  "orbisarcana.configuration.maxCircles": "Максимум кругов"
 }

@@ -1,6 +1,9 @@
 package com.orbisarcana;
 
+import com.orbisarcana.client.ClientConfig;
+
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
@@ -10,6 +13,7 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 @Mod(value = OrbisArcana.MODID, dist = Dist.CLIENT)
 public class OrbisArcanaClient {
     public OrbisArcanaClient(ModContainer container) {
+        container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 }

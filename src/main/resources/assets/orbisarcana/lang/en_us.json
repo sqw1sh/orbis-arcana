@@ -56,5 +56,17 @@
   "cast.orbisarcana.denied.no_target": "No target",
   "cast.orbisarcana.denied.out_of_range": "Out of range",
   "hud.orbisarcana.no_spell": "No spell selected (learn one: /orbis spell learn)",
-  "entity.orbisarcana.spell_projectile": "Spell Projectile"
+  "entity.orbisarcana.spell_projectile": "Spell Projectile",
+  "commands.orbisarcana.circles.spawned": "Spawned %s demo circles (local only). Measuring FPS for 10 s...",
+  "commands.orbisarcana.circles.fps": "%s circles: average %s FPS",
+  "orbisarcana.configuration.circles": "Magic circles",
+  "orbisarcana.configuration.enabled": "Draw circles",
+  "orbisarcana.configuration.particleFallback": "Particles instead of meshes (shader fallback)",
+  "orbisarcana.configuration.rimOnly": "Rim only",
+  "orbisarcana.configuration.opacity": "Opacity",
+  "orbisarcana.configuration.ownOpacity": "Own first-person circle opacity",
+  "orbisarcana.configuration.ownScale": "Own first-person circle size",
+  "orbisarcana.configuration.rimOnlyDistance": "Rim-only distance",
+  "orbisarcana.configuration.hideDistance": "Hide distance",
+  "orbisarcana.configuration.maxCircles": "Max circles"
 }

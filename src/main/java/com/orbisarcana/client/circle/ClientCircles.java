@@ -8,6 +8,7 @@ import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 import com.orbisarcana.OrbisArcana;
+import com.orbisarcana.client.ClientConfig;
 import com.orbisarcana.client.circle.CircleDefinition.Layer;
 import com.orbisarcana.core.ActiveCast.Outcome;
 import com.orbisarcana.core.Rarity;
@@ -41,11 +42,14 @@ public final class ClientCircles {
     private static final float RELEASE_TICKS = 6f;
     private static final float BREAK_TICKS = 4f;     // <= 0.2 s
     private static final long ORPHAN_TIMEOUT = 200;  // drop circles whose CastEnded never arrived
-    private static final double LOD_RIM_ONLY = 32, LOD_HIDDEN = 64;
-    private static final int MAX_CIRCLES = 48;
     private static final double MAX_RADIUS = 6.0;
     /** Own first-person DIRECTIONAL circle: at most this share of the screen height (§9.3). */
     private static final double MAX_SCREEN_SHARE = 0.25;
+    /**
+     * Own first-person circle hangs this close to the eye and is shrunk to keep its on-screen size (D6).
+     * Pushing it further away instead made it sink into terrain when looking down.
+     */
+    private static final double FIRST_PERSON_DISTANCE = 0.6;
 
     private static final class Circle {
         final CastStarted cast;
@@ -64,7 +68,7 @@ public final class ClientCircles {
     public static void start(CastStarted msg) {
         var mc = Minecraft.getInstance();
         if (mc.level == null) return;
-        CIRCLES.removeIf(c -> c.cast.casterId() == msg.casterId());
+        CIRCLES.removeIf(c -> c.cast.casterId() == msg.casterId() && c.cast.castId() >= 0); // keep demo circles
         CIRCLES.add(new Circle(msg, SpellRegistry.get(mc.level.registryAccess(), msg.spell()).orElse(null)));
     }
 
@@ -83,11 +87,49 @@ public final class ClientCircles {
         CIRCLES.clear();
     }
 
+    /**
+     * Debug stand (§15.8 {@code debug circles}): {@code count} local-only circles in a grid in front of
+     * the player, one per rarity in turn, charging over 3 s and fading after ~13 s. Not sent to the server.
+     */
+    public static int spawnDemo(int count) {
+        var mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null) return 0;
+        long now = mc.level.getGameTime();
+        Vec3 origin = mc.player.position();
+        Vec3 forward = new Vec3(mc.player.getLookAngle().x, 0, mc.player.getLookAngle().z).normalize();
+        Vec3 side = new Vec3(-forward.z, 0, forward.x);
+        Rarity[] rarities = Rarity.values();
+        int perRow = (int) Math.ceil(Math.sqrt(count));
+        for (int i = 0; i < count; i++) {
+            Rarity rarity = rarities[i % rarities.length];
+            Identifier school = Schools.ALL.get(i % Schools.ALL.size());
+            SpellDefinition spell = demoSpell(school, rarity);
+            int row = i / perRow, col = i % perRow;
+            Vec3 pos = origin.add(forward.scale(4 + row * 3.5)).add(side.scale((col - (perRow - 1) / 2.0) * 3.5));
+            var start = new CastStarted(-1000 - i, mc.player.getId(), OrbisArcana.id("demo_" + rarity.id), now, 60,
+                    1 + (i * 7) % 15, java.util.Optional.of(pos), -1);
+            CIRCLES.add(new Circle(start, spell));
+        }
+        return count;
+    }
+
+    private static SpellDefinition demoSpell(Identifier school, Rarity rarity) {
+        return new SpellDefinition(school, rarity, OrbisArcana.id("zone"), Targeting.GROUND,
+                new SpellDefinition.Cast(com.orbisarcana.core.CastMode.CHARGED, 60, 0), 0, 0, "radius",
+                java.util.Map.of("radius", rarity.circleBaseRadius * 1.4), java.util.Map.of(),
+                java.util.Optional.of(OrbisArcana.id("fireball")), java.util.Optional.empty(),
+                com.orbisarcana.core.XpCategory.ATTACK, false, true);
+    }
+
     // ---- extract (game state -> render state) ----
 
     @SubscribeEvent
     static void extract(ExtractLevelRenderStateEvent event) {
         var mc = Minecraft.getInstance();
+        if (!ClientConfig.CIRCLES_ENABLED.getAsBoolean()) {
+            event.getRenderState().setRenderData(RENDER_KEY, List.of());
+            return;
+        }
         var level = event.getLevel();
         float partial = event.getDeltaTracker().getGameTimeDeltaPartialTick(false);
         double now = level.getGameTime() + partial;
@@ -104,9 +146,14 @@ public final class ClientCircles {
                 out.add(s);
             }
         }
-        if (out.size() > MAX_CIRCLES) {
+        int max = ClientConfig.MAX_CIRCLES.getAsInt();
+        if (out.size() > max) {
             out.sort(Comparator.comparingDouble(s -> s.center().lengthSqr()));
-            out = new ArrayList<>(out.subList(0, MAX_CIRCLES));
+            out = new ArrayList<>(out.subList(0, max));
+        }
+        if (ClientConfig.PARTICLE_FALLBACK.getAsBoolean()) {
+            CircleParticles.emit(level, cam, out);
+            out = List.of();
         }
         event.getRenderState().setRenderData(RENDER_KEY, out);
     }
@@ -143,7 +190,8 @@ public final class ClientCircles {
                 Vec3 eye = caster.getEyePosition(partial);
                 if (firstPerson) {
                     double tanHalfFov = Math.tan(Math.toRadians(mc.options.fov().get()) / 2);
-                    double dist = Math.max(0.9, radius / (MAX_SCREEN_SHARE * tanHalfFov));
+                    double dist = FIRST_PERSON_DISTANCE;
+                    radius = Math.min(radius, MAX_SCREEN_SHARE * dist * tanHalfFov) * ClientConfig.OWN_SCALE.get();
                     Vec3[] axes = axes(look);
                     // Down-right towards the main hand, centre of the screen stays clear (§9.3)
                     center = eye.add(look.scale(dist)).add(axes[0].scale(0.42 * dist * tanHalfFov)).add(axes[1].scale(-0.32 * dist * tanHalfFov));
@@ -176,12 +224,12 @@ public final class ClientCircles {
 
         Vec3 rel = center.subtract(cam);
         double dist = rel.length();
-        if (dist > LOD_HIDDEN) return null;
+        if (dist > ClientConfig.HIDE_DISTANCE.getAsInt()) return null;
 
         // Animation (§9.1)
         float appear = (float) Math.min(1.0, age / APPEAR_TICKS);
         float scale = 1f - (1f - appear) * (1f - appear);
-        float alpha = 0.85f;
+        float alpha = 0.85f * ClientConfig.OPACITY.get().floatValue();
         float flash = 0f;
         if (sinceEnd >= 0) {
             float t = (float) (sinceEnd / (released ? RELEASE_TICKS : BREAK_TICKS));
@@ -193,7 +241,9 @@ public final class ClientCircles {
             }
             alpha *= 1f - t;
         }
-        if (firstPerson && targeting == Targeting.DIRECTIONAL) alpha *= 0.4f + 0.3f * progress; // 35-60% (§9.3)
+        if (firstPerson && targeting == Targeting.DIRECTIONAL) {
+            alpha *= (0.4f + 0.3f * progress) * ClientConfig.OWN_OPACITY.get().floatValue(); // 35-60% (§9.3)
+        }
 
         Vec3[] axes = axes(normal);
         int schoolColor = Schools.color(c.spell.school());
@@ -202,7 +252,8 @@ public final class ClientCircles {
 
         return new CircleRenderState(rel, axes[0], axes[1], (float) radius, scale, alpha, progress,
                 (float) (now / 20.0), flash, schoolColor, rarity.color, rarity.circleLayers,
-                layers(c), dist > LOD_RIM_ONLY, c.cast.spell().hashCode());
+                layers(c), ClientConfig.RIM_ONLY.getAsBoolean() || dist > ClientConfig.RIM_ONLY_DISTANCE.getAsInt(),
+                c.cast.spell().hashCode());
     }
 
     /** §9.4: base radius by rarity, +2% per mastery level; zones/targets use the effect radius. */
