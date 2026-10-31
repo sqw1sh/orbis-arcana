@@ -5,6 +5,7 @@ import com.mojang.renderpearl.api.pipeline.ColorTargetState;
 import com.mojang.renderpearl.api.pipeline.DepthStencilState;
 import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.orbisarcana.OrbisArcana;
+import com.orbisarcana.compat.iris.IrisCompat;
 
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
@@ -12,6 +13,7 @@ import net.minecraft.client.renderer.rendertype.RenderType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 
 /**
@@ -34,6 +36,11 @@ public final class CircleRenderTypes {
     @SubscribeEvent
     static void registerPipelines(RegisterRenderPipelinesEvent event) {
         event.registerPipeline(CIRCLE_PIPELINE);
+    }
+
+    @SubscribeEvent
+    static void clientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> IrisCompat.assignBasicProgram(CIRCLE_PIPELINE));
     }
 
     private CircleRenderTypes() {}

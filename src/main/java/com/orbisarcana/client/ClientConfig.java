@@ -16,18 +16,16 @@ public final class ClientConfig {
 
     /** How circles are drawn. */
     public enum RenderMode {
-        /** Mesh normally, particles while an Iris shader pack is active. */
+        /** Mesh; particles under an Iris shader pack only if the pipeline could not be registered with Iris. */
         AUTO,
-        /** Own additive pipeline (best look, invisible under most shader packs). */
+        /** Always the mesh pipeline. */
         MESH,
-        /** Vanilla lightning render type: shader packs know it, but it writes depth. Experimental. */
-        MESH_VANILLA,
         /** Rim traced with particles. */
         PARTICLES
     }
 
     public static final ModConfigSpec.EnumValue<RenderMode> RENDER_MODE = B
-            .comment("AUTO = mesh, or particles while an Iris shader pack is on; MESH_VANILLA = try meshes under shaders (experimental)")
+            .comment("AUTO = mesh (registered with Iris shader packs), particles only if Iris could not take the circle pipeline")
             .defineEnum("renderMode", RenderMode.AUTO);
 
     public static final ModConfigSpec.BooleanValue RIM_ONLY = B

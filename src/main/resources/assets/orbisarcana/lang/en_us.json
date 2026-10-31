@@ -68,7 +68,7 @@
   "orbisarcana.configuration.rimOnlyDistance": "Rim-only distance",
   "orbisarcana.configuration.hideDistance": "Hide distance",
   "orbisarcana.configuration.maxCircles": "Max circles",
-  "orbisarcana.configuration.renderMode": "Render mode (AUTO / MESH / MESH_VANILLA / PARTICLES)",
+  "orbisarcana.configuration.renderMode": "Render mode (AUTO / MESH / PARTICLES)",
   "rarity.orbisarcana.common": "Common",
   "rarity.orbisarcana.uncommon": "Uncommon",
   "rarity.orbisarcana.rare": "Rare",

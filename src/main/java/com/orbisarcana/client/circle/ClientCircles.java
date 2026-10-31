@@ -20,7 +20,6 @@ import com.orbisarcana.spell.SpellDefinition;
 import com.orbisarcana.spell.SpellRegistry;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.Entity;
@@ -283,7 +282,8 @@ public final class ClientCircles {
     private static ClientConfig.RenderMode effectiveMode() {
         ClientConfig.RenderMode mode = ClientConfig.RENDER_MODE.get();
         if (mode == ClientConfig.RenderMode.AUTO) {
-            return IrisCompat.isShaderPackInUse() ? ClientConfig.RenderMode.PARTICLES : ClientConfig.RenderMode.MESH;
+            boolean meshUnderShaders = IrisCompat.isPipelineAssigned();
+            return IrisCompat.isShaderPackInUse() && !meshUnderShaders ? ClientConfig.RenderMode.PARTICLES : ClientConfig.RenderMode.MESH;
         }
         return mode;
     }
@@ -307,8 +307,7 @@ public final class ClientCircles {
     static void submit(SubmitCustomGeometryEvent event) {
         List<CircleRenderState> states = event.getLevelRenderState().getRenderData(RENDER_KEY);
         if (states == null || states.isEmpty()) return;
-        var type = effectiveMode() == ClientConfig.RenderMode.MESH_VANILLA ? RenderTypes.lightning() : CircleRenderTypes.CIRCLE;
-        event.getSubmitNodeCollector().submitCustomGeometry(event.getPoseStack(), type, (pose, buffer) -> {
+        event.getSubmitNodeCollector().submitCustomGeometry(event.getPoseStack(), CircleRenderTypes.CIRCLE, (pose, buffer) -> {
             CircleRenderer renderer = new CircleRenderer(pose, buffer);
             for (CircleRenderState s : states) renderer.draw(s);
         });

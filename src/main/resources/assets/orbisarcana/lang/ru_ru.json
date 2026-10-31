@@ -68,7 +68,7 @@
   "orbisarcana.configuration.rimOnlyDistance": "Дальность «только обод»",
   "orbisarcana.configuration.hideDistance": "Дальность отрисовки",
   "orbisarcana.configuration.maxCircles": "Максимум кругов",
-  "orbisarcana.configuration.renderMode": "Режим отрисовки (AUTO / MESH / MESH_VANILLA / PARTICLES)",
+  "orbisarcana.configuration.renderMode": "Режим отрисовки (AUTO / MESH / PARTICLES)",
   "rarity.orbisarcana.common": "Обычное",
   "rarity.orbisarcana.uncommon": "Необычное",
   "rarity.orbisarcana.rare": "Редкое",

@@ -20,6 +20,7 @@
 - `./gradlew build` — компиляция + JUnit (ядро `core`).
 - `./gradlew deployJar` — собрать и положить jar в Prism-инстанс (старые `orbisarcana-*.jar` удаляются).
 - `./gradlew runClient` / `runServer` — dev-запуски (папка `run/`, eula уже принята).
+- `./gradlew runClientShot` — визуальная проверка: грузит `run/saves/devtest`, ставит стенд кругов, делает скриншоты `run/screenshots/devshot_<mode>.png` и выходит (`client/DevShot`). Iris/Sodium/шейдерпак лежат в `run/mods`, `run/shaderpacks` (локально). Скриншоты смотреть через Read.
 - `./gradlew runGameTestServer` — все GameTest-ы (`gametest/OrbisGameTests`), код выхода ≠ 0 при падении. Итог в логе: `All N required tests passed`.
 
 ## Особенности API 26.3 (найдено на практике)
@@ -42,6 +43,8 @@
 - GameTest 26.3: функции в реестре `Registries.TEST_FUNCTION`, тесты — `RegisterGameTestsEvent#registerTest(id, data -> new FunctionGameTestInstance(fnKey, data), new TestData<>(env, structure, maxTicks, setup, required))`. Мок-игрок: `helper.makeMockServerPlayerInLevel()` (каналов мода нет → слать пакеты через `network/Net`).
 - Рендер 26.3: API пайплайнов в `com.mojang.renderpearl.api.pipeline` (внутри jar MC; javap по `build/moddev/artifacts/minecraft-patched-*.jar`). Свой геометрии: состояние в `ExtractLevelRenderStateEvent` → `renderState.setRenderData(ContextKey)`, рисовать в `SubmitCustomGeometryEvent#getSubmitNodeCollector().submitCustomGeometry(pose, renderType, (pose, buf) -> ...)`. Пайплайн регистрировать в `RegisterRenderPipelinesEvent`.
 - Клиентские JSON-ресурсы: `SimpleJsonResourceReloadListener` + `AddClientReloadListenersEvent#addListener(id, listener)`.
+- Iris: свои пайплайны регистрировать через `IrisApi.assignPipeline(pipeline, IrisProgram.X)` (иначе под шейдерами не рисуются). В dev Iris падает на строгой валидации GPU — `-Dneoforge.disableBlaze3DValidation=true`.
+- Dev-клиент: в `run/options.txt` `onboardAccessibility:false`, в `run/config/neoforge-client.toml` `showLoadWarnings = false` — иначе quickPlay висит на экранах.
 - В Bash нет python — для JSON-скриптов использовать node.
 
 ## Архитектура (§15)

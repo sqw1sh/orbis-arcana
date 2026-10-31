@@ -31,6 +31,16 @@ neoForge {
             client()
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         }
+        // Visual check: loads run/saves/devtest, screenshots the circle stand in every render mode, quits.
+        // Put optional mods (e.g. Iris/Sodium) into run/mods and shader packs into run/shaderpacks.
+        clientShot {
+            client()
+            programArguments.addAll '--quickPlaySingleplayer', 'devtest'
+            systemProperty 'orbisarcana.devshot', 'true'
+            // Strict GPU validation is IDE-only; third-party mods like Iris trip it, production never runs it
+            systemProperty 'neoforge.disableBlaze3DValidation', 'true'
+        }
+
         server {
             server()
             programArgument '--nogui'

@@ -11,11 +11,12 @@ import net.minecraft.world.phys.Vec3;
  * progress shown by how much of the rim is traced. Throttled to every other game tick.
  */
 final class CircleParticles {
-    private static long lastEmitTick = Long.MIN_VALUE;
+    /** -1 = never; Long.MIN_VALUE here overflowed {@code tick - lastEmitTick} and blocked all emission. */
+    private static long lastEmitTick = -1;
 
     static void emit(ClientLevel level, Vec3 cam, List<CircleRenderState> states) {
         long tick = level.getGameTime();
-        if (tick - lastEmitTick < 2) return;
+        if (lastEmitTick >= 0 && tick >= lastEmitTick && tick - lastEmitTick < 2) return;
         lastEmitTick = tick;
         for (CircleRenderState s : states) {
             DustParticleOptions dust = new DustParticleOptions(s.color(), 0.6f);
