@@ -22,7 +22,17 @@
 - [x] `core/ManaRegen` + JUnit
 - [ ] Проверка в клиенте (пользователь): полоса, реген, смерть, перезаход
 
-Часть 2 (следующая):
-- Attachments `knowledge`, `attunement`, `loadout` (+ `schema`, архив неизвестных spellId)
-- `/orbis spell learn|forget|mastery`, `/orbis school set|resonance|reset`
-- GameTest: данные переживают смерть
+Часть 2 (31.10.2026):
+- [x] Attachments `knowledge` (мастерство, отключённые вехи, `schema`, архив неизвестных spellId), `attunement` (доминанта, резонанс + пик, таланты, Дисгармония, КД смены), `loadout` (3×8 + выбор)
+- [x] Все attachments: сохранение, `copyOnDeath`, синхронизация владельцу (пока полный стейт, не дельты)
+- [x] `/orbis spell learn|forget|mastery|list`, `/orbis school set|resonance|reset|info`
+- [x] JUnit на кодеки всех attachments (MDG `unitTest` включён — в тестах доступны классы MC)
+- [ ] spellId пока не валидируется (реестра заклинаний ещё нет — S2)
+- [ ] GameTest-инфраструктура → перенесена в S2 (тесты каста)
+- [ ] Проверка в клиенте (пользователь)
+
+## S2. Каст-ядро — ⏳ следующая
+- Реестр заклинаний из датапака (`SpellDefinition` codec, §15.4), валидация spellId в командах
+- CastService + машина состояний (`core`), сеть C2S/S2C (§15.6), КД, GCD, резерв/потеря маны
+- 4 тестовых заклинания (по одному на DIRECTIONAL/GROUND/TARGET/SELF), временная клавиша каста
+- GameTest-инфраструктура

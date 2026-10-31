@@ -8,5 +8,14 @@
   "commands.orbisarcana.mana.get": "%s: %s / %s mana (%s)",
   "commands.orbisarcana.mana.combat": "in combat",
   "commands.orbisarcana.mana.calm": "out of combat",
-  "commands.orbisarcana.mana.set": "Mana updated for %s player(s)"
+  "commands.orbisarcana.mana.set": "Mana updated for %s player(s)",
+  "commands.orbisarcana.spell.learn": "Learned %s: %s player(s)",
+  "commands.orbisarcana.spell.forget": "Forgot %s: %s player(s)",
+  "commands.orbisarcana.spell.mastery": "Mastery of %s set to %s: %s player(s)",
+  "commands.orbisarcana.spell.list": "%s knows %s spell(s): %s",
+  "commands.orbisarcana.school.unknown": "Unknown school: %s",
+  "commands.orbisarcana.school.set": "Dominant school set to %s: %s player(s)",
+  "commands.orbisarcana.school.resonance": "Resonance of %s set to %s: %s player(s)",
+  "commands.orbisarcana.school.reset": "Schools reset: %s player(s)",
+  "commands.orbisarcana.school.info": "%s — dominant: %s; resonance: %s"
 }

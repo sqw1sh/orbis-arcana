@@ -55,6 +55,12 @@ neoForge {
             sourceSet(sourceSets.main)
         }
     }
+
+    // Puts Minecraft/NeoForge on the JUnit classpath (codec and data tests)
+    unitTest {
+        enable()
+        testedMod = mods."${mod_id}"
+    }
 }
 
 configurations {

@@ -29,6 +29,8 @@
 - `LivingDamageEvent.Post#getHealthDamage()`; права команд: `.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))`.
 - Attachments умеют синхронизацию сами: `.sync(predicate, streamCodec)` + `player.syncData(type)`.
 - Исходники для поиска API: распаковать `build/moddev/artifacts/minecraft-patched-*-sources.jar` и neoforge-sources из `~/.gradle/caches` во временную папку.
+- JUnit с классами MC: в build.gradle включён `neoForge.unitTest` (тесты стартуют FML, ~10 с).
+- `IdentifierArgument.id()` вместо ResourceLocationArgument; `SharedSuggestionProvider.suggestResource`.
 - В Bash нет python — для JSON-скриптов использовать node.
 
 ## Архитектура (§15)

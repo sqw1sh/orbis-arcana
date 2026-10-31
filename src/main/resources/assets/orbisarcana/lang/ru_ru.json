@@ -8,5 +8,14 @@
   "commands.orbisarcana.mana.get": "%s: %s / %s маны (%s)",
   "commands.orbisarcana.mana.combat": "в бою",
   "commands.orbisarcana.mana.calm": "вне боя",
-  "commands.orbisarcana.mana.set": "Мана изменена у игроков: %s"
+  "commands.orbisarcana.mana.set": "Мана изменена у игроков: %s",
+  "commands.orbisarcana.spell.learn": "Изучено %s: игроков — %s",
+  "commands.orbisarcana.spell.forget": "Забыто %s: игроков — %s",
+  "commands.orbisarcana.spell.mastery": "Мастерство %s = %s: игроков — %s",
+  "commands.orbisarcana.spell.list": "%s знает заклинаний: %s — %s",
+  "commands.orbisarcana.school.unknown": "Неизвестная школа: %s",
+  "commands.orbisarcana.school.set": "Доминанта %s: игроков — %s",
+  "commands.orbisarcana.school.resonance": "Резонанс %s = %s: игроков — %s",
+  "commands.orbisarcana.school.reset": "Школы сброшены: игроков — %s",
+  "commands.orbisarcana.school.info": "%s — доминанта: %s; резонанс: %s"
 }
