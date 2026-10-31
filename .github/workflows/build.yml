@@ -25,6 +25,9 @@ jobs:
       - name: Build and unit tests
         run: ./gradlew build --console=plain
 
+      - name: GameTests
+        run: ./gradlew runGameTestServer --console=plain
+
       - name: Upload test reports
         if: failure()
         uses: actions/upload-artifact@v4

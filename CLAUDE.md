@@ -19,7 +19,8 @@
 ## Команды
 - `./gradlew build` — компиляция + JUnit (ядро `core`).
 - `./gradlew deployJar` — собрать и положить jar в Prism-инстанс (старые `orbisarcana-*.jar` удаляются).
-- `./gradlew runClient` / `runServer` / `runGameTestServer` — dev-запуски (папка `run/`, eula уже принята).
+- `./gradlew runClient` / `runServer` — dev-запуски (папка `run/`, eula уже принята).
+- `./gradlew runGameTestServer` — все GameTest-ы (`gametest/OrbisGameTests`), код выхода ≠ 0 при падении. Итог в логе: `All N required tests passed`.
 
 ## Особенности API 26.3 (найдено на практике)
 - `ResourceLocation` → `net.minecraft.resources.Identifier` (`Identifier.fromNamespaceAndPath`).
@@ -38,6 +39,7 @@
 - Скорость игроку: `entity.syncVelocity = true` (бывший hurtMarked); `needsSync` — только для трекинга.
 - Клиентские хендлеры пакетов: `RegisterClientPayloadHandlersEvent`; сервер регистрирует `playToClient(type, codec)` без хендлера. Отправка с клиента: `ClientPacketDistributor.sendToServer`.
 - Сущности: `DeferredRegister.createEntities` + `registerEntityType(name, factory, category, builder -> ...)`.
+- GameTest 26.3: функции в реестре `Registries.TEST_FUNCTION`, тесты — `RegisterGameTestsEvent#registerTest(id, data -> new FunctionGameTestInstance(fnKey, data), new TestData<>(env, structure, maxTicks, setup, required))`. Мок-игрок: `helper.makeMockServerPlayerInLevel()` (каналов мода нет → слать пакеты через `network/Net`).
 - В Bash нет python — для JSON-скриптов использовать node.
 
 ## Архитектура (§15)

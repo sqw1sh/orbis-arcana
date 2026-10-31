@@ -46,7 +46,7 @@ import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
+import com.orbisarcana.network.Net;
 
 /**
  * Server-side cast lifecycle (§8.2): validate, snapshot, reserve mana, charge, release or interrupt.
@@ -141,7 +141,7 @@ public final class CastService {
 
         ServerCast cast = new ServerCast(nextCastId++, spellId, spell, core, mastery, params, ground, target);
         ACTIVE.put(player.getUUID(), cast);
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player,
+        Net.toPlayerAndNearby(player,
                 new CastStarted(cast.id(), player.getId(), spellId, now, castTicks));
 
         if (core.mode == CastMode.INSTANT) {
@@ -168,6 +168,12 @@ public final class CastService {
         return ACTIVE.containsKey(player.getUUID());
     }
 
+    /** Id of the player's active cast, or -1. */
+    public static int activeCastId(ServerPlayer player) {
+        ServerCast cast = ACTIVE.get(player.getUUID());
+        return cast == null ? -1 : cast.id();
+    }
+
     /** Used by {@code wind_step} milestone 5. */
     public static void grantNoFall(ServerPlayer player, int ticks) {
         NO_FALL_UNTIL.put(player.getUUID(), player.level().getGameTime() + ticks);
@@ -188,18 +194,18 @@ public final class CastService {
             int cooldown = cast.spell().cooldownTicks();
             if (cooldown > 0) {
                 player.getData(ModAttachments.RESOURCES).cooldowns().put(cast.spellId(), now + cooldown);
-                PacketDistributor.sendToPlayer(player, new CooldownSet(cast.spellId(), now + cooldown, cooldown));
+                Net.toPlayer(player, new CooldownSet(cast.spellId(), now + cooldown, cooldown));
             }
         } else {
             double refund = core.cost - core.manaSpent(outcome, now);
             ManaService.setMana(player, ManaService.mana(player) + refund);
         }
         GCD_UNTIL.put(player.getUUID(), now + CastRules.GCD_TICKS);
-        PacketDistributor.sendToPlayersTrackingEntityAndSelf(player, new CastEnded(cast.id(), player.getId(), outcome.ordinal()));
+        Net.toPlayerAndNearby(player, new CastEnded(cast.id(), player.getId(), outcome.ordinal()));
     }
 
     private static void deny(ServerPlayer player, Identifier spellId, CastDenial reason) {
-        PacketDistributor.sendToPlayer(player, new CastDenied(spellId, reason.ordinal()));
+        Net.toPlayer(player, new CastDenied(spellId, reason.ordinal()));
     }
 
     private static boolean rateLimited(ServerPlayer player) {
@@ -286,6 +292,17 @@ public final class CastService {
     @SubscribeEvent
     static void onDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) interrupt(player, Outcome.INTERRUPTED);
+    }
+
+    /** Re-sends running cooldowns (they are saved server-side) and drops expired ones. */
+    @SubscribeEvent
+    static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        long now = player.level().getGameTime();
+        var cooldowns = player.getData(ModAttachments.RESOURCES).cooldowns();
+        cooldowns.values().removeIf(until -> until <= now);
+        cooldowns.forEach((spell, until) ->
+                Net.toPlayer(player, new CooldownSet(spell, until, (int) (until - now))));
     }
 
     @SubscribeEvent

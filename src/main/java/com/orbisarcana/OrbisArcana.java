@@ -9,6 +9,7 @@ import com.orbisarcana.registry.ModRegistries;
 import com.orbisarcana.spell.SpellRegistry;
 import com.orbisarcana.spell.behavior.SpellBehaviors;
 import com.orbisarcana.registry.ModEntities;
+import com.orbisarcana.gametest.OrbisGameTests;
 
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
@@ -28,6 +29,7 @@ public class OrbisArcana {
         SpellRegistry.register(modEventBus);
         SpellBehaviors.register(modEventBus);
         ModEntities.register(modEventBus);
+        OrbisGameTests.register(modEventBus);
         modContainer.registerConfig(ModConfig.Type.SYNCED, OrbisConfig.SERVER_SPEC);
         LOGGER.info("Orbis Arcana loading");
     }
