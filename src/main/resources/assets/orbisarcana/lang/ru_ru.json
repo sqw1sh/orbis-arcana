@@ -1,0 +1,6 @@
+{
+  "orbisarcana.configuration.title": "Настройки Orbis Arcana",
+  "orbisarcana.configuration.masteryXpRate": "Множитель опыта мастерства",
+  "orbisarcana.configuration.learnRequirements": "Требования к изучению",
+  "orbisarcana.configuration.allowForgetting": "Разрешить забывать заклинания"
+}
