@@ -1,5 +1,7 @@
 package com.orbisarcana.progression;
 
+import java.util.Optional;
+
 import com.orbisarcana.data.ModAttachments;
 
 import net.minecraft.resources.Identifier;
@@ -11,10 +13,33 @@ public final class KnowledgeService {
         return player.getData(ModAttachments.KNOWLEDGE);
     }
 
+    /** Learns the spell and places it into the first free radial-menu slot. */
     public static boolean learn(ServerPlayer player, Identifier spell) {
         boolean learned = knowledge(player).learn(spell);
-        if (learned) player.syncData(ModAttachments.KNOWLEDGE);
+        if (learned) {
+            player.syncData(ModAttachments.KNOWLEDGE);
+            if (player.getData(ModAttachments.LOADOUT).assignToFirstEmpty(spell)) player.syncData(ModAttachments.LOADOUT);
+        }
         return learned;
+    }
+
+    /** Puts a known spell into a radial slot, or clears the slot (empty {@code spell}). */
+    public static boolean setSlot(ServerPlayer player, int page, int slot, Optional<Identifier> spell) {
+        if (page < 0 || page >= Loadout.PAGES || slot < 0 || slot >= Loadout.SLOTS) return false;
+        if (spell.isPresent() && !knowledge(player).knows(spell.get())) return false;
+        Loadout loadout = player.getData(ModAttachments.LOADOUT);
+        spell.ifPresent(loadout::removeEverywhere); // one slot per spell
+        loadout.set(page, slot, spell);
+        player.syncData(ModAttachments.LOADOUT);
+        return true;
+    }
+
+    public static void select(ServerPlayer player, int page, int slot) {
+        if (page < 0 || page >= Loadout.PAGES || slot < 0 || slot >= Loadout.SLOTS) return;
+        Loadout loadout = player.getData(ModAttachments.LOADOUT);
+        loadout.setPage(page);
+        loadout.setSelected(slot);
+        player.syncData(ModAttachments.LOADOUT);
     }
 
     /** Forgets the spell and clears it from the radial menu. */

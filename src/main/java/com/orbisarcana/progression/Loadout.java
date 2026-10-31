@@ -61,6 +61,28 @@ public final class Loadout {
         slots[page][slot] = spell.orElse(null);
     }
 
+    public boolean isEmpty() {
+        return entries().isEmpty();
+    }
+
+    /** Puts the spell into the first empty slot (page by page); false if it is already placed or all slots are full. */
+    public boolean assignToFirstEmpty(Identifier spell) {
+        for (Identifier[] pageSlots : slots) {
+            for (Identifier s : pageSlots) {
+                if (spell.equals(s)) return false;
+            }
+        }
+        for (Identifier[] pageSlots : slots) {
+            for (int s = 0; s < SLOTS; s++) {
+                if (pageSlots[s] == null) {
+                    pageSlots[s] = spell;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /** Clears every slot holding this spell (e.g. after it was forgotten). */
     public void removeEverywhere(Identifier spell) {
         for (Identifier[] pageSlots : slots) {

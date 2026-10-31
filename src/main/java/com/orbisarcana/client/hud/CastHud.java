@@ -43,7 +43,9 @@ public final class CastHud {
         }
         Identifier spell = selected.get();
         int color = SpellRegistry.get(mc.player.registryAccess(), spell).map(d -> 0xFF000000 | d.rarity().color).orElse(0xFFFFFFFF);
-        Component name = Component.translatable("spell." + spell.getNamespace() + "." + spell.getPath());
+        int page = ClientCastState.loadout(mc.player).page() + 1;
+        Component name = Component.literal("[" + page + "] ").withColor(TEXT_DIM)
+                .append(Component.translatable("spell." + spell.getNamespace() + "." + spell.getPath()).withColor(color));
         long now = ClientCastState.gameTime();
         var cd = ClientCastState.cooldown(spell, now);
         if (cd.isPresent()) {

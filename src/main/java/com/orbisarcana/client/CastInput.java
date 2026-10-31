@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.network.CastPayloads.CastRequest;
 import com.orbisarcana.network.CastPayloads.CastStop;
+import com.orbisarcana.progression.Loadout;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -16,7 +17,10 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 
-/** Cast key (hold for CHARGED) and modifier + mouse wheel to switch spells (§13.1). */
+/**
+ * Controls (§13.1): V casts (hold for CHARGED), R (hold) opens the radial menu, G the grimoire,
+ * Alt + wheel cycles the current set, Alt + 1/2/3 switches sets.
+ */
 @EventBusSubscriber(modid = OrbisArcana.MODID, value = Dist.CLIENT)
 public final class CastInput {
     public static final KeyMapping.Category CATEGORY = new KeyMapping.Category(OrbisArcana.id("main"));
@@ -26,6 +30,11 @@ public final class CastInput {
     public static final KeyMapping CYCLE_MODIFIER = new KeyMapping("key.orbisarcana.cycle_modifier", KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYBOARD, InputConstants.KEY_LALT, CATEGORY);
 
+    public static final KeyMapping RADIAL = new KeyMapping("key.orbisarcana.radial", KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYBOARD, InputConstants.KEY_R, CATEGORY);
+    public static final KeyMapping GRIMOIRE = new KeyMapping("key.orbisarcana.grimoire", KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYBOARD, InputConstants.KEY_G, CATEGORY);
+
     private static boolean wasDown;
     private static boolean releaseQueued;
 
@@ -34,6 +43,29 @@ public final class CastInput {
         event.registerCategory(CATEGORY);
         event.register(CAST);
         event.register(CYCLE_MODIFIER);
+        event.register(RADIAL);
+        event.register(GRIMOIRE);
+    }
+
+    /** Runs before vanilla key handling so Alt + 1/2/3 does not also switch the hotbar slot. */
+    @SubscribeEvent
+    static void onClientTickPre(ClientTickEvent.Pre event) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.gui.screen() != null) return;
+        if (CYCLE_MODIFIER.isDown()) {
+            for (int page = 0; page < Loadout.PAGES; page++) {
+                if (mc.options.keyHotbarSlots[page].consumeClick()) {
+                    while (mc.options.keyHotbarSlots[page].consumeClick()) {}
+                    ClientCastState.selectPage(mc.player, page);
+                }
+            }
+        }
+        while (RADIAL.consumeClick()) {
+            mc.gui.setScreen(new RadialMenuScreen());
+        }
+        while (GRIMOIRE.consumeClick()) {
+            mc.gui.setScreen(new GrimoireScreen());
+        }
     }
 
     @SubscribeEvent
@@ -66,7 +98,7 @@ public final class CastInput {
         if (mc.player == null || mc.gui.screen() != null || !CYCLE_MODIFIER.isDown()) return;
         double delta = event.getScrollDeltaY();
         if (delta != 0) {
-            ClientCastState.cycle(delta > 0 ? -1 : 1);
+            ClientCastState.cycle(mc.player, delta > 0 ? -1 : 1);
             event.setCanceled(true);
         }
     }

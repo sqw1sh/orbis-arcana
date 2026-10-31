@@ -63,6 +63,8 @@ public final class OrbisGameTests {
         test("scroll_teaches_and_is_consumed", 20, OrbisGameTests::scrollTeaches);
         test("known_scroll_is_kept", 20, OrbisGameTests::knownScrollKept);
         test("dissolve_grants_capped_xp", 20, OrbisGameTests::dissolveCapped);
+        test("learning_fills_radial_menu", 20, OrbisGameTests::learnFillsLoadout);
+        test("loadout_rejects_unknown_spell", 20, OrbisGameTests::loadoutRejectsUnknown);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -270,6 +272,32 @@ public final class OrbisGameTests {
         ScrollService.dissolve(p, scrolls, FIREBALL);
         h.assertValueEqual(scrolls.getCount(), left, "no scroll consumed at the level-9 cap");
         h.assertValueEqual(progress.level(), 9, "level stays at the cap");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void learnFillsLoadout(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        KnowledgeService.learn(p, FIREBALL);
+        KnowledgeService.learn(p, WIND_STEP);
+        var loadout = p.getData(ModAttachments.LOADOUT);
+        h.assertValueEqual(loadout.get(0, 0), Optional.of(FIREBALL), "slot 1");
+        h.assertValueEqual(loadout.get(0, 1), Optional.of(WIND_STEP), "slot 2");
+        KnowledgeService.select(p, 0, 1);
+        h.assertValueEqual(loadout.selectedSpell(), Optional.of(WIND_STEP), "selected spell");
+        // Moving a spell keeps it in one slot only
+        KnowledgeService.setSlot(p, 2, 7, Optional.of(FIREBALL));
+        h.assertValueEqual(loadout.get(0, 0), Optional.<Identifier>empty(), "old slot cleared");
+        h.assertValueEqual(loadout.get(2, 7), Optional.of(FIREBALL), "new slot");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void loadoutRejectsUnknown(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        h.assertFalse(KnowledgeService.setSlot(p, 0, 0, Optional.of(FIREBALL)), "unknown spell must be rejected");
+        h.assertFalse(KnowledgeService.setSlot(p, 5, 0, Optional.empty()), "bad page must be rejected");
+        h.assertValueEqual(p.getData(ModAttachments.LOADOUT).get(0, 0), Optional.<Identifier>empty(), "slot stays empty");
         cleanup(h, p);
         h.succeed();
     }

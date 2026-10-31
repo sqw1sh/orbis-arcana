@@ -53,6 +53,12 @@ public final class SpellRegistry {
             OrbisArcana.LOGGER.info("{}: archived {} unknown spell(s), restored {}", player.getGameProfile().name(), archived, restored);
             player.syncData(ModAttachments.KNOWLEDGE);
         }
+        // Saves from before the radial menu existed: fill a completely empty menu once
+        var loadout = player.getData(ModAttachments.LOADOUT);
+        if (loadout.isEmpty() && !knowledge.spells().isEmpty()) {
+            knowledge.spells().keySet().stream().sorted().forEach(loadout::assignToFirstEmpty);
+            player.syncData(ModAttachments.LOADOUT);
+        }
     }
 
     private SpellRegistry() {}

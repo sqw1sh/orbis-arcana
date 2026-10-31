@@ -1,35 +1,71 @@
 package com.orbisarcana.client;
 
 import java.util.List;
+import java.util.Locale;
 
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.client.circle.ClientCircles;
 import com.orbisarcana.compat.iris.IrisCompat;
+import com.orbisarcana.progression.KnowledgeService;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 /**
- * Dev-only visual check, enabled by {@code -Dorbisarcana.devshot=true} (see the {@code clientShot} run in
- * build.gradle): after the world loads it shows the circle stand in every render mode, saves a screenshot
- * of each to {@code run/screenshots/devshot_<mode>.png}, then quits. Does nothing in normal play.
+ * Dev-only visual check, enabled by {@code -Dorbisarcana.devshot=true} (the {@code clientShot} run in
+ * build.gradle). After the world loads it plays a list of scenes (circle stand in every render mode, radial
+ * menu, grimoire), saves {@code run/screenshots/devshot_<scene>.png} for each, then quits.
  * Third-party mods with load warnings need {@code showLoadWarnings = false} in run/config/neoforge-client.toml.
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID, value = Dist.CLIENT)
 public final class DevShot {
     private static final boolean ENABLED = Boolean.getBoolean("orbisarcana.devshot");
     private static final int WARMUP_TICKS = 200;
-    private static final int SHOT_DELAY = 50;
-    private static final List<ClientConfig.RenderMode> MODES = List.of(
-            ClientConfig.RenderMode.AUTO, ClientConfig.RenderMode.MESH, ClientConfig.RenderMode.PARTICLES);
+    private static final int SCENE_TICKS = 50;
+
+    private record Scene(String name, Runnable setup) {}
+
+    private static final List<Scene> SCENES = List.of(
+            circles(ClientConfig.RenderMode.AUTO),
+            circles(ClientConfig.RenderMode.MESH),
+            circles(ClientConfig.RenderMode.PARTICLES),
+            new Scene("radial", () -> {
+                learnTestSpells();
+                Minecraft.getInstance().gui.setScreen(new RadialMenuScreen(true));
+            }),
+            new Scene("grimoire", () -> Minecraft.getInstance().gui.setScreen(new GrimoireScreen())));
 
     private static int ticks;
     private static int waiting;
-    private static int modeIndex;
+    private static int scene;
+
+    private static Scene circles(ClientConfig.RenderMode mode) {
+        return new Scene(mode.name().toLowerCase(Locale.ROOT), () -> {
+            Minecraft mc = Minecraft.getInstance();
+            ClientConfig.RENDER_MODE.set(mode);
+            mc.player.setYRot(0);
+            mc.player.setXRot(30);
+            ClientCircles.spawnDemo(9);
+        });
+    }
+
+    /** Teaches the four test spells on the integrated server so menus have content. */
+    private static void learnTestSpells() {
+        Minecraft mc = Minecraft.getInstance();
+        var server = mc.getSingleplayerServer();
+        if (server == null || mc.player == null) return;
+        server.execute(() -> {
+            ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+            if (sp == null) return;
+            for (String id : List.of("fireball", "life_bloom", "healing_dew", "wind_step")) KnowledgeService.learn(sp, OrbisArcana.id(id));
+            KnowledgeService.setMastery(sp, OrbisArcana.id("fireball"), 7);
+        });
+    }
 
     @SubscribeEvent
     static void onTick(ClientTickEvent.Post event) {
@@ -44,26 +80,21 @@ public final class DevShot {
             }
             return;
         }
-        ticks++;
-        if (ticks < WARMUP_TICKS) return;
+        if (++ticks < WARMUP_TICKS) return;
         int step = ticks - WARMUP_TICKS;
-        if (step % SHOT_DELAY == 0) {
-            if (modeIndex >= MODES.size()) {
+        if (step % SCENE_TICKS == 0) {
+            if (scene >= SCENES.size()) {
                 OrbisArcana.LOGGER.info("[devshot] done, quitting");
                 mc.stop();
                 return;
             }
-            ClientConfig.RenderMode mode = MODES.get(modeIndex);
-            ClientConfig.RENDER_MODE.set(mode);
-            mc.player.setYRot(0);
-            mc.player.setXRot(30);
-            ClientCircles.spawnDemo(9);
-            OrbisArcana.LOGGER.info("[devshot] mode {} (iris loaded={}, shaders={}, pipeline assigned={})",
-                    mode, IrisCompat.isLoaded(), IrisCompat.isShaderPackInUse(), IrisCompat.isPipelineAssigned());
-        } else if (step % SHOT_DELAY == SHOT_DELAY - 5) {
-            String name = "devshot_" + MODES.get(modeIndex).name().toLowerCase(java.util.Locale.ROOT) + ".png";
+            OrbisArcana.LOGGER.info("[devshot] scene {} (iris={}, shaders={}, pipeline assigned={})", SCENES.get(scene).name(),
+                    IrisCompat.isLoaded(), IrisCompat.isShaderPackInUse(), IrisCompat.isPipelineAssigned());
+            SCENES.get(scene).setup().run();
+        } else if (step % SCENE_TICKS == SCENE_TICKS - 5) {
+            String name = "devshot_" + SCENES.get(scene).name() + ".png";
             Screenshot.grab(mc.gameDirectory, name, mc.gameRenderer.mainRenderTarget(), 2, msg -> OrbisArcana.LOGGER.info("[devshot] saved {}", name));
-            modeIndex++;
+            scene++;
         }
     }
 

@@ -7,6 +7,9 @@ import com.orbisarcana.network.CastPayloads.CastRequest;
 import com.orbisarcana.network.CastPayloads.CastStarted;
 import com.orbisarcana.network.CastPayloads.CastStop;
 import com.orbisarcana.network.CastPayloads.CooldownSet;
+import com.orbisarcana.network.CastPayloads.LoadoutSelect;
+import com.orbisarcana.network.CastPayloads.LoadoutSet;
+import com.orbisarcana.progression.KnowledgeService;
 import com.orbisarcana.spell.CastService;
 
 import net.minecraft.server.level.ServerPlayer;
@@ -29,6 +32,13 @@ public final class ModNetwork {
         });
         r.playToServer(CastStop.TYPE, CastStop.CODEC, (msg, ctx) -> {
             if (ctx.player() instanceof ServerPlayer p) CastService.stop(p, msg.castId(), msg.cancel());
+        });
+
+        r.playToServer(LoadoutSet.TYPE, LoadoutSet.CODEC, (msg, ctx) -> {
+            if (ctx.player() instanceof ServerPlayer p) KnowledgeService.setSlot(p, msg.page(), msg.slot(), msg.spell());
+        });
+        r.playToServer(LoadoutSelect.TYPE, LoadoutSelect.CODEC, (msg, ctx) -> {
+            if (ctx.player() instanceof ServerPlayer p) KnowledgeService.select(p, msg.page(), msg.slot());
         });
 
         r.playToClient(CastStarted.TYPE, CastStarted.CODEC);

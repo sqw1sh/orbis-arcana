@@ -40,6 +40,35 @@ public final class CastPayloads {
         }
     }
 
+    /** Assign a known spell to a radial slot, or clear it (§13.3). */
+    public record LoadoutSet(int page, int slot, Optional<Identifier> spell) implements CustomPacketPayload {
+        public static final Type<LoadoutSet> TYPE = new Type<>(OrbisArcana.id("loadout_set"));
+        public static final StreamCodec<ByteBuf, LoadoutSet> CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, LoadoutSet::page,
+                ByteBufCodecs.VAR_INT, LoadoutSet::slot,
+                ByteBufCodecs.optional(Identifier.STREAM_CODEC), LoadoutSet::spell,
+                LoadoutSet::new);
+
+        @Override
+        public Type<LoadoutSet> type() {
+            return TYPE;
+        }
+    }
+
+    /** Select page + slot as the active spell. */
+    public record LoadoutSelect(int page, int slot) implements CustomPacketPayload {
+        public static final Type<LoadoutSelect> TYPE = new Type<>(OrbisArcana.id("loadout_select"));
+        public static final StreamCodec<ByteBuf, LoadoutSelect> CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, LoadoutSelect::page,
+                ByteBufCodecs.VAR_INT, LoadoutSelect::slot,
+                LoadoutSelect::new);
+
+        @Override
+        public Type<LoadoutSelect> type() {
+            return TYPE;
+        }
+    }
+
     // ---- server -> client ----
 
     /**
