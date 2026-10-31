@@ -2,5 +2,11 @@
   "orbisarcana.configuration.title": "Orbis Arcana Configs",
   "orbisarcana.configuration.masteryXpRate": "Mastery XP rate",
   "orbisarcana.configuration.learnRequirements": "Learning requirements",
-  "orbisarcana.configuration.allowForgetting": "Allow forgetting spells"
+  "orbisarcana.configuration.allowForgetting": "Allow forgetting spells",
+  "attribute.orbisarcana.max_mana": "Max Mana",
+  "attribute.orbisarcana.mana_regen": "Mana Regeneration",
+  "commands.orbisarcana.mana.get": "%s: %s / %s mana (%s)",
+  "commands.orbisarcana.mana.combat": "in combat",
+  "commands.orbisarcana.mana.calm": "out of combat",
+  "commands.orbisarcana.mana.set": "Mana updated for %s player(s)"
 }

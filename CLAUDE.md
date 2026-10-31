@@ -25,6 +25,11 @@
 - `ResourceLocation` → `net.minecraft.resources.Identifier` (`Identifier.fromNamespaceAndPath`).
 - `ModConfig.Type`: LOCAL, CLIENT, SYNCED, STARTUP (нет SERVER/COMMON). Серверный конфиг = `SYNCED`.
 - `DeferredRegister.registerSimpleBlock/registerSimpleItem(name, props -> ...)`.
+- `EntityType.PLAYER` → `EntityTypes.PLAYER`; `GuiGraphics` → `GuiGraphicsExtractor` (`fill`, `fillGradient`, `text`, `blit`).
+- `LivingDamageEvent.Post#getHealthDamage()`; права команд: `.requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))`.
+- Attachments умеют синхронизацию сами: `.sync(predicate, streamCodec)` + `player.syncData(type)`.
+- Исходники для поиска API: распаковать `build/moddev/artifacts/minecraft-patched-*-sources.jar` и neoforge-sources из `~/.gradle/caches` во временную папку.
+- В Bash нет python — для JSON-скриптов использовать node.
 
 ## Архитектура (§15)
 `api/ core/ registry/ spell/ school/ progression/ mana/ data/ network/ item/ block/ world/ client/ compat/ gametest/`

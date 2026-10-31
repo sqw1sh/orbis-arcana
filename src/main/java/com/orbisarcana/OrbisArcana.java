@@ -3,6 +3,8 @@ package com.orbisarcana;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
+import com.orbisarcana.data.ModAttachments;
+import com.orbisarcana.registry.ModAttributes;
 import com.orbisarcana.registry.ModRegistries;
 
 import net.minecraft.resources.Identifier;
@@ -18,6 +20,8 @@ public class OrbisArcana {
 
     public OrbisArcana(IEventBus modEventBus, ModContainer modContainer) {
         ModRegistries.register(modEventBus);
+        ModAttributes.register(modEventBus);
+        ModAttachments.register(modEventBus);
         modContainer.registerConfig(ModConfig.Type.SYNCED, OrbisConfig.SERVER_SPEC);
         LOGGER.info("Orbis Arcana loading");
     }
