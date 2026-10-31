@@ -9,7 +9,7 @@
 - [x] Задача `deployJar` → Prism-инстанс
 - [x] Dedicated server стартует с модом (runServer → Done)
 - [ ] Проверка клиента в Prism (пользователь)
-- [ ] git init + CI (шаблон `.github/workflows/build.yml` из MDK лежит, не настроен)
+- [x] git + CI: https://github.com/sqw1sh/orbis-arcana (GitHub Actions: build + тесты + jar-артефакт)
 - [ ] GeckoLib / Player Animation Library — подключить, когда понадобятся (S3/S4), проверив сборки под 26.3
 
 ## S1. Данные и мана — ⏳ следующая
