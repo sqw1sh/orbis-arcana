@@ -123,12 +123,17 @@ final class CircleRenderer {
     }
 
     private void ring(float radius, float width, float from, float to) {
-        int segs = Math.max(12, (int) (48 * Math.abs(to - from) / TAU * Math.min(3f, 0.6f + radius)));
+        float sweep = to - from;
+        int segs = Math.max(8, Math.min(64, (int) (32 * Math.abs(sweep) / TAU * (0.5f + radius))));
         float inner = radius - width / 2, outer = radius + width / 2;
+        // Rotate (cos, sin) incrementally instead of calling trig per segment
+        float step = sweep / segs, cs = cos(step), sn = sin(step);
+        float x = cos(from), y = sin(from);
         for (int i = 0; i < segs; i++) {
-            float a0 = from + (to - from) * i / segs, a1 = from + (to - from) * (i + 1) / segs;
-            quad(inner * cos(a0), inner * sin(a0), outer * cos(a0), outer * sin(a0),
-                    outer * cos(a1), outer * sin(a1), inner * cos(a1), inner * sin(a1));
+            float nx = x * cs - y * sn, ny = x * sn + y * cs;
+            quad(inner * x, inner * y, outer * x, outer * y, outer * nx, outer * ny, inner * nx, inner * ny);
+            x = nx;
+            y = ny;
         }
     }
 

@@ -14,9 +14,21 @@ public final class ClientConfig {
             .comment("Draw magic circles at all. Gameplay does not depend on them.")
             .define("enabled", true);
 
-    public static final ModConfigSpec.BooleanValue PARTICLE_FALLBACK = B
-            .comment("Draw circles as particles instead of meshes (use if shaders break circle rendering)")
-            .define("particleFallback", false);
+    /** How circles are drawn. */
+    public enum RenderMode {
+        /** Mesh normally, particles while an Iris shader pack is active. */
+        AUTO,
+        /** Own additive pipeline (best look, invisible under most shader packs). */
+        MESH,
+        /** Vanilla lightning render type: shader packs know it, but it writes depth. Experimental. */
+        MESH_VANILLA,
+        /** Rim traced with particles. */
+        PARTICLES
+    }
+
+    public static final ModConfigSpec.EnumValue<RenderMode> RENDER_MODE = B
+            .comment("AUTO = mesh, or particles while an Iris shader pack is on; MESH_VANILLA = try meshes under shaders (experimental)")
+            .defineEnum("renderMode", RenderMode.AUTO);
 
     public static final ModConfigSpec.BooleanValue RIM_ONLY = B
             .comment("Draw only the outer rim of every circle")

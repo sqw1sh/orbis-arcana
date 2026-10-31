@@ -27,8 +27,9 @@ public final class CircleRenderTypes {
             .withCull(false)
             .build();
 
+    /** No sorting: additive blending is order-independent, and sorting tens of thousands of vertices per frame was the main cost. */
     public static final RenderType CIRCLE = RenderType.create("orbisarcana_magic_circle",
-            RenderSetup.builder(CIRCLE_PIPELINE).sortOnUpload().createRenderSetup());
+            RenderSetup.builder(CIRCLE_PIPELINE).createRenderSetup());
 
     @SubscribeEvent
     static void registerPipelines(RegisterRenderPipelinesEvent event) {

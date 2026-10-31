@@ -21,6 +21,26 @@ public final class MasteryMath {
         return categoryWeight * cycleWeight(castSec, cooldownSec) * serverRate;
     }
 
+    /** Level and XP inside that level. */
+    public record Progress(int level, double xp) {}
+
+    /**
+     * Adds {@code gained} XP, levelling up as many times as it covers. Levels stop at {@code maxLevel};
+     * XP beyond the cap is discarded (at the cap the bar stays full but short of the next level).
+     */
+    public static Progress addXp(int level, double xp, double gained, Rarity rarity, int maxLevel) {
+        int cap = Math.min(maxLevel, MAX_LEVEL);
+        if (level >= cap) return new Progress(level, level >= MAX_LEVEL ? 0 : Math.min(xp, xpRequired(level, rarity) - 1e-6));
+        xp += Math.max(0, gained);
+        while (level < cap && xp >= xpRequired(level, rarity)) {
+            xp -= xpRequired(level, rarity);
+            level++;
+        }
+        if (level >= MAX_LEVEL) return new Progress(MAX_LEVEL, 0);
+        if (level >= cap) xp = Math.min(xp, xpRequired(level, rarity) - 1e-6);
+        return new Progress(level, xp);
+    }
+
     public static boolean isMilestone(int level) {
         return level == 5 || level == 10 || level == 15;
     }

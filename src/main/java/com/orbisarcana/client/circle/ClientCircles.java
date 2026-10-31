@@ -9,6 +9,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.client.ClientConfig;
+import com.orbisarcana.compat.iris.IrisCompat;
 import com.orbisarcana.client.circle.CircleDefinition.Layer;
 import com.orbisarcana.core.ActiveCast.Outcome;
 import com.orbisarcana.core.Rarity;
@@ -19,6 +20,7 @@ import com.orbisarcana.spell.SpellDefinition;
 import com.orbisarcana.spell.SpellRegistry;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.Entity;
@@ -151,7 +153,7 @@ public final class ClientCircles {
             out.sort(Comparator.comparingDouble(s -> s.center().lengthSqr()));
             out = new ArrayList<>(out.subList(0, max));
         }
-        if (ClientConfig.PARTICLE_FALLBACK.getAsBoolean()) {
+        if (effectiveMode() == ClientConfig.RenderMode.PARTICLES) {
             CircleParticles.emit(level, cam, out);
             out = List.of();
         }
@@ -278,6 +280,14 @@ public final class ClientCircles {
         return all;
     }
 
+    private static ClientConfig.RenderMode effectiveMode() {
+        ClientConfig.RenderMode mode = ClientConfig.RENDER_MODE.get();
+        if (mode == ClientConfig.RenderMode.AUTO) {
+            return IrisCompat.isShaderPackInUse() ? ClientConfig.RenderMode.PARTICLES : ClientConfig.RenderMode.MESH;
+        }
+        return mode;
+    }
+
     /** Two unit axes spanning the plane perpendicular to {@code normal}: [right, up]. */
     private static Vec3[] axes(Vec3 normal) {
         Vec3 ref = Math.abs(normal.y) > 0.95 ? new Vec3(0, 0, 1) : new Vec3(0, 1, 0);
@@ -297,7 +307,8 @@ public final class ClientCircles {
     static void submit(SubmitCustomGeometryEvent event) {
         List<CircleRenderState> states = event.getLevelRenderState().getRenderData(RENDER_KEY);
         if (states == null || states.isEmpty()) return;
-        event.getSubmitNodeCollector().submitCustomGeometry(event.getPoseStack(), CircleRenderTypes.CIRCLE, (pose, buffer) -> {
+        var type = effectiveMode() == ClientConfig.RenderMode.MESH_VANILLA ? RenderTypes.lightning() : CircleRenderTypes.CIRCLE;
+        event.getSubmitNodeCollector().submitCustomGeometry(event.getPoseStack(), type, (pose, buffer) -> {
             CircleRenderer renderer = new CircleRenderer(pose, buffer);
             for (CircleRenderState s : states) renderer.draw(s);
         });

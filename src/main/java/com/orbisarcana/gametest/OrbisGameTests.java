@@ -9,7 +9,9 @@ import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.core.ActiveCast.Outcome;
 import com.orbisarcana.data.ModAttachments;
 import com.orbisarcana.mana.ManaService;
+import com.orbisarcana.item.SpellScrollItem;
 import com.orbisarcana.progression.KnowledgeService;
+import com.orbisarcana.progression.ScrollService;
 import com.orbisarcana.school.Schools;
 import com.orbisarcana.spell.CastService;
 
@@ -25,6 +27,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.animal.pig.Pig;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
@@ -57,6 +60,9 @@ public final class OrbisGameTests {
         test("interrupt_refunds_mana", 40, OrbisGameTests::interruptRefundsMana);
         test("cooldown_blocks_recast", 40, OrbisGameTests::cooldownBlocksRecast);
         test("data_survives_death", 40, OrbisGameTests::dataSurvivesDeath);
+        test("scroll_teaches_and_is_consumed", 20, OrbisGameTests::scrollTeaches);
+        test("known_scroll_is_kept", 20, OrbisGameTests::knownScrollKept);
+        test("dissolve_grants_capped_xp", 20, OrbisGameTests::dissolveCapped);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -223,6 +229,48 @@ public final class OrbisGameTests {
         h.assertTrue(Math.abs(ManaService.mana(respawned) - ManaService.maxMana(respawned) * 0.5) < 0.01,
                 "mana after death should be 50%, got " + ManaService.mana(respawned));
         cleanup(h, respawned);
+        h.succeed();
+    }
+
+    private static void scrollTeaches(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        ItemStack scroll = SpellScrollItem.of(LIFE_BLOOM);
+        scroll.setCount(2);
+        ScrollService.learn(p, scroll, LIFE_BLOOM);
+        h.assertTrue(p.getData(ModAttachments.KNOWLEDGE).knows(LIFE_BLOOM), "scroll should teach the spell");
+        // The mock player is in creative, where items are not used up (vanilla rule)
+        h.assertValueEqual(scroll.getCount(), p.hasInfiniteMaterials() ? 2 : 1, "scrolls left");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void knownScrollKept(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        KnowledgeService.learn(p, FIREBALL);
+        ItemStack scroll = SpellScrollItem.of(FIREBALL);
+        h.assertFalse(ScrollService.canStartReading(p, FIREBALL), "known spell must not start reading");
+        ScrollService.learn(p, scroll, FIREBALL);
+        h.assertValueEqual(scroll.getCount(), 1, "scroll of a known spell must not be consumed");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void dissolveCapped(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        KnowledgeService.learn(p, FIREBALL);
+        ItemStack scrolls = SpellScrollItem.of(FIREBALL);
+        scrolls.setCount(16);
+        ScrollService.dissolve(p, scrolls, FIREBALL);
+        var progress = p.getData(ModAttachments.KNOWLEDGE).progress(FIREBALL).orElseThrow();
+        h.assertTrue(progress.xp() > 0, "dissolving should add mastery XP");
+        int left = p.hasInfiniteMaterials() ? 16 : 15;
+        h.assertValueEqual(scrolls.getCount(), left, "dissolved scrolls left");
+
+        KnowledgeService.setMastery(p, FIREBALL, 9);
+        ScrollService.dissolve(p, scrolls, FIREBALL);
+        h.assertValueEqual(scrolls.getCount(), left, "no scroll consumed at the level-9 cap");
+        h.assertValueEqual(progress.level(), 9, "level stays at the cap");
+        cleanup(h, p);
         h.succeed();
     }
 
