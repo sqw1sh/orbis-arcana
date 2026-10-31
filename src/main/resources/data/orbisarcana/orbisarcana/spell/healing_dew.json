@@ -1,0 +1,19 @@
+{
+  "school": "orbisarcana:water",
+  "rarity": "orbisarcana:uncommon",
+  "behavior": "orbisarcana:heal",
+  "targeting": "target",
+  "cast": { "mode": "charged", "ticks": 16, "min_ticks": 10 },
+  "cost": 14,
+  "cooldown_ticks": 100,
+  "primary_stat": "heal",
+  "params": { "heal": 6.0, "range": 20, "heal_over_time": 0, "bounce_fraction": 0, "overheal_to_shield": 0 },
+  "milestones": {
+    "5":  { "params": { "heal_over_time": 3.0 } },
+    "10": { "params": { "bounce_fraction": 0.5 } },
+    "15": { "params": { "overheal_to_shield": 1 } }
+  },
+  "circle": "orbisarcana:healing_dew",
+  "xp_category": "heal",
+  "allow_self": true
+}

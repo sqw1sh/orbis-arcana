@@ -1,0 +1,18 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:projectile",
+  "targeting": "directional",
+  "cast": { "mode": "charged", "ticks": 14, "min_ticks": 8 },
+  "cost": 10,
+  "cooldown_ticks": 40,
+  "primary_stat": "damage",
+  "params": { "damage": 6.0, "speed": 1.8, "range": 32, "ignite_ticks": 60, "count": 1, "spread_deg": 0, "size": 0.5, "ground_fire_ticks": 0, "explode_radius": 0 },
+  "milestones": {
+    "5":  { "params": { "count": 2, "spread_deg": 8 } },
+    "10": { "params": { "size": 0.8, "ground_fire_ticks": 60 } },
+    "15": { "params": { "explode_radius": 2.5 } }
+  },
+  "circle": "orbisarcana:fireball",
+  "xp_category": "attack"
+}

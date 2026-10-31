@@ -17,5 +17,6 @@
   "commands.orbisarcana.school.set": "Dominant school set to %s: %s player(s)",
   "commands.orbisarcana.school.resonance": "Resonance of %s set to %s: %s player(s)",
   "commands.orbisarcana.school.reset": "Schools reset: %s player(s)",
-  "commands.orbisarcana.school.info": "%s — dominant: %s; resonance: %s"
+  "commands.orbisarcana.school.info": "%s — dominant: %s; resonance: %s",
+  "commands.orbisarcana.spell.unknown": "Unknown spell: %s"
 }

@@ -17,5 +17,6 @@
   "commands.orbisarcana.school.set": "Доминанта %s: игроков — %s",
   "commands.orbisarcana.school.resonance": "Резонанс %s = %s: игроков — %s",
   "commands.orbisarcana.school.reset": "Школы сброшены: игроков — %s",
-  "commands.orbisarcana.school.info": "%s — доминанта: %s; резонанс: %s"
+  "commands.orbisarcana.school.info": "%s — доминанта: %s; резонанс: %s",
+  "commands.orbisarcana.spell.unknown": "Неизвестное заклинание: %s"
 }

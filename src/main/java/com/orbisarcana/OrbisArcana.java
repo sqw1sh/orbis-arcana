@@ -6,6 +6,7 @@ import com.mojang.logging.LogUtils;
 import com.orbisarcana.data.ModAttachments;
 import com.orbisarcana.registry.ModAttributes;
 import com.orbisarcana.registry.ModRegistries;
+import com.orbisarcana.spell.SpellRegistry;
 
 import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
@@ -22,6 +23,7 @@ public class OrbisArcana {
         ModRegistries.register(modEventBus);
         ModAttributes.register(modEventBus);
         ModAttachments.register(modEventBus);
+        SpellRegistry.register(modEventBus);
         modContainer.registerConfig(ModConfig.Type.SYNCED, OrbisConfig.SERVER_SPEC);
         LOGGER.info("Orbis Arcana loading");
     }

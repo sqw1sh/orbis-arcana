@@ -22,6 +22,7 @@ import com.orbisarcana.progression.KnowledgeService;
 import com.orbisarcana.progression.KnownSpells;
 import com.orbisarcana.school.Attunement;
 import com.orbisarcana.school.Schools;
+import com.orbisarcana.spell.SpellRegistry;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -41,10 +42,16 @@ public final class OrbisCommand {
     private static final DynamicCommandExceptionType UNKNOWN_SCHOOL = new DynamicCommandExceptionType(
             id -> Component.translatable("commands.orbisarcana.school.unknown", String.valueOf(id)));
 
+    private static final DynamicCommandExceptionType UNKNOWN_SPELL = new DynamicCommandExceptionType(
+            id -> Component.translatable("commands.orbisarcana.spell.unknown", String.valueOf(id)));
+
+    private static final SuggestionProvider<CommandSourceStack> ALL_SPELLS =
+            (ctx, builder) -> SharedSuggestionProvider.suggestResource(SpellRegistry.ids(ctx.getSource().registryAccess()), builder);
+
     private static final SuggestionProvider<CommandSourceStack> SCHOOLS =
             (ctx, builder) -> SharedSuggestionProvider.suggestResource(Schools.ALL, builder);
 
-    /** Known spells of the executing player; real spell registry suggestions arrive in S2. */
+    /** Spells known by the executing player. */
     private static final SuggestionProvider<CommandSourceStack> KNOWN_SPELLS = (ctx, builder) -> {
         ServerPlayer player = ctx.getSource().getPlayer();
         return SharedSuggestionProvider.suggestResource(
@@ -97,8 +104,8 @@ public final class OrbisCommand {
     private static LiteralArgumentBuilder<CommandSourceStack> spell() {
         return Commands.literal("spell")
                 .then(Commands.literal("learn")
-                        .then(withTargets(Commands.argument("spell", IdentifierArgument.id()),
-                                (ctx, players) -> learn(ctx, players, IdentifierArgument.getId(ctx, "spell")))))
+                        .then(withTargets(Commands.argument("spell", IdentifierArgument.id()).suggests(ALL_SPELLS),
+                                (ctx, players) -> learn(ctx, players, existingSpell(ctx)))))
                 .then(Commands.literal("forget")
                         .then(withTargets(Commands.argument("spell", IdentifierArgument.id()).suggests(KNOWN_SPELLS),
                                 (ctx, players) -> forget(ctx, players, IdentifierArgument.getId(ctx, "spell")))))
@@ -110,6 +117,12 @@ public final class OrbisCommand {
                         .executes(ctx -> listSpells(ctx, self(ctx)))
                         .then(Commands.argument("target", EntityArgument.player())
                                 .executes(ctx -> listSpells(ctx, EntityArgument.getPlayer(ctx, "target")))));
+    }
+
+    private static Identifier existingSpell(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        Identifier id = IdentifierArgument.getId(ctx, "spell");
+        if (SpellRegistry.get(ctx.getSource().registryAccess(), id).isEmpty()) throw UNKNOWN_SPELL.create(id);
+        return id;
     }
 
     private static int learn(CommandContext<CommandSourceStack> ctx, Collection<ServerPlayer> players, Identifier spell) {

@@ -76,6 +76,13 @@ public final class KnownSpells {
         return missing.size();
     }
 
+    /** Moves archived spells that exist again back into {@code spells}; returns how many were restored. */
+    public int restoreArchived(Set<Identifier> existing) {
+        List<Identifier> back = archived.keySet().stream().filter(existing::contains).toList();
+        back.forEach(id -> spells.put(id, archived.remove(id)));
+        return back.size();
+    }
+
     /** Mastery of one spell for one player. */
     public static final class SpellProgress {
         public static final Codec<SpellProgress> CODEC = RecordCodecBuilder.create(i -> i.group(

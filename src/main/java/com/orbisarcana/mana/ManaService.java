@@ -71,11 +71,14 @@ public final class ManaService {
         }
     }
 
+    /**
+     * Death penalty. Not done in {@code PlayerEvent.Clone}: NeoForge copies attachments in its own
+     * Clone listener, which may run after ours and overwrite the value. Respawn fires after the copy.
+     */
     @SubscribeEvent
-    static void onClone(PlayerEvent.Clone event) {
-        if (!event.isWasDeath()) return;
-        PlayerResources res = event.getEntity().getData(ModAttachments.RESOURCES);
-        res.setMana(maxMana(event.getOriginal()) * ManaRegen.DEATH_KEEP_FRACTION);
+    static void onRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.isEndConquered() || !(event.getEntity() instanceof ServerPlayer player)) return;
+        setMana(player, maxMana(player) * ManaRegen.DEATH_KEEP_FRACTION);
     }
 
     private ManaService() {}

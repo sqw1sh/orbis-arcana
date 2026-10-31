@@ -76,6 +76,8 @@ dependencies {
 
 tasks.named('test', Test) {
     useJUnitPlatform()
+    // MDG runs tests from its own working directory; tests read bundled data from here
+    systemProperty 'orbisarcana.resources', file('src/main/resources').absolutePath
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

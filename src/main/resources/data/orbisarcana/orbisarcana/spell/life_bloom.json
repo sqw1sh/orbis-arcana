@@ -1,0 +1,18 @@
+{
+  "school": "orbisarcana:nature",
+  "rarity": "orbisarcana:rare",
+  "behavior": "orbisarcana:zone",
+  "targeting": "ground",
+  "cast": { "mode": "charged", "ticks": 20, "min_ticks": 14 },
+  "cost": 20,
+  "cooldown_ticks": 200,
+  "primary_stat": "heal_per_second",
+  "params": { "heal_per_second": 1.5, "radius": 3.0, "duration_ticks": 120, "range": 24, "regen_ticks": 0, "follow_wounded": 0, "final_burst_heal": 0 },
+  "milestones": {
+    "5":  { "params": { "regen_ticks": 60 } },
+    "10": { "params": { "follow_wounded": 1 } },
+    "15": { "params": { "final_burst_heal": 6.0 } }
+  },
+  "circle": "orbisarcana:life_bloom",
+  "xp_category": "heal"
+}

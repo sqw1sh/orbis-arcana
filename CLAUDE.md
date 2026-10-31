@@ -31,6 +31,9 @@
 - Исходники для поиска API: распаковать `build/moddev/artifacts/minecraft-patched-*-sources.jar` и neoforge-sources из `~/.gradle/caches` во временную папку.
 - JUnit с классами MC: в build.gradle включён `neoForge.unitTest` (тесты стартуют FML, ~10 с).
 - `IdentifierArgument.id()` вместо ResourceLocationArgument; `SharedSuggestionProvider.suggestResource`.
+- НЕ менять attachments в `PlayerEvent.Clone`: NeoForge копирует их своим Clone-листенером и может перезаписать. Пост-смертные правки — в `PlayerEvent.PlayerRespawnEvent`.
+- Датапак-реестры: `NewDatapackRegistryEvent#worldRegistry(key, codec, networkCodec)`. Путь JSON: `data/<ns>/orbisarcana/spell/`.
+- Рабочая папка JUnit под MDG — не корень проекта; путь к ресурсам — системное свойство `orbisarcana.resources`.
 - В Bash нет python — для JSON-скриптов использовать node.
 
 ## Архитектура (§15)
