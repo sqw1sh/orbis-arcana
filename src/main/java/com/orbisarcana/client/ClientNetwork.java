@@ -1,6 +1,8 @@
 package com.orbisarcana.client;
 
 import com.orbisarcana.OrbisArcana;
+import com.orbisarcana.client.circle.ClientCircles;
+import com.orbisarcana.core.ActiveCast.Outcome;
 import com.orbisarcana.core.CastDenial;
 import com.orbisarcana.network.CastPayloads.CastDenied;
 import com.orbisarcana.network.CastPayloads.CastEnded;
@@ -22,6 +24,7 @@ public final class ClientNetwork {
     @SubscribeEvent
     static void register(RegisterClientPayloadHandlersEvent event) {
         event.register(CastStarted.TYPE, (msg, ctx) -> {
+            ClientCircles.start(msg);
             var player = Minecraft.getInstance().player;
             if (player == null || msg.casterId() != player.getId()) return;
             ClientCastState.setOwnCast(new ClientCastState.OwnCast(msg.castId(), msg.spell(), msg.startTick(), msg.durationTicks()));
@@ -31,6 +34,8 @@ public final class ClientNetwork {
             }
         });
         event.register(CastEnded.TYPE, (msg, ctx) -> {
+            Outcome[] outcomes = Outcome.values();
+            if (msg.outcome() >= 0 && msg.outcome() < outcomes.length) ClientCircles.end(msg.castId(), outcomes[msg.outcome()]);
             var own = ClientCastState.ownCast();
             if (own != null && own.castId() == msg.castId()) ClientCastState.setOwnCast(null);
         });

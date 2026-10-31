@@ -40,6 +40,8 @@
 - Клиентские хендлеры пакетов: `RegisterClientPayloadHandlersEvent`; сервер регистрирует `playToClient(type, codec)` без хендлера. Отправка с клиента: `ClientPacketDistributor.sendToServer`.
 - Сущности: `DeferredRegister.createEntities` + `registerEntityType(name, factory, category, builder -> ...)`.
 - GameTest 26.3: функции в реестре `Registries.TEST_FUNCTION`, тесты — `RegisterGameTestsEvent#registerTest(id, data -> new FunctionGameTestInstance(fnKey, data), new TestData<>(env, structure, maxTicks, setup, required))`. Мок-игрок: `helper.makeMockServerPlayerInLevel()` (каналов мода нет → слать пакеты через `network/Net`).
+- Рендер 26.3: API пайплайнов в `com.mojang.renderpearl.api.pipeline` (внутри jar MC; javap по `build/moddev/artifacts/minecraft-patched-*.jar`). Свой геометрии: состояние в `ExtractLevelRenderStateEvent` → `renderState.setRenderData(ContextKey)`, рисовать в `SubmitCustomGeometryEvent#getSubmitNodeCollector().submitCustomGeometry(pose, renderType, (pose, buf) -> ...)`. Пайплайн регистрировать в `RegisterRenderPipelinesEvent`.
+- Клиентские JSON-ресурсы: `SimpleJsonResourceReloadListener` + `AddClientReloadListenersEvent#addListener(id, listener)`.
 - В Bash нет python — для JSON-скриптов использовать node.
 
 ## Архитектура (§15)

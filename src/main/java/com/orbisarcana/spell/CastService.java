@@ -142,7 +142,8 @@ public final class CastService {
         ServerCast cast = new ServerCast(nextCastId++, spellId, spell, core, mastery, params, ground, target);
         ACTIVE.put(player.getUUID(), cast);
         Net.toPlayerAndNearby(player,
-                new CastStarted(cast.id(), player.getId(), spellId, now, castTicks));
+                new CastStarted(cast.id(), player.getId(), spellId, now, castTicks, mastery,
+                        Optional.ofNullable(ground), target == null ? -1 : target.getId()));
 
         if (core.mode == CastMode.INSTANT) {
             finish(player, cast, Outcome.RELEASED);

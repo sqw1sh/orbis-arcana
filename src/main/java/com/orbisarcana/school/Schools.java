@@ -22,6 +22,23 @@ public final class Schools {
     public static final List<Identifier> ALL = List.of(FIRE, EARTH, WATER, AIR, ICE, LIGHTNING, NATURE, LIGHT, DARK, ASTRAL);
     public static final List<Identifier> HIGHER = List.of(LIGHT, DARK, ASTRAL);
 
+    /** Primary circle colour of a school (§5.4: the school sets the colour, rarity only the outline). */
+    public static int color(Identifier id) {
+        return switch (id.getPath()) {
+            case "fire" -> 0xFF6A2A;
+            case "earth" -> 0xC09050;
+            case "water" -> 0x3FA9F5;
+            case "air" -> 0xC8F5EE;
+            case "ice" -> 0x9EE4FF;
+            case "lightning" -> 0xFFE95A;
+            case "nature" -> 0x6BD66B;
+            case "light" -> 0xFFF2B0;
+            case "dark" -> 0x9B5CD6;
+            case "astral" -> 0x7A8CFF;
+            default -> 0xFFFFFF;
+        };
+    }
+
     public static boolean exists(Identifier id) {
         return ALL.contains(id);
     }

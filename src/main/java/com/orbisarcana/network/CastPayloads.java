@@ -1,5 +1,7 @@
 package com.orbisarcana.network;
 
+import java.util.Optional;
+
 import com.orbisarcana.OrbisArcana;
 
 import io.netty.buffer.ByteBuf;
@@ -7,6 +9,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.Vec3;
 
 /** Cast packets (§15.6). Clients only send intents; everything is decided on the server. */
 public final class CastPayloads {
@@ -39,8 +42,13 @@ public final class CastPayloads {
 
     // ---- server -> client ----
 
-    /** Sent to the caster and everyone tracking them; drives cast bars now and circles in S3. */
-    public record CastStarted(int castId, int casterId, Identifier spell, long startTick, int durationTicks) implements CustomPacketPayload {
+    /**
+     * Sent to the caster and nearby players; drives cast bars and magic circles. Circles are animated
+     * client-side from {@code startTick}/{@code durationTicks}; positions are never streamed (§9.7).
+     * {@code groundPoint} is set for GROUND spells, {@code targetId} (-1 if none) for TARGET spells.
+     */
+    public record CastStarted(int castId, int casterId, Identifier spell, long startTick, int durationTicks,
+                              int mastery, Optional<Vec3> groundPoint, int targetId) implements CustomPacketPayload {
         public static final Type<CastStarted> TYPE = new Type<>(OrbisArcana.id("cast_started"));
         public static final StreamCodec<ByteBuf, CastStarted> CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, CastStarted::castId,
@@ -48,6 +56,9 @@ public final class CastPayloads {
                 Identifier.STREAM_CODEC, CastStarted::spell,
                 ByteBufCodecs.VAR_LONG, CastStarted::startTick,
                 ByteBufCodecs.VAR_INT, CastStarted::durationTicks,
+                ByteBufCodecs.VAR_INT, CastStarted::mastery,
+                ByteBufCodecs.optional(Vec3.STREAM_CODEC), CastStarted::groundPoint,
+                ByteBufCodecs.VAR_INT, CastStarted::targetId,
                 CastStarted::new);
 
         @Override
