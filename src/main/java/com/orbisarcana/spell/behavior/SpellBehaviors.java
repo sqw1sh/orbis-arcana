@@ -42,6 +42,9 @@ public final class SpellBehaviors {
     public static final Supplier<SpellBehavior> RAY = BEHAVIORS.register("ray", () -> RayBehavior.INSTANCE);
     public static final Supplier<SpellBehavior> AURA = BEHAVIORS.register("aura", () -> AuraBehavior.INSTANCE);
     public static final Supplier<SpellBehavior> JUDGMENT = BEHAVIORS.register("judgment", () -> JudgmentBehavior::release);
+    public static final Supplier<SpellBehavior> DART = BEHAVIORS.register("dart", () -> DartBehavior::release);
+    public static final Supplier<SpellBehavior> CURSE = BEHAVIORS.register("curse", () -> CurseBehavior::release);
+    public static final Supplier<SpellBehavior> STEP = BEHAVIORS.register("step", () -> StepBehavior::release);
 
     public static void register(IEventBus modBus) {
         modBus.addListener((NewRegistryEvent event) -> event.register(REGISTRY));

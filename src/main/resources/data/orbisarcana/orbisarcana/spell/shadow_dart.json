@@ -1,0 +1,41 @@
+{
+  "school": "orbisarcana:dark",
+  "rarity": "orbisarcana:rare",
+  "behavior": "orbisarcana:dart",
+  "targeting": "directional",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 16,
+  "cooldown_ticks": 120,
+  "primary_stat": "damage",
+  "params": {
+    "damage": 9,
+    "speed": 2,
+    "range": 28,
+    "count": 1,
+    "volley_delay": 0,
+    "echo_hit": 0,
+    "kill_jump": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "count": 2,
+        "volley_delay": 5
+      }
+    },
+    "10": {
+      "params": {
+        "echo_hit": 0.5
+      }
+    },
+    "15": {
+      "params": {
+        "kill_jump": 8
+      }
+    }
+  },
+  "circle": "orbisarcana:shadow_dart",
+  "xp_category": "attack"
+}

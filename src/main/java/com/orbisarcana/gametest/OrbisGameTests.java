@@ -24,6 +24,7 @@ import com.orbisarcana.spell.CastService;
 import com.orbisarcana.spell.Frost;
 import com.orbisarcana.spell.Shields;
 import com.orbisarcana.spell.Toggles;
+import com.orbisarcana.spell.behavior.CurseBehavior;
 import com.orbisarcana.spell.behavior.RootsBehavior;
 import com.orbisarcana.spell.behavior.BurningGround;
 
@@ -137,6 +138,10 @@ public final class OrbisGameTests {
         test("heavens_judgment_strikes_and_marks", 100, OrbisGameTests::heavensJudgment);
         test("heavens_judgment_hallows_ground", 140, OrbisGameTests::hallowedGround);
         test("radiance_pulse_cleanses_and_veils", 20, OrbisGameTests::radiance);
+        test("shadow_dart_hits_and_echoes", 60, OrbisGameTests::shadowDart);
+        test("withering_curse_weakens_and_spreads", 80, OrbisGameTests::witheringCurse);
+        test("shadow_step_teleports_and_returns", 40, OrbisGameTests::shadowStep);
+        test("dusk_mark_absorbed_for_mana", 20, OrbisGameTests::dusk);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1179,6 +1184,81 @@ public final class OrbisGameTests {
         h.assertFalse(p.hasEffect(MobEffects.POISON), "a full charge pulses and cleanses");
         h.assertTrue(Shields.total(p) >= 4f, "Veil shields the allies around");
         h.assertValueEqual(EchoService.radiance(p), 0.0, "the charge is spent");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static final Identifier SHADOW_DART = OrbisArcana.id("shadow_dart");
+    private static final Identifier WITHERING_CURSE = OrbisArcana.id("withering_curse");
+    private static final Identifier SHADOW_STEP = OrbisArcana.id("shadow_step");
+
+    private static void shadowDart(GameTestHelper h) {
+        var golem = h.spawn(EntityTypes.IRON_GOLEM, new Vec3(7.5, 1, 4.5));
+        golem.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 5f);
+        KnowledgeService.learn(p, SHADOW_DART);
+        KnowledgeService.setMastery(p, SHADOW_DART, 10);
+        CastService.request(p, SHADOW_DART);
+        h.assertFalse(CastService.isCasting(p), "instant");
+        float[] afterFirst = new float[1];
+        h.runAfterDelay(8, () -> {
+            afterFirst[0] = golem.getHealth();
+            h.assertTrue(afterFirst[0] < golem.getMaxHealth(), "the darts hit");
+        });
+        h.runAfterDelay(40, () -> {
+            h.assertTrue(golem.getHealth() < afterFirst[0], "the echo hit lands a second later (m10)");
+            golem.discard();
+            cleanup(h, p);
+            h.succeed();
+        });
+    }
+
+    private static void witheringCurse(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(4.5, 1, 7.5));
+        Pig neighbour = h.spawn(EntityTypes.PIG, new Vec3(6.5, 1, 7.5));
+        pig.setNoAi(true);
+        neighbour.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 2.5), 0f, 15f);
+        KnowledgeService.learn(p, WITHERING_CURSE);
+        KnowledgeService.setMastery(p, WITHERING_CURSE, 5);
+        CastService.request(p, WITHERING_CURSE);
+        h.assertTrue(CastService.isCasting(p), "a target under the crosshair");
+        release(h, p, 26);
+        h.runAfterDelay(30, () -> {
+            h.assertTrue(CurseBehavior.isCursed(pig), "the pig is cursed");
+            pig.kill(h.getLevel());
+            h.assertTrue(CurseBehavior.isCursed(neighbour), "on death the curse jumps to the neighbour (m5)");
+        });
+        succeedWhen(h, p, () -> h.assertTrue(neighbour.getHealth() < neighbour.getMaxHealth(), "and withers it"));
+    }
+
+    private static void shadowStep(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 0f);
+        KnowledgeService.learn(p, SHADOW_STEP);
+        KnowledgeService.setMastery(p, SHADOW_STEP, 10);
+        Vec3 start = p.position();
+        CastService.request(p, SHADOW_STEP);
+        h.assertTrue(p.position().x > start.x + 3, "stepped forward, at " + p.position());
+        h.runAfterDelay(5, () -> {
+            CastService.request(p, SHADOW_STEP);
+            h.assertTrue(p.position().distanceTo(start) < 0.5, "a second press steps back (m10), at " + p.position());
+            cleanup(h, p);
+            h.succeed();
+        });
+    }
+
+    private static void dusk(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.DARK, SHADOW_DART, 1);
+        var golem = h.spawn(EntityTypes.IRON_GOLEM, new Vec3(2.5, 1, 2.5));
+        golem.setNoAi(true);
+        golem.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0), p);
+        h.assertTrue(EchoService.duskBy(golem, p), "a debuff from the player leaves a Dusk mark");
+        ManaService.setMana(p, 10);
+        golem.hurtServer(h.getLevel(), h.getLevel().damageSources().playerAttack(p), 2f);
+        h.assertFalse(EchoService.duskBy(golem, p), "the blow absorbs the mark");
+        h.assertTrue(ManaService.mana(p) >= 12.9, "and gives mana, " + ManaService.mana(p));
+        h.assertTrue(golem.getHealth() <= golem.getMaxHealth() - 4f, "plus extra damage, health " + golem.getHealth());
+        golem.discard();
         cleanup(h, p);
         h.succeed();
     }

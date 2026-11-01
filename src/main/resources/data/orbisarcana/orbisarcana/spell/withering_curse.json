@@ -1,0 +1,44 @@
+{
+  "school": "orbisarcana:dark",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:curse",
+  "targeting": "target",
+  "cast": {
+    "mode": "charged",
+    "ticks": 24,
+    "min_ticks": 16
+  },
+  "cost": 28,
+  "cooldown_ticks": 300,
+  "primary_stat": "damage_per_second",
+  "params": {
+    "range": 20,
+    "duration_ticks": 160,
+    "damage_per_second": 1.5,
+    "weaken": 0.2,
+    "spread_radius": 0,
+    "heal_cut": 0,
+    "death_mana": 0,
+    "death_heal": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "spread_radius": 6
+      }
+    },
+    "10": {
+      "params": {
+        "heal_cut": 0.5
+      }
+    },
+    "15": {
+      "params": {
+        "death_mana": 15,
+        "death_heal": 4
+      }
+    }
+  },
+  "circle": "orbisarcana:withering_curse",
+  "xp_category": "control"
+}

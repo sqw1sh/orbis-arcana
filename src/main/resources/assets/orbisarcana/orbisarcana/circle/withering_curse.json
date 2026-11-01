@@ -1,0 +1,44 @@
+{
+  "layers": [
+    {
+      "type": "ring",
+      "radius": 0.9,
+      "width": 0.022
+    },
+    {
+      "type": "polygon",
+      "sides": 5,
+      "radius": 0.86,
+      "width": 0.015,
+      "rotate_speed": -14,
+      "count": 2
+    },
+    {
+      "type": "glyph_ring",
+      "radius": 0.62,
+      "count": 9,
+      "size": 0.05,
+      "progress": true,
+      "rotate_speed": 12
+    }
+  ],
+  "milestone_layers": {
+    "5": [
+      {
+        "type": "satellite",
+        "count": 3,
+        "radius": 1.05,
+        "size": 0.045,
+        "rotate_speed": -45
+      }
+    ],
+    "15": [
+      {
+        "type": "ring",
+        "radius": 1.15,
+        "width": 0.022,
+        "color": "#B070E0"
+      }
+    ]
+  }
+}

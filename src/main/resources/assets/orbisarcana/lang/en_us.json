@@ -429,5 +429,20 @@
   "spell.orbisarcana.heavens_judgment.desc": "A column of light strikes the point (r3) and marks enemies.",
   "spell.orbisarcana.heavens_judgment.m5": "the column stays for 2 s",
   "spell.orbisarcana.heavens_judgment.m10": "3 small columns around it",
-  "spell.orbisarcana.heavens_judgment.m15": "hallowed ground heals allies"
+  "spell.orbisarcana.heavens_judgment.m15": "hallowed ground heals allies",
+  "spell.orbisarcana.shadow_dart": "Shadow Dart",
+  "spell.orbisarcana.shadow_dart.desc": "A fast shadow dart that leaves a Dusk mark.",
+  "spell.orbisarcana.shadow_dart.m5": "2 darts",
+  "spell.orbisarcana.shadow_dart.m10": "a delayed second hit after 1 s",
+  "spell.orbisarcana.shadow_dart.m15": "a kill sends the dart on",
+  "spell.orbisarcana.withering_curse": "Withering Curse",
+  "spell.orbisarcana.withering_curse.desc": "The target deals 20% less damage and withers for 8 s.",
+  "spell.orbisarcana.withering_curse.m5": "jumps to a neighbour on death",
+  "spell.orbisarcana.withering_curse.m10": "the target heals 50% less",
+  "spell.orbisarcana.withering_curse.m15": "its death restores your mana and HP",
+  "spell.orbisarcana.shadow_step": "Shadow Step",
+  "spell.orbisarcana.shadow_step.desc": "Teleport to where you look (up to 16 blocks).",
+  "spell.orbisarcana.shadow_step.m5": "a decoy stays behind",
+  "spell.orbisarcana.shadow_step.m10": "press again within 3 s to return",
+  "spell.orbisarcana.shadow_step.m15": "a wave of fear on arrival"
 }

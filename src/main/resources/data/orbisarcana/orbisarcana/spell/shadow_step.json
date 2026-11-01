@@ -1,0 +1,39 @@
+{
+  "school": "orbisarcana:dark",
+  "rarity": "orbisarcana:mythic",
+  "behavior": "orbisarcana:step",
+  "targeting": "self",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 40,
+  "cooldown_ticks": 600,
+  "primary_stat": "range",
+  "params": {
+    "range": 16,
+    "decoy_ticks": 0,
+    "return_ticks": 0,
+    "fear_ticks": 0,
+    "fear_radius": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "decoy_ticks": 100
+      }
+    },
+    "10": {
+      "params": {
+        "return_ticks": 60
+      }
+    },
+    "15": {
+      "params": {
+        "fear_ticks": 40,
+        "fear_radius": 5
+      }
+    }
+  },
+  "circle": "orbisarcana:shadow_step",
+  "xp_category": "mobility"
+}

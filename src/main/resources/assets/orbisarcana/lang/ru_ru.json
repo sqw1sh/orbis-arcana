@@ -429,5 +429,20 @@
   "spell.orbisarcana.heavens_judgment.desc": "Колонна света бьёт с неба в точку (r3) и подсвечивает врагов.",
   "spell.orbisarcana.heavens_judgment.m5": "колонна держится 2 с",
   "spell.orbisarcana.heavens_judgment.m10": "3 малые колонны вокруг",
-  "spell.orbisarcana.heavens_judgment.m15": "освящённая земля лечит союзников"
+  "spell.orbisarcana.heavens_judgment.m15": "освящённая земля лечит союзников",
+  "spell.orbisarcana.shadow_dart": "Теневой дротик",
+  "spell.orbisarcana.shadow_dart.desc": "Быстрый дротик тени, оставляет метку Сумрака.",
+  "spell.orbisarcana.shadow_dart.m5": "2 дротика",
+  "spell.orbisarcana.shadow_dart.m10": "повторный удар через 1 с",
+  "spell.orbisarcana.shadow_dart.m15": "убийство — дротик перескакивает",
+  "spell.orbisarcana.withering_curse": "Проклятие увядания",
+  "spell.orbisarcana.withering_curse.desc": "Цель наносит на 20% меньше урона и увядает 8 с.",
+  "spell.orbisarcana.withering_curse.m5": "при смерти переходит на соседа",
+  "spell.orbisarcana.withering_curse.m10": "лечение цели −50%",
+  "spell.orbisarcana.withering_curse.m15": "смерть цели восстанавливает вам ману и HP",
+  "spell.orbisarcana.shadow_step": "Теневой переход",
+  "spell.orbisarcana.shadow_step.desc": "Телепорт в точку взгляда (до 16 блоков).",
+  "spell.orbisarcana.shadow_step.m5": "иллюзия-приманка на месте",
+  "spell.orbisarcana.shadow_step.m10": "повторное нажатие за 3 с — возврат",
+  "spell.orbisarcana.shadow_step.m15": "на выходе — волна страха"
 }

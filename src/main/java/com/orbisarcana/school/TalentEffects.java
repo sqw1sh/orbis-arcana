@@ -45,7 +45,8 @@ public final class TalentEffects {
             "ice/echo", "ice/root", "ice/a1", "ice/a2", "ice/b1", "ice/b2",
             "lightning/echo", "lightning/root", "lightning/a1", "lightning/a2", "lightning/b1", "lightning/b2",
             "nature/echo", "nature/root", "nature/a1", "nature/a2", "nature/b1", "nature/b2",
-            "light/echo", "light/root", "light/a1", "light/a2", "light/b1", "light/b2");
+            "light/echo", "light/root", "light/a1", "light/a2", "light/b1", "light/b2",
+            "dark/echo", "dark/root", "dark/a1", "dark/a2", "dark/b1", "dark/b2");
 
     public static final double EMBERS_IGNITE_MULT = 1.3;
     public static final double LIVING_WAVE_HEAL_MULT = 1.1;
@@ -283,6 +284,49 @@ public final class TalentEffects {
         }
     }
 
+    // ---- Dark ----
+
+    public static final double ABSORPTION_SHARE = 0.05;
+    public static final int NIGHT_VEIL_TICKS = 40;
+    public static final long NIGHT_VEIL_COOLDOWN = 30 * 20;
+    public static final double BLIND_SPOT_RADIUS = 24;
+    private static final Map<UUID, Long> VEIL_READY = new HashMap<>();
+
+    /** A1 "Absorption": your Dark magic heals you for 5% of the damage dealt. */
+    @SubscribeEvent
+    static void onDamageDark(LivingDamageEvent.Post event) {
+        if (event.getSource().getEntity() instanceof ServerPlayer p && p != event.getEntity() && event.getHealthDamage() > 0
+                && event.getSource().is(com.orbisarcana.registry.ModDamageTypes.forSchool(Schools.DARK))
+                && AttunementService.hasTalent(p, Schools.DARK, TalentRules.A1)) {
+            p.heal((float) (event.getHealthDamage() * ABSORPTION_SHARE));
+        }
+    }
+
+    /** B1 "Night Veil": a kill hides you for 2 s (30 s cooldown). */
+    @SubscribeEvent
+    static void onKillDark(LivingDeathEvent event) {
+        if (!(event.getSource().getEntity() instanceof ServerPlayer p) || p == event.getEntity()
+                || !AttunementService.hasTalent(p, Schools.DARK, TalentRules.B1)) return;
+        long now = p.level().getGameTime();
+        if (now < VEIL_READY.getOrDefault(p.getUUID(), 0L)) return;
+        VEIL_READY.put(p.getUUID(), now + NIGHT_VEIL_COOLDOWN);
+        p.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, NIGHT_VEIL_TICKS, 0, false, false));
+    }
+
+    /** B2 "Blind Spot": when you teleport, mobs hunting you lose you. */
+    public static void blindSpot(ServerPlayer p) {
+        if (!AttunementService.hasTalent(p, Schools.DARK, TalentRules.B2)) return;
+        for (var mob : p.level().getEntitiesOfClass(net.minecraft.world.entity.Mob.class, p.getBoundingBox().inflate(BLIND_SPOT_RADIUS),
+                m -> m.getTarget() == p)) {
+            mob.setTarget(null);
+        }
+    }
+
+    @SubscribeEvent
+    static void onPearl(net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderPearl event) {
+        blindSpot(event.getPlayer());
+    }
+
     // ---- Water ----
 
     /** Water root "Living Wave": +10% healing; Nature B2 "Great Crown": +15% near leaves or logs. */
@@ -340,6 +384,7 @@ public final class TalentEffects {
         UNBREAKABLE_READY.remove(id);
         WHITE_WALL_READY.remove(id);
         REVERSE_READY.remove(id);
+        VEIL_READY.remove(id);
     }
 
     @SubscribeEvent
@@ -350,6 +395,7 @@ public final class TalentEffects {
         UNBREAKABLE_READY.clear();
         WHITE_WALL_READY.clear();
         REVERSE_READY.clear();
+        VEIL_READY.clear();
     }
 
     private TalentEffects() {}

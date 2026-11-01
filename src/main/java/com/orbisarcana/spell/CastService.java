@@ -29,6 +29,7 @@ import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.behavior.CastContext;
 import com.orbisarcana.spell.behavior.ChannelBehavior;
 import com.orbisarcana.spell.behavior.SpellBehaviors;
+import com.orbisarcana.spell.behavior.StepBehavior;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -103,6 +104,8 @@ public final class CastService {
             Toggles.disable(player, spellId, true);
             return;
         }
+        // Shadow Step, milestone 10: a second press inside the window steps back, free
+        if (def.isPresent() && StepBehavior.tryReturn(player, spellId)) return;
 
         Optional<CastDenial> denial = CastRules.check(new CastRules.Request(
                 def.isPresent() && SpellBehaviors.get(def.get().behavior()).isPresent(),

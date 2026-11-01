@@ -351,6 +351,107 @@ public final class EchoService {
         level.sendParticles(ParticleTypes.END_ROD, player.getX(), player.getY() + 1, player.getZ(), 40, 0.5, 0.8, 0.5, 0.15);
     }
 
+    // ---- Dark: Dusk ----
+
+    private record Dusk(UUID caster, long until, int entityId) {}
+
+    /** target -> Dusk mark. */
+    private static final Map<UUID, Dusk> DUSK = new HashMap<>();
+    /** player -> marks absorbed towards the next Eclipse. */
+    private static final Map<UUID, Integer> ECLIPSE = new HashMap<>();
+    private static boolean quiet;
+
+    /** Runs damage that must not absorb Dusk marks (damage over time, the mark's own blow). */
+    public static void quietly(Runnable damage) {
+        boolean was = quiet;
+        quiet = true;
+        try {
+            damage.run();
+        } finally {
+            quiet = was;
+        }
+    }
+
+    /** A Dark debuff leaves the caster's Dusk mark on {@code target}. */
+    public static void markDusk(ServerPlayer caster, LivingEntity target) {
+        if (target instanceof net.minecraft.world.entity.player.Player || !target.isAlive() || tier(caster, Schools.DARK) <= 0) return;
+        long now = caster.level().getGameTime();
+        DUSK.put(target.getUUID(), new Dusk(caster.getUUID(), now + EchoRules.DUSK_MARK_TICKS, target.getId()));
+        Net.toNearby(target, new HeatMark(target.getId(), 1f, Schools.DARK));
+        sendDusk(caster, now);
+    }
+
+    public static boolean duskBy(LivingEntity e, ServerPlayer caster) {
+        Dusk d = DUSK.get(e.getUUID());
+        return d != null && d.caster().equals(caster.getUUID()) && caster.level().getGameTime() < d.until();
+    }
+
+    private static void sendDusk(ServerPlayer caster, long now) {
+        long n = DUSK.values().stream().filter(d -> d.caster().equals(caster.getUUID()) && now < d.until()).count();
+        Net.toPlayer(caster, new EchoState(Schools.DARK, (float) Math.min(n, EchoRules.DUSK_SHOWN), EchoRules.DUSK_SHOWN));
+    }
+
+    /** Any harmful effect the player puts on a mob marks it. */
+    @SubscribeEvent
+    static void onEffectAdded(net.neoforged.neoforge.event.entity.living.MobEffectEvent.Added event) {
+        if (event.getEffectSource() instanceof ServerPlayer p && p != event.getEntity()
+                && event.getEffectInstance().getEffect().value().getCategory() == net.minecraft.world.effect.MobEffectCategory.HARMFUL) {
+            markDusk(p, event.getEntity());
+        }
+    }
+
+    /** The marker's blow absorbs the mark: extra damage and mana; A2 "Eclipse" every 3rd time. */
+    @SubscribeEvent
+    static void onDuskHit(LivingDamageEvent.Post event) {
+        if (quiet || DUSK.isEmpty() || event.getHealthDamage() <= 0) return;
+        LivingEntity victim = event.getEntity();
+        if (!(event.getSource().getEntity() instanceof ServerPlayer p) || p == victim || !duskBy(victim, p)) return;
+        int tier = tier(p, Schools.DARK);
+        if (tier <= 0) return;
+        ServerLevel level = p.level();
+        DUSK.remove(victim.getUUID());
+        Net.toNearby(victim, new HeatMark(victim.getId(), 0f, Schools.DARK));
+        boolean dissonant = AttunementService.isDissonant(p);
+        if (victim.isAlive()) {
+            float bonus = (float) EchoRules.duskDamage(tier, dissonant);
+            quietly(() -> {
+                victim.damageCooldownTime = 0;
+                victim.hurtServer(level, ModDamageTypes.source(victim, Schools.DARK, null, p), bonus);
+            });
+        }
+        double mana = EchoRules.duskMana(dissonant, AttunementService.hasTalent(p, Schools.DARK, TalentRules.ROOT));
+        ManaService.setMana(p, Math.min(ManaService.maxMana(p), ManaService.mana(p) + mana));
+        Vec3 c = victim.getBoundingBox().getCenter();
+        level.sendParticles(ParticleTypes.SQUID_INK, c.x, c.y, c.z, 15, 0.3, 0.4, 0.3, 0.05);
+        if (AttunementService.hasTalent(p, Schools.DARK, TalentRules.A2)
+                && ECLIPSE.merge(p.getUUID(), 1, Integer::sum) >= EchoRules.ECLIPSE_EVERY) {
+            ECLIPSE.put(p.getUUID(), 0);
+            for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, victim.getBoundingBox().inflate(EchoRules.ECLIPSE_RADIUS),
+                    e -> e.isAlive() && !(e instanceof net.minecraft.world.entity.player.Player))) {
+                e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, EchoRules.ECLIPSE_BLIND_TICKS, 0), p);
+                if (e instanceof net.minecraft.world.entity.Mob mob) mob.setTarget(null);
+            }
+            level.sendParticles(ParticleTypes.SQUID_INK, c.x, c.y, c.z, 60, EchoRules.ECLIPSE_RADIUS / 2, 0.8, EchoRules.ECLIPSE_RADIUS / 2, 0.1);
+        }
+        sendDusk(p, level.getGameTime());
+    }
+
+    @SubscribeEvent
+    static void onDuskTick(LevelTickEvent.Post event) {
+        if (!(event.getLevel() instanceof ServerLevel level) || DUSK.isEmpty() || level.getGameTime() % 20 != 0) return;
+        long now = level.getGameTime();
+        var it = DUSK.entrySet().iterator();
+        while (it.hasNext()) {
+            Dusk d = it.next().getValue();
+            if (now < d.until()) continue;
+            it.remove();
+            var entity = level.getEntity(d.entityId());
+            if (entity != null) Net.toNearby(entity, new HeatMark(entity.getId(), 0f, Schools.DARK));
+            ServerPlayer owner = level.getServer().getPlayerList().getPlayer(d.caster());
+            if (owner != null) sendDusk(owner, now);
+        }
+    }
+
     // ---- Water: Flow ----
 
     /** A healing/support cast succeeded (counted once per cast). */
@@ -467,6 +568,8 @@ public final class EchoService {
         FLOW.remove(id);
         FLOW_CAST.remove(id);
         BULWARK.remove(id);
+        ECLIPSE.remove(id);
+        DUSK.values().removeIf(d -> d.caster().equals(id));
         RADIANCE.remove(id);
         IMPULSE.remove(id);
         LAST_POS.remove(id);
@@ -485,6 +588,8 @@ public final class EchoService {
         FLOW.clear();
         FLOW_CAST.clear();
         BULWARK.clear();
+        DUSK.clear();
+        ECLIPSE.clear();
         RADIANCE.clear();
         IMPULSE.clear();
         LAST_POS.clear();

@@ -83,6 +83,28 @@ public final class EchoRules {
         return dissonance ? dmg * SchoolRules.DISSONANCE_ECHO_MULT : dmg;
     }
 
+    // Dark: Dusk
+    public static final long DUSK_MARK_TICKS = 200;
+    public static final double DUSK_MANA = 3;
+    /** Root "Shadow Mark": +2 mana per absorbed mark. */
+    public static final double SHADOW_MARK_MANA = 2;
+    public static final int DUSK_SHOWN = 5;
+    /** A2 "Eclipse": every 3rd absorbed mark flashes blindness around the target. */
+    public static final int ECLIPSE_EVERY = 3;
+    public static final double ECLIPSE_RADIUS = 4;
+    public static final int ECLIPSE_BLIND_TICKS = 60;
+
+    /** Extra damage of a hit that absorbs a mark: 2, or 3 at tier 2; Dissonance halves it. */
+    public static double duskDamage(int tier, boolean dissonance) {
+        double dmg = tier >= 2 ? 3.0 : 2.0;
+        return dissonance ? dmg * SchoolRules.DISSONANCE_ECHO_MULT : dmg;
+    }
+
+    /** Mana of an absorbed mark; Dissonance halves the Echo part. */
+    public static double duskMana(boolean dissonance, boolean shadowMark) {
+        return (dissonance ? DUSK_MANA * SchoolRules.DISSONANCE_ECHO_MULT : DUSK_MANA) + (shadowMark ? SHADOW_MARK_MANA : 0);
+    }
+
     // Air: Impulse
     public static final double IMPULSE_MAX = 10;
     /** Charge per block moved while in combat. */
