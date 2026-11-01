@@ -92,6 +92,8 @@ public final class OrbisGameTests {
         test("flow_makes_next_cast_instant", 20, OrbisGameTests::flowInstant);
         test("crown_of_flame_every_third_cast", 20, OrbisGameTests::crownOfFlame);
         test("flow_real_cast_needs_resonance_1", 20, OrbisGameTests::flowRealCast);
+        test("ash_spiral_burns_in_area", 120, OrbisGameTests::ashSpiral);
+        test("flame_dash_ignites_path_at_10", 30, OrbisGameTests::flameDash);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -609,6 +611,31 @@ public final class OrbisGameTests {
             cleanup(h, p);
             h.succeed();
         });
+    }
+
+    private static final Identifier ASH_SPIRAL = OrbisArcana.id("ash_spiral");
+    private static final Identifier FLAME_DASH = OrbisArcana.id("flame_dash");
+
+    private static void ashSpiral(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(4.5, 1, 6.5));
+        pig.setNoAi(true);
+        // Looking down at the pig two blocks ahead
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 40f);
+        KnowledgeService.learn(p, ASH_SPIRAL);
+        CastService.request(p, ASH_SPIRAL);
+        h.assertTrue(CastService.isCasting(p), "ash spiral starts charging");
+        release(h, p, 28);
+        succeedWhen(h, p, () -> h.assertTrue(pig.getHealth() <= pig.getMaxHealth() - 3f, "vortex should hurt the pig repeatedly, health " + pig.getHealth()));
+    }
+
+    private static void flameDash(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(4.5, 1, 4.5));
+        pig.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 0f);
+        KnowledgeService.learn(p, FLAME_DASH);
+        KnowledgeService.setMastery(p, FLAME_DASH, 10);
+        CastService.request(p, FLAME_DASH);
+        succeedWhen(h, p, () -> h.assertTrue(pig.isOnFire(), "a pig on the dash path is set on fire"));
     }
 
     private OrbisGameTests() {}

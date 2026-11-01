@@ -1,0 +1,18 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:rare",
+  "behavior": "orbisarcana:dash",
+  "targeting": "self",
+  "cast": { "mode": "instant" },
+  "cost": 18,
+  "cooldown_ticks": 160,
+  "primary_stat": "distance",
+  "params": { "distance": 6.0, "fire_trail_ticks": 0, "path_ignite": 0, "charges": 1 },
+  "milestones": {
+    "5":  { "params": { "fire_trail_ticks": 60 } },
+    "10": { "params": { "path_ignite": 1 } },
+    "15": { "params": { "charges": 2 } }
+  },
+  "circle": "orbisarcana:flame_dash",
+  "xp_category": "mobility"
+}

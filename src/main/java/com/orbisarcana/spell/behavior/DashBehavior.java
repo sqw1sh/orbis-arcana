@@ -6,7 +6,9 @@ import com.orbisarcana.spell.CastService;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -17,6 +19,9 @@ final class DashBehavior {
     /** Horizontal speed per block of distance, compensating ground friction. */
     private static final double SPEED_PER_BLOCK = 0.16;
     private static final double ALLY_RADIUS = 2.5;
+    private static final int TRAIL_PATCHES = 3;
+    private static final int PATH_IGNITE_TICKS = 80;
+    private static final double PATH_PUSH = 0.8;
 
     static void release(CastContext ctx) {
         var player = ctx.caster();
@@ -33,11 +38,27 @@ final class DashBehavior {
         int noFall = ctx.ticks("no_fall_ticks");
         if (noFall > 0) CastService.grantNoFall(player, noFall);
 
+        AABB path = player.getBoundingBox().expandTowards(dir.scale(ctx.param("distance"))).inflate(ALLY_RADIUS);
         int allySpeed = ctx.ticks("ally_speed_ticks");
         if (allySpeed > 0) {
-            for (Player ally : ctx.level().getEntitiesOfClass(Player.class, player.getBoundingBox().expandTowards(dir.scale(ctx.param("distance"))).inflate(ALLY_RADIUS),
-                    p -> p != player)) {
+            for (Player ally : ctx.level().getEntitiesOfClass(Player.class, path, p -> p != player)) {
                 ally.addEffect(new MobEffectInstance(MobEffects.SPEED, allySpeed, 0), player);
+            }
+        }
+
+        // Flame dash: burning trail behind (milestone 5), enemies on the path ignited and pushed (10)
+        int trail = ctx.ticks("fire_trail_ticks");
+        if (trail > 0) {
+            Vec3 from = player.position();
+            for (int i = 0; i < TRAIL_PATCHES; i++) {
+                Vec3 at = from.add(dir.scale(ctx.param("distance") * i / TRAIL_PATCHES));
+                BurningGround.spawn(ctx.level(), at, 1.0, trail, player, ctx.spell().school(), ctx.spellId(), ctx.castId());
+            }
+        }
+        if (ctx.param("path_ignite") > 0) {
+            for (LivingEntity e : ctx.level().getEntitiesOfClass(LivingEntity.class, path, e -> e != player && e.isAlive() && !(e instanceof Player))) {
+                e.igniteForTicks(PATH_IGNITE_TICKS);
+                e.push(dir.x * PATH_PUSH, 0.3, dir.z * PATH_PUSH);
             }
         }
     }

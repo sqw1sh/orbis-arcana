@@ -323,5 +323,16 @@
   "message.orbisarcana.altar.reset_cost": "Needs %s Aether Ink",
   "screen.orbisarcana.altar.reset": "Reset talents",
   "message.orbisarcana.school.echo_hint": "The %s Echo and the root passive unlock at resonance 1 — use this school spells",
-  "hud.orbisarcana.echo_locked": "%s — from resonance 1"
+  "hud.orbisarcana.echo_locked": "%s — from resonance 1",
+  "spell.orbisarcana.flame_dash": "Flame Dash",
+  "spell.orbisarcana.flame_dash.desc": "A 6-block dash through fire.",
+  "spell.orbisarcana.flame_dash.m5": "a fiery trail behind you",
+  "spell.orbisarcana.flame_dash.m10": "enemies on the path are set on fire and pushed",
+  "spell.orbisarcana.flame_dash.m15": "two charges",
+  "spell.orbisarcana.ash_spiral": "Ash Spiral",
+  "spell.orbisarcana.ash_spiral.desc": "A spinning fire vortex at a point for 4 s.",
+  "spell.orbisarcana.ash_spiral.m5": "+1 s, the vortex pulls enemies in",
+  "spell.orbisarcana.ash_spiral.m10": "the vortex slowly follows your aim",
+  "spell.orbisarcana.ash_spiral.m15": "ends with a fire pillar, ×2 damage in the centre",
+  "stat.orbisarcana.damage_per_pulse": "Damage per pulse"
 }

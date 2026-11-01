@@ -1,0 +1,43 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:vortex",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 26,
+    "min_ticks": 18
+  },
+  "cost": 30,
+  "cooldown_ticks": 300,
+  "primary_stat": "damage_per_pulse",
+  "params": {
+    "damage_per_pulse": 1.6,
+    "radius": 3,
+    "duration_ticks": 80,
+    "range": 24,
+    "pull": 0,
+    "follow_aim": 0,
+    "final_pillar": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "duration_ticks": 100,
+        "pull": 1
+      }
+    },
+    "10": {
+      "params": {
+        "follow_aim": 1
+      }
+    },
+    "15": {
+      "params": {
+        "final_pillar": 1
+      }
+    }
+  },
+  "circle": "orbisarcana:ash_spiral",
+  "xp_category": "attack"
+}

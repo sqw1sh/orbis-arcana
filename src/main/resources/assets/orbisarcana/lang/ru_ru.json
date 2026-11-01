@@ -323,5 +323,16 @@
   "message.orbisarcana.altar.reset_cost": "Нужно %s Чернил эфира",
   "screen.orbisarcana.altar.reset": "Сброс талантов",
   "message.orbisarcana.school.echo_hint": "Отзвук «%s» и корневой пассив откроются на резонансе 1 — используйте заклинания этой школы",
-  "hud.orbisarcana.echo_locked": "%s — с резонанса 1"
+  "hud.orbisarcana.echo_locked": "%s — с резонанса 1",
+  "spell.orbisarcana.flame_dash": "Пламенный рывок",
+  "spell.orbisarcana.flame_dash.desc": "Рывок на 6 блоков сквозь огонь.",
+  "spell.orbisarcana.flame_dash.m5": "огненный след за спиной",
+  "spell.orbisarcana.flame_dash.m10": "враги на пути поджигаются и отбрасываются",
+  "spell.orbisarcana.flame_dash.m15": "2 заряда",
+  "spell.orbisarcana.ash_spiral": "Пепельная спираль",
+  "spell.orbisarcana.ash_spiral.desc": "Вращающийся огненный вихрь в точке на 4 с.",
+  "spell.orbisarcana.ash_spiral.m5": "+1 с, вихрь затягивает",
+  "spell.orbisarcana.ash_spiral.m10": "вихрь медленно следует за прицелом",
+  "spell.orbisarcana.ash_spiral.m15": "в конце — огненный столп, урон ×2 по центру",
+  "stat.orbisarcana.damage_per_pulse": "Урон за удар"
 }
