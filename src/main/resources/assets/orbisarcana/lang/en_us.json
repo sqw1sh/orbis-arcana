@@ -402,5 +402,17 @@
   "spell.orbisarcana.current_shell.desc": "Toggle: +15% speed, your blows shock; drains mana every second.",
   "spell.orbisarcana.current_shell.m5": "sparks back at attackers",
   "spell.orbisarcana.current_shell.m10": "right-click an ally to pass the shell for 10 s",
-  "spell.orbisarcana.current_shell.m15": "turning it off discharges around you, stronger the longer it was on"
+  "spell.orbisarcana.current_shell.m15": "turning it off discharges around you, stronger the longer it was on",
+  "block.orbisarcana.thorn_hedge": "Thorn Hedge",
+  "entity.orbisarcana.guardian_treant": "Guardian Treant",
+  "spell.orbisarcana.root_shackles": "Root Shackles",
+  "spell.orbisarcana.root_shackles.desc": "Roots hold the target in place for 2 s.",
+  "spell.orbisarcana.root_shackles.m5": "the roots spread to a neighbour",
+  "spell.orbisarcana.root_shackles.m10": "thorns deal damage over time",
+  "spell.orbisarcana.root_shackles.m15": "slowed for 3 s afterwards",
+  "spell.orbisarcana.thorn_seed": "Thorn Seed",
+  "spell.orbisarcana.thorn_seed.desc": "A seed that sprouts into a thicket where it lands.",
+  "spell.orbisarcana.thorn_seed.m5": "the thicket grows a barrier",
+  "spell.orbisarcana.thorn_seed.m10": "side spikes burst out",
+  "spell.orbisarcana.thorn_seed.m15": "a Guardian Treant grows for 8 s"
 }

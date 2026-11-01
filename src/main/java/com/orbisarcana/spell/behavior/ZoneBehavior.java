@@ -37,7 +37,7 @@ final class ZoneBehavior {
     private static final class Zone {
         final ServerLevel level;
         final UUID caster;
-        final Identifier spellId;
+        final Identifier spellId, school;
         final int castId;
         Vec3 center;
         final double radius;
@@ -51,6 +51,7 @@ final class ZoneBehavior {
             this.level = ctx.level();
             this.caster = ctx.caster().getUUID();
             this.spellId = ctx.spellId();
+            this.school = ctx.spell().school();
             this.castId = ctx.castId();
             this.center = center;
             this.radius = ctx.param("radius");
@@ -120,7 +121,10 @@ final class ZoneBehavior {
         ServerPlayer caster = zone.level.getServer().getPlayerList().getPlayer(zone.caster);
         if (caster != null) {
             MasteryService.onHeal(caster, zone.spellId, zone.castId, target, Math.min(amount, missing));
-            if (missing > 0) EchoService.onHealCast(caster, zone.castId);
+            if (missing > 0) {
+                EchoService.onHealCast(caster, zone.castId);
+                EchoService.onEffectiveCast(caster, zone.school, target.position(), zone.castId);
+            }
         }
     }
 

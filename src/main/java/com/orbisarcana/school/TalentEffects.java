@@ -43,7 +43,8 @@ public final class TalentEffects {
             "earth/echo", "earth/root", "earth/a1", "earth/a2", "earth/b1", "earth/b2",
             "air/echo", "air/root", "air/a1", "air/a2", "air/b1", "air/b2",
             "ice/echo", "ice/root", "ice/a1", "ice/a2", "ice/b1", "ice/b2",
-            "lightning/echo", "lightning/root", "lightning/a1", "lightning/a2", "lightning/b1", "lightning/b2");
+            "lightning/echo", "lightning/root", "lightning/a1", "lightning/a2", "lightning/b1", "lightning/b2",
+            "nature/echo", "nature/root", "nature/a1", "nature/a2", "nature/b1", "nature/b2");
 
     public static final double EMBERS_IGNITE_MULT = 1.3;
     public static final double LIVING_WAVE_HEAL_MULT = 1.1;
@@ -244,9 +245,24 @@ public final class TalentEffects {
 
     // ---- Water ----
 
-    /** Root "Living Wave": +10% healing. */
+    /** Water root "Living Wave": +10% healing; Nature B2 "Great Crown": +15% near leaves or logs. */
     public static double healMult(ServerPlayer caster) {
-        return AttunementService.hasTalent(caster, Schools.WATER, TalentRules.ROOT) ? LIVING_WAVE_HEAL_MULT : 1.0;
+        double mult = AttunementService.hasTalent(caster, Schools.WATER, TalentRules.ROOT) ? LIVING_WAVE_HEAL_MULT : 1.0;
+        if (AttunementService.hasTalent(caster, Schools.NATURE, TalentRules.B2) && nearTrees(caster)) mult *= GREAT_CROWN_HEAL_MULT;
+        return mult;
+    }
+
+    public static final double GREAT_CROWN_HEAL_MULT = 1.15;
+    private static final int GREAT_CROWN_REACH = 3;
+
+    private static boolean nearTrees(ServerPlayer p) {
+        var origin = p.blockPosition();
+        for (var pos : net.minecraft.core.BlockPos.betweenClosed(origin.offset(-GREAT_CROWN_REACH, -1, -GREAT_CROWN_REACH),
+                origin.offset(GREAT_CROWN_REACH, GREAT_CROWN_REACH + 2, GREAT_CROWN_REACH))) {
+            var state = p.level().getBlockState(pos);
+            if (state.is(net.minecraft.tags.BlockTags.LEAVES) || state.is(net.minecraft.tags.BlockTags.LOGS)) return true;
+        }
+        return false;
     }
 
     /**

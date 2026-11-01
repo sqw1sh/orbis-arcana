@@ -52,6 +52,22 @@ public final class EchoRules {
         return dissonance ? dmg * SchoolRules.DISSONANCE_ECHO_MULT : dmg;
     }
 
+    // Nature: Sprouting
+    public static final int SPROUT_MAX = 3;
+    public static final long SPROUT_MATURE_TICKS = 100;
+    /** Root "Seed": sprouts mature 1 s sooner. */
+    public static final long SEED_MATURE_TICKS = 80;
+    public static final double SPROUT_RADIUS = 3;
+    public static final int WILD_GROWTH_TICKS = 20;
+    /** B1 "Healing Grove": sprouts heal +50%. */
+    public static final double HEALING_GROVE_MULT = 1.5;
+
+    /** What a mature sprout heals or stings for: 2, or 3 at tier 2; Dissonance halves it. */
+    public static double sproutPower(int tier, boolean dissonance) {
+        double p = tier >= 2 ? 3.0 : 2.0;
+        return dissonance ? p * SchoolRules.DISSONANCE_ECHO_MULT : p;
+    }
+
     // Air: Impulse
     public static final double IMPULSE_MAX = 10;
     /** Charge per block moved while in combat. */

@@ -37,6 +37,8 @@ public final class SpellBehaviors {
     public static final Supplier<SpellBehavior> DISCHARGE = BEHAVIORS.register("discharge", () -> DischargeBehavior::release);
     public static final Supplier<SpellBehavior> ANCHOR = BEHAVIORS.register("anchor", () -> AnchorBehavior::release);
     public static final Supplier<SpellBehavior> SHELL = BEHAVIORS.register("shell", () -> ShellBehavior.INSTANCE);
+    public static final Supplier<SpellBehavior> ROOTS = BEHAVIORS.register("roots", () -> RootsBehavior::release);
+    public static final Supplier<SpellBehavior> SEED = BEHAVIORS.register("seed", () -> SeedBehavior::release);
 
     public static void register(IEventBus modBus) {
         modBus.addListener((NewRegistryEvent event) -> event.register(REGISTRY));

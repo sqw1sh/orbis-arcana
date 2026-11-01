@@ -39,7 +39,10 @@ final class HealBehavior {
         float missing = target.getMaxHealth() - target.getHealth();
         target.heal(amount);
         MasteryService.onHeal(ctx.caster(), ctx.spellId(), ctx.castId(), target, Math.min(amount, missing));
-        if (missing > 0) EchoService.onHealCast(ctx.caster(), ctx.castId());
+        if (missing > 0) {
+            EchoService.onHealCast(ctx.caster(), ctx.castId());
+            EchoService.onEffectiveCast(ctx.caster(), ctx.spell().school(), target.position(), ctx.castId());
+        }
         TalentEffects.afterHeal(ctx.caster(), target, amount);
         float overheal = amount - missing;
         if (overheal > 0 && ctx.param("overheal_to_shield") > 0) {

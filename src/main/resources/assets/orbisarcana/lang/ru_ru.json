@@ -402,5 +402,17 @@
   "spell.orbisarcana.current_shell.desc": "Вкл/выкл: скорость +15%, удары бьют током; тратит ману каждую секунду.",
   "spell.orbisarcana.current_shell.m5": "ответная искра атакующему",
   "spell.orbisarcana.current_shell.m10": "ПКМ по союзнику — передать оболочку на 10 с",
-  "spell.orbisarcana.current_shell.m15": "выключение — разряд вокруг, сильнее чем дольше была включена"
+  "spell.orbisarcana.current_shell.m15": "выключение — разряд вокруг, сильнее чем дольше была включена",
+  "block.orbisarcana.thorn_hedge": "Терновая изгородь",
+  "entity.orbisarcana.guardian_treant": "Страж-древень",
+  "spell.orbisarcana.root_shackles": "Корни-оковы",
+  "spell.orbisarcana.root_shackles.desc": "Корни держат цель на месте 2 с.",
+  "spell.orbisarcana.root_shackles.m5": "корни перекидываются на соседа",
+  "spell.orbisarcana.root_shackles.m10": "шипы — урон по времени",
+  "spell.orbisarcana.root_shackles.m15": "после оков цель замедлена 3 с",
+  "spell.orbisarcana.thorn_seed": "Терновое семя",
+  "spell.orbisarcana.thorn_seed.desc": "Семя прорастает терновником там, куда попало.",
+  "spell.orbisarcana.thorn_seed.m5": "терновник — барьер",
+  "spell.orbisarcana.thorn_seed.m10": "выпускает боковые шипы",
+  "spell.orbisarcana.thorn_seed.m15": "вырастает Страж-древень на 8 с"
 }

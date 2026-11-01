@@ -19,6 +19,7 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import com.orbisarcana.mana.ManaService;
 import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.minecraft.core.particles.ParticleTypes;
@@ -49,6 +50,11 @@ public final class EchoService {
     private static final Map<UUID, Heat> HEAT = new HashMap<>();
     /** target -> Frost placed by one caster (same bookkeeping as Heat). */
     private static final Map<UUID, Heat> FROST = new HashMap<>();
+    /** A Nature sprout growing at {@code pos}. */
+    private record Sprout(UUID caster, ServerLevel level, Vec3 pos, long matureAt, int castId) {}
+
+    private static final List<Sprout> SPROUTS = new java.util.ArrayList<>();
+
     /** Conductivity mark on a target ({@code entityId} for expiry messages). */
     private record Mark(UUID caster, long until, int castId, int entityId) {}
 
@@ -78,6 +84,10 @@ public final class EchoService {
     public static void onSpellHit(ServerPlayer caster, Identifier school, LivingEntity target, int castId) {
         if (school.equals(Schools.ICE)) {
             frost(caster, target, castId);
+            return;
+        }
+        if (school.equals(Schools.NATURE)) {
+            onEffectiveCast(caster, school, target.position(), castId);
             return;
         }
         if (school.equals(Schools.LIGHTNING)) {
@@ -217,6 +227,78 @@ public final class EchoService {
         });
     }
 
+    // ---- Nature: Sprouting ----
+
+    /** A Nature cast hit, healed or held something: plant a sprout there (one per cast, at most 3 growing). */
+    public static void onEffectiveCast(ServerPlayer caster, Identifier school, Vec3 pos, int castId) {
+        if (!school.equals(Schools.NATURE)) return;
+        int tier = tier(caster, Schools.NATURE);
+        if (tier <= 0) return;
+        UUID id = caster.getUUID();
+        if (SPROUTS.stream().anyMatch(s -> s.caster().equals(id) && s.castId() == castId)) return;
+        if (sprouts(caster) >= EchoRules.SPROUT_MAX) return;
+        long grow = AttunementService.hasTalent(caster, Schools.NATURE, TalentRules.ROOT) ? EchoRules.SEED_MATURE_TICKS : EchoRules.SPROUT_MATURE_TICKS;
+        SPROUTS.add(new Sprout(id, caster.level(), pos, caster.level().getGameTime() + grow, castId));
+        Net.toPlayer(caster, new EchoState(Schools.NATURE, sprouts(caster), EchoRules.SPROUT_MAX));
+    }
+
+    public static int sprouts(ServerPlayer caster) {
+        return (int) SPROUTS.stream().filter(s -> s.caster().equals(caster.getUUID())).count();
+    }
+
+    @SubscribeEvent
+    static void onSproutTick(LevelTickEvent.Post event) {
+        if (!(event.getLevel() instanceof ServerLevel level) || SPROUTS.isEmpty()) return;
+        long now = level.getGameTime();
+        for (Sprout s : List.copyOf(SPROUTS)) {
+            if (s.level() != level) continue;
+            ServerPlayer caster = level.getServer().getPlayerList().getPlayer(s.caster());
+            if (caster == null) {
+                SPROUTS.remove(s);
+                continue;
+            }
+            if (now < s.matureAt()) {
+                if (now % 10 == 0) level.sendParticles(ParticleTypes.HAPPY_VILLAGER, s.pos().x, s.pos().y + 0.3, s.pos().z, 2, 0.15, 0.1, 0.15, 0);
+                continue;
+            }
+            SPROUTS.remove(s);
+            mature(caster, s);
+            Net.toPlayer(caster, new EchoState(Schools.NATURE, sprouts(caster), EchoRules.SPROUT_MAX));
+        }
+    }
+
+    /**
+     * A sprout matures: heals the most wounded ally near it, otherwise stings the enemies near it. A1 "Thorny
+     * Branches": it always stings too; A2 "Wild Growth": enemies near it are entangled.
+     */
+    private static void mature(ServerPlayer caster, Sprout s) {
+        ServerLevel level = s.level();
+        int tier = Math.max(1, tier(caster, Schools.NATURE));
+        double power = EchoRules.sproutPower(tier, AttunementService.isDissonant(caster));
+        AABB area = new AABB(s.pos(), s.pos()).inflate(EchoRules.SPROUT_RADIUS, 2, EchoRules.SPROUT_RADIUS);
+        var wounded = level.getEntitiesOfClass(net.minecraft.world.entity.player.Player.class, area,
+                        p -> p.isAlive() && p.getHealth() < p.getMaxHealth())
+                .stream().min(java.util.Comparator.comparingDouble(p -> p.getHealth() / p.getMaxHealth()));
+        boolean thorny = AttunementService.hasTalent(caster, Schools.NATURE, TalentRules.A1);
+        boolean healed = false;
+        if (wounded.isPresent()) {
+            double mult = AttunementService.hasTalent(caster, Schools.NATURE, TalentRules.B1) ? EchoRules.HEALING_GROVE_MULT : 1.0;
+            wounded.get().heal((float) (power * mult * TalentEffects.healMult(caster)));
+            healed = true;
+        }
+        if (!healed || thorny) {
+            for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, area,
+                    e -> e.isAlive() && e != caster && !(e instanceof net.minecraft.world.entity.player.Player))) {
+                e.hurtServer(level, ModDamageTypes.source(e, Schools.NATURE, null, caster), (float) power);
+                if (AttunementService.hasTalent(caster, Schools.NATURE, TalentRules.A2)) {
+                    com.orbisarcana.spell.behavior.RootsBehavior.entangle(caster, e, EchoRules.WILD_GROWTH_TICKS, Schools.NATURE);
+                }
+            }
+        }
+        level.sendParticles(ParticleTypes.SPORE_BLOSSOM_AIR, s.pos().x, s.pos().y + 0.5, s.pos().z, 25, 1, 0.4, 1, 0);
+        level.sendParticles(ParticleTypes.HAPPY_VILLAGER, s.pos().x, s.pos().y + 0.5, s.pos().z, 15, 0.8, 0.4, 0.8, 0);
+    }
+
     // ---- Water: Flow ----
 
     /** A healing/support cast succeeded (counted once per cast). */
@@ -338,6 +420,7 @@ public final class EchoService {
         HEAT.values().removeIf(h -> h.caster().equals(id));
         FROST.values().removeIf(h -> h.caster().equals(id));
         MARKS.values().removeIf(m -> m.caster().equals(id));
+        SPROUTS.removeIf(s -> s.caster().equals(id));
     }
 
     @SubscribeEvent
@@ -345,6 +428,7 @@ public final class EchoService {
         HEAT.clear();
         FROST.clear();
         MARKS.clear();
+        SPROUTS.clear();
         FLOW.clear();
         FLOW_CAST.clear();
         BULWARK.clear();

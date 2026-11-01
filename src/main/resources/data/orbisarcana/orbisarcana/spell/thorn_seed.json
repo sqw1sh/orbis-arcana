@@ -1,0 +1,43 @@
+{
+  "school": "orbisarcana:nature",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:seed",
+  "targeting": "directional",
+  "cast": {
+    "mode": "charged",
+    "ticks": 24,
+    "min_ticks": 16
+  },
+  "cost": 26,
+  "cooldown_ticks": 280,
+  "primary_stat": "damage_per_second",
+  "params": {
+    "damage_per_second": 2.5,
+    "radius": 2.5,
+    "duration_ticks": 120,
+    "speed": 1.1,
+    "range": 24,
+    "barrier": 0,
+    "side_spikes": 0,
+    "guardian_ticks": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "barrier": 1
+      }
+    },
+    "10": {
+      "params": {
+        "side_spikes": 4
+      }
+    },
+    "15": {
+      "params": {
+        "guardian_ticks": 160
+      }
+    }
+  },
+  "circle": "orbisarcana:thorn_seed",
+  "xp_category": "attack"
+}

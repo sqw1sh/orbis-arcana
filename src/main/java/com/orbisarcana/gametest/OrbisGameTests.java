@@ -24,6 +24,7 @@ import com.orbisarcana.spell.CastService;
 import com.orbisarcana.spell.Frost;
 import com.orbisarcana.spell.Shields;
 import com.orbisarcana.spell.Toggles;
+import com.orbisarcana.spell.behavior.RootsBehavior;
 import com.orbisarcana.spell.behavior.BurningGround;
 
 import net.minecraft.core.BlockPos;
@@ -125,6 +126,10 @@ public final class OrbisGameTests {
         test("current_shell_toggles_and_drains", 60, OrbisGameTests::currentShell);
         test("current_shell_shocks_on_melee", 20, OrbisGameTests::shellShock);
         test("conductivity_arcs_to_marked", 20, OrbisGameTests::conductivity);
+        test("root_shackles_hold_and_spread", 40, OrbisGameTests::rootShackles);
+        test("thorn_seed_sprouts_a_thicket", 100, OrbisGameTests::thornSeed);
+        test("thorn_seed_grows_a_guardian", 100, OrbisGameTests::thornGuardian);
+        test("sprouting_matures_and_heals", 160, OrbisGameTests::sprouting);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1022,6 +1027,58 @@ public final class OrbisGameTests {
         h.assertTrue(EchoService.markedBy(b, p, now), "and marks the new target");
         cleanup(h, p);
         h.succeed();
+    }
+
+    private static final Identifier ROOT_SHACKLES = OrbisArcana.id("root_shackles");
+    private static final Identifier THORN_SEED = OrbisArcana.id("thorn_seed");
+
+    private static void rootShackles(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(4.5, 1, 7.5));
+        Pig neighbour = h.spawn(EntityTypes.PIG, new Vec3(6.5, 1, 7.5));
+        pig.setNoAi(true);
+        neighbour.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 2.5), 0f, 15f);
+        KnowledgeService.learn(p, ROOT_SHACKLES);
+        KnowledgeService.setMastery(p, ROOT_SHACKLES, 5);
+        CastService.request(p, ROOT_SHACKLES);
+        h.assertTrue(CastService.isCasting(p), "a target under the crosshair");
+        release(h, p, 16);
+        succeedWhen(h, p, () -> {
+            h.assertTrue(RootsBehavior.isHeld(pig), "the roots hold the target");
+            h.assertTrue(RootsBehavior.isHeld(neighbour), "and spread to the neighbour (m5)");
+        });
+    }
+
+    private static void thornSeed(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(4.5, 1, 6.5));
+        pig.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 2.5), 0f, 15f);
+        KnowledgeService.learn(p, THORN_SEED);
+        CastService.request(p, THORN_SEED);
+        release(h, p, 26);
+        succeedWhen(h, p, () -> h.assertTrue(pig.getHealth() < pig.getMaxHealth(), "the thicket pricks the pig"));
+    }
+
+    private static void thornGuardian(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 2.5), 0f, 40f);
+        KnowledgeService.learn(p, THORN_SEED);
+        KnowledgeService.setMastery(p, THORN_SEED, 15);
+        CastService.request(p, THORN_SEED);
+        release(h, p, 26);
+        succeedWhen(h, p, () -> {
+            var golems = h.getLevel().getEntitiesOfClass(net.minecraft.world.entity.animal.golem.IronGolem.class, new net.minecraft.world.phys.AABB(h.absolutePos(new BlockPos(4, 1, 4))).inflate(8));
+            h.assertTrue(!golems.isEmpty(), "a guardian grows (m15)");
+            golems.forEach(Entity::discard);
+        });
+    }
+
+    private static void sprouting(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.NATURE, ROOT_SHACKLES, 1);
+        p.setHealth(10f);
+        EchoService.onEffectiveCast(p, Schools.NATURE, p.position(), 500);
+        EchoService.onEffectiveCast(p, Schools.NATURE, p.position(), 500); // one sprout per cast
+        h.assertValueEqual(EchoService.sprouts(p), 1, "one sprout per cast");
+        succeedWhen(h, p, () -> h.assertTrue(p.getHealth() > 10f, "the sprout matures and heals the wounded player"));
     }
 
     private OrbisGameTests() {}

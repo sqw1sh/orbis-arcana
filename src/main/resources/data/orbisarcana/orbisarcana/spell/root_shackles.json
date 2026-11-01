@@ -1,0 +1,40 @@
+{
+  "school": "orbisarcana:nature",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:roots",
+  "targeting": "target",
+  "cast": {
+    "mode": "charged",
+    "ticks": 14,
+    "min_ticks": 8
+  },
+  "cost": 10,
+  "cooldown_ticks": 120,
+  "primary_stat": "hold_ticks",
+  "params": {
+    "hold_ticks": 40,
+    "range": 16,
+    "spread_radius": 0,
+    "damage_per_second": 0,
+    "after_slow_ticks": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "spread_radius": 4
+      }
+    },
+    "10": {
+      "params": {
+        "damage_per_second": 1.5
+      }
+    },
+    "15": {
+      "params": {
+        "after_slow_ticks": 60
+      }
+    }
+  },
+  "circle": "orbisarcana:root_shackles",
+  "xp_category": "control"
+}
