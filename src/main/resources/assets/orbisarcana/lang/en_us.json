@@ -334,5 +334,16 @@
   "spell.orbisarcana.ash_spiral.m5": "+1 s, the vortex pulls enemies in",
   "spell.orbisarcana.ash_spiral.m10": "the vortex slowly follows your aim",
   "spell.orbisarcana.ash_spiral.m15": "ends with a fire pillar, ×2 damage in the centre",
-  "stat.orbisarcana.damage_per_pulse": "Damage per pulse"
+  "stat.orbisarcana.damage_per_pulse": "Damage per pulse",
+  "spell.orbisarcana.tidal_stream": "Tidal Stream",
+  "spell.orbisarcana.tidal_stream.desc": "Hold: a cone of water pushes enemies back and puts out fire.",
+  "spell.orbisarcana.tidal_stream.m5": "a wider cone",
+  "spell.orbisarcana.tidal_stream.m10": "the stream heals allies in the cone",
+  "spell.orbisarcana.tidal_stream.m15": "a final wave on release",
+  "spell.orbisarcana.water_prison": "Water Prison",
+  "spell.orbisarcana.water_prison.desc": "A bubble holds an enemy for 2 s.",
+  "spell.orbisarcana.water_prison.m5": "+0.5 s",
+  "spell.orbisarcana.water_prison.m10": "the target takes damage inside",
+  "spell.orbisarcana.water_prison.m15": "the bubble bursts in a wave, pushing everyone nearby",
+  "stat.orbisarcana.hold_ticks": "Hold (ticks)"
 }

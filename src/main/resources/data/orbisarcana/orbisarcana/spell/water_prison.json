@@ -1,0 +1,39 @@
+{
+  "school": "orbisarcana:water",
+  "rarity": "orbisarcana:rare",
+  "behavior": "orbisarcana:prison",
+  "targeting": "target",
+  "cast": {
+    "mode": "charged",
+    "ticks": 18,
+    "min_ticks": 12
+  },
+  "cost": 20,
+  "cooldown_ticks": 200,
+  "primary_stat": "hold_ticks",
+  "params": {
+    "hold_ticks": 40,
+    "range": 16,
+    "damage_per_second": 0,
+    "pop_wave": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "hold_ticks": 50
+      }
+    },
+    "10": {
+      "params": {
+        "damage_per_second": 1.5
+      }
+    },
+    "15": {
+      "params": {
+        "pop_wave": 1
+      }
+    }
+  },
+  "circle": "orbisarcana:water_prison",
+  "xp_category": "control"
+}

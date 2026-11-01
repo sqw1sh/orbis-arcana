@@ -1,6 +1,7 @@
 package com.orbisarcana.spell;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,6 +27,7 @@ import com.orbisarcana.school.AttunementService;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.behavior.CastContext;
+import com.orbisarcana.spell.behavior.ChannelBehavior;
 import com.orbisarcana.spell.behavior.SpellBehaviors;
 
 import net.minecraft.resources.Identifier;
@@ -49,7 +51,7 @@ import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import com.orbisarcana.network.Net;
 
 /**
@@ -71,7 +73,8 @@ public final class CastService {
 
     /** {@code schoolPower}: dominant-school / Dissonance multiplier taken at cast start (§10.2, §10.6). */
     private record ServerCast(int id, Identifier spellId, SpellDefinition spell, ActiveCast core, int mastery,
-                              Map<String, Double> params, double schoolPower, @Nullable Vec3 groundPoint, @Nullable LivingEntity target) {}
+                              Map<String, Double> params, double schoolPower, double drainPerTick,
+                              @Nullable Vec3 groundPoint, @Nullable LivingEntity target) {}
 
     private static final Map<UUID, ServerCast> ACTIVE = new HashMap<>();
     private static final Map<UUID, Long> GCD_UNTIL = new HashMap<>();
@@ -105,8 +108,8 @@ public final class CastService {
                 Charges.readyAt(fullAt, charges(params), cooldown),
                 ManaService.mana(player),
                 cost));
-        if (denial.isEmpty() && def.get().cast().mode() != CastMode.INSTANT && def.get().cast().mode() != CastMode.CHARGED) {
-            // CHANNEL and TOGGLE arrive with their spells in S7
+        if (denial.isEmpty() && def.get().cast().mode() == CastMode.TOGGLE) {
+            // TOGGLE arrives with its spells (S7)
             denial = Optional.of(CastDenial.DISABLED);
         }
         if (denial.isPresent()) {
@@ -148,13 +151,15 @@ public final class CastService {
             castTicks = 0;
             minTicks = 0;
         }
-        ActiveCast core = new ActiveCast(mode, now, castTicks, minTicks, cost);
+        // CHANNEL: "cost" is mana per second, drained every tick (§5.3); nothing is reserved up front
+        boolean channel = mode == CastMode.CHANNEL;
+        ActiveCast core = new ActiveCast(mode, now, castTicks, minTicks, channel ? 0 : cost);
 
         // Reserve: take the full cost now, refund the unspent part on interruption (§8.3)
-        ManaService.setMana(player, ManaService.mana(player) - cost);
+        if (!channel) ManaService.setMana(player, ManaService.mana(player) - cost);
 
         ServerCast cast = new ServerCast(nextCastId++, spellId, spell, core, mastery, params,
-                AttunementService.powerMult(player, spell.school()), ground, target);
+                AttunementService.powerMult(player, spell.school()), channel ? cost / 20.0 : 0, ground, target);
         ACTIVE.put(player.getUUID(), cast);
         Net.toPlayerAndNearby(player,
                 new CastStarted(cast.id(), player.getId(), spellId, now, castTicks, mastery,
@@ -204,9 +209,7 @@ public final class CastService {
         ActiveCast core = cast.core();
 
         if (outcome == Outcome.RELEASED) {
-            SpellBehaviors.get(cast.spell().behavior()).ifPresent(b -> b.release(new CastContext(
-                    player, cast.spellId(), cast.id(), cast.spell(), cast.mastery(), cast.params(), core.power(now) * cast.schoolPower(),
-                    cast.groundPoint(), cast.target())));
+            SpellBehaviors.get(cast.spell().behavior()).ifPresent(b -> b.release(context(player, cast, now)));
             if (TalentEffects.crownOfFlameFree(player, cast.spell().school())) {
                 ManaService.setMana(player, ManaService.mana(player) + core.cost);
             }
@@ -223,6 +226,26 @@ public final class CastService {
         }
         GCD_UNTIL.put(player.getUUID(), now + CastRules.GCD_TICKS);
         Net.toPlayerAndNearby(player, new CastEnded(cast.id(), player.getId(), outcome.ordinal()));
+    }
+
+    private static CastContext context(ServerPlayer player, ServerCast cast, long now) {
+        return new CastContext(player, cast.spellId(), cast.id(), cast.spell(), cast.mastery(), cast.params(),
+                cast.core().power(now) * cast.schoolPower(), cast.groundPoint(), cast.target());
+    }
+
+    /** One tick of a CHANNEL cast: drain mana, run the behavior, end at the max duration or when mana runs out. */
+    private static void tickChannel(ServerPlayer player, ServerCast cast, long now) {
+        double mana = ManaService.mana(player);
+        if (mana < cast.drainPerTick()) {
+            finish(player, cast, Outcome.RELEASED);
+            return;
+        }
+        ManaService.setMana(player, mana - cast.drainPerTick());
+        int elapsed = (int) cast.core().elapsed(now);
+        SpellBehaviors.get(cast.spell().behavior()).ifPresent(b -> {
+            if (b instanceof ChannelBehavior channel) channel.channelTick(context(player, cast, now), elapsed);
+        });
+        if (ACTIVE.get(player.getUUID()) == cast && elapsed >= cast.core().castTicks) finish(player, cast, Outcome.RELEASED);
     }
 
     /** Snapshot of the spell params: enabled milestones applied, primary stat scaled by mastery (§7.4). */
@@ -293,11 +316,26 @@ public final class CastService {
 
     // ---- events ----
 
+    /** Active casts tick with the server (players driven only by packets, e.g. mock players, tick too). */
     @SubscribeEvent
-    static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        ServerCast cast = ACTIVE.get(player.getUUID());
-        if (cast == null) return;
+    static void onServerTick(ServerTickEvent.Post event) {
+        if (ACTIVE.isEmpty()) return;
+        for (UUID id : List.copyOf(ACTIVE.keySet())) {
+            ServerPlayer player = event.getServer().getPlayerList().getPlayer(id);
+            ServerCast cast = ACTIVE.get(id);
+            if (player == null) {
+                ACTIVE.remove(id);
+            } else if (cast != null) {
+                tickCast(player, cast);
+            }
+        }
+    }
+
+    private static void tickCast(ServerPlayer player, ServerCast cast) {
+        if (cast.core().mode == CastMode.CHANNEL) {
+            tickChannel(player, cast, player.level().getGameTime());
+            if (ACTIVE.get(player.getUUID()) != cast) return;
+        }
         player.setSprinting(false);
         LivingEntity target = cast.target();
         if (target != null && target != player) {

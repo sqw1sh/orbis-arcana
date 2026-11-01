@@ -1,0 +1,40 @@
+{
+  "school": "orbisarcana:water",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:cone",
+  "targeting": "directional",
+  "cast": {
+    "mode": "channel",
+    "ticks": 100
+  },
+  "cost": 10,
+  "cooldown_ticks": 40,
+  "primary_stat": "damage_per_pulse",
+  "params": {
+    "damage_per_pulse": 0.8,
+    "range": 6,
+    "angle_deg": 35,
+    "knockback": 0.35,
+    "ally_heal": 0,
+    "final_wave": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "angle_deg": 55
+      }
+    },
+    "10": {
+      "params": {
+        "ally_heal": 0.75
+      }
+    },
+    "15": {
+      "params": {
+        "final_wave": 1
+      }
+    }
+  },
+  "circle": "orbisarcana:tidal_stream",
+  "xp_category": "attack"
+}

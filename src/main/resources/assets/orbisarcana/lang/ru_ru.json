@@ -334,5 +334,16 @@
   "spell.orbisarcana.ash_spiral.m5": "+1 с, вихрь затягивает",
   "spell.orbisarcana.ash_spiral.m10": "вихрь медленно следует за прицелом",
   "spell.orbisarcana.ash_spiral.m15": "в конце — огненный столп, урон ×2 по центру",
-  "stat.orbisarcana.damage_per_pulse": "Урон за удар"
+  "stat.orbisarcana.damage_per_pulse": "Урон за удар",
+  "spell.orbisarcana.tidal_stream": "Приливный поток",
+  "spell.orbisarcana.tidal_stream.desc": "Удерживайте: конус воды отталкивает врагов и тушит огонь.",
+  "spell.orbisarcana.tidal_stream.m5": "конус шире",
+  "spell.orbisarcana.tidal_stream.m10": "поток лечит союзников в конусе",
+  "spell.orbisarcana.tidal_stream.m15": "финальная волна при отпускании",
+  "spell.orbisarcana.water_prison": "Водяная тюрьма",
+  "spell.orbisarcana.water_prison.desc": "Пузырь удерживает врага 2 с.",
+  "spell.orbisarcana.water_prison.m5": "+0.5 с",
+  "spell.orbisarcana.water_prison.m10": "цель внутри получает урон",
+  "spell.orbisarcana.water_prison.m15": "пузырь лопается волной, отталкивая всех рядом",
+  "stat.orbisarcana.hold_ticks": "Удержание (тики)"
 }

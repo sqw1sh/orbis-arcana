@@ -94,6 +94,8 @@ public final class OrbisGameTests {
         test("flow_real_cast_needs_resonance_1", 20, OrbisGameTests::flowRealCast);
         test("ash_spiral_burns_in_area", 120, OrbisGameTests::ashSpiral);
         test("flame_dash_ignites_path_at_10", 30, OrbisGameTests::flameDash);
+        test("tidal_stream_channel_drains_and_hits", 80, OrbisGameTests::tidalStream);
+        test("water_prison_holds_target", 80, OrbisGameTests::waterPrison);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -636,6 +638,49 @@ public final class OrbisGameTests {
         KnowledgeService.setMastery(p, FLAME_DASH, 10);
         CastService.request(p, FLAME_DASH);
         succeedWhen(h, p, () -> h.assertTrue(pig.isOnFire(), "a pig on the dash path is set on fire"));
+    }
+
+    private static final Identifier TIDAL_STREAM = OrbisArcana.id("tidal_stream");
+    private static final Identifier WATER_PRISON = OrbisArcana.id("water_prison");
+
+    private static void tidalStream(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(4.5, 1, 4.5));
+        pig.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 15f);
+        KnowledgeService.learn(p, TIDAL_STREAM);
+        double before = ManaService.mana(p);
+        CastService.request(p, TIDAL_STREAM);
+        h.assertTrue(CastService.isCasting(p), "channel starts");
+        h.assertValueEqual(ManaService.mana(p), before, "a channel reserves nothing up front");
+        h.runAfterDelay(30, () -> {
+            h.assertTrue(CastService.isCasting(p), "still channelling while held");
+            h.assertTrue(ManaService.mana(p) < before - 3, "mana drains over time, left " + ManaService.mana(p));
+            CastService.stop(p, CastService.activeCastId(p), false);
+            h.assertFalse(CastService.isCasting(p), "releasing the key ends the channel");
+            h.assertTrue(pig.getHealth() < pig.getMaxHealth(), "the stream hurts the pig");
+            cleanup(h, p);
+            h.succeed();
+        });
+    }
+
+    private static void waterPrison(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(5.5, 1, 4.5));
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 10f);
+        KnowledgeService.learn(p, WATER_PRISON);
+        double xpBefore = xp(p, WATER_PRISON);
+        CastService.request(p, WATER_PRISON);
+        h.assertTrue(CastService.isCasting(p), "prison needs a target and starts charging");
+        release(h, p, 20);
+        h.runAfterDelay(24, () -> {
+            Vec3 anchor = pig.position();
+            pig.setDeltaMovement(1.0, 0, 0);
+            h.runAfterDelay(4, () -> {
+                h.assertTrue(pig.position().distanceTo(anchor) < 0.4, "the bubble keeps the pig in place");
+                h.assertTrue(xp(p, WATER_PRISON) > xpBefore, "control grants mastery XP");
+                cleanup(h, p);
+                h.succeed();
+            });
+        });
     }
 
     private OrbisGameTests() {}

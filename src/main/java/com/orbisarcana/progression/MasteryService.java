@@ -77,6 +77,14 @@ public final class MasteryService {
         award(player, spell, weight);
     }
 
+    /** A control effect landed on a target that is not immune (§7.2: weight 1.0, once per target per cast). */
+    public static void onControl(ServerPlayer player, Identifier spell, int castId, LivingEntity target) {
+        double antiFarm = targetMultiplier(player, target);
+        if (antiFarm <= 0) return;
+        double weight = XpRules.CONTROL * antiFarm * XpRules.sameTargetMult(recordHit(player, target));
+        award(player, spell, applyPvpCap(player, target, weight, spell));
+    }
+
     /** A spell restored {@code healed} HP (overheal excluded) on {@code target}. */
     public static void onHeal(ServerPlayer player, Identifier spell, int castId, LivingEntity target, float healed) {
         if (healed <= 0 || target instanceof ArmorStand) return;

@@ -28,10 +28,10 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class TalentEffects {
-    /** "school/node" keys whose effect is live. Water A1/A2 need knockback spells (S7). */
+    /** "school/node" keys whose effect is live (Water A1/A2 work through the Tidal Stream cone). */
     public static final Set<String> IMPLEMENTED = Set.of(
             "fire/echo", "fire/root", "fire/a1", "fire/a2", "fire/b1", "fire/b2",
-            "water/echo", "water/root", "water/b1", "water/b2");
+            "water/echo", "water/root", "water/a1", "water/a2", "water/b1", "water/b2");
 
     public static final double EMBERS_IGNITE_MULT = 1.3;
     public static final double LIVING_WAVE_HEAL_MULT = 1.1;
