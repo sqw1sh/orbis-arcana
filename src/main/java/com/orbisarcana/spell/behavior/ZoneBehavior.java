@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
+import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
 
 import net.minecraft.core.particles.ParticleTypes;
@@ -117,7 +118,10 @@ final class ZoneBehavior {
         float missing = target.getMaxHealth() - target.getHealth();
         target.heal(amount);
         ServerPlayer caster = zone.level.getServer().getPlayerList().getPlayer(zone.caster);
-        if (caster != null) MasteryService.onHeal(caster, zone.spellId, zone.castId, target, Math.min(amount, missing));
+        if (caster != null) {
+            MasteryService.onHeal(caster, zone.spellId, zone.castId, target, Math.min(amount, missing));
+            if (missing > 0) EchoService.onHealCast(caster, zone.castId);
+        }
     }
 
     @SubscribeEvent

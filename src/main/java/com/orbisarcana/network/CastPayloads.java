@@ -119,10 +119,11 @@ public final class CastPayloads {
     /**
      * Sent to the caster and nearby players; drives cast bars and magic circles. Circles are animated
      * client-side from {@code startTick}/{@code durationTicks}; positions are never streamed (§9.7).
-     * {@code groundPoint} is set for GROUND spells, {@code targetId} (-1 if none) for TARGET spells.
+     * {@code groundPoint} is set for GROUND spells, {@code targetId} (-1 if none) for TARGET spells,
+     * {@code seal} is the dominant seal level (0 none, 1, 2 full).
      */
     public record CastStarted(int castId, int casterId, Identifier spell, long startTick, int durationTicks,
-                              int mastery, Optional<Vec3> groundPoint, int targetId) implements CustomPacketPayload {
+                              int mastery, Optional<Vec3> groundPoint, int targetId, int seal) implements CustomPacketPayload {
         public static final Type<CastStarted> TYPE = new Type<>(OrbisArcana.id("cast_started"));
         public static final StreamCodec<ByteBuf, CastStarted> CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, CastStarted::castId,
@@ -133,6 +134,7 @@ public final class CastPayloads {
                 ByteBufCodecs.VAR_INT, CastStarted::mastery,
                 ByteBufCodecs.optional(Vec3.STREAM_CODEC), CastStarted::groundPoint,
                 ByteBufCodecs.VAR_INT, CastStarted::targetId,
+                ByteBufCodecs.VAR_INT, CastStarted::seal,
                 CastStarted::new);
 
         @Override
@@ -184,6 +186,21 @@ public final class CastPayloads {
 
         @Override
         public Type<CastDenied> type() {
+            return TYPE;
+        }
+    }
+
+    /** Echo of the dominant school for the HUD: {@code stacks} of {@code max} (§13.2). */
+    public record EchoState(Identifier school, float stacks, int max) implements CustomPacketPayload {
+        public static final Type<EchoState> TYPE = new Type<>(OrbisArcana.id("echo_state"));
+        public static final StreamCodec<ByteBuf, EchoState> CODEC = StreamCodec.composite(
+                Identifier.STREAM_CODEC, EchoState::school,
+                ByteBufCodecs.FLOAT, EchoState::stacks,
+                ByteBufCodecs.VAR_INT, EchoState::max,
+                EchoState::new);
+
+        @Override
+        public Type<EchoState> type() {
             return TYPE;
         }
     }

@@ -110,7 +110,7 @@ public final class ClientCircles {
             int row = i / perRow, col = i % perRow;
             Vec3 pos = origin.add(forward.scale(4 + row * 3.5)).add(side.scale((col - (perRow - 1) / 2.0) * 3.5));
             var start = new CastStarted(-1000 - i, mc.player.getId(), OrbisArcana.id("demo_" + rarity.id), now, 60,
-                    1 + (i * 7) % 15, java.util.Optional.of(pos), -1);
+                    1 + (i * 7) % 15, java.util.Optional.of(pos), -1, i % 3);
             CIRCLES.add(new Circle(start, spell));
         }
         return count;
@@ -121,7 +121,7 @@ public final class ClientCircles {
         if (Minecraft.getInstance().level == null) return;
         Vec3 floor = Vec3.atBottomCenterOf(msg.altar());
         var start = new CastStarted(msg.circleId(), msg.casterId(), OrbisArcana.id("ritual"), msg.startTick(), msg.durationTicks(),
-                15, java.util.Optional.of(floor), -1);
+                15, java.util.Optional.of(floor), -1, 0);
         CIRCLES.add(new Circle(start, syntheticSpell(msg.school(), Rarity.EPIC, OrbisArcana.id("ritual"),
                 AltarService.RITUAL_RADIUS, msg.durationTicks())));
     }
@@ -286,11 +286,19 @@ public final class ClientCircles {
         return Math.min(MAX_RADIUS, r);
     }
 
+    /** Dominant seal (§9.5): thin outer ring with six diamonds; a second ring when full (resonance 10). */
+    private static final List<Layer> SEAL = List.of(
+            new Layer(CircleDefinition.LayerType.RING, 1.16, 0.012, 3, 1, 0, false, 0.1, java.util.Optional.empty()),
+            new Layer(CircleDefinition.LayerType.SATELLITE, 1.16, 0.04, 3, 6, 12, false, 0.03, java.util.Optional.empty()));
+    private static final Layer FULL_SEAL = new Layer(CircleDefinition.LayerType.RING, 1.24, 0.008, 3, 1, 0, false, 0.1, java.util.Optional.empty());
+
     private static List<Layer> layers(Circle c) {
         Identifier circleId = c.spell.circle().orElse(c.cast.spell());
         CircleDefinition def = CircleLoader.get(circleId);
-        if (def.milestoneLayers().isEmpty()) return def.layers();
+        if (def.milestoneLayers().isEmpty() && c.cast.seal() <= 0) return def.layers();
         List<Layer> all = new ArrayList<>(def.layers());
+        if (c.cast.seal() >= 1) all.addAll(SEAL);
+        if (c.cast.seal() >= 2) all.add(FULL_SEAL);
         def.milestoneLayers().forEach((level, extra) -> {
             if (c.cast.mastery() >= level) all.addAll(extra);
         });

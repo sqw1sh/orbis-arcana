@@ -9,6 +9,7 @@ import com.orbisarcana.network.CastPayloads.CastEnded;
 import com.orbisarcana.network.CastPayloads.CastStarted;
 import com.orbisarcana.network.CastPayloads.CastStop;
 import com.orbisarcana.network.CastPayloads.CooldownSet;
+import com.orbisarcana.network.CastPayloads.EchoState;
 import com.orbisarcana.network.CastPayloads.RitualCircle;
 
 import net.minecraft.client.Minecraft;
@@ -41,6 +42,7 @@ public final class ClientNetwork {
             if (own != null && own.castId() == msg.castId()) ClientCastState.setOwnCast(null);
         });
         event.register(RitualCircle.TYPE, (msg, ctx) -> ClientCircles.startRitual(msg));
+        event.register(EchoState.TYPE, (msg, ctx) -> ClientCastState.setEcho(msg.school(), msg.stacks(), msg.max()));
         event.register(CastDenied.TYPE, (msg, ctx) -> {
             CastDenial[] values = CastDenial.values();
             if (msg.reason() >= 0 && msg.reason() < values.length) ClientCastState.deny(values[msg.reason()]);

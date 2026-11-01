@@ -72,7 +72,26 @@ public final class DevShot {
                     com.orbisarcana.school.AttunementService.pickTalent(sp, com.orbisarcana.school.Schools.FIRE, "a1");
                 });
             }),
-            new Scene("schools", () -> Minecraft.getInstance().gui.setScreen(new SchoolsScreen())));
+            new Scene("schools", () -> Minecraft.getInstance().gui.setScreen(new SchoolsScreen())),
+            new Scene("seal_and_echo", () -> {
+                Minecraft mc = Minecraft.getInstance();
+                mc.gui.setScreen(null);
+                mc.player.setYRot(0);
+                mc.player.setXRot(10);
+                ClientCircles.start(new CastStarted(-6000, mc.player.getId(), OrbisArcana.id("fireball"),
+                        mc.level.getGameTime(), 30, 15, Optional.empty(), -1, 2));
+                var server = mc.getSingleplayerServer();
+                if (server != null) server.execute(() -> {
+                    ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+                    if (sp == null) return;
+                    var pig = net.minecraft.world.entity.EntityTypes.PIG.create(sp.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+                    if (pig == null) return;
+                    pig.setPos(sp.getX(), sp.getY(), sp.getZ() + 4);
+                    pig.setNoAi(true);
+                    sp.level().addFreshEntity(pig);
+                    for (int i = 0; i < 3; i++) com.orbisarcana.school.EchoService.onSpellHit(sp, com.orbisarcana.school.Schools.FIRE, pig);
+                });
+            }));
 
     private static int ticks;
     private static int waiting;
@@ -98,7 +117,7 @@ public final class DevShot {
             mc.player.setYHeadRot(yaw);
             mc.player.setXRot(pitch);
             ClientCircles.start(new CastStarted(-5000 - name.hashCode() % 1000, mc.player.getId(), OrbisArcana.id("fireball"),
-                    mc.level.getGameTime(), 30, 7, Optional.empty(), -1));
+                    mc.level.getGameTime(), 30, 7, Optional.empty(), -1, 1));
         });
     }
 

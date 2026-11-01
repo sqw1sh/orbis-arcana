@@ -5,6 +5,7 @@ import com.orbisarcana.client.ClientCastState;
 import com.orbisarcana.core.CastDenial;
 import com.orbisarcana.data.ModAttachments;
 import com.orbisarcana.progression.Loadout;
+import com.orbisarcana.school.Schools;
 import com.orbisarcana.spell.SpellRegistry;
 
 import net.minecraft.client.DeltaTracker;
@@ -28,6 +29,8 @@ public final class CastHud {
     private static final int TEXT_DIM = 0xFF9A9AAA;
     private static final int TEXT_DENIED = 0xFFFF6A5A;
     private static final int CHARGE_READY = 0xFF8FD8FF;
+    /** Fire Heat lives on targets and decays; hide the indicator after 8 s without changes. */
+    private static final long ECHO_SHOW_TICKS = 160;
 
     @SubscribeEvent
     static void registerLayers(RegisterGuiLayersEvent event) {
@@ -68,6 +71,17 @@ public final class CastHud {
         var loadout = ClientCastState.loadout(mc.player);
         Component set = Component.translatable("hud.orbisarcana.set", loadout.page() + 1, Loadout.PAGES);
         g.text(mc.font, set, fit(g, mc, set, x), y - 10, TEXT_DIM, true);
+
+        // Line 3 (above): Echo stacks of the dominant school (§13.2); fire Heat fades after a while without hits
+        var echo = ClientCastState.echo();
+        var dominant = mc.player.getData(ModAttachments.ATTUNEMENT).dominant();
+        if (echo != null && dominant.filter(echo.school()::equals).isPresent() && (echo.stacks() > 0 || now - echo.tick() < 60)
+                && now - echo.tick() < ECHO_SHOW_TICKS) {
+            int filled = (int) Math.floor(echo.stacks());
+            Component pips = Component.translatable("talent.orbisarcana." + echo.school().getPath() + ".echo")
+                    .append(" " + "■".repeat(filled) + "□".repeat(Math.max(0, echo.max() - filled)));
+            g.text(mc.font, pips, fit(g, mc, pips, x), y - 20, 0xFF000000 | Schools.color(echo.school()), true);
+        }
     }
 
     /** Shifts text left so it does not run off the right edge on narrow windows. */

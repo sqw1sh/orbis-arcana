@@ -15,7 +15,9 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.progression.ScrollService;
 import com.orbisarcana.school.AltarService;
 import com.orbisarcana.school.AttunementService;
+import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.Schools;
+import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.registry.ModBlocks;
 import com.orbisarcana.registry.ModItems;
 import com.orbisarcana.spell.CastService;
@@ -86,6 +88,9 @@ public final class OrbisGameTests {
         test("mastery_feeds_resonance_and_dominant_discount", 40, OrbisGameTests::resonanceAndDiscount);
         test("talents_follow_points_and_reset", 20, OrbisGameTests::talentsAndReset);
         test("water_root_heals_more", 60, OrbisGameTests::waterRoot);
+        test("heat_bursts_at_five_stacks", 20, OrbisGameTests::heatBurst);
+        test("flow_makes_next_cast_instant", 20, OrbisGameTests::flowInstant);
+        test("crown_of_flame_every_third_cast", 20, OrbisGameTests::crownOfFlame);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -534,6 +539,56 @@ public final class OrbisGameTests {
         release(h, p, 18);
         // 6 HP x mastery 1 x dominant water power 1.10 x Living Wave 1.10 = 7.26
         succeedWhen(h, p, () -> h.assertTrue(p.getHealth() >= 4f + 7.2f, "Living Wave and dominant power should heal ~7.26, health " + p.getHealth()));
+    }
+
+    /** Player bound to {@code school} with the given resonance. */
+    private static ServerPlayer boundTo(GameTestHelper h, Identifier school, Identifier spell, int resonance) {
+        h.setBlock(ALTAR, ModBlocks.RESONANCE_ALTAR.get());
+        ServerPlayer p = player(h, new Vec3(5.5, 1, 4.5), 0f, 0f);
+        KnowledgeService.learn(p, spell);
+        AltarService.handle(p, h.absolutePos(ALTAR), AltarService.Action.BIND, Optional.of(school));
+        p.getData(ModAttachments.ATTUNEMENT).school(school).setResonance(resonance);
+        return p;
+    }
+
+    private static void heatBurst(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.FIRE, FIREBALL, 1);
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(2.5, 1, 2.5));
+        pig.setNoAi(true);
+        for (int i = 0; i < 4; i++) EchoService.onSpellHit(p, Schools.FIRE, pig);
+        h.assertValueEqual(pig.getHealth(), pig.getMaxHealth(), "no burst before the 5th stack");
+        EchoService.onSpellHit(p, Schools.FIRE, pig);
+        h.assertTrue(pig.getHealth() <= pig.getMaxHealth() - 3.9f, "Heat burst at 5 stacks, health " + pig.getHealth());
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void flowInstant(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.WATER, HEALING_DEW, 1);
+        EchoService.onHealCast(p, 101);
+        EchoService.onHealCast(p, 101); // zone pulses of one cast count once
+        EchoService.onHealCast(p, 102);
+        h.assertFalse(EchoService.consumeFlow(p), "two stacks are not enough at tier 1");
+        EchoService.onHealCast(p, 103);
+        h.assertTrue(EchoService.consumeFlow(p), "three stacks make the next cast instant");
+        h.assertFalse(EchoService.consumeFlow(p), "stacks are spent");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void crownOfFlame(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.FIRE, FIREBALL, 3);
+        AttunementService.pickTalent(p, Schools.FIRE, "a1");
+        h.assertFalse(TalentEffects.crownOfFlameFree(p, Schools.FIRE), "needs the A2 node");
+        p.getData(ModAttachments.ATTUNEMENT).school(Schools.FIRE).setResonance(6);
+        AttunementService.pickTalent(p, Schools.FIRE, "a2");
+        boolean first = TalentEffects.crownOfFlameFree(p, Schools.FIRE);
+        boolean second = TalentEffects.crownOfFlameFree(p, Schools.FIRE);
+        boolean third = TalentEffects.crownOfFlameFree(p, Schools.FIRE);
+        h.assertTrue(!first && !second && third, "every third fire cast is free");
+        h.assertFalse(TalentEffects.crownOfFlameFree(p, Schools.WATER), "only fire spells count");
+        cleanup(h, p);
+        h.succeed();
     }
 
     private OrbisGameTests() {}

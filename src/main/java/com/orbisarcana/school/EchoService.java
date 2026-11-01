@@ -1,0 +1,125 @@
+package com.orbisarcana.school;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import com.orbisarcana.OrbisArcana;
+import com.orbisarcana.core.EchoRules;
+import com.orbisarcana.core.SchoolRules;
+import com.orbisarcana.core.TalentRules;
+import com.orbisarcana.network.CastPayloads.EchoState;
+import com.orbisarcana.network.Net;
+import com.orbisarcana.registry.ModDamageTypes;
+
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+
+/**
+ * School Echoes (§10.5), active only for the dominant school from resonance 1. Session state, not saved.
+ * Fire "Heat": stacks on targets, bursts at 5. Water "Flow": healing casts stack, then the next charged
+ * cast is instant.
+ */
+@EventBusSubscriber(modid = OrbisArcana.MODID)
+public final class EchoService {
+    private record Heat(UUID caster, double stacks, long lastTick) {}
+
+    /** target -> heat placed by one caster. */
+    private static final Map<UUID, Heat> HEAT = new HashMap<>();
+    /** player -> flow stacks. */
+    private static final Map<UUID, Double> FLOW = new HashMap<>();
+    /** player -> last cast id that already gave flow (one stack per cast, zones pulse many times). */
+    private static final Map<UUID, Integer> FLOW_CAST = new HashMap<>();
+
+    /** Echo tier of {@code school} for the player: 0 unless it is dominant with resonance >= 1. */
+    public static int tier(ServerPlayer player, Identifier school) {
+        var a = AttunementService.attunement(player);
+        if (a.dominant().filter(school::equals).isEmpty()) return 0;
+        var p = a.schools().get(school);
+        return p == null ? 0 : SchoolRules.echoTier(p.resonance());
+    }
+
+    // ---- Fire: Heat ----
+
+    /** A spell of {@code school} damaged {@code target}. */
+    public static void onSpellHit(ServerPlayer caster, Identifier school, LivingEntity target) {
+        if (!school.equals(Schools.FIRE) || !target.isAlive()) return;
+        int tier = tier(caster, Schools.FIRE);
+        if (tier <= 0) return;
+        long now = caster.level().getGameTime();
+        if (HEAT.size() > 256) HEAT.values().removeIf(h -> now - h.lastTick() > EchoRules.HEAT_DECAY_TICKS);
+        Heat old = HEAT.get(target.getUUID());
+        double stacks = old != null && old.caster().equals(caster.getUUID()) && now - old.lastTick() <= EchoRules.HEAT_DECAY_TICKS ? old.stacks() : 0;
+        stacks += EchoRules.stackGain(AttunementService.isDissonant(caster));
+        if (stacks >= EchoRules.HEAT_MAX) {
+            HEAT.remove(target.getUUID());
+            heatBurst(caster, target, tier);
+            stacks = 0;
+        } else {
+            HEAT.put(target.getUUID(), new Heat(caster.getUUID(), stacks, now));
+        }
+        Net.toPlayer(caster, new EchoState(Schools.FIRE, (float) stacks, EchoRules.HEAT_MAX));
+    }
+
+    private static void heatBurst(ServerPlayer caster, LivingEntity centre, int tier) {
+        ServerLevel level = caster.level();
+        float damage = (float) EchoRules.heatBurstDamage(tier, AttunementService.isDissonant(caster));
+        boolean fanning = AttunementService.hasTalent(caster, Schools.FIRE, TalentRules.A1);
+        for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, centre.getBoundingBox().inflate(EchoRules.HEAT_RADIUS),
+                e -> e.isAlive() && e != caster && e.distanceTo(centre) <= EchoRules.HEAT_RADIUS + centre.getBbWidth())) {
+            e.hurtServer(level, ModDamageTypes.source(e, Schools.FIRE, null, caster), damage);
+            if (fanning) e.igniteForTicks(EchoRules.FANNING_IGNITE_TICKS);
+        }
+        level.sendParticles(ParticleTypes.FLAME, centre.getX(), centre.getY() + centre.getBbHeight() / 2, centre.getZ(), 40, 0.8, 0.5, 0.8, 0.08);
+        level.sendParticles(ParticleTypes.EXPLOSION, centre.getX(), centre.getY() + centre.getBbHeight() / 2, centre.getZ(), 1, 0, 0, 0, 0);
+    }
+
+    // ---- Water: Flow ----
+
+    /** A healing/support cast succeeded (counted once per cast). */
+    public static void onHealCast(ServerPlayer player, int castId) {
+        int tier = tier(player, Schools.WATER);
+        if (tier <= 0) return;
+        Integer last = FLOW_CAST.put(player.getUUID(), castId);
+        if (last != null && last == castId) return;
+        int needed = EchoRules.flowNeeded(tier);
+        double stacks = Math.min(needed, FLOW.getOrDefault(player.getUUID(), 0.0) + EchoRules.stackGain(AttunementService.isDissonant(player)));
+        FLOW.put(player.getUUID(), stacks);
+        Net.toPlayer(player, new EchoState(Schools.WATER, (float) stacks, needed));
+    }
+
+    /** True (and the stacks are spent) if Flow makes this cast instant. */
+    public static boolean consumeFlow(ServerPlayer player) {
+        int tier = tier(player, Schools.WATER);
+        if (tier <= 0) return false;
+        int needed = EchoRules.flowNeeded(tier);
+        if (FLOW.getOrDefault(player.getUUID(), 0.0) < needed) return false;
+        FLOW.put(player.getUUID(), 0.0);
+        Net.toPlayer(player, new EchoState(Schools.WATER, 0f, needed));
+        return true;
+    }
+
+    @SubscribeEvent
+    static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        UUID id = event.getEntity().getUUID();
+        FLOW.remove(id);
+        FLOW_CAST.remove(id);
+        HEAT.values().removeIf(h -> h.caster().equals(id));
+    }
+
+    @SubscribeEvent
+    static void onServerStopping(ServerStoppingEvent event) {
+        HEAT.clear();
+        FLOW.clear();
+        FLOW_CAST.clear();
+    }
+
+    private EchoService() {}
+}

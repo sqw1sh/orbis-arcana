@@ -40,7 +40,11 @@ public final class ClientCastState {
         }
     }
 
+    /** Echo stacks of the dominant school for the HUD, and when they last changed. */
+    public record Echo(Identifier school, float stacks, int max, long tick) {}
+
     private static @Nullable OwnCast ownCast;
+    private static @Nullable Echo echo;
     private static final Map<Identifier, Cooldown> COOLDOWNS = new HashMap<>();
     private static @Nullable CastDenial lastDenial;
     private static long lastDenialTick;
@@ -96,6 +100,14 @@ public final class ClientCastState {
         ClientPacketDistributor.sendToServer(new LoadoutSet(page, slot, spell));
     }
 
+    public static @Nullable Echo echo() {
+        return echo;
+    }
+
+    static void setEcho(Identifier school, float stacks, int max) {
+        echo = new Echo(school, stacks, max, gameTime());
+    }
+
     public static @Nullable OwnCast ownCast() {
         return ownCast;
     }
@@ -145,6 +157,7 @@ public final class ClientCastState {
     /** Called on disconnect. */
     static void reset() {
         ownCast = null;
+        echo = null;
         COOLDOWNS.clear();
         lastDenial = null;
     }

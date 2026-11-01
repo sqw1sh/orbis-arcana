@@ -23,6 +23,8 @@ import com.orbisarcana.network.CastPayloads.CastStarted;
 import com.orbisarcana.network.CastPayloads.CooldownSet;
 import com.orbisarcana.progression.KnownSpells;
 import com.orbisarcana.school.AttunementService;
+import com.orbisarcana.school.EchoService;
+import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.behavior.CastContext;
 import com.orbisarcana.spell.behavior.SpellBehaviors;
 
@@ -139,7 +141,14 @@ public final class CastService {
         double castTimeMult = MasteryMath.castTimeMult(mastery);
         int castTicks = (int) Math.round(spell.cast().ticks() * castTimeMult);
         int minTicks = (int) Math.round(spell.cast().minTicks() * castTimeMult);
-        ActiveCast core = new ActiveCast(spell.cast().mode(), now, castTicks, minTicks, cost);
+        CastMode mode = spell.cast().mode();
+        // Water Echo "Flow": with full stacks the next charged cast fires at once (§10.5)
+        if (mode == CastMode.CHARGED && EchoService.consumeFlow(player)) {
+            mode = CastMode.INSTANT;
+            castTicks = 0;
+            minTicks = 0;
+        }
+        ActiveCast core = new ActiveCast(mode, now, castTicks, minTicks, cost);
 
         // Reserve: take the full cost now, refund the unspent part on interruption (§8.3)
         ManaService.setMana(player, ManaService.mana(player) - cost);
@@ -149,7 +158,7 @@ public final class CastService {
         ACTIVE.put(player.getUUID(), cast);
         Net.toPlayerAndNearby(player,
                 new CastStarted(cast.id(), player.getId(), spellId, now, castTicks, mastery,
-                        Optional.ofNullable(ground), target == null ? -1 : target.getId()));
+                        Optional.ofNullable(ground), target == null ? -1 : target.getId(), sealLevel(player, spell.school())));
 
         if (core.mode == CastMode.INSTANT) {
             finish(player, cast, Outcome.RELEASED);
@@ -198,6 +207,9 @@ public final class CastService {
             SpellBehaviors.get(cast.spell().behavior()).ifPresent(b -> b.release(new CastContext(
                     player, cast.spellId(), cast.id(), cast.spell(), cast.mastery(), cast.params(), core.power(now) * cast.schoolPower(),
                     cast.groundPoint(), cast.target())));
+            if (TalentEffects.crownOfFlameFree(player, cast.spell().school())) {
+                ManaService.setMana(player, ManaService.mana(player) + core.cost);
+            }
             int cooldown = cast.spell().cooldownTicks();
             if (cooldown > 0) {
                 var cooldowns = player.getData(ModAttachments.RESOURCES).cooldowns();
@@ -219,6 +231,14 @@ public final class CastService {
         Map<String, Double> params = new HashMap<>(spell.paramsAt(mastery, level -> !progress.isMilestoneEnabled(level)));
         params.computeIfPresent(spell.primaryStat(), (k, v) -> v * MasteryMath.primaryStatMult(mastery));
         return params;
+    }
+
+    /** Dominant seal drawn on the circle (§9.5): 0 none, 1 dominant school, 2 full seal at resonance 10. */
+    private static int sealLevel(ServerPlayer player, Identifier school) {
+        var a = AttunementService.attunement(player);
+        if (a.dominant().filter(school::equals).isEmpty()) return 0;
+        var p = a.schools().get(school);
+        return p != null && p.resonance() >= com.orbisarcana.core.SchoolRules.MAX_RESONANCE ? 2 : 1;
     }
 
     private static int charges(Map<String, Double> params) {

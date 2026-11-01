@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
+import com.orbisarcana.school.EchoService;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
@@ -62,7 +63,10 @@ public final class BurningGround {
             float before = e.getHealth();
             e.igniteForTicks(IGNITE_TICKS);
             e.hurtServer(level, ModDamageTypes.source(e, p.school(), null, caster), PULSE_DAMAGE);
-            if (caster != null && e.getHealth() < before) MasteryService.onHit(caster, p.spell(), p.castId(), e, !e.isAlive());
+            if (caster != null && e.getHealth() < before) {
+                MasteryService.onHit(caster, p.spell(), p.castId(), e, !e.isAlive());
+                EchoService.onSpellHit(caster, p.school(), e);
+            }
         }
     }
 

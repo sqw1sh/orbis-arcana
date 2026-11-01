@@ -3,6 +3,7 @@ package com.orbisarcana.spell.behavior;
 import java.util.Comparator;
 
 import com.orbisarcana.progression.MasteryService;
+import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
 
 import net.minecraft.core.particles.ParticleTypes;
@@ -36,6 +37,8 @@ final class HealBehavior {
         float missing = target.getMaxHealth() - target.getHealth();
         target.heal(amount);
         MasteryService.onHeal(ctx.caster(), ctx.spellId(), ctx.castId(), target, Math.min(amount, missing));
+        if (missing > 0) EchoService.onHealCast(ctx.caster(), ctx.castId());
+        TalentEffects.afterHeal(ctx.caster(), target, amount);
         float overheal = amount - missing;
         if (overheal > 0 && ctx.param("overheal_to_shield") > 0) {
             target.setAbsorptionAmount(Math.min(MAX_SHIELD, Math.max(target.getAbsorptionAmount(), overheal)));

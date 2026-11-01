@@ -4,6 +4,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
+import com.orbisarcana.school.EchoService;
 import com.orbisarcana.spell.behavior.BurningGround;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.registry.ModEntities;
@@ -107,6 +108,7 @@ public class SpellProjectile extends ThrowableProjectile {
         if (igniteTicks > 0) target.igniteForTicks(igniteTicks);
         if (owner instanceof ServerPlayer player && spell != null && target instanceof LivingEntity living && living.getHealth() < before) {
             MasteryService.onHit(player, spell, castId, living, !living.isAlive());
+            EchoService.onSpellHit(player, school, living);
         }
     }
 
