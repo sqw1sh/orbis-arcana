@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.UUID;
 
 import com.orbisarcana.OrbisArcana;
+import com.orbisarcana.progression.MasteryService;
 
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
@@ -32,6 +35,8 @@ final class ZoneBehavior {
     private static final class Zone {
         final ServerLevel level;
         final UUID caster;
+        final Identifier spellId;
+        final int castId;
         Vec3 center;
         final double radius;
         final float healPerPulse;
@@ -43,6 +48,8 @@ final class ZoneBehavior {
         Zone(CastContext ctx, Vec3 center) {
             this.level = ctx.level();
             this.caster = ctx.caster().getUUID();
+            this.spellId = ctx.spellId();
+            this.castId = ctx.castId();
             this.center = center;
             this.radius = ctx.param("radius");
             this.healPerPulse = (float) ctx.scaled("heal_per_second");
@@ -70,7 +77,7 @@ final class ZoneBehavior {
         ZONES.removeIf(zone -> {
             if (zone.level != level) return false;
             if (now >= zone.endTick) {
-                if (zone.finalBurst > 0) zone.alliesInside().forEach(p -> p.heal(zone.finalBurst));
+                if (zone.finalBurst > 0) zone.alliesInside().forEach(p -> heal(zone, p, zone.finalBurst));
                 level.sendParticles(ParticleTypes.HAPPY_VILLAGER, zone.center.x, zone.center.y + 0.5, zone.center.z, 30, zone.radius / 2, 0.3, zone.radius / 2, 0);
                 return true;
             }
@@ -88,7 +95,7 @@ final class ZoneBehavior {
         }
         if ((zone.endTick - now) % PULSE_TICKS == 0) {
             for (Player p : zone.alliesInside()) {
-                p.heal(zone.healPerPulse);
+                heal(zone, p, zone.healPerPulse);
                 if (zone.regenTicks > 0) p.addEffect(new MobEffectInstance(MobEffects.REGENERATION, zone.regenTicks, 0));
             }
         }
@@ -101,6 +108,14 @@ final class ZoneBehavior {
                         zone.center.y + 0.1, zone.center.z + Math.sin(a) * zone.radius, 1, 0, 0, 0, 0);
             }
         }
+    }
+
+    /** Heals and reports really restored HP to the caster mastery (§7.2). */
+    private static void heal(Zone zone, Player target, float amount) {
+        float missing = target.getMaxHealth() - target.getHealth();
+        target.heal(amount);
+        ServerPlayer caster = zone.level.getServer().getPlayerList().getPlayer(zone.caster);
+        if (caster != null) MasteryService.onHeal(caster, zone.spellId, zone.castId, target, Math.min(amount, missing));
     }
 
     @SubscribeEvent

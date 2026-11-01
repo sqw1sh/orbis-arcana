@@ -19,6 +19,7 @@ import net.minecraft.world.phys.Vec3;
 public record CastContext(
         ServerPlayer caster,
         Identifier spellId,
+        int castId,
         SpellDefinition spell,
         int mastery,
         Map<String, Double> params,

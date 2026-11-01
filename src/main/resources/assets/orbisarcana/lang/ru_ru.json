@@ -149,5 +149,7 @@
   "spell.orbisarcana.healing_dew.m15": "избыточное лечение становится щитом",
   "spell.orbisarcana.wind_step.m5": "нет урона от падения 3 с",
   "spell.orbisarcana.wind_step.m10": "ускорение союзникам по пути",
-  "spell.orbisarcana.wind_step.m15": "2 заряда"
+  "spell.orbisarcana.wind_step.m15": "2 заряда",
+  "message.orbisarcana.level_up": "%s: мастерство %s",
+  "message.orbisarcana.milestone": "%s достигло мастерства %s — %s: %s"
 }

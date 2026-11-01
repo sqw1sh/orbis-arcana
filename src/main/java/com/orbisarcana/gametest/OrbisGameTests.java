@@ -11,6 +11,7 @@ import com.orbisarcana.data.ModAttachments;
 import com.orbisarcana.mana.ManaService;
 import com.orbisarcana.item.SpellScrollItem;
 import com.orbisarcana.progression.KnowledgeService;
+import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.progression.ScrollService;
 import com.orbisarcana.school.Schools;
 import com.orbisarcana.spell.CastService;
@@ -27,6 +28,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.animal.pig.Pig;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.IEventBus;
@@ -65,6 +67,10 @@ public final class OrbisGameTests {
         test("dissolve_grants_capped_xp", 20, OrbisGameTests::dissolveCapped);
         test("learning_fills_radial_menu", 20, OrbisGameTests::learnFillsLoadout);
         test("loadout_rejects_unknown_spell", 20, OrbisGameTests::loadoutRejectsUnknown);
+        test("hit_grants_mastery_xp", 100, OrbisGameTests::hitGrantsXp);
+        test("armor_stand_grants_no_xp", 20, OrbisGameTests::armorStandNoXp);
+        test("heal_grants_mastery_xp", 60, OrbisGameTests::healGrantsXp);
+        test("xp_levels_up_spell", 20, OrbisGameTests::xpLevelsUp);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -298,6 +304,52 @@ public final class OrbisGameTests {
         h.assertFalse(KnowledgeService.setSlot(p, 0, 0, Optional.of(FIREBALL)), "unknown spell must be rejected");
         h.assertFalse(KnowledgeService.setSlot(p, 5, 0, Optional.empty()), "bad page must be rejected");
         h.assertValueEqual(p.getData(ModAttachments.LOADOUT).get(0, 0), Optional.<Identifier>empty(), "slot stays empty");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static double xp(ServerPlayer p, Identifier spell) {
+        return p.getData(ModAttachments.KNOWLEDGE).progress(spell).map(sp -> sp.xp() + sp.level() * 1000.0).orElse(0.0);
+    }
+
+    private static void hitGrantsXp(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(6.5, 1, 4.5));
+        pig.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 12f);
+        KnowledgeService.learn(p, FIREBALL);
+        double before = xp(p, FIREBALL);
+        CastService.request(p, FIREBALL);
+        release(h, p, 16);
+        succeedWhen(h, p, () -> h.assertTrue(xp(p, FIREBALL) > before, "hitting a mob should grant mastery XP"));
+    }
+
+    private static void armorStandNoXp(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), 0f, 0f);
+        KnowledgeService.learn(p, FIREBALL);
+        ArmorStand stand = h.spawn(EntityTypes.ARMOR_STAND, new Vec3(4.5, 1, 4.5));
+        double before = xp(p, FIREBALL);
+        MasteryService.onHit(p, FIREBALL, 1, stand, true);
+        h.assertValueEqual(xp(p, FIREBALL), before, "armor stand XP");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void healGrantsXp(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, -90f);
+        KnowledgeService.learn(p, HEALING_DEW);
+        p.setHealth(8f);
+        double before = xp(p, HEALING_DEW);
+        CastService.request(p, HEALING_DEW);
+        release(h, p, 18);
+        succeedWhen(h, p, () -> h.assertTrue(xp(p, HEALING_DEW) > before, "real healing should grant mastery XP"));
+    }
+
+    private static void xpLevelsUp(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        KnowledgeService.learn(p, FIREBALL);
+        MasteryService.award(p, FIREBALL, 40); // weight 40 x cycleWeight -> several levels
+        int level = p.getData(ModAttachments.KNOWLEDGE).progress(FIREBALL).orElseThrow().level();
+        h.assertTrue(level > 1, "a large award should level the spell up, level " + level);
         cleanup(h, p);
         h.succeed();
     }

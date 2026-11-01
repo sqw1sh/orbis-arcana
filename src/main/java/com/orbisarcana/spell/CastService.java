@@ -190,7 +190,7 @@ public final class CastService {
 
         if (outcome == Outcome.RELEASED) {
             SpellBehaviors.get(cast.spell().behavior()).ifPresent(b -> b.release(new CastContext(
-                    player, cast.spellId(), cast.spell(), cast.mastery(), cast.params(), core.power(now),
+                    player, cast.spellId(), cast.id(), cast.spell(), cast.mastery(), cast.params(), core.power(now),
                     cast.groundPoint(), cast.target())));
             int cooldown = cast.spell().cooldownTicks();
             if (cooldown > 0) {

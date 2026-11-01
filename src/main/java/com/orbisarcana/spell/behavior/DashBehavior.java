@@ -1,5 +1,6 @@
 package com.orbisarcana.spell.behavior;
 
+import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.spell.CastService;
 
 import net.minecraft.core.particles.ParticleTypes;
@@ -26,6 +27,8 @@ final class DashBehavior {
         player.setDeltaMovement(dir.x * speed, Math.max(player.getDeltaMovement().y, 0.25), dir.z * speed);
         player.syncVelocity = true;
         ctx.level().sendParticles(ParticleTypes.CLOUD, player.getX(), player.getY() + 0.5, player.getZ(), 15, 0.3, 0.3, 0.3, 0.02);
+
+        MasteryService.onMove(player, ctx.spellId(), ctx.scaled("distance"));
 
         int noFall = ctx.ticks("no_fall_ticks");
         if (noFall > 0) CastService.grantNoFall(player, noFall);

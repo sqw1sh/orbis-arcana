@@ -1,6 +1,9 @@
 package com.orbisarcana.entity;
 
+import org.jspecify.annotations.Nullable;
+
 import com.orbisarcana.OrbisArcana;
+import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.registry.ModEntities;
 import com.orbisarcana.school.Schools;
@@ -10,6 +13,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -32,6 +36,9 @@ public class SpellProjectile extends ThrowableProjectile {
     private float explodeRadius;
     private int groundFireTicks;
     private int maxAge = 100;
+    /** Spell and cast that fired this projectile, for mastery XP. */
+    private @Nullable Identifier spell;
+    private int castId = -1;
 
     public SpellProjectile(EntityType<? extends SpellProjectile> type, Level level) {
         super(type, level);
@@ -49,6 +56,12 @@ public class SpellProjectile extends ThrowableProjectile {
         p.groundFireTicks = groundFireTicks;
         p.maxAge = maxAge;
         return p;
+    }
+
+    public SpellProjectile attribute(Identifier spell, int castId) {
+        this.spell = spell;
+        this.castId = castId;
+        return this;
     }
 
     @Override
@@ -69,17 +82,12 @@ public class SpellProjectile extends ThrowableProjectile {
     }
 
     @Override
-    protected void onHitEntity(EntityHitResult hit) {
-        if (!(level() instanceof ServerLevel server)) return;
-        Entity target = hit.getEntity();
-        hurt(server, target);
-    }
-
-    @Override
     protected void onHit(HitResult hit) {
         super.onHit(hit);
         if (!(level() instanceof ServerLevel server)) return;
-        if (explodeRadius > 0) explode(server);
+        Entity direct = hit instanceof EntityHitResult entityHit ? entityHit.getEntity() : null;
+        if (direct != null) hurt(server, direct);
+        if (explodeRadius > 0) explode(server, direct);
         // TODO(S5): ground_fire_ticks as a burning zone without fire blocks (world damage is opt-in, §1.4)
         server.sendParticles(particle(), getX(), getY(), getZ(), 12, 0.2, 0.2, 0.2, 0.05);
         discard();
@@ -88,13 +96,19 @@ public class SpellProjectile extends ThrowableProjectile {
     private void hurt(ServerLevel server, Entity target) {
         Entity owner = getOwner();
         if (target == owner) return;
+        float before = target instanceof LivingEntity living ? living.getHealth() : 0;
         target.hurtServer(server, ModDamageTypes.source(this, school, this, owner), damage);
         if (igniteTicks > 0) target.igniteForTicks(igniteTicks);
+        if (owner instanceof ServerPlayer player && spell != null && target instanceof LivingEntity living && living.getHealth() < before) {
+            MasteryService.onHit(player, spell, castId, living, !living.isAlive());
+        }
     }
 
-    private void explode(ServerLevel server) {
+    /** Area damage around the impact; the directly hit entity was already damaged. */
+    private void explode(ServerLevel server, @Nullable Entity direct) {
         AABB box = getBoundingBox().inflate(explodeRadius);
-        for (LivingEntity e : server.getEntitiesOfClass(LivingEntity.class, box, e -> e != getOwner() && e.distanceTo(this) <= explodeRadius)) {
+        for (LivingEntity e : server.getEntitiesOfClass(LivingEntity.class, box,
+                e -> e != getOwner() && e != direct && e.distanceTo(this) <= explodeRadius)) {
             hurt(server, e);
         }
         server.sendParticles(ParticleTypes.EXPLOSION, getX(), getY(), getZ(), 1, 0, 0, 0, 0);

@@ -149,5 +149,7 @@
   "spell.orbisarcana.healing_dew.m15": "overheal turns into a shield",
   "spell.orbisarcana.wind_step.m5": "no fall damage for 3 s",
   "spell.orbisarcana.wind_step.m10": "allies on your path get speed",
-  "spell.orbisarcana.wind_step.m15": "two charges"
+  "spell.orbisarcana.wind_step.m15": "two charges",
+  "message.orbisarcana.level_up": "%s: mastery %s",
+  "message.orbisarcana.milestone": "%s reached mastery %s — %s: %s"
 }
