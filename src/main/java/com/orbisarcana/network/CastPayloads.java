@@ -69,6 +69,21 @@ public final class CastPayloads {
         }
     }
 
+    /** Turn a reached milestone of a known spell off or back on (§7.5). */
+    public record MilestoneToggle(Identifier spell, int level, boolean disabled) implements CustomPacketPayload {
+        public static final Type<MilestoneToggle> TYPE = new Type<>(OrbisArcana.id("milestone_toggle"));
+        public static final StreamCodec<ByteBuf, MilestoneToggle> CODEC = StreamCodec.composite(
+                Identifier.STREAM_CODEC, MilestoneToggle::spell,
+                ByteBufCodecs.VAR_INT, MilestoneToggle::level,
+                ByteBufCodecs.BOOL, MilestoneToggle::disabled,
+                MilestoneToggle::new);
+
+        @Override
+        public Type<MilestoneToggle> type() {
+            return TYPE;
+        }
+    }
+
     // ---- server -> client ----
 
     /**

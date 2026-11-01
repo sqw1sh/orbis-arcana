@@ -9,6 +9,7 @@ import com.orbisarcana.network.CastPayloads.CastStop;
 import com.orbisarcana.network.CastPayloads.CooldownSet;
 import com.orbisarcana.network.CastPayloads.LoadoutSelect;
 import com.orbisarcana.network.CastPayloads.LoadoutSet;
+import com.orbisarcana.network.CastPayloads.MilestoneToggle;
 import com.orbisarcana.progression.KnowledgeService;
 import com.orbisarcana.spell.CastService;
 
@@ -39,6 +40,10 @@ public final class ModNetwork {
         });
         r.playToServer(LoadoutSelect.TYPE, LoadoutSelect.CODEC, (msg, ctx) -> {
             if (ctx.player() instanceof ServerPlayer p) KnowledgeService.select(p, msg.page(), msg.slot());
+        });
+
+        r.playToServer(MilestoneToggle.TYPE, MilestoneToggle.CODEC, (msg, ctx) -> {
+            if (ctx.player() instanceof ServerPlayer p) KnowledgeService.setMilestoneDisabled(p, msg.spell(), msg.level(), msg.disabled());
         });
 
         r.playToClient(CastStarted.TYPE, CastStarted.CODEC);

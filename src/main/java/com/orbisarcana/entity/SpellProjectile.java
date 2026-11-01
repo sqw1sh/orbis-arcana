@@ -4,6 +4,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
+import com.orbisarcana.spell.behavior.BurningGround;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.registry.ModEntities;
 import com.orbisarcana.school.Schools;
@@ -24,6 +25,7 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Gravity-less magic projectile. Visuals are server particles for now; a proper renderer comes with S3.
@@ -36,6 +38,7 @@ public class SpellProjectile extends ThrowableProjectile {
     private float explodeRadius;
     private int groundFireTicks;
     private int maxAge = 100;
+    private static final double GROUND_FIRE_RADIUS = 1.5;
     /** Spell and cast that fired this projectile, for mastery XP. */
     private @Nullable Identifier spell;
     private int castId = -1;
@@ -88,7 +91,10 @@ public class SpellProjectile extends ThrowableProjectile {
         Entity direct = hit instanceof EntityHitResult entityHit ? entityHit.getEntity() : null;
         if (direct != null) hurt(server, direct);
         if (explodeRadius > 0) explode(server, direct);
-        // TODO(S5): ground_fire_ticks as a burning zone without fire blocks (world damage is opt-in, §1.4)
+        if (groundFireTicks > 0 && getOwner() instanceof ServerPlayer player && spell != null) {
+            Vec3 at = direct != null ? direct.position() : hit.getLocation();
+            BurningGround.spawn(server, at, GROUND_FIRE_RADIUS, groundFireTicks, player, school, spell, castId);
+        }
         server.sendParticles(particle(), getX(), getY(), getZ(), 12, 0.2, 0.2, 0.2, 0.05);
         discard();
     }

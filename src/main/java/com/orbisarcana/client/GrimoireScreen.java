@@ -9,6 +9,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.orbisarcana.core.MasteryMath;
 import com.orbisarcana.item.SpellScrollItem;
+import com.orbisarcana.network.CastPayloads.MilestoneToggle;
 import com.orbisarcana.progression.KnownSpells;
 import com.orbisarcana.progression.Loadout;
 import com.orbisarcana.school.Schools;
@@ -19,8 +20,10 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 
 /**
  * Grimoire (§13.4), opened with G: known spells with school filter and search, the spell card
@@ -29,7 +32,12 @@ import net.minecraft.resources.Identifier;
  */
 public class GrimoireScreen extends Screen {
     private static final int LIST_W = 150, ROW_H = 16, CARD_W = 230;
-    private static final int PANEL = 0xC0101018, TEXT = 0xFFE8E8F0, DIM = 0xFF8A8A9A, GOOD = 0xFF7CE07C;
+    private static final int PANEL = 0xC0101018, TEXT = 0xFFE8E8F0, DIM = 0xFF8A8A9A, GOOD = 0xFF7CE07C, OFF = 0xFFE07070;
+
+    /** Clickable milestone switch, rebuilt every frame by {@link #drawCard}. */
+    private record Toggle(int x, int y, int w, int h, Identifier spell, int level, boolean enabled) {}
+
+    private final List<Toggle> toggles = new ArrayList<>();
 
     private @Nullable Identifier schoolFilter;
     private String search = "";
@@ -158,8 +166,23 @@ public class GrimoireScreen extends Screen {
     }
 
     @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        for (Toggle t : toggles) {
+            if (event.x() >= t.x() && event.x() < t.x() + t.w() && event.y() >= t.y() - 1 && event.y() < t.y() + t.h()) {
+                // Predict locally; the server confirms through the knowledge sync
+                minecraft.player.getData(com.orbisarcana.data.ModAttachments.KNOWLEDGE).progress(t.spell())
+                        .ifPresent(sp -> sp.setMilestoneDisabled(t.level(), t.enabled()));
+                ClientPacketDistributor.sendToServer(new MilestoneToggle(t.spell(), t.level(), t.enabled()));
+                return true;
+            }
+        }
+        return super.mouseClicked(event, doubleClick);
+    }
+
+    @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partial) {
         if (minecraft.player == null) return;
+        toggles.clear();
         int left = (width - LIST_W - CARD_W - 10) / 2;
         int cardX = left + LIST_W + 10;
         g.fill(left - 4, 26, left + LIST_W + 4, height - 16, PANEL);
@@ -212,18 +235,30 @@ public class GrimoireScreen extends Screen {
         g.fill(x, y, x + (int) (CARD_W * frac), y + 4, 0xFF7A8CFF);
         y += 10;
 
-        // Milestones (§7.5): shown before they are reached; clipped above the radial-menu block
+        // Milestones (§7.5): shown before they are reached; reached ones can be switched off.
+        // Clipped above the radial-menu block.
         int bottom = height - 84;
+        int marker = font.width("[✔] ");
         for (int m : SpellDefinition.MILESTONE_LEVELS) {
             boolean reached = level >= m;
+            boolean enabled = p.isMilestoneEnabled(m);
+            if (y + 9 > bottom) {
+                g.text(font, Component.literal("…"), x, y - 2, DIM, false);
+                return;
+            }
+            if (reached) {
+                g.text(font, Component.literal(enabled ? "[✔]" : "[✖]"), x, y, enabled ? GOOD : OFF, false);
+                toggles.add(new Toggle(x, y, marker, 9, id, m, enabled));
+            }
             String key = "spell." + id.getNamespace() + "." + id.getPath() + ".m" + m;
             Component line = Component.translatable("screen.orbisarcana.grimoire.milestone." + m).append(": ").append(Component.translatable(key));
-            for (var part : font.split(line, CARD_W)) {
+            int color = !reached ? DIM : enabled ? GOOD : OFF;
+            for (var part : font.split(line, CARD_W - marker)) {
                 if (y + 9 > bottom) {
-                    g.text(font, Component.literal("…"), x, y - 2, DIM, false);
+                    g.text(font, Component.literal("…"), x + marker, y - 2, DIM, false);
                     return;
                 }
-                g.text(font, part, x, y, reached ? GOOD : DIM, false);
+                g.text(font, part, x + marker, y, color, false);
                 y += 10;
             }
             y += 2;

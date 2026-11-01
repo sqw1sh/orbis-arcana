@@ -42,6 +42,15 @@ public final class KnowledgeService {
         player.syncData(ModAttachments.LOADOUT);
     }
 
+    /** Disables or re-enables a milestone the player has reached; regular-level stats stay (§7.5). */
+    public static boolean setMilestoneDisabled(ServerPlayer player, Identifier spell, int level, boolean disabled) {
+        var progress = knowledge(player).progress(spell);
+        if (progress.isEmpty() || !com.orbisarcana.core.MasteryMath.isMilestone(level) || progress.get().level() < level) return false;
+        progress.get().setMilestoneDisabled(level, disabled);
+        player.syncData(ModAttachments.KNOWLEDGE);
+        return true;
+    }
+
     /** Forgets the spell and clears it from the radial menu. */
     public static boolean forget(ServerPlayer player, Identifier spell) {
         if (!knowledge(player).forget(spell)) return false;

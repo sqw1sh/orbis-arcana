@@ -13,6 +13,7 @@ import com.orbisarcana.core.ActiveCast.Outcome;
 import com.orbisarcana.core.CastDenial;
 import com.orbisarcana.core.CastMode;
 import com.orbisarcana.core.CastRules;
+import com.orbisarcana.core.Charges;
 import com.orbisarcana.core.MasteryMath;
 import com.orbisarcana.data.ModAttachments;
 import com.orbisarcana.mana.ManaService;
@@ -85,6 +86,9 @@ public final class CastService {
         var progress = knowledge.progress(spellId);
         int mastery = progress.map(KnownSpells.SpellProgress::level).orElse(1);
         double cost = def.map(d -> d.cost() * MasteryMath.costMult(mastery)).orElse(0.0);
+        Map<String, Double> params = def.isPresent() && progress.isPresent() ? params(def.get(), progress.get()) : Map.of();
+        int cooldown = def.map(SpellDefinition::cooldownTicks).orElse(0);
+        long fullAt = player.getData(ModAttachments.RESOURCES).cooldowns().getOrDefault(spellId, 0L);
 
         Optional<CastDenial> denial = CastRules.check(new CastRules.Request(
                 def.isPresent() && SpellBehaviors.get(def.get().behavior()).isPresent(),
@@ -93,7 +97,7 @@ public final class CastService {
                 ACTIVE.containsKey(player.getUUID()),
                 now,
                 GCD_UNTIL.getOrDefault(player.getUUID(), 0L),
-                player.getData(ModAttachments.RESOURCES).cooldowns().getOrDefault(spellId, 0L),
+                Charges.readyAt(fullAt, charges(params), cooldown),
                 ManaService.mana(player),
                 cost));
         if (denial.isEmpty() && def.get().cast().mode() != CastMode.INSTANT && def.get().cast().mode() != CastMode.CHARGED) {
@@ -106,8 +110,6 @@ public final class CastService {
         }
 
         SpellDefinition spell = def.get();
-        Map<String, Double> params = new HashMap<>(spell.paramsAt(mastery, level -> !progress.get().isMilestoneEnabled(level)));
-        params.computeIfPresent(spell.primaryStat(), (k, v) -> v * MasteryMath.primaryStatMult(mastery));
         double range = params.getOrDefault("range", 24.0);
 
         Vec3 ground = null;
@@ -194,8 +196,11 @@ public final class CastService {
                     cast.groundPoint(), cast.target())));
             int cooldown = cast.spell().cooldownTicks();
             if (cooldown > 0) {
-                player.getData(ModAttachments.RESOURCES).cooldowns().put(cast.spellId(), now + cooldown);
-                Net.toPlayer(player, new CooldownSet(cast.spellId(), now + cooldown, cooldown));
+                var cooldowns = player.getData(ModAttachments.RESOURCES).cooldowns();
+                long fullAt = Charges.afterUse(cooldowns.getOrDefault(cast.spellId(), 0L), now, cooldown);
+                cooldowns.put(cast.spellId(), fullAt);
+                // The client shows the time until the next charge (none while charges remain)
+                Net.toPlayer(player, new CooldownSet(cast.spellId(), Charges.readyAt(fullAt, charges(cast.params()), cooldown), cooldown));
             }
         } else {
             double refund = core.cost - core.manaSpent(outcome, now);
@@ -203,6 +208,18 @@ public final class CastService {
         }
         GCD_UNTIL.put(player.getUUID(), now + CastRules.GCD_TICKS);
         Net.toPlayerAndNearby(player, new CastEnded(cast.id(), player.getId(), outcome.ordinal()));
+    }
+
+    /** Snapshot of the spell params: enabled milestones applied, primary stat scaled by mastery (§7.4). */
+    private static Map<String, Double> params(SpellDefinition spell, KnownSpells.SpellProgress progress) {
+        int mastery = progress.level();
+        Map<String, Double> params = new HashMap<>(spell.paramsAt(mastery, level -> !progress.isMilestoneEnabled(level)));
+        params.computeIfPresent(spell.primaryStat(), (k, v) -> v * MasteryMath.primaryStatMult(mastery));
+        return params;
+    }
+
+    private static int charges(Map<String, Double> params) {
+        return Math.max(1, (int) Math.round(params.getOrDefault("charges", 1.0)));
     }
 
     private static void deny(ServerPlayer player, Identifier spellId, CastDenial reason) {
@@ -302,8 +319,15 @@ public final class CastService {
         long now = player.level().getGameTime();
         var cooldowns = player.getData(ModAttachments.RESOURCES).cooldowns();
         cooldowns.values().removeIf(until -> until <= now);
-        cooldowns.forEach((spell, until) ->
-                Net.toPlayer(player, new CooldownSet(spell, until, (int) (until - now))));
+        var knowledge = player.getData(ModAttachments.KNOWLEDGE);
+        cooldowns.forEach((spellId, fullAt) -> {
+            var def = SpellRegistry.get(player.registryAccess(), spellId);
+            var progress = knowledge.progress(spellId);
+            if (def.isEmpty() || progress.isEmpty()) return;
+            int cooldown = def.get().cooldownTicks();
+            long ready = Charges.readyAt(fullAt, charges(params(def.get(), progress.get())), cooldown);
+            if (ready > now) Net.toPlayer(player, new CooldownSet(spellId, ready, cooldown));
+        });
     }
 
     @SubscribeEvent

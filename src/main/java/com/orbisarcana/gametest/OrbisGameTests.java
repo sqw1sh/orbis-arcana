@@ -15,6 +15,7 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.progression.ScrollService;
 import com.orbisarcana.school.Schools;
 import com.orbisarcana.spell.CastService;
+import com.orbisarcana.spell.behavior.BurningGround;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -71,6 +72,9 @@ public final class OrbisGameTests {
         test("armor_stand_grants_no_xp", 20, OrbisGameTests::armorStandNoXp);
         test("heal_grants_mastery_xp", 60, OrbisGameTests::healGrantsXp);
         test("xp_levels_up_spell", 20, OrbisGameTests::xpLevelsUp);
+        test("wind_step_has_two_charges_at_15", 40, OrbisGameTests::twoCharges);
+        test("disabled_milestone_removes_charge", 40, OrbisGameTests::disabledMilestone);
+        test("burning_ground_hurts_inside", 60, OrbisGameTests::burningGround);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -352,6 +356,60 @@ public final class OrbisGameTests {
         h.assertTrue(level > 1, "a large award should level the spell up, level " + level);
         cleanup(h, p);
         h.succeed();
+    }
+
+    /** Casts wind step now and again after the global cooldown; reports whether each started. */
+    private static void castTwice(GameTestHelper h, ServerPlayer p, java.util.function.BiConsumer<Boolean, Boolean> check) {
+        double before = ManaService.mana(p);
+        CastService.request(p, WIND_STEP);
+        boolean first = ManaService.mana(p) < before;
+        h.runAfterDelay(8, () -> {
+            double mid = ManaService.mana(p);
+            CastService.request(p, WIND_STEP);
+            check.accept(first, ManaService.mana(p) < mid);
+        });
+    }
+
+    private static void twoCharges(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 0f);
+        KnowledgeService.learn(p, WIND_STEP);
+        KnowledgeService.setMastery(p, WIND_STEP, 15);
+        castTwice(h, p, (first, second) -> {
+            h.assertTrue(first && second, "two charges should allow two casts in a row");
+            double mana = ManaService.mana(p);
+            h.runAfterDelay(8, () -> {
+                CastService.request(p, WIND_STEP);
+                h.assertTrue(ManaService.mana(p) >= mana, "third cast must wait for a charge");
+                cleanup(h, p);
+                h.succeed();
+            });
+        });
+    }
+
+    private static void disabledMilestone(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 0f);
+        KnowledgeService.learn(p, WIND_STEP);
+        h.assertFalse(KnowledgeService.setMilestoneDisabled(p, WIND_STEP, 15, true), "unreached milestone cannot be toggled");
+        KnowledgeService.setMastery(p, WIND_STEP, 15);
+        h.assertTrue(KnowledgeService.setMilestoneDisabled(p, WIND_STEP, 15, true), "reached milestone can be disabled");
+        castTwice(h, p, (first, second) -> {
+            h.assertTrue(first, "first cast starts");
+            h.assertFalse(second, "with milestone 15 off there is only one charge");
+            cleanup(h, p);
+            h.succeed();
+        });
+    }
+
+    private static void burningGround(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 1.5), 0f, 0f);
+        KnowledgeService.learn(p, FIREBALL);
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(5.5, 1, 5.5));
+        pig.setNoAi(true);
+        BurningGround.spawn(h.getLevel(), h.absoluteVec(new Vec3(5.5, 1, 5.5)), 1.5, 40, p, Schools.FIRE, FIREBALL, 77);
+        succeedWhen(h, p, () -> {
+            h.assertTrue(pig.getHealth() < pig.getMaxHealth(), "burning ground should hurt a creature standing in it");
+            h.assertTrue(xp(p, FIREBALL) > 0, "burn damage counts for the spell mastery");
+        });
     }
 
     private OrbisGameTests() {}
