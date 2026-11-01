@@ -20,5 +20,7 @@ class EchoRulesTest {
         assertEquals(1.6, EchoRules.impulseMult(20, 2, false), 1e-9);
         assertEquals(1.15, EchoRules.impulseMult(5, 2, true), 1e-9);
         assertEquals(1.0, EchoRules.impulseMult(0, 1, false), 1e-9);
+        assertEquals(30, EchoRules.freezeTicks(1));
+        assertEquals(40, EchoRules.freezeTicks(2));
     }
 }

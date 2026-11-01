@@ -1,0 +1,42 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:pattern",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 24,
+    "min_ticks": 16
+  },
+  "cost": 28,
+  "cooldown_ticks": 300,
+  "primary_stat": "duration_ticks",
+  "params": {
+    "radius": 5,
+    "duration_ticks": 120,
+    "slow_amplifier": 2,
+    "range": 20,
+    "link": 0,
+    "link_share": 0.5,
+    "freeze_end_ticks": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 6.5
+      }
+    },
+    "10": {
+      "params": {
+        "link": 1
+      }
+    },
+    "15": {
+      "params": {
+        "freeze_end_ticks": 30
+      }
+    }
+  },
+  "circle": "orbisarcana:frost_pattern",
+  "xp_category": "control"
+}

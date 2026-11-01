@@ -43,7 +43,7 @@ public final class ClientNetwork {
             if (own != null && own.castId() == msg.castId()) ClientCastState.setOwnCast(null);
         });
         event.register(RitualCircle.TYPE, (msg, ctx) -> ClientCircles.startRitual(msg));
-        event.register(HeatMark.TYPE, (msg, ctx) -> ClientCircles.heatMark(msg.entityId(), msg.stacks()));
+        event.register(HeatMark.TYPE, (msg, ctx) -> ClientCircles.heatMark(msg.entityId(), msg.stacks(), msg.school()));
         event.register(EchoState.TYPE, (msg, ctx) -> ClientCastState.setEcho(msg.school(), msg.stacks(), msg.max()));
         event.register(CastDenied.TYPE, (msg, ctx) -> {
             CastDenial[] values = CastDenial.values();

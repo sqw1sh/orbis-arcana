@@ -21,6 +21,7 @@ import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.registry.ModBlocks;
 import com.orbisarcana.registry.ModItems;
 import com.orbisarcana.spell.CastService;
+import com.orbisarcana.spell.Frost;
 import com.orbisarcana.spell.Shields;
 import com.orbisarcana.spell.behavior.BurningGround;
 
@@ -35,6 +36,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.effect.MobEffects;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.minecraft.world.entity.EntityTypes;
@@ -109,6 +112,12 @@ public final class OrbisGameTests {
         test("gust_dome_deflects_projectiles", 80, OrbisGameTests::gustDome);
         test("impulse_lengthens_dash", 20, OrbisGameTests::impulseDash);
         test("light_step_cancels_short_falls", 20, OrbisGameTests::lightStep);
+        test("ice_shard_hits_and_slows", 40, OrbisGameTests::iceShard);
+        test("ice_shard_blasts_frozen_target", 40, OrbisGameTests::iceShardBlast);
+        test("ice_bastion_raises_and_melts", 200, OrbisGameTests::iceBastion);
+        test("frost_pattern_slows_then_freezes", 300, OrbisGameTests::frostPattern);
+        test("frost_echo_freezes_at_five", 20, OrbisGameTests::frostEcho);
+        test("cold_blood_keeps_speed_while_casting", 20, OrbisGameTests::coldBlood);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -815,6 +824,101 @@ public final class OrbisGameTests {
         var longFall = new LivingFallEvent(p, 14, 1f);
         NeoForge.EVENT_BUS.post(longFall);
         h.assertFalse(longFall.isCanceled(), "a 14 block fall still hurts");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static final Identifier ICE_SHARD = OrbisArcana.id("ice_shard");
+    private static final Identifier ICE_BASTION = OrbisArcana.id("ice_bastion");
+    private static final Identifier FROST_PATTERN = OrbisArcana.id("frost_pattern");
+
+    private static void iceShard(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(6.5, 1, 4.5));
+        pig.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 11f); // aimed at the pig's body
+        KnowledgeService.learn(p, ICE_SHARD);
+        CastService.request(p, ICE_SHARD);
+        succeedWhen(h, p, () -> {
+            h.assertTrue(pig.getHealth() < pig.getMaxHealth(), "the shard hurts the pig");
+            h.assertTrue(pig.hasEffect(MobEffects.SLOWNESS), "and slows it");
+        });
+    }
+
+    private static void iceShardBlast(GameTestHelper h) {
+        Pig frozen = h.spawn(EntityTypes.PIG, new Vec3(6.5, 1, 4.5));
+        Pig beside = h.spawn(EntityTypes.PIG, new Vec3(6.5, 1, 6.2));
+        frozen.setNoAi(true);
+        beside.setNoAi(true);
+        Frost.freeze(frozen, 100, null);
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 11f);
+        KnowledgeService.learn(p, ICE_SHARD);
+        KnowledgeService.setMastery(p, ICE_SHARD, 15);
+        CastService.request(p, ICE_SHARD);
+        succeedWhen(h, p, () -> h.assertTrue(beside.getHealth() < beside.getMaxHealth(), "the ice blast reaches the pig beside"));
+    }
+
+    private static boolean anyFrostWall(GameTestHelper h) {
+        for (int x = 0; x < 9; x++) for (int y = 1; y < 5; y++) for (int z = 0; z < 9; z++) {
+            if (h.getBlockState(new BlockPos(x, y, z)).is(ModBlocks.FROST_WALL.get())) return true;
+        }
+        return false;
+    }
+
+    private static void iceBastion(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 1.5), 0f, 45f); // facing +z, looking at the floor ahead
+        KnowledgeService.learn(p, ICE_BASTION);
+        CastService.request(p, ICE_BASTION);
+        h.assertTrue(CastService.isCasting(p), "ice bastion needs a ground point and starts");
+        release(h, p, 20);
+        boolean[] raised = new boolean[1];
+        h.runAfterDelay(22, () -> raised[0] = anyFrostWall(h));
+        h.runAfterDelay(23, () -> h.assertTrue(raised[0], "the wall stands after the cast"));
+        succeedWhen(h, p, () -> {
+            h.assertTrue(raised[0], "the wall stood");
+            h.assertFalse(anyFrostWall(h), "and melts when its time is up");
+        });
+    }
+
+    private static void frostPattern(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(4.5, 1, 6.5));
+        pig.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 2.5), 0f, 45f);
+        KnowledgeService.learn(p, FROST_PATTERN);
+        KnowledgeService.setMastery(p, FROST_PATTERN, 15);
+        CastService.request(p, FROST_PATTERN);
+        release(h, p, 26);
+        boolean[] slowed = new boolean[1];
+        h.runAfterDelay(40, () -> {
+            var slow = pig.getEffect(MobEffects.SLOWNESS);
+            slowed[0] = slow != null && slow.getAmplifier() >= 2;
+        });
+        succeedWhen(h, p, () -> {
+            h.assertTrue(slowed[0], "the pattern strongly slows");
+            h.assertTrue(Frost.isFrozen(pig), "the pattern freezes everyone inside at the end (m15)");
+        });
+    }
+
+    private static void frostEcho(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.ICE, ICE_SHARD, 1);
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(2.5, 1, 2.5));
+        pig.setNoAi(true);
+        for (int i = 0; i < 4; i++) EchoService.onSpellHit(p, Schools.ICE, pig, 300 + i);
+        h.assertFalse(Frost.isFrozen(pig), "four Frost stacks only slow");
+        h.assertTrue(pig.getEffect(MobEffects.SLOWNESS).getAmplifier() == 3, "slow grows with stacks");
+        EchoService.onSpellHit(p, Schools.ICE, pig, 304);
+        h.assertTrue(Frost.isFrozen(pig), "the fifth stack freezes");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void coldBlood(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.ICE, FROST_PATTERN, 1);
+        p.setXRot(60f);
+        double base = p.getAttributeValue(Attributes.MOVEMENT_SPEED);
+        CastService.request(p, FROST_PATTERN);
+        h.assertTrue(CastService.isCasting(p), "charging");
+        h.assertValueEqual(p.getAttributeValue(Attributes.MOVEMENT_SPEED), base, "Cold Blood: no casting slow for Ice");
+        CastService.stop(p, CastService.activeCastId(p), true);
         cleanup(h, p);
         h.succeed();
     }

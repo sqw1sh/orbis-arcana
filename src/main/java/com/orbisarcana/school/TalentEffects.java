@@ -8,7 +8,9 @@ import java.util.UUID;
 
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.core.TalentRules;
+import com.orbisarcana.spell.Frost;
 import com.orbisarcana.spell.Shields;
+import net.minecraft.world.effect.MobEffects;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,7 +41,8 @@ public final class TalentEffects {
             "fire/echo", "fire/root", "fire/a1", "fire/a2", "fire/b1", "fire/b2",
             "water/echo", "water/root", "water/a1", "water/a2", "water/b1", "water/b2",
             "earth/echo", "earth/root", "earth/a1", "earth/a2", "earth/b1", "earth/b2",
-            "air/echo", "air/root", "air/a1", "air/a2", "air/b1", "air/b2");
+            "air/echo", "air/root", "air/a1", "air/a2", "air/b1", "air/b2",
+            "ice/echo", "ice/root", "ice/a1", "ice/a2", "ice/b1", "ice/b2");
 
     public static final double EMBERS_IGNITE_MULT = 1.3;
     public static final double LIVING_WAVE_HEAL_MULT = 1.1;
@@ -122,6 +125,65 @@ public final class TalentEffects {
         p.setHealth(1f);
     }
 
+    // ---- Ice ----
+
+    public static final double CRYSTALLIZATION_MULT = 1.25;
+    public static final double ICE_ROSE_RADIUS = 2.5;
+    public static final float ICE_ROSE_DAMAGE = 3f;
+    public static final int QUIET_WINTER_TICKS = 60;
+    public static final double WHITE_WALL_HEALTH_SHARE = 0.3;
+    public static final float WHITE_WALL_SHIELD = 6f;
+    public static final int WHITE_WALL_TICKS = 10 * 20;
+    public static final long WHITE_WALL_COOLDOWN = 90 * 20;
+    private static final Map<UUID, Long> WHITE_WALL_READY = new HashMap<>();
+
+    /** Root "Cold Blood": casting Ice spells does not slow you. */
+    public static boolean coldBlood(ServerPlayer caster, Identifier spellSchool) {
+        return spellSchool.equals(Schools.ICE) && AttunementService.hasTalent(caster, Schools.ICE, TalentRules.ROOT);
+    }
+
+    /** A1 "Crystallization": +25% damage to frozen targets. */
+    @SubscribeEvent
+    static void onIncomingIce(LivingIncomingDamageEvent event) {
+        if (event.getSource().getEntity() instanceof ServerPlayer p && Frost.isFrozen(event.getEntity())
+                && AttunementService.hasTalent(p, Schools.ICE, TalentRules.A1)) {
+            event.setAmount((float) (event.getAmount() * CRYSTALLIZATION_MULT));
+        }
+    }
+
+    /**
+     * A2 "Ice Rose": your hit shatters a freeze, shards hurt those around. B1 "Quiet Winter": melee attackers are
+     * slowed. B2 "White Wall": dropping below 30% HP grants an ice shell (90 s cooldown).
+     */
+    @SubscribeEvent
+    static void onDamageIce(LivingDamageEvent.Post event) {
+        LivingEntity victim = event.getEntity();
+        var source = event.getSource();
+        if (source.getEntity() instanceof ServerPlayer p && p != victim && Frost.isFrozen(victim)
+                && AttunementService.hasTalent(p, Schools.ICE, TalentRules.A2)) {
+            Frost.unfreeze(victim);
+            var level = p.level();
+            for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, victim.getBoundingBox().inflate(ICE_ROSE_RADIUS),
+                    e -> e.isAlive() && e != p && e != victim && !(e instanceof Player))) {
+                e.hurtServer(level, com.orbisarcana.registry.ModDamageTypes.source(e, Schools.ICE, null, p), ICE_ROSE_DAMAGE);
+            }
+            level.sendParticles(Frost.ICE, victim.getX(), victim.getY() + victim.getBbHeight() / 2, victim.getZ(), 50, 0.8, 0.5, 0.8, 0.25);
+        }
+        if (!(victim instanceof ServerPlayer p)) return;
+        if (source.getDirectEntity() instanceof LivingEntity attacker && source.getEntity() == attacker && attacker != p
+                && AttunementService.hasTalent(p, Schools.ICE, TalentRules.B1)) {
+            attacker.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, QUIET_WINTER_TICKS, 1), p);
+        }
+        if (event.getHealthDamage() > 0 && p.isAlive() && p.getHealth() < p.getMaxHealth() * WHITE_WALL_HEALTH_SHARE
+                && AttunementService.hasTalent(p, Schools.ICE, TalentRules.B2)) {
+            long now = p.level().getGameTime();
+            if (now < WHITE_WALL_READY.getOrDefault(p.getUUID(), 0L)) return;
+            WHITE_WALL_READY.put(p.getUUID(), now + WHITE_WALL_COOLDOWN);
+            Shields.grant(p, WHITE_WALL_SHIELD, WHITE_WALL_TICKS, null);
+            p.level().sendParticles(Frost.ICE, p.getX(), p.getY() + 1, p.getZ(), 40, 0.5, 0.8, 0.5, 0.1);
+        }
+    }
+
     // ---- Air ----
 
     public static final double LIGHT_STEP_MAX_FALL = 10.0;
@@ -192,6 +254,7 @@ public final class TalentEffects {
         ASH_READY.remove(id);
         MERCY_READY.remove(id);
         UNBREAKABLE_READY.remove(id);
+        WHITE_WALL_READY.remove(id);
     }
 
     @SubscribeEvent
@@ -200,6 +263,7 @@ public final class TalentEffects {
         ASH_READY.clear();
         MERCY_READY.clear();
         UNBREAKABLE_READY.clear();
+        WHITE_WALL_READY.clear();
     }
 
     private TalentEffects() {}

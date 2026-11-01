@@ -167,7 +167,7 @@ public final class CastService {
 
         if (core.mode == CastMode.INSTANT) {
             finish(player, cast, Outcome.RELEASED);
-        } else {
+        } else if (!TalentEffects.coldBlood(player, spell.school())) {
             applySlow(player);
         }
     }

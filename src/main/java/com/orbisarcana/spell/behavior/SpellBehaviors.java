@@ -31,6 +31,9 @@ public final class SpellBehaviors {
     public static final Supplier<SpellBehavior> SHIELD = BEHAVIORS.register("shield", () -> ShieldBehavior::release);
     public static final Supplier<SpellBehavior> BLADE = BEHAVIORS.register("blade", () -> BladeBehavior::release);
     public static final Supplier<SpellBehavior> DOME = BEHAVIORS.register("dome", () -> DomeBehavior::release);
+    public static final Supplier<SpellBehavior> SHARD = BEHAVIORS.register("shard", () -> ShardBehavior::release);
+    public static final Supplier<SpellBehavior> BASTION = BEHAVIORS.register("bastion", () -> BastionBehavior::release);
+    public static final Supplier<SpellBehavior> PATTERN = BEHAVIORS.register("pattern", () -> PatternBehavior::release);
 
     public static void register(IEventBus modBus) {
         modBus.addListener((NewRegistryEvent event) -> event.register(REGISTRY));

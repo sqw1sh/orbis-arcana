@@ -24,6 +24,17 @@ public final class EchoRules {
     /** Fortress: -10% damage while Bulwark is at 50% or more. */
     public static final double FORTRESS_MULT = 0.9;
 
+    // Ice: Frost
+    public static final int FROST_MAX = 5;
+    public static final long FROST_DECAY_TICKS = 160;
+    public static final int FROST_SLOW_TICKS = 80;
+    public static final int FREEZE_TICKS_TIER1 = 30;
+    public static final int FREEZE_TICKS_TIER2 = 40;
+
+    public static int freezeTicks(int tier) {
+        return tier >= 2 ? FREEZE_TICKS_TIER2 : FREEZE_TICKS_TIER1;
+    }
+
     // Air: Impulse
     public static final double IMPULSE_MAX = 10;
     /** Charge per block moved while in combat. */

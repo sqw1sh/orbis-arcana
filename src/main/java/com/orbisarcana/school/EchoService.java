@@ -12,6 +12,7 @@ import com.orbisarcana.network.CastPayloads.EchoState;
 import com.orbisarcana.network.CastPayloads.HeatMark;
 import com.orbisarcana.network.Net;
 import com.orbisarcana.registry.ModDamageTypes;
+import com.orbisarcana.spell.Frost;
 
 import com.orbisarcana.mana.ManaService;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -43,6 +44,8 @@ public final class EchoService {
 
     /** target -> heat placed by one caster. */
     private static final Map<UUID, Heat> HEAT = new HashMap<>();
+    /** target -> Frost placed by one caster (same bookkeeping as Heat). */
+    private static final Map<UUID, Heat> FROST = new HashMap<>();
     /** player -> flow stacks. */
     private static final Map<UUID, Double> FLOW = new HashMap<>();
     /** player -> last cast id that already gave flow (one stack per cast, zones pulse many times). */
@@ -65,6 +68,10 @@ public final class EchoService {
 
     /** A spell of {@code school} from cast {@code castId} damaged {@code target}. */
     public static void onSpellHit(ServerPlayer caster, Identifier school, LivingEntity target, int castId) {
+        if (school.equals(Schools.ICE)) {
+            frost(caster, target, castId);
+            return;
+        }
         if (!school.equals(Schools.FIRE) || !target.isAlive()) return;
         int tier = tier(caster, Schools.FIRE);
         if (tier <= 0) return;
@@ -83,7 +90,7 @@ public final class EchoService {
             HEAT.put(target.getUUID(), new Heat(caster.getUUID(), stacks, now, castId));
         }
         Net.toPlayer(caster, new EchoState(Schools.FIRE, (float) stacks, EchoRules.HEAT_MAX));
-        Net.toNearby(target, new HeatMark(target.getId(), (float) stacks));
+        Net.toNearby(target, new HeatMark(target.getId(), (float) stacks, Schools.FIRE));
     }
 
     private static void heatBurst(ServerPlayer caster, LivingEntity centre, int tier) {
@@ -97,6 +104,30 @@ public final class EchoService {
         }
         level.sendParticles(ParticleTypes.FLAME, centre.getX(), centre.getY() + centre.getBbHeight() / 2, centre.getZ(), 40, 0.8, 0.5, 0.8, 0.08);
         level.sendParticles(ParticleTypes.EXPLOSION, centre.getX(), centre.getY() + centre.getBbHeight() / 2, centre.getZ(), 1, 0, 0, 0, 0);
+    }
+
+    // ---- Ice: Frost ----
+
+    /** Ice hits stack Frost on the target (one per cast): each stack slows more, the 5th freezes. */
+    private static void frost(ServerPlayer caster, LivingEntity target, int castId) {
+        int tier = tier(caster, Schools.ICE);
+        if (tier <= 0 || !target.isAlive()) return;
+        long now = caster.level().getGameTime();
+        if (FROST.size() > 256) FROST.values().removeIf(h -> now - h.lastTick() > EchoRules.FROST_DECAY_TICKS);
+        Heat old = FROST.get(target.getUUID());
+        boolean live = old != null && old.caster().equals(caster.getUUID()) && now - old.lastTick() <= EchoRules.FROST_DECAY_TICKS;
+        if (live && old.lastCast() == castId) return;
+        double stacks = (live ? old.stacks() : 0) + EchoRules.stackGain(AttunementService.isDissonant(caster));
+        if (stacks >= EchoRules.FROST_MAX) {
+            FROST.remove(target.getUUID());
+            Frost.freeze(target, EchoRules.freezeTicks(tier), caster);
+            stacks = 0;
+        } else {
+            FROST.put(target.getUUID(), new Heat(caster.getUUID(), stacks, now, castId));
+            target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, EchoRules.FROST_SLOW_TICKS, Math.max(0, (int) stacks - 1)), caster);
+        }
+        Net.toPlayer(caster, new EchoState(Schools.ICE, (float) stacks, EchoRules.FROST_MAX));
+        Net.toNearby(target, new HeatMark(target.getId(), (float) stacks, Schools.ICE));
     }
 
     // ---- Water: Flow ----
@@ -218,11 +249,13 @@ public final class EchoService {
         IMPULSE.remove(id);
         LAST_POS.remove(id);
         HEAT.values().removeIf(h -> h.caster().equals(id));
+        FROST.values().removeIf(h -> h.caster().equals(id));
     }
 
     @SubscribeEvent
     static void onServerStopping(ServerStoppingEvent event) {
         HEAT.clear();
+        FROST.clear();
         FLOW.clear();
         FLOW_CAST.clear();
         BULWARK.clear();

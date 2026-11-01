@@ -371,5 +371,21 @@
   "spell.orbisarcana.gust_dome.desc": "Купол ветра r4 отклоняет вражеские снаряды 5 с.",
   "spell.orbisarcana.gust_dome.m5": "отталкивает врагов с границы",
   "spell.orbisarcana.gust_dome.m10": "союзники внутри быстрее",
-  "spell.orbisarcana.gust_dome.m15": "при окончании взрывается порывом"
+  "spell.orbisarcana.gust_dome.m15": "при окончании взрывается порывом",
+  "block.orbisarcana.frost_wall": "Ледяная стена",
+  "spell.orbisarcana.ice_shard": "Ледяной осколок",
+  "spell.orbisarcana.ice_shard.desc": "Осколок льда ранит и замедляет.",
+  "spell.orbisarcana.ice_shard.m5": "3 осколка очередью",
+  "spell.orbisarcana.ice_shard.m10": "осколки дробятся на мелкие",
+  "spell.orbisarcana.ice_shard.m15": "попадание по замороженной цели — ледяной взрыв",
+  "spell.orbisarcana.ice_bastion": "Ледяной бастион",
+  "spell.orbisarcana.ice_bastion.desc": "Ледяная стена 5×3 на 6 с поперёк взгляда.",
+  "spell.orbisarcana.ice_bastion.m5": "враги у стены замедляются",
+  "spell.orbisarcana.ice_bastion.m10": "две боковые створки",
+  "spell.orbisarcana.ice_bastion.m15": "разрушение стены — осколки во все стороны",
+  "spell.orbisarcana.frost_pattern": "Морозный узор",
+  "spell.orbisarcana.frost_pattern.desc": "Узор r5 на земле сильно замедляет врагов.",
+  "spell.orbisarcana.frost_pattern.m5": "шире",
+  "spell.orbisarcana.frost_pattern.m10": "цели в узоре связаны — урон делится",
+  "spell.orbisarcana.frost_pattern.m15": "в конце — заморозка всех в узоре"
 }

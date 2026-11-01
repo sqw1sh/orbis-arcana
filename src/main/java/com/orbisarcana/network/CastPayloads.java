@@ -191,11 +191,13 @@ public final class CastPayloads {
     }
 
     /** Fire Heat stacks on an entity, shown above it to nearby players (0 clears). */
-    public record HeatMark(int entityId, float stacks) implements CustomPacketPayload {
+    /** Echo stacks shown above a mob (Fire Heat, Ice Frost); {@code school} gives the colour. */
+    public record HeatMark(int entityId, float stacks, Identifier school) implements CustomPacketPayload {
         public static final Type<HeatMark> TYPE = new Type<>(OrbisArcana.id("heat_mark"));
         public static final StreamCodec<ByteBuf, HeatMark> CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT, HeatMark::entityId,
                 ByteBufCodecs.FLOAT, HeatMark::stacks,
+                Identifier.STREAM_CODEC, HeatMark::school,
                 HeatMark::new);
 
         @Override

@@ -1,0 +1,42 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:rare",
+  "behavior": "orbisarcana:bastion",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 18,
+    "min_ticks": 12
+  },
+  "cost": 20,
+  "cooldown_ticks": 240,
+  "primary_stat": "duration_ticks",
+  "params": {
+    "width": 5,
+    "height": 3,
+    "duration_ticks": 120,
+    "range": 16,
+    "attacker_slow": 0,
+    "wings": 0,
+    "shatter_damage": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "attacker_slow": 1
+      }
+    },
+    "10": {
+      "params": {
+        "wings": 1
+      }
+    },
+    "15": {
+      "params": {
+        "shatter_damage": 5
+      }
+    }
+  },
+  "circle": "orbisarcana:ice_bastion",
+  "xp_category": "control"
+}

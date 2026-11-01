@@ -68,7 +68,7 @@ public final class ClientCircles {
 
     private static final List<Circle> CIRCLES = new ArrayList<>();
 
-    /** Fire Heat marks above entities: entity id -> {stacks, tick received}. */
+    /** Echo marks above entities (Heat, Frost): entity id -> {stacks, tick received, colour}. */
     private static final java.util.Map<Integer, double[]> HEAT_MARKS = new java.util.HashMap<>();
     private static final long HEAT_MARK_TICKS = com.orbisarcana.core.EchoRules.HEAT_DECAY_TICKS;
     private static final List<List<Layer>> HEAT_LAYERS = new ArrayList<>();
@@ -79,10 +79,10 @@ public final class ClientCircles {
         }
     }
 
-    public static void heatMark(int entityId, float stacks) {
+    public static void heatMark(int entityId, float stacks, net.minecraft.resources.Identifier school) {
         var level = Minecraft.getInstance().level;
         if (stacks <= 0 || level == null) HEAT_MARKS.remove(entityId);
-        else HEAT_MARKS.put(entityId, new double[] {stacks, level.getGameTime()});
+        else HEAT_MARKS.put(entityId, new double[] {stacks, level.getGameTime(), Schools.color(school)});
     }
 
     public static void start(CastStarted msg) {
@@ -209,7 +209,7 @@ public final class ClientCircles {
             int n = (int) Math.min(com.orbisarcana.core.EchoRules.HEAT_MAX, Math.floor(stacks));
             out.add(new CircleRenderState(rel, axes[0], axes[1], 0.28f, 1f, 0.9f * ClientConfig.OPACITY.get().floatValue(),
                     (float) (stacks / com.orbisarcana.core.EchoRules.HEAT_MAX), (float) (now / 20.0), 0f,
-                    Schools.color(Schools.FIRE), Schools.color(Schools.FIRE), 1, HEAT_LAYERS.get(n), false, 0));
+                    (int) e.getValue()[2], (int) e.getValue()[2], 1, HEAT_LAYERS.get(n), false, 0));
         }
     }
 

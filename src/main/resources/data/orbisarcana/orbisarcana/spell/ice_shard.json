@@ -1,0 +1,41 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:shard",
+  "targeting": "directional",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 8,
+  "cooldown_ticks": 30,
+  "primary_stat": "damage",
+  "params": {
+    "damage": 4,
+    "speed": 1.6,
+    "range": 24,
+    "slow_ticks": 40,
+    "count": 1,
+    "volley_delay": 4,
+    "split": 0,
+    "frozen_burst": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "count": 3
+      }
+    },
+    "10": {
+      "params": {
+        "split": 1
+      }
+    },
+    "15": {
+      "params": {
+        "frozen_burst": 2.5
+      }
+    }
+  },
+  "circle": "orbisarcana:ice_shard",
+  "xp_category": "attack"
+}

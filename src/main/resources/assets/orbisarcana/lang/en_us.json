@@ -371,5 +371,21 @@
   "spell.orbisarcana.gust_dome.desc": "A wind dome (r4) turns away enemy projectiles for 5 s.",
   "spell.orbisarcana.gust_dome.m5": "pushes enemies off its edge",
   "spell.orbisarcana.gust_dome.m10": "allies inside move faster",
-  "spell.orbisarcana.gust_dome.m15": "bursts in a gust when it ends"
+  "spell.orbisarcana.gust_dome.m15": "bursts in a gust when it ends",
+  "block.orbisarcana.frost_wall": "Frost Wall",
+  "spell.orbisarcana.ice_shard": "Ice Shard",
+  "spell.orbisarcana.ice_shard.desc": "A shard of ice that hurts and slows.",
+  "spell.orbisarcana.ice_shard.m5": "a volley of 3 shards",
+  "spell.orbisarcana.ice_shard.m10": "shards split into small ones",
+  "spell.orbisarcana.ice_shard.m15": "hitting a frozen target sets off an ice blast",
+  "spell.orbisarcana.ice_bastion": "Ice Bastion",
+  "spell.orbisarcana.ice_bastion.desc": "A 5×3 ice wall across your view for 6 s.",
+  "spell.orbisarcana.ice_bastion.m5": "enemies at the wall are slowed",
+  "spell.orbisarcana.ice_bastion.m10": "two side leaves",
+  "spell.orbisarcana.ice_bastion.m15": "the wall shatters into shards",
+  "spell.orbisarcana.frost_pattern": "Frost Pattern",
+  "spell.orbisarcana.frost_pattern.desc": "A frost pattern (r5) on the ground strongly slows enemies.",
+  "spell.orbisarcana.frost_pattern.m5": "wider",
+  "spell.orbisarcana.frost_pattern.m10": "targets inside are linked: damage is shared",
+  "spell.orbisarcana.frost_pattern.m15": "everyone inside freezes at the end"
 }
