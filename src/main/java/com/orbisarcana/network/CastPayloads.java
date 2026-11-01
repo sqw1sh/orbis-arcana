@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.orbisarcana.OrbisArcana;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -80,6 +81,21 @@ public final class CastPayloads {
 
         @Override
         public Type<MilestoneToggle> type() {
+            return TYPE;
+        }
+    }
+
+    /** Altar action (§10.6): bind to a school or unbind; the server checks distance, conditions and cost. */
+    public record AltarAction(BlockPos altar, int action, Optional<Identifier> school) implements CustomPacketPayload {
+        public static final Type<AltarAction> TYPE = new Type<>(OrbisArcana.id("altar_action"));
+        public static final StreamCodec<ByteBuf, AltarAction> CODEC = StreamCodec.composite(
+                BlockPos.STREAM_CODEC, AltarAction::altar,
+                ByteBufCodecs.VAR_INT, AltarAction::action,
+                ByteBufCodecs.optional(Identifier.STREAM_CODEC), AltarAction::school,
+                AltarAction::new);
+
+        @Override
+        public Type<AltarAction> type() {
             return TYPE;
         }
     }

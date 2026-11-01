@@ -19,6 +19,9 @@ public final class ModItems {
     public static final DeferredItem<SpellScrollItem> SPELL_SCROLL = ModRegistries.ITEMS.registerItem(
             "spell_scroll", SpellScrollItem::new, p -> p.stacksTo(16));
 
+    /** Aether Ink (§11.4): currency of altar rituals. Sources (dissolving duplicates, crafting) arrive in S7. */
+    public static final DeferredItem<Item> AETHER_INK = ModRegistries.ITEMS.registerSimpleItem("aether_ink", p -> p.rarity(Rarity.UNCOMMON));
+
     /** Seal of Comprehension (§11.4): key to a higher school, consumed by its first scroll. Recipes in S7. */
     public static final DeferredItem<Item> SEAL_LIGHT = seal("light");
     public static final DeferredItem<Item> SEAL_DARK = seal("dark");
@@ -34,6 +37,8 @@ public final class ModItems {
                     .displayItems((params, out) -> {
                         SpellRegistry.ids(params.holders()).stream().sorted()
                                 .forEach(id -> out.accept(SpellScrollItem.of(id)));
+                        out.accept(ModBlocks.RESONANCE_ALTAR_ITEM.get());
+                        out.accept(AETHER_INK.get());
                         out.accept(SEAL_LIGHT.get());
                         out.accept(SEAL_DARK.get());
                         out.accept(SEAL_ASTRAL.get());

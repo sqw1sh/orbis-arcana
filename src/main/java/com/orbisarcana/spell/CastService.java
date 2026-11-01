@@ -22,6 +22,7 @@ import com.orbisarcana.network.CastPayloads.CastEnded;
 import com.orbisarcana.network.CastPayloads.CastStarted;
 import com.orbisarcana.network.CastPayloads.CooldownSet;
 import com.orbisarcana.progression.KnownSpells;
+import com.orbisarcana.school.AttunementService;
 import com.orbisarcana.spell.behavior.CastContext;
 import com.orbisarcana.spell.behavior.SpellBehaviors;
 
@@ -66,8 +67,9 @@ public final class CastService {
     /** Max cast requests per player per second (§15.6). */
     private static final int REQUESTS_PER_SECOND = 10;
 
+    /** {@code schoolPower}: dominant-school / Dissonance multiplier taken at cast start (§10.2, §10.6). */
     private record ServerCast(int id, Identifier spellId, SpellDefinition spell, ActiveCast core, int mastery,
-                              Map<String, Double> params, @Nullable Vec3 groundPoint, @Nullable LivingEntity target) {}
+                              Map<String, Double> params, double schoolPower, @Nullable Vec3 groundPoint, @Nullable LivingEntity target) {}
 
     private static final Map<UUID, ServerCast> ACTIVE = new HashMap<>();
     private static final Map<UUID, Long> GCD_UNTIL = new HashMap<>();
@@ -85,7 +87,8 @@ public final class CastService {
         KnownSpells knowledge = player.getData(ModAttachments.KNOWLEDGE);
         var progress = knowledge.progress(spellId);
         int mastery = progress.map(KnownSpells.SpellProgress::level).orElse(1);
-        double cost = def.map(d -> d.cost() * MasteryMath.costMult(mastery)).orElse(0.0);
+        // Dominant school: -5% cost (§10.2); snapshotted at start like everything else (§8.2)
+        double cost = def.map(d -> d.cost() * MasteryMath.costMult(mastery) * AttunementService.costMult(player, d.school())).orElse(0.0);
         Map<String, Double> params = def.isPresent() && progress.isPresent() ? params(def.get(), progress.get()) : Map.of();
         int cooldown = def.map(SpellDefinition::cooldownTicks).orElse(0);
         long fullAt = player.getData(ModAttachments.RESOURCES).cooldowns().getOrDefault(spellId, 0L);
@@ -141,7 +144,8 @@ public final class CastService {
         // Reserve: take the full cost now, refund the unspent part on interruption (§8.3)
         ManaService.setMana(player, ManaService.mana(player) - cost);
 
-        ServerCast cast = new ServerCast(nextCastId++, spellId, spell, core, mastery, params, ground, target);
+        ServerCast cast = new ServerCast(nextCastId++, spellId, spell, core, mastery, params,
+                AttunementService.powerMult(player, spell.school()), ground, target);
         ACTIVE.put(player.getUUID(), cast);
         Net.toPlayerAndNearby(player,
                 new CastStarted(cast.id(), player.getId(), spellId, now, castTicks, mastery,
@@ -192,7 +196,7 @@ public final class CastService {
 
         if (outcome == Outcome.RELEASED) {
             SpellBehaviors.get(cast.spell().behavior()).ifPresent(b -> b.release(new CastContext(
-                    player, cast.spellId(), cast.id(), cast.spell(), cast.mastery(), cast.params(), core.power(now),
+                    player, cast.spellId(), cast.id(), cast.spell(), cast.mastery(), cast.params(), core.power(now) * cast.schoolPower(),
                     cast.groundPoint(), cast.target())));
             int cooldown = cast.spell().cooldownTicks();
             if (cooldown > 0) {

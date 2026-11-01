@@ -6,6 +6,7 @@ import com.mojang.logging.LogUtils;
 import com.orbisarcana.data.ModAttachments;
 import com.orbisarcana.registry.ModAttributes;
 import com.orbisarcana.registry.ModDataComponents;
+import com.orbisarcana.registry.ModBlocks;
 import com.orbisarcana.registry.ModItems;
 import com.orbisarcana.registry.ModRegistries;
 import com.orbisarcana.spell.SpellRegistry;
@@ -26,6 +27,7 @@ public class OrbisArcana {
 
     public OrbisArcana(IEventBus modEventBus, ModContainer modContainer) {
         ModItems.init();
+        ModBlocks.init();
         ModRegistries.register(modEventBus);
         ModDataComponents.register(modEventBus);
         ModAttributes.register(modEventBus);

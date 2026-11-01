@@ -13,10 +13,15 @@ import com.orbisarcana.item.SpellScrollItem;
 import com.orbisarcana.progression.KnowledgeService;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.progression.ScrollService;
+import com.orbisarcana.school.AltarService;
+import com.orbisarcana.school.AttunementService;
 import com.orbisarcana.school.Schools;
+import com.orbisarcana.registry.ModBlocks;
+import com.orbisarcana.registry.ModItems;
 import com.orbisarcana.spell.CastService;
 import com.orbisarcana.spell.behavior.BurningGround;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.FunctionGameTestInstance;
@@ -75,6 +80,10 @@ public final class OrbisGameTests {
         test("wind_step_has_two_charges_at_15", 40, OrbisGameTests::twoCharges);
         test("disabled_milestone_removes_charge", 40, OrbisGameTests::disabledMilestone);
         test("burning_ground_hurts_inside", 60, OrbisGameTests::burningGround);
+        test("altar_first_binding_is_free", 20, OrbisGameTests::altarFirstBinding);
+        test("altar_switch_ritual_and_dissonance", 260, OrbisGameTests::altarSwitchRitual);
+        test("altar_ritual_breaks_when_leaving", 60, OrbisGameTests::altarRitualBroken);
+        test("mastery_feeds_resonance_and_dominant_discount", 40, OrbisGameTests::resonanceAndDiscount);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -410,6 +419,89 @@ public final class OrbisGameTests {
             h.assertTrue(pig.getHealth() < pig.getMaxHealth(), "burning ground should hurt a creature standing in it");
             h.assertTrue(xp(p, FIREBALL) > 0, "burn damage counts for the spell mastery");
         });
+    }
+
+    private static final BlockPos ALTAR = new BlockPos(4, 1, 4);
+
+    /** Survival player next to an altar, knowing a fire and an air spell. */
+    private static ServerPlayer altarPlayer(GameTestHelper h) {
+        h.setBlock(ALTAR, ModBlocks.RESONANCE_ALTAR.get());
+        ServerPlayer p = player(h, new Vec3(5.5, 1, 4.5), 90f, 0f);
+        KnowledgeService.learn(p, FIREBALL);
+        KnowledgeService.learn(p, WIND_STEP);
+        return p;
+    }
+
+    private static int ink(ServerPlayer p) {
+        int n = 0;
+        for (int i = 0; i < p.getInventory().getContainerSize(); i++) {
+            if (p.getInventory().getItem(i).is(ModItems.AETHER_INK.get())) n += p.getInventory().getItem(i).getCount();
+        }
+        return n;
+    }
+
+    private static void altarFirstBinding(GameTestHelper h) {
+        ServerPlayer p = altarPlayer(h);
+        AltarService.handle(p, h.absolutePos(ALTAR), AltarService.Action.BIND, Optional.of(Schools.FIRE));
+        var a = p.getData(ModAttachments.ATTUNEMENT);
+        h.assertValueEqual(a.dominant(), Optional.of(Schools.FIRE), "dominant after first binding");
+        h.assertFalse(AttunementService.isDissonant(p), "first binding starts no Dissonance");
+        h.assertFalse(AltarService.inRitual(p), "first binding needs no ritual");
+        AltarService.handle(p, h.absolutePos(ALTAR), AltarService.Action.BIND, Optional.of(Schools.ICE));
+        h.assertValueEqual(a.dominant(), Optional.of(Schools.FIRE), "no binding to a school without a known spell");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void altarSwitchRitual(GameTestHelper h) {
+        ServerPlayer p = altarPlayer(h);
+        BlockPos altar = h.absolutePos(ALTAR);
+        AltarService.handle(p, altar, AltarService.Action.BIND, Optional.of(Schools.FIRE));
+        AltarService.handle(p, altar, AltarService.Action.BIND, Optional.of(Schools.AIR));
+        // The mock player is in creative (infinite materials), so the ritual starts without ink
+        h.assertTrue(AltarService.inRitual(p), "switch starts a ritual");
+        h.runAfterDelay(205, () -> {
+            var a = p.getData(ModAttachments.ATTUNEMENT);
+            h.assertValueEqual(a.dominant(), Optional.of(Schools.AIR), "dominant after the ritual");
+            h.assertValueEqual(a.previous(), Optional.of(Schools.FIRE), "previous school");
+            h.assertTrue(AttunementService.isDissonant(p), "switch starts Dissonance");
+            h.assertTrue(AttunementService.powerMult(p, Schools.AIR) < 1.10, "new school weakened by Dissonance");
+            h.assertTrue(AttunementService.bindProblem(p, Schools.FIRE).isPresent(), "switch pause blocks another switch");
+            cleanup(h, p);
+            h.succeed();
+        });
+    }
+
+    private static void altarRitualBroken(GameTestHelper h) {
+        ServerPlayer p = altarPlayer(h);
+        BlockPos altar = h.absolutePos(ALTAR);
+        AltarService.handle(p, altar, AltarService.Action.BIND, Optional.of(Schools.FIRE));
+        AltarService.handle(p, altar, AltarService.Action.BIND, Optional.of(Schools.AIR));
+        h.assertTrue(AltarService.inRitual(p), "ritual started");
+        Vec3 away = h.absoluteVec(new Vec3(4.5, 1, 4.5)).add(8, 0, 0);
+        p.setPos(away.x, away.y, away.z); // leaving the circle breaks it
+        h.runAfterDelay(3, () -> {
+            h.assertFalse(AltarService.inRitual(p), "ritual broken");
+            h.assertValueEqual(p.getData(ModAttachments.ATTUNEMENT).dominant(), Optional.of(Schools.FIRE), "dominant unchanged");
+            cleanup(h, p);
+            h.succeed();
+        });
+    }
+
+    private static void resonanceAndDiscount(GameTestHelper h) {
+        ServerPlayer p = altarPlayer(h);
+        AltarService.handle(p, h.absolutePos(ALTAR), AltarService.Action.BIND, Optional.of(Schools.FIRE));
+        MasteryService.award(p, FIREBALL, 30);
+        var fire = p.getData(ModAttachments.ATTUNEMENT).school(Schools.FIRE);
+        h.assertTrue(fire.resonance() > 0 || fire.xp() > 0, "fire mastery feeds fire resonance");
+        h.assertValueEqual(AttunementService.costMult(p, Schools.FIRE), 0.95, "dominant cost multiplier");
+        h.assertValueEqual(AttunementService.costMult(p, Schools.AIR), 1.0, "other school cost multiplier");
+        double before = ManaService.mana(p);
+        CastService.request(p, WIND_STEP);
+        double spentAir = before - ManaService.mana(p);
+        h.assertTrue(Math.abs(spentAir - 12.0) < 0.01, "wind step costs full mana, spent " + spentAir);
+        cleanup(h, p);
+        h.succeed();
     }
 
     private OrbisGameTests() {}

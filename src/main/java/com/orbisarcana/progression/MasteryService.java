@@ -16,6 +16,7 @@ import com.orbisarcana.core.XpRules;
 import com.orbisarcana.data.ModAttachments;
 import com.orbisarcana.item.SpellScrollItem;
 import com.orbisarcana.mana.ManaService;
+import com.orbisarcana.school.AttunementService;
 import com.orbisarcana.spell.SpellDefinition;
 import com.orbisarcana.spell.SpellRegistry;
 
@@ -123,6 +124,7 @@ public final class MasteryService {
         p.setLevel(result.level());
         p.setXp(result.xp());
         player.syncData(ModAttachments.KNOWLEDGE);
+        AttunementService.onMasteryXp(player, spell.get().school(), gained);
         for (int level = before + 1; level <= result.level(); level++) announce(player, spellId, spell.get(), level);
     }
 

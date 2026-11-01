@@ -25,23 +25,43 @@ public final class Attunement {
             Identifier.CODEC.optionalFieldOf("dominant").forGetter(a -> a.dominant),
             Codec.unboundedMap(Identifier.CODEC, SchoolProgress.CODEC).optionalFieldOf("schools", Map.of()).forGetter(a -> a.schools),
             Codec.LONG.optionalFieldOf("dissonance_until", 0L).forGetter(a -> a.dissonanceUntil),
-            Codec.LONG.optionalFieldOf("next_switch_at", 0L).forGetter(a -> a.nextSwitchAt)
+            Codec.LONG.optionalFieldOf("next_switch_at", 0L).forGetter(a -> a.nextSwitchAt),
+            Identifier.CODEC.optionalFieldOf("previous").forGetter(a -> a.previous),
+            Codec.BOOL.optionalFieldOf("ever_bound", false).forGetter(a -> a.everBound)
     ).apply(i, Attunement::new));
 
     private Optional<Identifier> dominant;
     private final Map<Identifier, SchoolProgress> schools;
     private long dissonanceUntil;
     private long nextSwitchAt;
+    /** School left by the last switch: weaker during Dissonance (§10.6). */
+    private Optional<Identifier> previous;
+    private boolean everBound;
 
     public Attunement() {
-        this(Optional.empty(), Map.of(), 0L, 0L);
+        this(Optional.empty(), Map.of(), 0L, 0L, Optional.empty(), false);
     }
 
-    private Attunement(Optional<Identifier> dominant, Map<Identifier, SchoolProgress> schools, long dissonanceUntil, long nextSwitchAt) {
+    private Attunement(Optional<Identifier> dominant, Map<Identifier, SchoolProgress> schools, long dissonanceUntil,
+                       long nextSwitchAt, Optional<Identifier> previous, boolean everBound) {
         this.dominant = dominant;
         this.schools = new HashMap<>(schools);
         this.dissonanceUntil = dissonanceUntil;
         this.nextSwitchAt = nextSwitchAt;
+        this.previous = previous;
+        this.everBound = everBound || dominant.isPresent();
+    }
+
+    public Optional<Identifier> previous() {
+        return previous;
+    }
+
+    public void setPrevious(Optional<Identifier> previous) {
+        this.previous = previous;
+    }
+
+    public boolean everBound() {
+        return everBound;
     }
 
     public Optional<Identifier> dominant() {
@@ -52,6 +72,7 @@ public final class Attunement {
     public void setDominant(Optional<Identifier> school) {
         this.dominant = school;
         school.ifPresent(this::school);
+        if (school.isPresent()) everBound = true;
     }
 
     /** Progress of a school, created on first access. */
@@ -84,6 +105,8 @@ public final class Attunement {
         schools.clear();
         dissonanceUntil = 0;
         nextSwitchAt = 0;
+        previous = Optional.empty();
+        everBound = false;
     }
 
     /** Resonance and talents of one school. {@code peak} remembers the highest resonance ever reached (§6.2). */

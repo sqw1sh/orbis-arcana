@@ -1,6 +1,7 @@
 package com.orbisarcana.network;
 
 import com.orbisarcana.OrbisArcana;
+import com.orbisarcana.network.CastPayloads.AltarAction;
 import com.orbisarcana.network.CastPayloads.CastDenied;
 import com.orbisarcana.network.CastPayloads.CastEnded;
 import com.orbisarcana.network.CastPayloads.CastRequest;
@@ -11,6 +12,7 @@ import com.orbisarcana.network.CastPayloads.LoadoutSelect;
 import com.orbisarcana.network.CastPayloads.LoadoutSet;
 import com.orbisarcana.network.CastPayloads.MilestoneToggle;
 import com.orbisarcana.progression.KnowledgeService;
+import com.orbisarcana.school.AltarService;
 import com.orbisarcana.spell.CastService;
 
 import net.minecraft.server.level.ServerPlayer;
@@ -44,6 +46,13 @@ public final class ModNetwork {
 
         r.playToServer(MilestoneToggle.TYPE, MilestoneToggle.CODEC, (msg, ctx) -> {
             if (ctx.player() instanceof ServerPlayer p) KnowledgeService.setMilestoneDisabled(p, msg.spell(), msg.level(), msg.disabled());
+        });
+
+        r.playToServer(AltarAction.TYPE, AltarAction.CODEC, (msg, ctx) -> {
+            AltarService.Action[] actions = AltarService.Action.values();
+            if (ctx.player() instanceof ServerPlayer p && msg.action() >= 0 && msg.action() < actions.length) {
+                AltarService.handle(p, msg.altar(), actions[msg.action()], msg.school());
+            }
         });
 
         r.playToClient(CastStarted.TYPE, CastStarted.CODEC);

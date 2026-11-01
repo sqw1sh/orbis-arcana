@@ -45,7 +45,19 @@ public final class DevShot {
             ownCircle("own_down_yaw120", 120, 88),
             ownCircle("own_ahead", 45, 10),
             new Scene("hud_one_charge", () -> castWindStep(true)),
-            new Scene("hud_no_charges", () -> castWindStep(false)));
+            new Scene("hud_no_charges", () -> castWindStep(false)),
+            new Scene("altar_setup", () -> {
+                Minecraft mc = Minecraft.getInstance();
+                var server = mc.getSingleplayerServer();
+                if (server != null) server.execute(() -> {
+                    ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+                    if (sp == null) return;
+                    com.orbisarcana.school.AttunementService.bind(sp, com.orbisarcana.school.Schools.FIRE);
+                    sp.getData(com.orbisarcana.data.ModAttachments.ATTUNEMENT).school(com.orbisarcana.school.Schools.FIRE).setResonance(4);
+                    sp.syncData(com.orbisarcana.data.ModAttachments.ATTUNEMENT);
+                });
+            }),
+            new Scene("altar", () -> Minecraft.getInstance().gui.setScreen(new AltarScreen(Minecraft.getInstance().player.blockPosition()))));
 
     private static int ticks;
     private static int waiting;
