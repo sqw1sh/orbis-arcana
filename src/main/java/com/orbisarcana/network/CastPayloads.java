@@ -127,6 +127,24 @@ public final class CastPayloads {
         }
     }
 
+    /** Altar ritual started: a large world seal around the altar (§10.6). Ends with {@link CastEnded} of the same id. */
+    public record RitualCircle(int circleId, int casterId, BlockPos altar, Identifier school, long startTick, int durationTicks) implements CustomPacketPayload {
+        public static final Type<RitualCircle> TYPE = new Type<>(OrbisArcana.id("ritual_circle"));
+        public static final StreamCodec<ByteBuf, RitualCircle> CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, RitualCircle::circleId,
+                ByteBufCodecs.VAR_INT, RitualCircle::casterId,
+                BlockPos.STREAM_CODEC, RitualCircle::altar,
+                Identifier.STREAM_CODEC, RitualCircle::school,
+                ByteBufCodecs.VAR_LONG, RitualCircle::startTick,
+                ByteBufCodecs.VAR_INT, RitualCircle::durationTicks,
+                RitualCircle::new);
+
+        @Override
+        public Type<RitualCircle> type() {
+            return TYPE;
+        }
+    }
+
     /** End of a cast; {@code outcome} is an {@code ActiveCast.Outcome} ordinal. */
     public record CastEnded(int castId, int casterId, int outcome) implements CustomPacketPayload {
         public static final Type<CastEnded> TYPE = new Type<>(OrbisArcana.id("cast_ended"));

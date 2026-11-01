@@ -11,6 +11,7 @@ import com.orbisarcana.network.CastPayloads.CooldownSet;
 import com.orbisarcana.network.CastPayloads.LoadoutSelect;
 import com.orbisarcana.network.CastPayloads.LoadoutSet;
 import com.orbisarcana.network.CastPayloads.MilestoneToggle;
+import com.orbisarcana.network.CastPayloads.RitualCircle;
 import com.orbisarcana.progression.KnowledgeService;
 import com.orbisarcana.school.AltarService;
 import com.orbisarcana.spell.CastService;
@@ -57,6 +58,7 @@ public final class ModNetwork {
 
         r.playToClient(CastStarted.TYPE, CastStarted.CODEC);
         r.playToClient(CastEnded.TYPE, CastEnded.CODEC);
+        r.playToClient(RitualCircle.TYPE, RitualCircle.CODEC);
         r.playToClient(CastDenied.TYPE, CastDenied.CODEC);
         r.playToClient(CooldownSet.TYPE, CooldownSet.CODEC);
     }

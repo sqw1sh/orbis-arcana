@@ -57,7 +57,8 @@ public final class DevShot {
                     sp.syncData(com.orbisarcana.data.ModAttachments.ATTUNEMENT);
                 });
             }),
-            new Scene("altar", () -> Minecraft.getInstance().gui.setScreen(new AltarScreen(Minecraft.getInstance().player.blockPosition()))));
+            new Scene("altar", () -> Minecraft.getInstance().gui.setScreen(new AltarScreen(Minecraft.getInstance().player.blockPosition()))),
+            new Scene("ritual", DevShot::startRitual));
 
     private static int ticks;
     private static int waiting;
@@ -104,6 +105,26 @@ public final class DevShot {
                 }
             }
             com.orbisarcana.spell.CastService.request(sp, id);
+        });
+    }
+
+    /** Places an altar ahead of the player and starts a school switch ritual (fresh attunement first). */
+    private static void startRitual() {
+        Minecraft mc = Minecraft.getInstance();
+        mc.gui.setScreen(null);
+        mc.player.setYRot(0);
+        mc.player.setXRot(35);
+        var server = mc.getSingleplayerServer();
+        if (server == null) return;
+        server.execute(() -> {
+            ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+            if (sp == null) return;
+            var altar = sp.blockPosition().south(2);
+            sp.level().setBlockAndUpdate(altar, com.orbisarcana.registry.ModBlocks.RESONANCE_ALTAR.get().defaultBlockState());
+            sp.getData(com.orbisarcana.data.ModAttachments.ATTUNEMENT).reset();
+            var bind = com.orbisarcana.school.AltarService.Action.BIND;
+            com.orbisarcana.school.AltarService.handle(sp, altar, bind, Optional.of(com.orbisarcana.school.Schools.FIRE));
+            com.orbisarcana.school.AltarService.handle(sp, altar, bind, Optional.of(com.orbisarcana.school.Schools.AIR));
         });
     }
 

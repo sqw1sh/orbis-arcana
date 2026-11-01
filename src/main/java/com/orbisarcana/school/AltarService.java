@@ -7,7 +7,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.orbisarcana.OrbisArcana;
+import com.orbisarcana.core.ActiveCast;
 import com.orbisarcana.core.SchoolRules;
+import com.orbisarcana.network.CastPayloads.CastEnded;
+import com.orbisarcana.network.CastPayloads.RitualCircle;
+import com.orbisarcana.network.Net;
 import com.orbisarcana.data.ModAttachments;
 import com.orbisarcana.registry.ModBlocks;
 import com.orbisarcana.registry.ModItems;
@@ -46,7 +50,11 @@ public final class AltarService {
         UNBIND
     }
 
-    private record Ritual(BlockPos altar, Identifier school, long startTick, SchoolRules.SwitchCost paid) {}
+    /** {@code circleId}: negative id of the world seal shown to clients (never clashes with cast ids). */
+    private record Ritual(BlockPos altar, Identifier school, long startTick, SchoolRules.SwitchCost paid, int circleId) {}
+
+    /** Far below local demo/devshot ids (-1000...). */
+    private static int nextCircleId = -1_000_000;
 
     private static final Map<UUID, Ritual> RITUALS = new HashMap<>();
 
@@ -89,7 +97,9 @@ public final class AltarService {
             takeInk(player, cost.ink());
             player.giveExperienceLevels(-cost.xpLevels());
         }
-        RITUALS.put(player.getUUID(), new Ritual(altar, school, player.level().getGameTime(), cost));
+        Ritual ritual = new Ritual(altar, school, player.level().getGameTime(), cost, nextCircleId--);
+        RITUALS.put(player.getUUID(), ritual);
+        Net.toPlayerAndNearby(player, new RitualCircle(ritual.circleId(), player.getId(), altar, school, ritual.startTick(), SchoolRules.RITUAL_TICKS));
         player.sendSystemMessage(Component.translatable("message.orbisarcana.altar.ritual_start", AttunementService.schoolName(school),
                 SchoolRules.RITUAL_TICKS / 20).withStyle(ChatFormatting.LIGHT_PURPLE));
         player.level().playSound(null, altar, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1f, 0.8f);
@@ -122,12 +132,8 @@ public final class AltarService {
             cancel(player, ritual);
             return;
         }
-        if (elapsed % 5 == 0) {
-            for (int i = 0; i < 8; i++) {
-                double a = Math.PI * 2 * i / 8 + elapsed * 0.05;
-                player.level().sendParticles(ParticleTypes.ENCHANT, centre.x + Math.cos(a) * RITUAL_RADIUS, centre.y + 0.2,
-                        centre.z + Math.sin(a) * RITUAL_RADIUS, 2, 0, 0.3, 0, 0.1);
-            }
+        if (elapsed % 10 == 0) {
+            player.level().sendParticles(ParticleTypes.ENCHANT, centre.x, centre.y + 1.5, centre.z, 6, 0.4, 0.4, 0.4, 0.5);
         }
         if (elapsed % 20 == 0 && elapsed < SchoolRules.RITUAL_TICKS) {
             player.sendOverlayMessage(Component.translatable("message.orbisarcana.altar.ritual_progress",
@@ -137,6 +143,7 @@ public final class AltarService {
             RITUALS.remove(player.getUUID());
             AttunementService.bind(player, ritual.school());
             effects(player, ritual.altar(), true);
+            Net.toPlayerAndNearby(player, new CastEnded(ritual.circleId(), player.getId(), ActiveCast.Outcome.RELEASED.ordinal()));
         }
     }
 
@@ -151,6 +158,7 @@ public final class AltarService {
 
     private static void cancel(ServerPlayer player, Ritual ritual) {
         RITUALS.remove(player.getUUID());
+        Net.toPlayerAndNearby(player, new CastEnded(ritual.circleId(), player.getId(), ActiveCast.Outcome.INTERRUPTED.ordinal()));
         if (!player.hasInfiniteMaterials()) {
             int ink = ritual.paid().ink() / 2;
             // Drops what does not fit

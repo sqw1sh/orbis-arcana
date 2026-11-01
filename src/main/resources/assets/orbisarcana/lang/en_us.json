@@ -184,5 +184,6 @@
   "message.orbisarcana.altar.cost": "Needs %s Aether Ink and %s experience levels",
   "message.orbisarcana.altar.ritual_start": "Ritual of %s begins: stay in the circle for %s s",
   "message.orbisarcana.altar.ritual_progress": "Ritual: %s s",
-  "message.orbisarcana.altar.ritual_broken": "The ritual is broken — half of the price returns"
+  "message.orbisarcana.altar.ritual_broken": "The ritual is broken — half of the price returns",
+  "screen.orbisarcana.altar.cost_short": "%s ink · %s lv"
 }

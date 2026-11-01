@@ -15,6 +15,8 @@ import com.orbisarcana.core.ActiveCast.Outcome;
 import com.orbisarcana.core.Rarity;
 import com.orbisarcana.core.Targeting;
 import com.orbisarcana.network.CastPayloads.CastStarted;
+import com.orbisarcana.network.CastPayloads.RitualCircle;
+import com.orbisarcana.school.AltarService;
 import com.orbisarcana.school.Schools;
 import com.orbisarcana.spell.SpellDefinition;
 import com.orbisarcana.spell.SpellRegistry;
@@ -104,7 +106,7 @@ public final class ClientCircles {
         for (int i = 0; i < count; i++) {
             Rarity rarity = rarities[i % rarities.length];
             Identifier school = Schools.ALL.get(i % Schools.ALL.size());
-            SpellDefinition spell = demoSpell(school, rarity);
+            SpellDefinition spell = syntheticSpell(school, rarity, OrbisArcana.id("fireball"), rarity.circleBaseRadius * 1.4, 60);
             int row = i / perRow, col = i % perRow;
             Vec3 pos = origin.add(forward.scale(4 + row * 3.5)).add(side.scale((col - (perRow - 1) / 2.0) * 3.5));
             var start = new CastStarted(-1000 - i, mc.player.getId(), OrbisArcana.id("demo_" + rarity.id), now, 60,
@@ -114,11 +116,22 @@ public final class ClientCircles {
         return count;
     }
 
-    private static SpellDefinition demoSpell(Identifier school, Rarity rarity) {
+    /** Altar ritual seal (§10.6): a large ground circle of the chosen school around the altar. */
+    public static void startRitual(RitualCircle msg) {
+        if (Minecraft.getInstance().level == null) return;
+        Vec3 floor = Vec3.atBottomCenterOf(msg.altar());
+        var start = new CastStarted(msg.circleId(), msg.casterId(), OrbisArcana.id("ritual"), msg.startTick(), msg.durationTicks(),
+                15, java.util.Optional.of(floor), -1);
+        CIRCLES.add(new Circle(start, syntheticSpell(msg.school(), Rarity.EPIC, OrbisArcana.id("ritual"),
+                AltarService.RITUAL_RADIUS, msg.durationTicks())));
+    }
+
+    /** A GROUND "spell" used only to drive a circle that is not a real cast (demo stand, ritual seal). */
+    private static SpellDefinition syntheticSpell(Identifier school, Rarity rarity, Identifier circle, double radius, int ticks) {
         return new SpellDefinition(school, rarity, OrbisArcana.id("zone"), Targeting.GROUND,
-                new SpellDefinition.Cast(com.orbisarcana.core.CastMode.CHARGED, 60, 0), 0, 0, "radius",
-                java.util.Map.of("radius", rarity.circleBaseRadius * 1.4), java.util.Map.of(),
-                java.util.Optional.of(OrbisArcana.id("fireball")), java.util.Optional.empty(),
+                new SpellDefinition.Cast(com.orbisarcana.core.CastMode.CHARGED, ticks, 0), 0, 0, "radius",
+                java.util.Map.of("radius", radius), java.util.Map.of(),
+                java.util.Optional.of(circle), java.util.Optional.empty(),
                 com.orbisarcana.core.XpCategory.ATTACK, false, true);
     }
 

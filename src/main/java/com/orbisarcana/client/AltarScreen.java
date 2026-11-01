@@ -37,7 +37,7 @@ public class AltarScreen extends Screen {
     protected void init() {
         if (minecraft.player == null) return;
         Attunement a = minecraft.player.getData(ModAttachments.ATTUNEMENT);
-        int cellW = Math.min(180, (width - 30) / 2);
+        int cellW = Math.min(215, (width - 30) / 2);
         int left = (width - cellW * 2 - 10) / 2;
         int top = 34;
         for (int i = 0; i < Schools.ALL.size(); i++) {
@@ -79,7 +79,7 @@ public class AltarScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float partial) {
         if (minecraft.player == null) return;
         Attunement a = minecraft.player.getData(ModAttachments.ATTUNEMENT);
-        int cellW = Math.min(180, (width - 30) / 2);
+        int cellW = Math.min(215, (width - 30) / 2);
         int left = (width - cellW * 2 - 10) / 2;
         int top = 34;
         g.fill(left - 6, 6, left + cellW * 2 + 16, top + 5 * CELL_H + 30, PANEL);
@@ -127,6 +127,12 @@ public class AltarScreen extends Screen {
 
             int line2X = x + font.width(resonanceText) + 6;
             if (note != null && !noteOnLine1) {
+                // Still too wide: fall back to the short form ("4 · 5") so it never runs under the button
+                if (line2X + font.width(note) > rightEdge && !knowsSpellOf(school)) note = Component.literal("—");
+                else if (line2X + font.width(note) > rightEdge) {
+                    var cost = AttunementService.costFor(a, school);
+                    note = Component.translatable("screen.orbisarcana.altar.cost_short", cost.ink(), cost.xpLevels());
+                }
                 g.text(font, note, Math.max(line2X, rightEdge - font.width(note)), y + 12, noteColor, false);
             } else if (rightEdge - line2X > 10) {
                 int need = SchoolRules.resonanceXpRequired(resonance);

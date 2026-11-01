@@ -184,5 +184,6 @@
   "message.orbisarcana.altar.cost": "Нужно %s Чернил эфира и %s уровней опыта",
   "message.orbisarcana.altar.ritual_start": "Ритуал школы %s начат: оставайтесь в круге %s с",
   "message.orbisarcana.altar.ritual_progress": "Ритуал: %s с",
-  "message.orbisarcana.altar.ritual_broken": "Ритуал прерван — возвращена половина стоимости"
+  "message.orbisarcana.altar.ritual_broken": "Ритуал прерван — возвращена половина стоимости",
+  "screen.orbisarcana.altar.cost_short": "%s ч · %s ур"
 }
