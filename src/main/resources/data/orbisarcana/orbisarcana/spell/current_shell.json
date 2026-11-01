@@ -1,0 +1,38 @@
+{
+  "school": "orbisarcana:lightning",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:shell",
+  "targeting": "self",
+  "cast": {
+    "mode": "toggle"
+  },
+  "cost": 3,
+  "cooldown_ticks": 100,
+  "primary_stat": "shock_damage",
+  "params": {
+    "speed_bonus": 0.15,
+    "shock_damage": 2,
+    "return_spark": 0,
+    "transfer_ticks": 0,
+    "final_burst": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "return_spark": 2
+      }
+    },
+    "10": {
+      "params": {
+        "transfer_ticks": 200
+      }
+    },
+    "15": {
+      "params": {
+        "final_burst": 3
+      }
+    }
+  },
+  "circle": "orbisarcana:current_shell",
+  "xp_category": "attack"
+}

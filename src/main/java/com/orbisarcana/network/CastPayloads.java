@@ -191,6 +191,22 @@ public final class CastPayloads {
     }
 
     /** Fire Heat stacks on an entity, shown above it to nearby players (0 clears). */
+    /** A player's TOGGLE spell turned on or off (small circle under the feet while on, §5.3). */
+    public record ToggleState(int playerId, Identifier spell, boolean on, int mastery) implements CustomPacketPayload {
+        public static final Type<ToggleState> TYPE = new Type<>(OrbisArcana.id("toggle_state"));
+        public static final StreamCodec<ByteBuf, ToggleState> CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, ToggleState::playerId,
+                Identifier.STREAM_CODEC, ToggleState::spell,
+                ByteBufCodecs.BOOL, ToggleState::on,
+                ByteBufCodecs.VAR_INT, ToggleState::mastery,
+                ToggleState::new);
+
+        @Override
+        public Type<ToggleState> type() {
+            return TYPE;
+        }
+    }
+
     /** Echo stacks shown above a mob (Fire Heat, Ice Frost); {@code school} gives the colour. */
     public record HeatMark(int entityId, float stacks, Identifier school) implements CustomPacketPayload {
         public static final Type<HeatMark> TYPE = new Type<>(OrbisArcana.id("heat_mark"));

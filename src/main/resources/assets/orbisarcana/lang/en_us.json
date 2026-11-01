@@ -387,5 +387,20 @@
   "spell.orbisarcana.frost_pattern.desc": "A frost pattern (r5) on the ground strongly slows enemies.",
   "spell.orbisarcana.frost_pattern.m5": "wider",
   "spell.orbisarcana.frost_pattern.m10": "targets inside are linked: damage is shared",
-  "spell.orbisarcana.frost_pattern.m15": "everyone inside freezes at the end"
+  "spell.orbisarcana.frost_pattern.m15": "everyone inside freezes at the end",
+  "spell.orbisarcana.discharge": "Discharge",
+  "spell.orbisarcana.discharge.desc": "An instant bolt at whatever you aim at.",
+  "spell.orbisarcana.discharge.m5": "jumps to 1 enemy",
+  "spell.orbisarcana.discharge.m10": "jumps to 3 enemies",
+  "spell.orbisarcana.discharge.m15": "each jump paralyses for 1 s",
+  "spell.orbisarcana.storm_anchor": "Storm Anchor",
+  "spell.orbisarcana.storm_anchor.desc": "A trap: lightning strikes when an enemy comes near.",
+  "spell.orbisarcana.storm_anchor.m5": "2 anchors at once",
+  "spell.orbisarcana.storm_anchor.m10": "an arc joins the anchors",
+  "spell.orbisarcana.storm_anchor.m15": "a strike leaves a storm (r4, 3 s)",
+  "spell.orbisarcana.current_shell": "Current Shell",
+  "spell.orbisarcana.current_shell.desc": "Toggle: +15% speed, your blows shock; drains mana every second.",
+  "spell.orbisarcana.current_shell.m5": "sparks back at attackers",
+  "spell.orbisarcana.current_shell.m10": "right-click an ally to pass the shell for 10 s",
+  "spell.orbisarcana.current_shell.m15": "turning it off discharges around you, stronger the longer it was on"
 }

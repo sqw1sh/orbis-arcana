@@ -35,6 +35,23 @@ public final class EchoRules {
         return tier >= 2 ? FREEZE_TICKS_TIER2 : FREEZE_TICKS_TIER1;
     }
 
+    // Lightning: Conductivity
+    public static final long MARK_TICKS = 80;
+    /** Root "Conductor": marks hold 6 s instead of 4. */
+    public static final long CONDUCTOR_MARK_TICKS = 120;
+    public static final double CONDUCT_RANGE = 8;
+    public static final int CONDUCT_JUMPS = 2;
+    public static final double STORM_NET_RANGE = 6;
+    public static final float STORM_NET_DAMAGE = 1f;
+    /** Shown on the HUD as marked targets out of this many. */
+    public static final int MARKS_SHOWN = 5;
+
+    /** Damage of an arc jumping to a marked target: 3, or 4.5 at tier 2; Dissonance halves it. */
+    public static double conductDamage(int tier, boolean dissonance) {
+        double dmg = tier >= 2 ? 4.5 : 3.0;
+        return dissonance ? dmg * SchoolRules.DISSONANCE_ECHO_MULT : dmg;
+    }
+
     // Air: Impulse
     public static final double IMPULSE_MAX = 10;
     /** Charge per block moved while in combat. */

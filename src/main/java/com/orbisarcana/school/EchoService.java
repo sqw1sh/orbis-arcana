@@ -12,7 +12,10 @@ import com.orbisarcana.network.CastPayloads.EchoState;
 import com.orbisarcana.network.CastPayloads.HeatMark;
 import com.orbisarcana.network.Net;
 import com.orbisarcana.registry.ModDamageTypes;
+import com.orbisarcana.spell.Arcs;
 import com.orbisarcana.spell.Frost;
+import java.util.List;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import com.orbisarcana.mana.ManaService;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -46,6 +49,11 @@ public final class EchoService {
     private static final Map<UUID, Heat> HEAT = new HashMap<>();
     /** target -> Frost placed by one caster (same bookkeeping as Heat). */
     private static final Map<UUID, Heat> FROST = new HashMap<>();
+    /** Conductivity mark on a target ({@code entityId} for expiry messages). */
+    private record Mark(UUID caster, long until, int castId, int entityId) {}
+
+    /** target -> Conductivity mark. */
+    private static final Map<UUID, Mark> MARKS = new HashMap<>();
     /** player -> flow stacks. */
     private static final Map<UUID, Double> FLOW = new HashMap<>();
     /** player -> last cast id that already gave flow (one stack per cast, zones pulse many times). */
@@ -70,6 +78,11 @@ public final class EchoService {
     public static void onSpellHit(ServerPlayer caster, Identifier school, LivingEntity target, int castId) {
         if (school.equals(Schools.ICE)) {
             frost(caster, target, castId);
+            return;
+        }
+        if (school.equals(Schools.LIGHTNING)) {
+            TalentEffects.lightningRod(caster, target);
+            conduct(caster, target, castId);
             return;
         }
         if (!school.equals(Schools.FIRE) || !target.isAlive()) return;
@@ -128,6 +141,80 @@ public final class EchoService {
         }
         Net.toPlayer(caster, new EchoState(Schools.ICE, (float) stacks, EchoRules.FROST_MAX));
         Net.toNearby(target, new HeatMark(target.getId(), (float) stacks, Schools.ICE));
+    }
+
+    // ---- Lightning: Conductivity ----
+
+    /**
+     * A lightning hit arcs on to marked targets near it (consuming their marks), then marks the target. One mark per
+     * target per cast, so a jump never comes back to the same cast's targets.
+     */
+    private static void conduct(ServerPlayer caster, LivingEntity target, int castId) {
+        int tier = tier(caster, Schools.LIGHTNING);
+        if (tier <= 0) return;
+        ServerLevel level = caster.level();
+        long now = level.getGameTime();
+        int jumps = EchoRules.CONDUCT_JUMPS + (AttunementService.hasTalent(caster, Schools.LIGHTNING, TalentRules.A1) ? 1 : 0);
+        float damage = (float) EchoRules.conductDamage(tier, AttunementService.isDissonant(caster));
+        List<LivingEntity> marked = level.getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(EchoRules.CONDUCT_RANGE),
+                        e -> e != target && e.isAlive() && markedBy(e, caster, now) && MARKS.get(e.getUUID()).castId() != castId)
+                .stream().sorted(java.util.Comparator.comparingDouble(e -> e.distanceToSqr(target))).limit(jumps).toList();
+        for (LivingEntity e : marked) {
+            MARKS.remove(e.getUUID());
+            Net.toNearby(e, new HeatMark(e.getId(), 0f, Schools.LIGHTNING));
+            e.hurtServer(level, ModDamageTypes.source(e, Schools.LIGHTNING, null, caster), damage);
+            Arcs.draw(level, Arcs.body(target), Arcs.body(e));
+        }
+        long hold = AttunementService.hasTalent(caster, Schools.LIGHTNING, TalentRules.ROOT) ? EchoRules.CONDUCTOR_MARK_TICKS : EchoRules.MARK_TICKS;
+        if (target.isAlive()) {
+            MARKS.put(target.getUUID(), new Mark(caster.getUUID(), now + hold, castId, target.getId()));
+            Net.toNearby(target, new HeatMark(target.getId(), 1f, Schools.LIGHTNING));
+        }
+        sendMarks(caster, now);
+    }
+
+    public static boolean markedBy(LivingEntity e, ServerPlayer caster, long now) {
+        Mark m = MARKS.get(e.getUUID());
+        return m != null && m.caster().equals(caster.getUUID()) && now < m.until();
+    }
+
+    private static void sendMarks(ServerPlayer caster, long now) {
+        long n = MARKS.values().stream().filter(m -> m.caster().equals(caster.getUUID()) && now < m.until()).count();
+        Net.toPlayer(caster, new EchoState(Schools.LIGHTNING, (float) Math.min(n, EchoRules.MARKS_SHOWN), EchoRules.MARKS_SHOWN));
+    }
+
+    /** Once a second: marks run out; with A2 "Storm Net" weak arcs join marked targets of one caster. */
+    @SubscribeEvent
+    static void onLevelTick(LevelTickEvent.Post event) {
+        if (!(event.getLevel() instanceof ServerLevel level) || MARKS.isEmpty() || level.getGameTime() % 20 != 0) return;
+        long now = level.getGameTime();
+        var it = MARKS.entrySet().iterator();
+        while (it.hasNext()) {
+            var e = it.next();
+            if (now < e.getValue().until()) continue;
+            it.remove();
+            var entity = level.getEntity(e.getValue().entityId());
+            if (entity != null) Net.toNearby(entity, new HeatMark(entity.getId(), 0f, Schools.LIGHTNING));
+            ServerPlayer owner = level.getServer().getPlayerList().getPlayer(e.getValue().caster());
+            if (owner != null) sendMarks(owner, now);
+        }
+        Map<UUID, List<LivingEntity>> byCaster = new HashMap<>();
+        for (Mark m : MARKS.values()) {
+            if (level.getEntity(m.entityId()) instanceof LivingEntity le && le.isAlive()) byCaster.computeIfAbsent(m.caster(), k -> new java.util.ArrayList<>()).add(le);
+        }
+        byCaster.forEach((casterId, list) -> {
+            ServerPlayer caster = level.getServer().getPlayerList().getPlayer(casterId);
+            if (caster == null || list.size() < 2 || !AttunementService.hasTalent(caster, Schools.LIGHTNING, TalentRules.A2)) return;
+            for (int i = 0; i < list.size(); i++) {
+                for (int j = i + 1; j < list.size(); j++) {
+                    LivingEntity a = list.get(i), b = list.get(j);
+                    if (a.distanceTo(b) > EchoRules.STORM_NET_RANGE) continue;
+                    a.hurtServer(level, ModDamageTypes.source(a, Schools.LIGHTNING, null, caster), EchoRules.STORM_NET_DAMAGE);
+                    b.hurtServer(level, ModDamageTypes.source(b, Schools.LIGHTNING, null, caster), EchoRules.STORM_NET_DAMAGE);
+                    Arcs.draw(level, Arcs.body(a), Arcs.body(b));
+                }
+            }
+        });
     }
 
     // ---- Water: Flow ----
@@ -250,12 +337,14 @@ public final class EchoService {
         LAST_POS.remove(id);
         HEAT.values().removeIf(h -> h.caster().equals(id));
         FROST.values().removeIf(h -> h.caster().equals(id));
+        MARKS.values().removeIf(m -> m.caster().equals(id));
     }
 
     @SubscribeEvent
     static void onServerStopping(ServerStoppingEvent event) {
         HEAT.clear();
         FROST.clear();
+        MARKS.clear();
         FLOW.clear();
         FLOW_CAST.clear();
         BULWARK.clear();

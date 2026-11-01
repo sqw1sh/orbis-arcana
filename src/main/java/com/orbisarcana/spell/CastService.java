@@ -98,6 +98,12 @@ public final class CastService {
         int cooldown = def.map(SpellDefinition::cooldownTicks).orElse(0);
         long fullAt = player.getData(ModAttachments.RESOURCES).cooldowns().getOrDefault(spellId, 0L);
 
+        // TOGGLE: a second press turns it off, whatever the cooldown, mana or current cast (§5.3)
+        if (def.isPresent() && def.get().cast().mode() == CastMode.TOGGLE && Toggles.isOn(player, spellId)) {
+            Toggles.disable(player, spellId, true);
+            return;
+        }
+
         Optional<CastDenial> denial = CastRules.check(new CastRules.Request(
                 def.isPresent() && SpellBehaviors.get(def.get().behavior()).isPresent(),
                 def.map(SpellDefinition::enabled).orElse(false),
@@ -108,16 +114,19 @@ public final class CastService {
                 Charges.readyAt(fullAt, charges(params), cooldown),
                 ManaService.mana(player),
                 cost));
-        if (denial.isEmpty() && def.get().cast().mode() == CastMode.TOGGLE) {
-            // TOGGLE arrives with its spells (S7)
-            denial = Optional.of(CastDenial.DISABLED);
-        }
         if (denial.isPresent()) {
             deny(player, spellId, denial.get());
             return;
         }
 
         SpellDefinition spell = def.get();
+        if (spell.cast().mode() == CastMode.TOGGLE) {
+            // "cost" is mana per second; at least one second's worth is needed to turn it on
+            Toggles.enable(player, new Toggles.Active(spellId, spell, nextCastId++, mastery, params,
+                    AttunementService.powerMult(player, spell.school()), cost / 20.0, now));
+            GCD_UNTIL.put(player.getUUID(), now + CastRules.GCD_TICKS);
+            return;
+        }
         double range = params.getOrDefault("range", 24.0);
 
         Vec3 ground = null;
@@ -214,19 +223,24 @@ public final class CastService {
             if (TalentEffects.crownOfFlameFree(player, cast.spell().school())) {
                 ManaService.setMana(player, ManaService.mana(player) + core.cost);
             }
-            int cooldown = cast.spell().cooldownTicks();
-            if (cooldown > 0) {
-                var cooldowns = player.getData(ModAttachments.RESOURCES).cooldowns();
-                long fullAt = Charges.afterUse(cooldowns.getOrDefault(cast.spellId(), 0L), now, cooldown);
-                cooldowns.put(cast.spellId(), fullAt);
-                Net.toPlayer(player, new CooldownSet(cast.spellId(), fullAt, cooldown));
-            }
+            startCooldown(player, cast.spellId(), cast.spell());
         } else {
             double refund = core.cost - core.manaSpent(outcome, now);
             ManaService.setMana(player, ManaService.mana(player) + refund);
         }
         GCD_UNTIL.put(player.getUUID(), now + CastRules.GCD_TICKS);
         Net.toPlayerAndNearby(player, new CastEnded(cast.id(), player.getId(), outcome.ordinal()));
+    }
+
+    /** Spends a charge of the spell's cooldown (§5.5) and tells the client. */
+    static void startCooldown(ServerPlayer player, Identifier spellId, SpellDefinition spell) {
+        int cooldown = spell.cooldownTicks();
+        if (cooldown <= 0) return;
+        long now = player.level().getGameTime();
+        var cooldowns = player.getData(ModAttachments.RESOURCES).cooldowns();
+        long fullAt = Charges.afterUse(cooldowns.getOrDefault(spellId, 0L), now, cooldown);
+        cooldowns.put(spellId, fullAt);
+        Net.toPlayer(player, new CooldownSet(spellId, fullAt, cooldown));
     }
 
     private static CastContext context(ServerPlayer player, ServerCast cast, long now) {

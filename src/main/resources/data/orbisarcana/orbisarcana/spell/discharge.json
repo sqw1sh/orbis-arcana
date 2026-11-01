@@ -1,0 +1,38 @@
+{
+  "school": "orbisarcana:lightning",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:discharge",
+  "targeting": "directional",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 9,
+  "cooldown_ticks": 35,
+  "primary_stat": "damage",
+  "params": {
+    "damage": 5,
+    "range": 20,
+    "jumps": 0,
+    "jump_range": 6,
+    "shock_ticks": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "jumps": 1
+      }
+    },
+    "10": {
+      "params": {
+        "jumps": 3
+      }
+    },
+    "15": {
+      "params": {
+        "shock_ticks": 20
+      }
+    }
+  },
+  "circle": "orbisarcana:discharge",
+  "xp_category": "attack"
+}

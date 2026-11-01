@@ -34,6 +34,9 @@ public final class SpellBehaviors {
     public static final Supplier<SpellBehavior> SHARD = BEHAVIORS.register("shard", () -> ShardBehavior::release);
     public static final Supplier<SpellBehavior> BASTION = BEHAVIORS.register("bastion", () -> BastionBehavior::release);
     public static final Supplier<SpellBehavior> PATTERN = BEHAVIORS.register("pattern", () -> PatternBehavior::release);
+    public static final Supplier<SpellBehavior> DISCHARGE = BEHAVIORS.register("discharge", () -> DischargeBehavior::release);
+    public static final Supplier<SpellBehavior> ANCHOR = BEHAVIORS.register("anchor", () -> AnchorBehavior::release);
+    public static final Supplier<SpellBehavior> SHELL = BEHAVIORS.register("shell", () -> ShellBehavior.INSTANCE);
 
     public static void register(IEventBus modBus) {
         modBus.addListener((NewRegistryEvent event) -> event.register(REGISTRY));

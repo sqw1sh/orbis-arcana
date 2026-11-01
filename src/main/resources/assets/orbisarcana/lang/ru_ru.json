@@ -387,5 +387,20 @@
   "spell.orbisarcana.frost_pattern.desc": "Узор r5 на земле сильно замедляет врагов.",
   "spell.orbisarcana.frost_pattern.m5": "шире",
   "spell.orbisarcana.frost_pattern.m10": "цели в узоре связаны — урон делится",
-  "spell.orbisarcana.frost_pattern.m15": "в конце — заморозка всех в узоре"
+  "spell.orbisarcana.frost_pattern.m15": "в конце — заморозка всех в узоре",
+  "spell.orbisarcana.discharge": "Разряд",
+  "spell.orbisarcana.discharge.desc": "Мгновенный разряд по цели под прицелом.",
+  "spell.orbisarcana.discharge.m5": "перескок на 1 врага",
+  "spell.orbisarcana.discharge.m10": "перескок на 3 врагов",
+  "spell.orbisarcana.discharge.m15": "каждый перескок парализует на 1 с",
+  "spell.orbisarcana.storm_anchor": "Грозовой якорь",
+  "spell.orbisarcana.storm_anchor.desc": "Ловушка: удар молнии, когда рядом враг.",
+  "spell.orbisarcana.storm_anchor.m5": "2 якоря одновременно",
+  "spell.orbisarcana.storm_anchor.m10": "между якорями — дуга",
+  "spell.orbisarcana.storm_anchor.m15": "срабатывание — гроза r4 на 3 с",
+  "spell.orbisarcana.current_shell": "Токовая оболочка",
+  "spell.orbisarcana.current_shell.desc": "Вкл/выкл: скорость +15%, удары бьют током; тратит ману каждую секунду.",
+  "spell.orbisarcana.current_shell.m5": "ответная искра атакующему",
+  "spell.orbisarcana.current_shell.m10": "ПКМ по союзнику — передать оболочку на 10 с",
+  "spell.orbisarcana.current_shell.m15": "выключение — разряд вокруг, сильнее чем дольше была включена"
 }

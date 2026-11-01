@@ -48,6 +48,8 @@ public final class ClientCastState {
     private static final Map<Identifier, Cooldown> COOLDOWNS = new HashMap<>();
     private static @Nullable CastDenial lastDenial;
     private static long lastDenialTick;
+    /** Own toggles that are on, in the order they were turned on. */
+    private static final java.util.Set<Identifier> TOGGLES = new java.util.LinkedHashSet<>();
 
     public static Loadout loadout(Player player) {
         return player.getData(ModAttachments.LOADOUT);
@@ -108,6 +110,17 @@ public final class ClientCastState {
         echo = new Echo(school, stacks, max, gameTime());
     }
 
+    public static java.util.Set<Identifier> ownToggles() {
+        return TOGGLES;
+    }
+
+    static void setToggle(int playerId, Identifier spell, boolean on) {
+        var player = Minecraft.getInstance().player;
+        if (player == null || player.getId() != playerId) return;
+        if (on) TOGGLES.add(spell);
+        else TOGGLES.remove(spell);
+    }
+
     public static @Nullable OwnCast ownCast() {
         return ownCast;
     }
@@ -160,6 +173,7 @@ public final class ClientCastState {
         echo = null;
         COOLDOWNS.clear();
         lastDenial = null;
+        TOGGLES.clear();
     }
 
     private ClientCastState() {}

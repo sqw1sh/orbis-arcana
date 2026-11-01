@@ -23,6 +23,7 @@ import com.orbisarcana.registry.ModItems;
 import com.orbisarcana.spell.CastService;
 import com.orbisarcana.spell.Frost;
 import com.orbisarcana.spell.Shields;
+import com.orbisarcana.spell.Toggles;
 import com.orbisarcana.spell.behavior.BurningGround;
 
 import net.minecraft.core.BlockPos;
@@ -118,6 +119,12 @@ public final class OrbisGameTests {
         test("frost_pattern_slows_then_freezes", 300, OrbisGameTests::frostPattern);
         test("frost_echo_freezes_at_five", 20, OrbisGameTests::frostEcho);
         test("cold_blood_keeps_speed_while_casting", 20, OrbisGameTests::coldBlood);
+        test("discharge_hits_what_you_aim_at", 20, OrbisGameTests::discharge);
+        test("discharge_jumps_at_10", 20, OrbisGameTests::dischargeJumps);
+        test("storm_anchor_strikes_when_enemy_near", 60, OrbisGameTests::stormAnchor);
+        test("current_shell_toggles_and_drains", 60, OrbisGameTests::currentShell);
+        test("current_shell_shocks_on_melee", 20, OrbisGameTests::shellShock);
+        test("conductivity_arcs_to_marked", 20, OrbisGameTests::conductivity);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -919,6 +926,100 @@ public final class OrbisGameTests {
         h.assertTrue(CastService.isCasting(p), "charging");
         h.assertValueEqual(p.getAttributeValue(Attributes.MOVEMENT_SPEED), base, "Cold Blood: no casting slow for Ice");
         CastService.stop(p, CastService.activeCastId(p), true);
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static final Identifier DISCHARGE = OrbisArcana.id("discharge");
+    private static final Identifier STORM_ANCHOR = OrbisArcana.id("storm_anchor");
+    private static final Identifier CURRENT_SHELL = OrbisArcana.id("current_shell");
+
+    private static void discharge(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(6.5, 1, 4.5));
+        pig.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 11f);
+        KnowledgeService.learn(p, DISCHARGE);
+        CastService.request(p, DISCHARGE);
+        h.assertTrue(pig.getHealth() < pig.getMaxHealth(), "the bolt hits at once");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void dischargeJumps(GameTestHelper h) {
+        Pig first = h.spawn(EntityTypes.PIG, new Vec3(6.5, 1, 4.5));
+        Pig second = h.spawn(EntityTypes.PIG, new Vec3(6.5, 1, 7.5));
+        Pig third = h.spawn(EntityTypes.PIG, new Vec3(3.5, 1, 7.5));
+        for (Pig pig : List.of(first, second, third)) pig.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 11f);
+        KnowledgeService.learn(p, DISCHARGE);
+        KnowledgeService.setMastery(p, DISCHARGE, 10);
+        CastService.request(p, DISCHARGE);
+        for (Pig pig : List.of(first, second, third)) h.assertTrue(pig.getHealth() < pig.getMaxHealth(), "the bolt jumps to every pig");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void stormAnchor(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 2.5), 0f, 45f);
+        KnowledgeService.learn(p, STORM_ANCHOR);
+        CastService.request(p, STORM_ANCHOR);
+        h.assertFalse(CastService.isCasting(p), "instant");
+        Pig[] pig = new Pig[1];
+        h.runAfterDelay(15, () -> {
+            pig[0] = h.spawn(EntityTypes.PIG, new Vec3(4.5, 1, 5.5));
+            pig[0].setNoAi(true);
+        });
+        succeedWhen(h, p, () -> {
+            h.assertTrue(pig[0] != null && pig[0].getHealth() < pig[0].getMaxHealth(), "the anchor strikes the pig that came near");
+        });
+    }
+
+    private static void currentShell(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        KnowledgeService.learn(p, CURRENT_SHELL);
+        double base = p.getAttributeValue(Attributes.MOVEMENT_SPEED);
+        double full = ManaService.mana(p);
+        CastService.request(p, CURRENT_SHELL);
+        h.assertTrue(Toggles.isOn(p, CURRENT_SHELL), "first press turns it on");
+        h.assertFalse(CastService.isCasting(p), "a toggle does not take the cast slot");
+        h.assertTrue(p.getAttributeValue(Attributes.MOVEMENT_SPEED) > base * 1.1, "faster while on");
+        h.runAfterDelay(20, () -> {
+            h.assertTrue(ManaService.mana(p) < full - 2, "drains mana every tick, mana " + ManaService.mana(p));
+            CastService.request(p, CURRENT_SHELL);
+            h.assertFalse(Toggles.isOn(p, CURRENT_SHELL), "second press turns it off");
+            h.assertValueEqual(p.getAttributeValue(Attributes.MOVEMENT_SPEED), base, "speed back");
+            h.assertTrue(p.getData(ModAttachments.RESOURCES).cooldowns().containsKey(CURRENT_SHELL), "cooldown starts when it ends");
+            cleanup(h, p);
+            h.succeed();
+        });
+    }
+
+    private static void shellShock(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(5.5, 1, 4.5));
+        pig.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), -90f, 0f);
+        KnowledgeService.learn(p, CURRENT_SHELL);
+        CastService.request(p, CURRENT_SHELL);
+        p.attack(pig);
+        h.assertTrue(pig.getHealth() <= pig.getMaxHealth() - 2f, "the blow shocks, health " + pig.getHealth());
+        Toggles.disableAll(p);
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void conductivity(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.LIGHTNING, DISCHARGE, 1);
+        Pig a = h.spawn(EntityTypes.PIG, new Vec3(2.5, 1, 2.5));
+        Pig b = h.spawn(EntityTypes.PIG, new Vec3(2.5, 1, 6.5));
+        a.setNoAi(true);
+        b.setNoAi(true);
+        long now = h.getLevel().getGameTime();
+        EchoService.onSpellHit(p, Schools.LIGHTNING, a, 401);
+        h.assertTrue(EchoService.markedBy(a, p, now), "a hit marks the target");
+        EchoService.onSpellHit(p, Schools.LIGHTNING, b, 402);
+        h.assertTrue(a.getHealth() < a.getMaxHealth(), "the next hit arcs to the marked pig");
+        h.assertFalse(EchoService.markedBy(a, p, now), "the jump spends the mark");
+        h.assertTrue(EchoService.markedBy(b, p, now), "and marks the new target");
         cleanup(h, p);
         h.succeed();
     }

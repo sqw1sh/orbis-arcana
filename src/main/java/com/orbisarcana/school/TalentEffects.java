@@ -42,7 +42,8 @@ public final class TalentEffects {
             "water/echo", "water/root", "water/a1", "water/a2", "water/b1", "water/b2",
             "earth/echo", "earth/root", "earth/a1", "earth/a2", "earth/b1", "earth/b2",
             "air/echo", "air/root", "air/a1", "air/a2", "air/b1", "air/b2",
-            "ice/echo", "ice/root", "ice/a1", "ice/a2", "ice/b1", "ice/b2");
+            "ice/echo", "ice/root", "ice/a1", "ice/a2", "ice/b1", "ice/b2",
+            "lightning/echo", "lightning/root", "lightning/a1", "lightning/a2", "lightning/b1", "lightning/b2");
 
     public static final double EMBERS_IGNITE_MULT = 1.3;
     public static final double LIVING_WAVE_HEAL_MULT = 1.1;
@@ -123,6 +124,33 @@ public final class TalentEffects {
         UNBREAKABLE_READY.put(p.getUUID(), now + UNBREAKABLE_COOLDOWN);
         event.setCanceled(true);
         p.setHealth(1f);
+    }
+
+    // ---- Lightning ----
+
+    public static final float REVERSE_CURRENT_DAMAGE = 3f;
+    public static final long REVERSE_CURRENT_COOLDOWN = 4 * 20;
+    private static final Map<UUID, Long> REVERSE_READY = new HashMap<>();
+
+    /** B1 "Lightning Rod": your lightning breaks mobs' casting (drawing a bow, drinking, illager spells). */
+    public static void lightningRod(ServerPlayer caster, LivingEntity target) {
+        if (!(target instanceof net.minecraft.world.entity.Mob mob) || !AttunementService.hasTalent(caster, Schools.LIGHTNING, TalentRules.B1)) return;
+        mob.stopUsingItem();
+        if (mob instanceof net.minecraft.world.entity.monster.illager.SpellcasterIllager illager && illager.isCastingSpell()) {
+            illager.setTarget(null); // casting goals need a target; the spell enum itself is protected
+        }
+    }
+
+    /** B2 "Reverse Current": when hit, spark the attacker (4 s cooldown). */
+    @SubscribeEvent
+    static void onDamageLightning(LivingDamageEvent.Post event) {
+        if (!(event.getEntity() instanceof ServerPlayer p) || !(event.getSource().getEntity() instanceof LivingEntity attacker)
+                || attacker == p || !attacker.isAlive() || !AttunementService.hasTalent(p, Schools.LIGHTNING, TalentRules.B2)) return;
+        long now = p.level().getGameTime();
+        if (now < REVERSE_READY.getOrDefault(p.getUUID(), 0L)) return;
+        REVERSE_READY.put(p.getUUID(), now + REVERSE_CURRENT_COOLDOWN);
+        attacker.hurtServer(p.level(), com.orbisarcana.registry.ModDamageTypes.source(attacker, Schools.LIGHTNING, null, p), REVERSE_CURRENT_DAMAGE);
+        com.orbisarcana.spell.Arcs.draw(p.level(), com.orbisarcana.spell.Arcs.body(p), com.orbisarcana.spell.Arcs.body(attacker));
     }
 
     // ---- Ice ----
@@ -255,6 +283,7 @@ public final class TalentEffects {
         MERCY_READY.remove(id);
         UNBREAKABLE_READY.remove(id);
         WHITE_WALL_READY.remove(id);
+        REVERSE_READY.remove(id);
     }
 
     @SubscribeEvent
@@ -264,6 +293,7 @@ public final class TalentEffects {
         MERCY_READY.clear();
         UNBREAKABLE_READY.clear();
         WHITE_WALL_READY.clear();
+        REVERSE_READY.clear();
     }
 
     private TalentEffects() {}

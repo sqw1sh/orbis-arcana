@@ -1,0 +1,40 @@
+{
+  "school": "orbisarcana:lightning",
+  "rarity": "orbisarcana:rare",
+  "behavior": "orbisarcana:anchor",
+  "targeting": "ground",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 16,
+  "cooldown_ticks": 120,
+  "primary_stat": "damage",
+  "params": {
+    "damage": 8,
+    "trigger_radius": 2.5,
+    "life_ticks": 600,
+    "range": 16,
+    "max_anchors": 1,
+    "arc_damage": 0,
+    "storm_ticks": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "max_anchors": 2
+      }
+    },
+    "10": {
+      "params": {
+        "arc_damage": 2
+      }
+    },
+    "15": {
+      "params": {
+        "storm_ticks": 60
+      }
+    }
+  },
+  "circle": "orbisarcana:storm_anchor",
+  "xp_category": "attack"
+}

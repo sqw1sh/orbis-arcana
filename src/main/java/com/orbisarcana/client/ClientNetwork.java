@@ -11,6 +11,7 @@ import com.orbisarcana.network.CastPayloads.CastStop;
 import com.orbisarcana.network.CastPayloads.CooldownSet;
 import com.orbisarcana.network.CastPayloads.EchoState;
 import com.orbisarcana.network.CastPayloads.HeatMark;
+import com.orbisarcana.network.CastPayloads.ToggleState;
 import com.orbisarcana.network.CastPayloads.RitualCircle;
 
 import net.minecraft.client.Minecraft;
@@ -43,6 +44,10 @@ public final class ClientNetwork {
             if (own != null && own.castId() == msg.castId()) ClientCastState.setOwnCast(null);
         });
         event.register(RitualCircle.TYPE, (msg, ctx) -> ClientCircles.startRitual(msg));
+        event.register(ToggleState.TYPE, (msg, ctx) -> {
+            ClientCircles.toggle(msg.playerId(), msg.spell(), msg.on(), msg.mastery());
+            ClientCastState.setToggle(msg.playerId(), msg.spell(), msg.on());
+        });
         event.register(HeatMark.TYPE, (msg, ctx) -> ClientCircles.heatMark(msg.entityId(), msg.stacks(), msg.school()));
         event.register(EchoState.TYPE, (msg, ctx) -> ClientCastState.setEcho(msg.school(), msg.stacks(), msg.max()));
         event.register(CastDenied.TYPE, (msg, ctx) -> {

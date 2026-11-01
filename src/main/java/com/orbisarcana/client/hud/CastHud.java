@@ -72,6 +72,21 @@ public final class CastHud {
         Component set = Component.translatable("hud.orbisarcana.set", loadout.page() + 1, Loadout.PAGES);
         g.text(mc.font, set, fit(g, mc, set, x), y - 10, TEXT_DIM, true);
 
+        // Line 4 (above): toggles that are on, in their school colour
+        var toggles = ClientCastState.ownToggles();
+        if (!toggles.isEmpty()) {
+            MutableComponent on = Component.literal("● ");
+            boolean first = true;
+            for (Identifier t : toggles) {
+                if (!first) on.append(", ");
+                first = false;
+                var def = SpellRegistry.get(mc.player.registryAccess(), t);
+                on.append(Component.translatable("spell." + t.getNamespace() + "." + t.getPath())
+                        .withColor(def.map(d -> Schools.color(d.school())).orElse(0xFFFFFF)));
+            }
+            g.text(mc.font, on, fit(g, mc, on, x), y - 30, TEXT_DIM, true);
+        }
+
         // Line 3 (above): Echo stacks of the dominant school (§13.2); fire Heat fades after a while without hits
         var echo = ClientCastState.echo();
         var attunement = mc.player.getData(ModAttachments.ATTUNEMENT);

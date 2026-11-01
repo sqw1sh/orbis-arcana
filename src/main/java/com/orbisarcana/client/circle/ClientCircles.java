@@ -68,6 +68,42 @@ public final class ClientCircles {
 
     private static final List<Circle> CIRCLES = new ArrayList<>();
 
+    /** Active toggles: player entity id -> spell -> circle (a CastStarted stand-in carrying mastery). */
+    private static final java.util.Map<Integer, java.util.Map<Identifier, Circle>> TOGGLES = new java.util.HashMap<>();
+    private static final double TOGGLE_RADIUS = 0.75;
+
+    public static void toggle(int playerId, Identifier spell, boolean on, int mastery) {
+        var mc = Minecraft.getInstance();
+        if (mc.level == null) return;
+        if (!on) {
+            var map = TOGGLES.get(playerId);
+            if (map != null) map.remove(spell);
+            return;
+        }
+        CastStarted stand = new CastStarted(-1, playerId, spell, mc.level.getGameTime(), 0, mastery, java.util.Optional.empty(), -1, 0);
+        TOGGLES.computeIfAbsent(playerId, k -> new java.util.HashMap<>())
+                .put(spell, new Circle(stand, SpellRegistry.get(mc.level.registryAccess(), spell).orElse(null)));
+    }
+
+    private static void extractToggles(Minecraft mc, double now, float partial, Vec3 cam, List<CircleRenderState> out) {
+        TOGGLES.values().removeIf(java.util.Map::isEmpty);
+        for (var e : TOGGLES.entrySet()) {
+            Entity player = mc.level.getEntity(e.getKey());
+            if (player == null || !player.isAlive()) continue;
+            int i = 0;
+            for (Circle c : e.getValue().values()) {
+                if (c.spell == null) continue;
+                Vec3 rel = player.getPosition(partial).add(0, 0.03 + 0.01 * i++, 0).subtract(cam);
+                if (rel.length() > ClientConfig.HIDE_DISTANCE.getAsInt()) continue;
+                Vec3[] axes = axes(new Vec3(0, 1, 0));
+                int color = Schools.color(c.spell.school());
+                out.add(new CircleRenderState(rel, axes[0], axes[1], (float) TOGGLE_RADIUS, 1f, 0.6f * ClientConfig.OPACITY.get().floatValue(),
+                        1f, (float) (now / 20.0), 0f, color, c.spell.rarity().color, c.spell.rarity().circleLayers, layers(c),
+                        ClientConfig.RIM_ONLY.getAsBoolean(), c.cast.spell().hashCode()));
+            }
+        }
+    }
+
     /** Echo marks above entities (Heat, Frost): entity id -> {stacks, tick received, colour}. */
     private static final java.util.Map<Integer, double[]> HEAT_MARKS = new java.util.HashMap<>();
     private static final long HEAT_MARK_TICKS = com.orbisarcana.core.EchoRules.HEAT_DECAY_TICKS;
@@ -106,6 +142,7 @@ public final class ClientCircles {
     static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
         CIRCLES.clear();
         HEAT_MARKS.clear();
+        TOGGLES.clear();
     }
 
     /**
@@ -179,6 +216,7 @@ public final class ClientCircles {
             }
         }
         extractHeatMarks(mc, now, partial, cam, out);
+        extractToggles(mc, now, partial, cam, out);
         int max = ClientConfig.MAX_CIRCLES.getAsInt();
         if (out.size() > max) {
             out.sort(Comparator.comparingDouble(s -> s.center().lengthSqr()));
