@@ -2,10 +2,12 @@ package com.orbisarcana.client;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.client.circle.ClientCircles;
 import com.orbisarcana.compat.iris.IrisCompat;
+import com.orbisarcana.network.CastPayloads.CastStarted;
 import com.orbisarcana.progression.KnowledgeService;
 
 import net.minecraft.client.Minecraft;
@@ -38,7 +40,10 @@ public final class DevShot {
                 learnTestSpells();
                 Minecraft.getInstance().gui.setScreen(new RadialMenuScreen(true));
             }),
-            new Scene("grimoire", () -> Minecraft.getInstance().gui.setScreen(new GrimoireScreen())));
+            new Scene("grimoire", () -> Minecraft.getInstance().gui.setScreen(new GrimoireScreen())),
+            ownCircle("own_down_yaw0", 0, 88),
+            ownCircle("own_down_yaw120", 120, 88),
+            ownCircle("own_ahead", 45, 10));
 
     private static int ticks;
     private static int waiting;
@@ -51,6 +56,20 @@ public final class DevShot {
             mc.player.setYRot(0);
             mc.player.setXRot(30);
             ClientCircles.spawnDemo(9);
+        });
+    }
+
+    /** Own first-person fireball circle at the given view angles (a local fake cast). */
+    private static Scene ownCircle(String name, float yaw, float pitch) {
+        return new Scene(name, () -> {
+            Minecraft mc = Minecraft.getInstance();
+            mc.gui.setScreen(null);
+            ClientConfig.RENDER_MODE.set(ClientConfig.RenderMode.AUTO);
+            mc.player.setYRot(yaw);
+            mc.player.setYHeadRot(yaw);
+            mc.player.setXRot(pitch);
+            ClientCircles.start(new CastStarted(-5000 - name.hashCode() % 1000, mc.player.getId(), OrbisArcana.id("fireball"),
+                    mc.level.getGameTime(), 30, 7, Optional.empty(), -1));
         });
     }
 

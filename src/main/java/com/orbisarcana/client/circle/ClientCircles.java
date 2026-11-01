@@ -176,6 +176,8 @@ public final class ClientCircles {
         boolean own = caster == mc.player;
         boolean firstPerson = own && mc.options.getCameraType().isFirstPerson();
         if (firstPerson && targeting == Targeting.DIRECTIONAL && (mc.player.isScoping() || mc.player.isUsingItem())) return null;
+        // As particles, the own first-person circle would be a cloud right in front of the eyes
+        if (firstPerson && targeting == Targeting.DIRECTIONAL && effectiveMode() == ClientConfig.RenderMode.PARTICLES) return null;
 
         float progress = cast.durationTicks() <= 0 ? 1f : (float) Math.min(1.0, Math.max(0.0, age / cast.durationTicks()));
         if (sinceEnd >= 0 && released) progress = 1f;
@@ -185,6 +187,7 @@ public final class ClientCircles {
         Vec3 center;
         Vec3 normal;
         Vec3 look = caster.getViewVector(partial);
+        Vec3[] planeAxes = null;
         switch (targeting) {
             case DIRECTIONAL -> {
                 normal = look;
@@ -193,9 +196,11 @@ public final class ClientCircles {
                     double tanHalfFov = Math.tan(Math.toRadians(mc.options.fov().get()) / 2);
                     double dist = FIRST_PERSON_DISTANCE;
                     radius = Math.min(radius, MAX_SCREEN_SHARE * dist * tanHalfFov) * ClientConfig.OWN_SCALE.get();
-                    Vec3[] axes = axes(look);
+                    // Screen axes from the camera yaw: stable even when looking straight down, where
+                    // axes derived from the look vector alone stay fixed in the world and the circle slides
+                    planeAxes = screenAxes(caster.getViewYRot(partial), look);
                     // Down-right towards the main hand, centre of the screen stays clear (§9.3)
-                    center = eye.add(look.scale(dist)).add(axes[0].scale(0.42 * dist * tanHalfFov)).add(axes[1].scale(-0.32 * dist * tanHalfFov));
+                    center = eye.add(look.scale(dist)).add(planeAxes[0].scale(0.42 * dist * tanHalfFov)).add(planeAxes[1].scale(-0.32 * dist * tanHalfFov));
                 } else {
                     center = eye.add(look.scale(0.9)).add(0, -0.25, 0);
                 }
@@ -246,7 +251,7 @@ public final class ClientCircles {
             alpha *= (0.4f + 0.3f * progress) * ClientConfig.OWN_OPACITY.get().floatValue(); // 35-60% (§9.3)
         }
 
-        Vec3[] axes = axes(normal);
+        Vec3[] axes = planeAxes != null ? planeAxes : axes(normal);
         int schoolColor = Schools.color(c.spell.school());
         if (!released && sinceEnd >= 0) schoolColor = dim(schoolColor);
         Rarity rarity = c.spell.rarity();
@@ -286,6 +291,14 @@ public final class ClientCircles {
             return IrisCompat.isShaderPackInUse() && !meshUnderShaders ? ClientConfig.RenderMode.PARTICLES : ClientConfig.RenderMode.MESH;
         }
         return mode;
+    }
+
+    /** Camera right/up for a view with the given yaw (degrees) and look vector: [right, up]. */
+    private static Vec3[] screenAxes(float yawDeg, Vec3 look) {
+        double yaw = Math.toRadians(yawDeg);
+        Vec3 right = new Vec3(-Math.cos(yaw), 0, -Math.sin(yaw));
+        Vec3 up = right.cross(look).normalize();
+        return new Vec3[] {right, up};
     }
 
     /** Two unit axes spanning the plane perpendicular to {@code normal}: [right, up]. */
