@@ -9,6 +9,7 @@ import com.orbisarcana.core.EchoRules;
 import com.orbisarcana.core.SchoolRules;
 import com.orbisarcana.core.TalentRules;
 import com.orbisarcana.network.CastPayloads.EchoState;
+import com.orbisarcana.network.CastPayloads.HeatMark;
 import com.orbisarcana.network.Net;
 import com.orbisarcana.registry.ModDamageTypes;
 
@@ -29,7 +30,8 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class EchoService {
-    private record Heat(UUID caster, double stacks, long lastTick) {}
+    /** {@code lastCast}: one stack per target per cast (multi-projectile casts and burning ground pulses). */
+    private record Heat(UUID caster, double stacks, long lastTick, int lastCast) {}
 
     /** target -> heat placed by one caster. */
     private static final Map<UUID, Heat> HEAT = new HashMap<>();
@@ -48,24 +50,27 @@ public final class EchoService {
 
     // ---- Fire: Heat ----
 
-    /** A spell of {@code school} damaged {@code target}. */
-    public static void onSpellHit(ServerPlayer caster, Identifier school, LivingEntity target) {
+    /** A spell of {@code school} from cast {@code castId} damaged {@code target}. */
+    public static void onSpellHit(ServerPlayer caster, Identifier school, LivingEntity target, int castId) {
         if (!school.equals(Schools.FIRE) || !target.isAlive()) return;
         int tier = tier(caster, Schools.FIRE);
         if (tier <= 0) return;
         long now = caster.level().getGameTime();
         if (HEAT.size() > 256) HEAT.values().removeIf(h -> now - h.lastTick() > EchoRules.HEAT_DECAY_TICKS);
         Heat old = HEAT.get(target.getUUID());
-        double stacks = old != null && old.caster().equals(caster.getUUID()) && now - old.lastTick() <= EchoRules.HEAT_DECAY_TICKS ? old.stacks() : 0;
+        boolean live = old != null && old.caster().equals(caster.getUUID()) && now - old.lastTick() <= EchoRules.HEAT_DECAY_TICKS;
+        if (live && old.lastCast() == castId) return;
+        double stacks = live ? old.stacks() : 0;
         stacks += EchoRules.stackGain(AttunementService.isDissonant(caster));
         if (stacks >= EchoRules.HEAT_MAX) {
             HEAT.remove(target.getUUID());
             heatBurst(caster, target, tier);
             stacks = 0;
         } else {
-            HEAT.put(target.getUUID(), new Heat(caster.getUUID(), stacks, now));
+            HEAT.put(target.getUUID(), new Heat(caster.getUUID(), stacks, now, castId));
         }
         Net.toPlayer(caster, new EchoState(Schools.FIRE, (float) stacks, EchoRules.HEAT_MAX));
+        Net.toNearby(target, new HeatMark(target.getId(), (float) stacks));
     }
 
     private static void heatBurst(ServerPlayer caster, LivingEntity centre, int tier) {

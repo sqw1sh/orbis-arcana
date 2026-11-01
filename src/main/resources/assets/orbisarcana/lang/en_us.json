@@ -321,5 +321,7 @@
   "screen.orbisarcana.schools.state.frozen": "frozen",
   "message.orbisarcana.altar.reset": "Talents of %s were reset",
   "message.orbisarcana.altar.reset_cost": "Needs %s Aether Ink",
-  "screen.orbisarcana.altar.reset": "Reset talents"
+  "screen.orbisarcana.altar.reset": "Reset talents",
+  "message.orbisarcana.school.echo_hint": "The %s Echo and the root passive unlock at resonance 1 — use this school spells",
+  "hud.orbisarcana.echo_locked": "%s — from resonance 1"
 }

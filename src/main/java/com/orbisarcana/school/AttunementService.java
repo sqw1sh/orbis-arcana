@@ -83,6 +83,10 @@ public final class AttunementService {
         player.syncData(ModAttachments.ATTUNEMENT);
         player.sendSystemMessage(Component.translatable(first ? "message.orbisarcana.school.bound" : "message.orbisarcana.school.switched",
                 schoolName(school)).withStyle(ChatFormatting.LIGHT_PURPLE));
+        if (a.school(school).resonance() < 1) {
+            player.sendSystemMessage(Component.translatable("message.orbisarcana.school.echo_hint",
+                    Component.translatable("talent.orbisarcana." + school.getPath() + ".echo")).withStyle(ChatFormatting.GRAY));
+        }
     }
 
     /** Back to the neutral state; free, the school's progress is frozen (§10.6). */

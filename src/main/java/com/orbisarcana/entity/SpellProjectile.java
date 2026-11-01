@@ -108,7 +108,7 @@ public class SpellProjectile extends ThrowableProjectile {
         if (igniteTicks > 0) target.igniteForTicks(igniteTicks);
         if (owner instanceof ServerPlayer player && spell != null && target instanceof LivingEntity living && living.getHealth() < before) {
             MasteryService.onHit(player, spell, castId, living, !living.isAlive());
-            EchoService.onSpellHit(player, school, living);
+            EchoService.onSpellHit(player, school, living, castId);
         }
     }
 

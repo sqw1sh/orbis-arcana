@@ -37,6 +37,8 @@ neoForge {
             client()
             programArguments.addAll '--quickPlaySingleplayer', 'devtest'
             systemProperty 'orbisarcana.devshot', 'true'
+            // ./gradlew runClientShot -Pshots=radial,grimoire  -> only these scenes
+            if (project.hasProperty('shots')) systemProperty 'orbisarcana.devshot.only', project.property('shots')
             // Strict GPU validation is IDE-only; third-party mods like Iris trip it, production never runs it
             systemProperty 'neoforge.disableBlaze3DValidation', 'true'
         }

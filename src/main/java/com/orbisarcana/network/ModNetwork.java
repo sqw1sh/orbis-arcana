@@ -9,6 +9,7 @@ import com.orbisarcana.network.CastPayloads.CastStarted;
 import com.orbisarcana.network.CastPayloads.CastStop;
 import com.orbisarcana.network.CastPayloads.CooldownSet;
 import com.orbisarcana.network.CastPayloads.EchoState;
+import com.orbisarcana.network.CastPayloads.HeatMark;
 import com.orbisarcana.network.CastPayloads.LoadoutSelect;
 import com.orbisarcana.network.CastPayloads.LoadoutSet;
 import com.orbisarcana.network.CastPayloads.MilestoneToggle;
@@ -69,6 +70,7 @@ public final class ModNetwork {
         r.playToClient(CastDenied.TYPE, CastDenied.CODEC);
         r.playToClient(CooldownSet.TYPE, CooldownSet.CODEC);
         r.playToClient(EchoState.TYPE, EchoState.CODEC);
+        r.playToClient(HeatMark.TYPE, HeatMark.CODEC);
     }
 
     private ModNetwork() {}

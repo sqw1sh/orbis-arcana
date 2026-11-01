@@ -190,6 +190,20 @@ public final class CastPayloads {
         }
     }
 
+    /** Fire Heat stacks on an entity, shown above it to nearby players (0 clears). */
+    public record HeatMark(int entityId, float stacks) implements CustomPacketPayload {
+        public static final Type<HeatMark> TYPE = new Type<>(OrbisArcana.id("heat_mark"));
+        public static final StreamCodec<ByteBuf, HeatMark> CODEC = StreamCodec.composite(
+                ByteBufCodecs.VAR_INT, HeatMark::entityId,
+                ByteBufCodecs.FLOAT, HeatMark::stacks,
+                HeatMark::new);
+
+        @Override
+        public Type<HeatMark> type() {
+            return TYPE;
+        }
+    }
+
     /** Echo of the dominant school for the HUD: {@code stacks} of {@code max} (§13.2). */
     public record EchoState(Identifier school, float stacks, int max) implements CustomPacketPayload {
         public static final Type<EchoState> TYPE = new Type<>(OrbisArcana.id("echo_state"));

@@ -91,6 +91,7 @@ public final class OrbisGameTests {
         test("heat_bursts_at_five_stacks", 20, OrbisGameTests::heatBurst);
         test("flow_makes_next_cast_instant", 20, OrbisGameTests::flowInstant);
         test("crown_of_flame_every_third_cast", 20, OrbisGameTests::crownOfFlame);
+        test("flow_real_cast_needs_resonance_1", 20, OrbisGameTests::flowRealCast);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -555,9 +556,10 @@ public final class OrbisGameTests {
         ServerPlayer p = boundTo(h, Schools.FIRE, FIREBALL, 1);
         Pig pig = h.spawn(EntityTypes.PIG, new Vec3(2.5, 1, 2.5));
         pig.setNoAi(true);
-        for (int i = 0; i < 4; i++) EchoService.onSpellHit(p, Schools.FIRE, pig);
+        for (int i = 0; i < 4; i++) EchoService.onSpellHit(p, Schools.FIRE, pig, i);
+        EchoService.onSpellHit(p, Schools.FIRE, pig, 3); // same cast again: no extra stack
         h.assertValueEqual(pig.getHealth(), pig.getMaxHealth(), "no burst before the 5th stack");
-        EchoService.onSpellHit(p, Schools.FIRE, pig);
+        EchoService.onSpellHit(p, Schools.FIRE, pig, 4);
         h.assertTrue(pig.getHealth() <= pig.getMaxHealth() - 3.9f, "Heat burst at 5 stacks, health " + pig.getHealth());
         cleanup(h, p);
         h.succeed();
@@ -589,6 +591,24 @@ public final class OrbisGameTests {
         h.assertFalse(TalentEffects.crownOfFlameFree(p, Schools.WATER), "only fire spells count");
         cleanup(h, p);
         h.succeed();
+    }
+
+    /** End-to-end Flow: three healing casts, then a charged fireball fires at once; nothing at resonance 0. */
+    private static void flowRealCast(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.WATER, HEALING_DEW, 0);
+        KnowledgeService.learn(p, FIREBALL);
+        for (int i = 0; i < 3; i++) EchoService.onHealCast(p, 200 + i);
+        CastService.request(p, FIREBALL);
+        h.assertTrue(CastService.isCasting(p), "at resonance 0 there is no Echo: the fireball still charges");
+        CastService.interrupt(p, com.orbisarcana.core.ActiveCast.Outcome.CANCELLED);
+        p.getData(ModAttachments.ATTUNEMENT).school(Schools.WATER).setResonance(1);
+        for (int i = 0; i < 3; i++) EchoService.onHealCast(p, 300 + i);
+        h.runAfterDelay(6, () -> { // after the global cooldown
+            CastService.request(p, FIREBALL);
+            h.assertFalse(CastService.isCasting(p), "with Flow the charged fireball is released immediately");
+            cleanup(h, p);
+            h.succeed();
+        });
     }
 
     private OrbisGameTests() {}

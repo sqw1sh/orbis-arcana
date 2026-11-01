@@ -2,6 +2,7 @@ package com.orbisarcana.network;
 
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -20,6 +21,14 @@ public final class Net {
         ChunkPos chunk = ChunkPos.containing(player.blockPosition());
         for (ServerPlayer other : player.level().getChunkSource().chunkMap.getPlayers(chunk, false)) {
             if (other != player) toPlayer(other, payload);
+        }
+    }
+
+    /** Everyone with the entity chunk loaded. */
+    public static void toNearby(Entity entity, CustomPacketPayload payload) {
+        if (!(entity.level() instanceof net.minecraft.server.level.ServerLevel level)) return;
+        for (ServerPlayer p : level.getChunkSource().chunkMap.getPlayers(ChunkPos.containing(entity.blockPosition()), false)) {
+            toPlayer(p, payload);
         }
     }
 

@@ -32,7 +32,7 @@ public final class DevShot {
 
     private record Scene(String name, Runnable setup) {}
 
-    private static final List<Scene> SCENES = List.of(
+    private static final List<Scene> ALL_SCENES = List.of(
             circles(ClientConfig.RenderMode.AUTO),
             circles(ClientConfig.RenderMode.MESH),
             circles(ClientConfig.RenderMode.PARTICLES),
@@ -89,9 +89,18 @@ public final class DevShot {
                     pig.setPos(sp.getX(), sp.getY(), sp.getZ() + 4);
                     pig.setNoAi(true);
                     sp.level().addFreshEntity(pig);
-                    for (int i = 0; i < 3; i++) com.orbisarcana.school.EchoService.onSpellHit(sp, com.orbisarcana.school.Schools.FIRE, pig);
+                    for (int i = 0; i < 3; i++) com.orbisarcana.school.EchoService.onSpellHit(sp, com.orbisarcana.school.Schools.FIRE, pig, 9000 + i);
                 });
             }));
+
+    /** {@code -Dorbisarcana.devshot.only=a,b}: run only these scenes (setup scenes they need included). */
+    private static final List<Scene> SCENES = filterScenes(System.getProperty("orbisarcana.devshot.only", ""));
+
+    private static List<Scene> filterScenes(String only) {
+        if (only.isBlank()) return ALL_SCENES;
+        var names = java.util.Set.of(only.split(","));
+        return ALL_SCENES.stream().filter(s -> names.contains(s.name())).toList();
+    }
 
     private static int ticks;
     private static int waiting;

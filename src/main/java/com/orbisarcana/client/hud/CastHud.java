@@ -74,7 +74,17 @@ public final class CastHud {
 
         // Line 3 (above): Echo stacks of the dominant school (§13.2); fire Heat fades after a while without hits
         var echo = ClientCastState.echo();
-        var dominant = mc.player.getData(ModAttachments.ATTUNEMENT).dominant();
+        var attunement = mc.player.getData(ModAttachments.ATTUNEMENT);
+        var dominant = attunement.dominant();
+        if (dominant.isPresent()) {
+            var progress = attunement.schools().get(dominant.get());
+            if (progress == null || progress.resonance() < 1) {
+                Component locked = Component.translatable("hud.orbisarcana.echo_locked",
+                        Component.translatable("talent.orbisarcana." + dominant.get().getPath() + ".echo"));
+                g.text(mc.font, locked, fit(g, mc, locked, x), y - 20, TEXT_DIM, true);
+                return;
+            }
+        }
         if (echo != null && dominant.filter(echo.school()::equals).isPresent() && (echo.stacks() > 0 || now - echo.tick() < 60)
                 && now - echo.tick() < ECHO_SHOW_TICKS) {
             int filled = (int) Math.floor(echo.stacks());

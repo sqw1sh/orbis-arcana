@@ -65,7 +65,7 @@ public final class BurningGround {
             e.hurtServer(level, ModDamageTypes.source(e, p.school(), null, caster), PULSE_DAMAGE);
             if (caster != null && e.getHealth() < before) {
                 MasteryService.onHit(caster, p.spell(), p.castId(), e, !e.isAlive());
-                EchoService.onSpellHit(caster, p.school(), e);
+                EchoService.onSpellHit(caster, p.school(), e, p.castId());
             }
         }
     }

@@ -68,6 +68,23 @@ public final class ClientCircles {
 
     private static final List<Circle> CIRCLES = new ArrayList<>();
 
+    /** Fire Heat marks above entities: entity id -> {stacks, tick received}. */
+    private static final java.util.Map<Integer, double[]> HEAT_MARKS = new java.util.HashMap<>();
+    private static final long HEAT_MARK_TICKS = com.orbisarcana.core.EchoRules.HEAT_DECAY_TICKS;
+    private static final List<List<Layer>> HEAT_LAYERS = new ArrayList<>();
+
+    static {
+        for (int n = 0; n <= com.orbisarcana.core.EchoRules.HEAT_MAX; n++) {
+            HEAT_LAYERS.add(n == 0 ? List.of() : List.of(new Layer(CircleDefinition.LayerType.SATELLITE, 0.62, 0.04, 3, n, 40, false, 0.2, java.util.Optional.empty())));
+        }
+    }
+
+    public static void heatMark(int entityId, float stacks) {
+        var level = Minecraft.getInstance().level;
+        if (stacks <= 0 || level == null) HEAT_MARKS.remove(entityId);
+        else HEAT_MARKS.put(entityId, new double[] {stacks, level.getGameTime()});
+    }
+
     public static void start(CastStarted msg) {
         var mc = Minecraft.getInstance();
         if (mc.level == null) return;
@@ -88,6 +105,7 @@ public final class ClientCircles {
     @SubscribeEvent
     static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
         CIRCLES.clear();
+        HEAT_MARKS.clear();
     }
 
     /**
@@ -160,6 +178,7 @@ public final class ClientCircles {
                 out.add(s);
             }
         }
+        extractHeatMarks(mc, now, partial, cam, out);
         int max = ClientConfig.MAX_CIRCLES.getAsInt();
         if (out.size() > max) {
             out.sort(Comparator.comparingDouble(s -> s.center().lengthSqr()));
@@ -170,6 +189,28 @@ public final class ClientCircles {
             out = List.of();
         }
         event.getRenderState().setRenderData(RENDER_KEY, out);
+    }
+
+    /** Small camera-facing ring above each entity with Heat: the rim arc and diamonds show the stacks. */
+    private static void extractHeatMarks(Minecraft mc, double now, float partial, Vec3 cam, List<CircleRenderState> out) {
+        var it = HEAT_MARKS.entrySet().iterator();
+        while (it.hasNext()) {
+            var e = it.next();
+            Entity entity = mc.level.getEntity(e.getKey());
+            double stacks = e.getValue()[0];
+            if (entity == null || !entity.isAlive() || now - e.getValue()[1] > HEAT_MARK_TICKS) {
+                it.remove();
+                continue;
+            }
+            Vec3 centre = entity.getPosition(partial).add(0, entity.getBbHeight() + 0.45, 0);
+            Vec3 rel = centre.subtract(cam);
+            if (rel.length() > ClientConfig.HIDE_DISTANCE.getAsInt()) continue;
+            Vec3[] axes = axes(rel.lengthSqr() < 1.0E-4 ? new Vec3(0, 0, 1) : rel.normalize());
+            int n = (int) Math.min(com.orbisarcana.core.EchoRules.HEAT_MAX, Math.floor(stacks));
+            out.add(new CircleRenderState(rel, axes[0], axes[1], 0.28f, 1f, 0.9f * ClientConfig.OPACITY.get().floatValue(),
+                    (float) (stacks / com.orbisarcana.core.EchoRules.HEAT_MAX), (float) (now / 20.0), 0f,
+                    Schools.color(Schools.FIRE), Schools.color(Schools.FIRE), 1, HEAT_LAYERS.get(n), false, 0));
+        }
     }
 
     private static final CircleRenderState REMOVE = new CircleRenderState(Vec3.ZERO, Vec3.ZERO, Vec3.ZERO, 0, 0, 0, 0, 0, 0, 0, 0, 0, List.of(), true, 0);
