@@ -46,7 +46,8 @@ public final class TalentEffects {
             "lightning/echo", "lightning/root", "lightning/a1", "lightning/a2", "lightning/b1", "lightning/b2",
             "nature/echo", "nature/root", "nature/a1", "nature/a2", "nature/b1", "nature/b2",
             "light/echo", "light/root", "light/a1", "light/a2", "light/b1", "light/b2",
-            "dark/echo", "dark/root", "dark/a1", "dark/a2", "dark/b1", "dark/b2");
+            "dark/echo", "dark/root", "dark/a1", "dark/a2", "dark/b1", "dark/b2",
+            "astral/echo", "astral/root", "astral/a1", "astral/a2", "astral/b1", "astral/b2");
 
     public static final double EMBERS_IGNITE_MULT = 1.3;
     public static final double LIVING_WAVE_HEAL_MULT = 1.1;
@@ -325,6 +326,19 @@ public final class TalentEffects {
     @SubscribeEvent
     static void onPearl(net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderPearl event) {
         blindSpot(event.getPlayer());
+    }
+
+    // ---- Astral ----
+
+    /** B1 "Warp": -20% projectile damage while one of your stars is near (orbiting stars count). */
+    @SubscribeEvent
+    static void onProjectileAstral(LivingIncomingDamageEvent event) {
+        if (event.getEntity() instanceof ServerPlayer p && event.getSource().getDirectEntity() instanceof Projectile
+                && AttunementService.hasTalent(p, Schools.ASTRAL, TalentRules.B1)
+                && (com.orbisarcana.spell.Stars.near(p, com.orbisarcana.core.EchoRules.WARP_RADIUS)
+                        || com.orbisarcana.spell.behavior.OrbitBehavior.stars(p) > 0)) {
+            event.setAmount((float) (event.getAmount() * com.orbisarcana.core.EchoRules.WARP_MULT));
+        }
     }
 
     // ---- Water ----

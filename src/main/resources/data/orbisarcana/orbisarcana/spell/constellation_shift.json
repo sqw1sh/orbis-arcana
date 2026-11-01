@@ -1,0 +1,43 @@
+{
+  "school": "orbisarcana:astral",
+  "rarity": "orbisarcana:mythic",
+  "behavior": "orbisarcana:shift",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 50,
+    "min_ticks": 34
+  },
+  "cost": 46,
+  "cooldown_ticks": 900,
+  "primary_stat": "damage_per_second",
+  "params": {
+    "radius": 5,
+    "duration_ticks": 100,
+    "pull": 0.12,
+    "damage_per_second": 1.5,
+    "range": 24,
+    "second_zone": 0,
+    "hop_ticks": 0,
+    "collapse_damage": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "second_zone": 1
+      }
+    },
+    "10": {
+      "params": {
+        "hop_ticks": 30
+      }
+    },
+    "15": {
+      "params": {
+        "collapse_damage": 10
+      }
+    }
+  },
+  "circle": "orbisarcana:constellation_shift",
+  "xp_category": "control"
+}

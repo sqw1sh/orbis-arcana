@@ -444,5 +444,20 @@
   "spell.orbisarcana.shadow_step.desc": "Телепорт в точку взгляда (до 16 блоков).",
   "spell.orbisarcana.shadow_step.m5": "иллюзия-приманка на месте",
   "spell.orbisarcana.shadow_step.m10": "повторное нажатие за 3 с — возврат",
-  "spell.orbisarcana.shadow_step.m15": "на выходе — волна страха"
+  "spell.orbisarcana.shadow_step.m15": "на выходе — волна страха",
+  "spell.orbisarcana.star_spike": "Звёздный шип",
+  "spell.orbisarcana.star_spike.desc": "Пронзающий звёздный луч, ставит звезду.",
+  "spell.orbisarcana.star_spike.m5": "2 звезды за попадание",
+  "spell.orbisarcana.star_spike.m10": "звёзды соединяются дугой",
+  "spell.orbisarcana.star_spike.m15": "3 звезды — гравитационный коллапс",
+  "spell.orbisarcana.guardian_orbit": "Орбита хранителя",
+  "spell.orbisarcana.guardian_orbit.desc": "2 звезды вращаются вокруг и останавливают снаряды.",
+  "spell.orbisarcana.guardian_orbit.m5": "3 звезды",
+  "spell.orbisarcana.guardian_orbit.m10": "снаряд отражается",
+  "spell.orbisarcana.guardian_orbit.m15": "повторное нажатие — выпустить звёзды в цель",
+  "spell.orbisarcana.constellation_shift": "Сдвиг созвездий",
+  "spell.orbisarcana.constellation_shift.desc": "Гравитационная зона r5 стягивает врагов.",
+  "spell.orbisarcana.constellation_shift.m5": "вторая малая зона",
+  "spell.orbisarcana.constellation_shift.m10": "центр прыгает между вашими звёздами",
+  "spell.orbisarcana.constellation_shift.m15": "коллапс — урон и подъём в воздух"
 }

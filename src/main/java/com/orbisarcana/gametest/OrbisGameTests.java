@@ -24,7 +24,10 @@ import com.orbisarcana.spell.CastService;
 import com.orbisarcana.spell.Frost;
 import com.orbisarcana.spell.Shields;
 import com.orbisarcana.spell.Toggles;
+import com.orbisarcana.spell.Stars;
 import com.orbisarcana.spell.behavior.CurseBehavior;
+import com.orbisarcana.spell.behavior.OrbitBehavior;
+import com.orbisarcana.spell.behavior.ShiftBehavior;
 import com.orbisarcana.spell.behavior.RootsBehavior;
 import com.orbisarcana.spell.behavior.BurningGround;
 
@@ -142,6 +145,10 @@ public final class OrbisGameTests {
         test("withering_curse_weakens_and_spreads", 80, OrbisGameTests::witheringCurse);
         test("shadow_step_teleports_and_returns", 40, OrbisGameTests::shadowStep);
         test("dusk_mark_absorbed_for_mana", 20, OrbisGameTests::dusk);
+        test("star_spike_pierces_and_places_a_star", 40, OrbisGameTests::starSpike);
+        test("guardian_orbit_catches_and_launches", 60, OrbisGameTests::guardianOrbit);
+        test("constellation_shift_drags_enemies", 100, OrbisGameTests::constellationShift);
+        test("constellation_pulses_on_three_stars", 20, OrbisGameTests::constellation);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1259,6 +1266,81 @@ public final class OrbisGameTests {
         h.assertTrue(ManaService.mana(p) >= 12.9, "and gives mana, " + ManaService.mana(p));
         h.assertTrue(golem.getHealth() <= golem.getMaxHealth() - 4f, "plus extra damage, health " + golem.getHealth());
         golem.discard();
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static final Identifier STAR_SPIKE = OrbisArcana.id("star_spike");
+    private static final Identifier GUARDIAN_ORBIT = OrbisArcana.id("guardian_orbit");
+    private static final Identifier CONSTELLATION_SHIFT = OrbisArcana.id("constellation_shift");
+
+    private static void starSpike(GameTestHelper h) {
+        Pig front = h.spawn(EntityTypes.PIG, new Vec3(4.5, 1, 4.5));
+        Pig back = h.spawn(EntityTypes.PIG, new Vec3(7.5, 1, 4.5));
+        front.setNoAi(true);
+        back.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 7f);
+        KnowledgeService.learn(p, STAR_SPIKE);
+        CastService.request(p, STAR_SPIKE);
+        release(h, p, 20);
+        succeedWhen(h, p, () -> {
+            h.assertTrue(front.getHealth() < front.getMaxHealth() && back.getHealth() < back.getMaxHealth(), "the beam pierces both pigs");
+            h.assertValueEqual(Stars.of(p).size(), 1, "and leaves a star");
+        });
+    }
+
+    private static void guardianOrbit(GameTestHelper h) {
+        var golem = h.spawn(EntityTypes.IRON_GOLEM, new Vec3(7.5, 1, 4.5));
+        golem.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(3.5, 1, 4.5), -90f, 0f);
+        KnowledgeService.learn(p, GUARDIAN_ORBIT);
+        KnowledgeService.setMastery(p, GUARDIAN_ORBIT, 15);
+        CastService.request(p, GUARDIAN_ORBIT);
+        h.assertValueEqual(OrbitBehavior.stars(p), 3, "three stars at m5");
+        var arrow = EntityTypes.ARROW.create(h.getLevel(), net.minecraft.world.entity.EntitySpawnReason.TRIGGERED);
+        Vec3 from = h.absoluteVec(new Vec3(1.0, 2.1, 4.5));
+        arrow.setPos(from.x, from.y, from.z);
+        arrow.setDeltaMovement(0.6, 0, 0);
+        arrow.setNoGravity(true);
+        h.getLevel().addFreshEntity(arrow);
+        h.runAfterDelay(20, () -> {
+            h.assertTrue(OrbitBehavior.stars(p) < 3, "a star stops the arrow");
+            CastService.request(p, GUARDIAN_ORBIT);
+            h.assertValueEqual(OrbitBehavior.stars(p), 0, "a second press launches the rest (m15)");
+            h.assertTrue(golem.getHealth() < golem.getMaxHealth(), "into the target");
+            golem.discard();
+            arrow.discard();
+            cleanup(h, p);
+            h.succeed();
+        });
+    }
+
+    private static void constellationShift(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(7.5, 1, 4.5));
+        ServerPlayer p = player(h, new Vec3(3.5, 1, 4.5), 0f, 90f);
+        KnowledgeService.learn(p, CONSTELLATION_SHIFT);
+        double start = pig.position().distanceTo(p.position());
+        CastService.request(p, CONSTELLATION_SHIFT);
+        release(h, p, 52);
+        succeedWhen(h, p, () -> {
+            h.assertTrue(ShiftBehavior.active() > 0, "the zone is up");
+            h.assertTrue(pig.position().distanceTo(p.position()) < start - 1.5, "and drags the pig in");
+            h.assertTrue(pig.getHealth() < pig.getMaxHealth(), "and wears it down");
+        });
+    }
+
+    private static void constellation(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.ASTRAL, STAR_SPIKE, 1);
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(3.5, 1, 3.5));
+        pig.setNoAi(true);
+        Vec3 c = h.absoluteVec(new Vec3(3.5, 1.5, 3.5));
+        Stars.place(p, c.add(1.5, 0, 0), 0, 0);
+        Stars.place(p, c.add(-1.5, 0, 1), 0, 0);
+        h.assertValueEqual(Stars.of(p).size(), 2, "two stars wait");
+        h.assertValueEqual(pig.getHealth(), pig.getMaxHealth(), "no pulse yet");
+        Stars.place(p, c.add(0, 0, -1.5), 0, 0);
+        h.assertTrue(pig.getHealth() < pig.getMaxHealth(), "the third star sets off the pulse");
+        h.assertValueEqual(Stars.of(p).size(), 0, "the figure is spent");
         cleanup(h, p);
         h.succeed();
     }

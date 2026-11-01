@@ -444,5 +444,20 @@
   "spell.orbisarcana.shadow_step.desc": "Teleport to where you look (up to 16 blocks).",
   "spell.orbisarcana.shadow_step.m5": "a decoy stays behind",
   "spell.orbisarcana.shadow_step.m10": "press again within 3 s to return",
-  "spell.orbisarcana.shadow_step.m15": "a wave of fear on arrival"
+  "spell.orbisarcana.shadow_step.m15": "a wave of fear on arrival",
+  "spell.orbisarcana.star_spike": "Star Spike",
+  "spell.orbisarcana.star_spike.desc": "A piercing star beam that leaves a star.",
+  "spell.orbisarcana.star_spike.m5": "2 stars per hit",
+  "spell.orbisarcana.star_spike.m10": "stars arc to each other",
+  "spell.orbisarcana.star_spike.m15": "3 stars collapse into gravity",
+  "spell.orbisarcana.guardian_orbit": "Guardian Orbit",
+  "spell.orbisarcana.guardian_orbit.desc": "2 stars circle you and stop projectiles.",
+  "spell.orbisarcana.guardian_orbit.m5": "3 stars",
+  "spell.orbisarcana.guardian_orbit.m10": "projectiles are reflected",
+  "spell.orbisarcana.guardian_orbit.m15": "press again to launch the stars",
+  "spell.orbisarcana.constellation_shift": "Constellation Shift",
+  "spell.orbisarcana.constellation_shift.desc": "An r5 gravity zone drags enemies in.",
+  "spell.orbisarcana.constellation_shift.m5": "a second, smaller zone",
+  "spell.orbisarcana.constellation_shift.m10": "the centre hops between your stars",
+  "spell.orbisarcana.constellation_shift.m15": "collapse: damage and a throw upwards"
 }

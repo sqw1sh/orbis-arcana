@@ -29,6 +29,7 @@ import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.behavior.CastContext;
 import com.orbisarcana.spell.behavior.ChannelBehavior;
 import com.orbisarcana.spell.behavior.SpellBehaviors;
+import com.orbisarcana.spell.behavior.OrbitBehavior;
 import com.orbisarcana.spell.behavior.StepBehavior;
 
 import net.minecraft.resources.Identifier;
@@ -106,6 +107,8 @@ public final class CastService {
         }
         // Shadow Step, milestone 10: a second press inside the window steps back, free
         if (def.isPresent() && StepBehavior.tryReturn(player, spellId)) return;
+        // Guardian Orbit, milestone 15: a second press while it spins launches the stars
+        if (def.isPresent() && OrbitBehavior.tryLaunch(player, spellId)) return;
 
         Optional<CastDenial> denial = CastRules.check(new CastRules.Request(
                 def.isPresent() && SpellBehaviors.get(def.get().behavior()).isPresent(),
@@ -221,7 +224,9 @@ public final class CastService {
         ActiveCast core = cast.core();
 
         if (outcome == Outcome.RELEASED) {
-            SpellBehaviors.get(cast.spell().behavior()).ifPresent(b -> b.release(context(player, cast, now)));
+            CastContext ctx = context(player, cast, now);
+            SpellBehaviors.get(cast.spell().behavior()).ifPresent(b -> b.release(ctx));
+            EchoService.onCastReleased(ctx);
             if (cast.spell().xpCategory() == com.orbisarcana.core.XpCategory.ATTACK) EchoService.onAttackCast(player);
             if (TalentEffects.crownOfFlameFree(player, cast.spell().school())) {
                 ManaService.setMana(player, ManaService.mana(player) + core.cost);

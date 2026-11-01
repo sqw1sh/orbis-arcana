@@ -1,0 +1,40 @@
+{
+  "school": "orbisarcana:astral",
+  "rarity": "orbisarcana:rare",
+  "behavior": "orbisarcana:spike",
+  "targeting": "directional",
+  "cast": {
+    "mode": "charged",
+    "ticks": 18,
+    "min_ticks": 10
+  },
+  "cost": 18,
+  "cooldown_ticks": 140,
+  "primary_stat": "damage",
+  "params": {
+    "damage": 9,
+    "range": 28,
+    "stars_per_hit": 1,
+    "arc_damage": 0,
+    "collapse_damage": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "stars_per_hit": 2
+      }
+    },
+    "10": {
+      "params": {
+        "arc_damage": 1.5
+      }
+    },
+    "15": {
+      "params": {
+        "collapse_damage": 8
+      }
+    }
+  },
+  "circle": "orbisarcana:star_spike",
+  "xp_category": "attack"
+}

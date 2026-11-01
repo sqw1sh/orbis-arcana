@@ -32,5 +32,7 @@ class EchoRulesTest {
         assertEquals(1.5, EchoRules.duskDamage(2, true), 1e-9);
         assertEquals(5.0, EchoRules.duskMana(false, true), 1e-9);
         assertEquals(1.5, EchoRules.duskMana(true, false), 1e-9);
+        assertEquals(4.0, EchoRules.pulseDamage(1, false), 1e-9);
+        assertEquals(3.0, EchoRules.pulseDamage(2, true), 1e-9);
     }
 }

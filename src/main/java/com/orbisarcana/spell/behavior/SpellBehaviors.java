@@ -45,6 +45,9 @@ public final class SpellBehaviors {
     public static final Supplier<SpellBehavior> DART = BEHAVIORS.register("dart", () -> DartBehavior::release);
     public static final Supplier<SpellBehavior> CURSE = BEHAVIORS.register("curse", () -> CurseBehavior::release);
     public static final Supplier<SpellBehavior> STEP = BEHAVIORS.register("step", () -> StepBehavior::release);
+    public static final Supplier<SpellBehavior> SPIKE = BEHAVIORS.register("spike", () -> SpikeBehavior::release);
+    public static final Supplier<SpellBehavior> ORBIT = BEHAVIORS.register("orbit", () -> OrbitBehavior::release);
+    public static final Supplier<SpellBehavior> SHIFT = BEHAVIORS.register("shift", () -> ShiftBehavior::release);
 
     public static void register(IEventBus modBus) {
         modBus.addListener((NewRegistryEvent event) -> event.register(REGISTRY));

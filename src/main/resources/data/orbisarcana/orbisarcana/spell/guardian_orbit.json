@@ -1,0 +1,38 @@
+{
+  "school": "orbisarcana:astral",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:orbit",
+  "targeting": "self",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 26,
+  "cooldown_ticks": 360,
+  "primary_stat": "duration_ticks",
+  "params": {
+    "stars": 2,
+    "duration_ticks": 300,
+    "radius": 1.6,
+    "reflect": 0,
+    "launch_damage": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "stars": 3
+      }
+    },
+    "10": {
+      "params": {
+        "reflect": 1
+      }
+    },
+    "15": {
+      "params": {
+        "launch_damage": 5
+      }
+    }
+  },
+  "circle": "orbisarcana:guardian_orbit",
+  "xp_category": "shield"
+}

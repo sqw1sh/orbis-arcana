@@ -452,6 +452,19 @@ public final class EchoService {
         }
     }
 
+    // ---- Astral: Constellation ----
+
+    private static final Identifier SPIKE = OrbisArcana.id("spike");
+
+    /** With the Astral Echo every released spell places a star where it aimed (Star Spike places its own). */
+    public static void onCastReleased(com.orbisarcana.spell.behavior.CastContext ctx) {
+        if (tier(ctx.caster(), Schools.ASTRAL) <= 0 || ctx.spell().behavior().equals(SPIKE)) return;
+        Vec3 pos = ctx.groundPoint() != null ? ctx.groundPoint().add(0, 1, 0)
+                : ctx.target() != null ? ctx.target().getBoundingBox().getCenter()
+                : ctx.caster().position().add(ctx.caster().getLookAngle().multiply(1, 0, 1).scale(2)).add(0, 1, 0);
+        com.orbisarcana.spell.Stars.place(ctx.caster(), pos, 0, 0);
+    }
+
     // ---- Water: Flow ----
 
     /** A healing/support cast succeeded (counted once per cast). */

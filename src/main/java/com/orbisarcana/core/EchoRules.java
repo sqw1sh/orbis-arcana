@@ -105,6 +105,27 @@ public final class EchoRules {
         return (dissonance ? DUSK_MANA * SchoolRules.DISSONANCE_ECHO_MULT : DUSK_MANA) + (shadowMark ? SHADOW_MARK_MANA : 0);
     }
 
+    // Astral: Constellation
+    public static final int STARS_MAX = 3;
+    /** A2 "Celestial Geometry": a 4th star, the diamond pulses twice. */
+    public static final int STARS_MAX_GEOMETRY = 4;
+    public static final int STARS_FOR_PULSE = 3;
+    public static final long STAR_TICKS = 160;
+    /** Root "First Star": stars live 12 s instead of 8. */
+    public static final long FIRST_STAR_TICKS = 240;
+    /** A1 "Star Orbit": pulse damage x1.5. */
+    public static final double STAR_ORBIT_MULT = 1.5;
+    public static final double NULL_MOMENT_RANGE = 24;
+    /** B1 "Warp": -20% projectile damage with a star within 6 blocks. */
+    public static final double WARP_MULT = 0.8;
+    public static final double WARP_RADIUS = 6;
+
+    /** Constellation pulse damage: 4, or 6 at tier 2; Dissonance halves it. */
+    public static double pulseDamage(int tier, boolean dissonance) {
+        double dmg = tier >= 2 ? 6.0 : 4.0;
+        return dissonance ? dmg * SchoolRules.DISSONANCE_ECHO_MULT : dmg;
+    }
+
     // Air: Impulse
     public static final double IMPULSE_MAX = 10;
     /** Charge per block moved while in combat. */
