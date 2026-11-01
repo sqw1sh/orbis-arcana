@@ -64,6 +64,8 @@ public final class EchoService {
     private static final Map<UUID, Double> FLOW = new HashMap<>();
     /** player -> last cast id that already gave flow (one stack per cast, zones pulse many times). */
     private static final Map<UUID, Integer> FLOW_CAST = new HashMap<>();
+    /** player -> Radiance charge. */
+    private static final Map<UUID, Double> RADIANCE = new HashMap<>();
     /** player -> Bulwark charge. */
     private static final Map<UUID, Double> BULWARK = new HashMap<>();
     /** player -> Impulse charge, and the position last tick. */
@@ -299,6 +301,56 @@ public final class EchoService {
         level.sendParticles(ParticleTypes.HAPPY_VILLAGER, s.pos().x, s.pos().y + 0.5, s.pos().z, 15, 0.8, 0.4, 0.8, 0);
     }
 
+    // ---- Light: Radiance ----
+
+    /** The player healed, shielded or spared someone {@code amount} HP: Radiance charges; full, it pulses. */
+    public static void onSupport(ServerPlayer player, float amount) {
+        int tier = tier(player, Schools.LIGHT);
+        if (tier <= 0 || amount <= 0) return;
+        double before = radiance(player);
+        double charge = before + amount * EchoRules.stackGain(AttunementService.isDissonant(player));
+        if (charge >= EchoRules.RADIANCE_MAX) {
+            charge = 0;
+            radiancePulse(player, tier);
+        }
+        RADIANCE.put(player.getUUID(), charge);
+        if ((int) charge != (int) before) Net.toPlayer(player, new EchoState(Schools.LIGHT, (float) Math.floor(charge), (int) EchoRules.RADIANCE_MAX));
+    }
+
+    public static double radiance(ServerPlayer player) {
+        return RADIANCE.getOrDefault(player.getUUID(), 0.0);
+    }
+
+    /**
+     * Full Radiance: allies around lose their harmful effects. B1 "Veil": they get a shield; A2 "Retribution Ray":
+     * enemies around are burnt.
+     */
+    private static void radiancePulse(ServerPlayer player, int tier) {
+        ServerLevel level = player.level();
+        double r = tier >= 2 ? EchoRules.RADIANCE_TIER2_RADIUS : EchoRules.RADIANCE_RADIUS;
+        boolean veil = AttunementService.hasTalent(player, Schools.LIGHT, TalentRules.B1);
+        for (var ally : level.getEntitiesOfClass(net.minecraft.world.entity.player.Player.class, player.getBoundingBox().inflate(r),
+                a -> a.isAlive() && a.distanceTo(player) <= r)) {
+            ally.getActiveEffects().stream()
+                    .filter(e -> e.getEffect().value().getCategory() == net.minecraft.world.effect.MobEffectCategory.HARMFUL)
+                    .map(MobEffectInstance::getEffect).toList()
+                    .forEach(ally::removeEffect);
+            if (veil) com.orbisarcana.spell.Shields.grant(ally, EchoRules.VEIL_SHIELD, EchoRules.VEIL_TICKS, null);
+        }
+        if (AttunementService.hasTalent(player, Schools.LIGHT, TalentRules.A2)) {
+            float damage = (float) EchoRules.retributionDamage(tier, AttunementService.isDissonant(player));
+            for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(r),
+                    e -> e.isAlive() && !(e instanceof net.minecraft.world.entity.player.Player) && e.distanceTo(player) <= r)) {
+                e.hurtServer(level, ModDamageTypes.source(e, Schools.LIGHT, null, player), damage);
+            }
+        }
+        for (int i = 0; i < 24; i++) {
+            double a = Math.PI * 2 * i / 24;
+            level.sendParticles(ParticleTypes.END_ROD, player.getX() + Math.cos(a) * r, player.getY() + 0.5, player.getZ() + Math.sin(a) * r, 1, 0, 0.1, 0, 0.02);
+        }
+        level.sendParticles(ParticleTypes.END_ROD, player.getX(), player.getY() + 1, player.getZ(), 40, 0.5, 0.8, 0.5, 0.15);
+    }
+
     // ---- Water: Flow ----
 
     /** A healing/support cast succeeded (counted once per cast). */
@@ -415,6 +467,7 @@ public final class EchoService {
         FLOW.remove(id);
         FLOW_CAST.remove(id);
         BULWARK.remove(id);
+        RADIANCE.remove(id);
         IMPULSE.remove(id);
         LAST_POS.remove(id);
         HEAT.values().removeIf(h -> h.caster().equals(id));
@@ -432,6 +485,7 @@ public final class EchoService {
         FLOW.clear();
         FLOW_CAST.clear();
         BULWARK.clear();
+        RADIANCE.clear();
         IMPULSE.clear();
         LAST_POS.clear();
     }

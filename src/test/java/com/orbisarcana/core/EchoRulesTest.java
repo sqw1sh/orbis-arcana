@@ -26,5 +26,7 @@ class EchoRulesTest {
         assertEquals(2.25, EchoRules.conductDamage(2, true), 1e-9);
         assertEquals(2.0, EchoRules.sproutPower(1, false), 1e-9);
         assertEquals(1.5, EchoRules.sproutPower(2, true), 1e-9);
+        assertEquals(4.0, EchoRules.retributionDamage(1, false), 1e-9);
+        assertEquals(3.0, EchoRules.retributionDamage(2, true), 1e-9);
     }
 }

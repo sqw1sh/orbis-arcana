@@ -1,0 +1,40 @@
+{
+  "school": "orbisarcana:light",
+  "rarity": "orbisarcana:rare",
+  "behavior": "orbisarcana:ray",
+  "targeting": "directional",
+  "cast": {
+    "mode": "channel",
+    "ticks": 60
+  },
+  "cost": 18,
+  "cooldown_ticks": 160,
+  "primary_stat": "damage_per_pulse",
+  "params": {
+    "damage_per_pulse": 1.5,
+    "range": 16,
+    "undead_mult": 2,
+    "pierce": 0,
+    "ally_heal": 0,
+    "finale": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "pierce": 1
+      }
+    },
+    "10": {
+      "params": {
+        "ally_heal": 1
+      }
+    },
+    "15": {
+      "params": {
+        "finale": 1
+      }
+    }
+  },
+  "circle": "orbisarcana:dawn_ray",
+  "xp_category": "attack"
+}

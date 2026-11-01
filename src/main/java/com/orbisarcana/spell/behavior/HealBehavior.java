@@ -44,7 +44,9 @@ final class HealBehavior {
             EchoService.onEffectiveCast(ctx.caster(), ctx.spell().school(), target.position(), ctx.castId());
         }
         TalentEffects.afterHeal(ctx.caster(), target, amount);
+        EchoService.onSupport(ctx.caster(), Math.min(amount, missing));
         float overheal = amount - missing;
+        TalentEffects.spark(ctx.caster(), target, overheal);
         if (overheal > 0 && ctx.param("overheal_to_shield") > 0) {
             Shields.grant(target, Math.min(MAX_SHIELD, overheal), OVERHEAL_SHIELD_TICKS, null);
         }

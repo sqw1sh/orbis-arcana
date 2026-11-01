@@ -414,5 +414,20 @@
   "spell.orbisarcana.thorn_seed.desc": "A seed that sprouts into a thicket where it lands.",
   "spell.orbisarcana.thorn_seed.m5": "the thicket grows a barrier",
   "spell.orbisarcana.thorn_seed.m10": "side spikes burst out",
-  "spell.orbisarcana.thorn_seed.m15": "a Guardian Treant grows for 8 s"
+  "spell.orbisarcana.thorn_seed.m15": "a Guardian Treant grows for 8 s",
+  "spell.orbisarcana.dawn_ray": "Dawn Ray",
+  "spell.orbisarcana.dawn_ray.desc": "A beam of light burns the first enemy on the line, undead twice as hard.",
+  "spell.orbisarcana.dawn_ray.m5": "pierces enemies",
+  "spell.orbisarcana.dawn_ray.m10": "heals allies on the line",
+  "spell.orbisarcana.dawn_ray.m15": "blinds undead, final flash",
+  "spell.orbisarcana.purifying_aura": "Purifying Aura",
+  "spell.orbisarcana.purifying_aura.desc": "An r5 aura: allies take 10% less damage.",
+  "spell.orbisarcana.purifying_aura.m5": "cleanses a debuff every 8 s",
+  "spell.orbisarcana.purifying_aura.m10": "a hit ally gets a shield",
+  "spell.orbisarcana.purifying_aura.m15": "undead in the aura burn",
+  "spell.orbisarcana.heavens_judgment": "Judgment of Heaven",
+  "spell.orbisarcana.heavens_judgment.desc": "A column of light strikes the point (r3) and marks enemies.",
+  "spell.orbisarcana.heavens_judgment.m5": "the column stays for 2 s",
+  "spell.orbisarcana.heavens_judgment.m10": "3 small columns around it",
+  "spell.orbisarcana.heavens_judgment.m15": "hallowed ground heals allies"
 }

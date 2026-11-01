@@ -121,6 +121,8 @@ final class ZoneBehavior {
         ServerPlayer caster = zone.level.getServer().getPlayerList().getPlayer(zone.caster);
         if (caster != null) {
             MasteryService.onHeal(caster, zone.spellId, zone.castId, target, Math.min(amount, missing));
+            EchoService.onSupport(caster, Math.min(amount, missing));
+            TalentEffects.spark(caster, target, amount - missing);
             if (missing > 0) {
                 EchoService.onHealCast(caster, zone.castId);
                 EchoService.onEffectiveCast(caster, zone.school, target.position(), zone.castId);

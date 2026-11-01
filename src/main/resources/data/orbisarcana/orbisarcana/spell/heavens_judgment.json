@@ -1,0 +1,41 @@
+{
+  "school": "orbisarcana:light",
+  "rarity": "orbisarcana:mythic",
+  "behavior": "orbisarcana:judgment",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 60,
+    "min_ticks": 40
+  },
+  "cost": 48,
+  "cooldown_ticks": 900,
+  "primary_stat": "damage",
+  "params": {
+    "damage": 16,
+    "radius": 3,
+    "range": 24,
+    "linger_ticks": 0,
+    "small_columns": 0,
+    "hallowed_ticks": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "linger_ticks": 40
+      }
+    },
+    "10": {
+      "params": {
+        "small_columns": 3
+      }
+    },
+    "15": {
+      "params": {
+        "hallowed_ticks": 160
+      }
+    }
+  },
+  "circle": "orbisarcana:heavens_judgment",
+  "xp_category": "attack"
+}

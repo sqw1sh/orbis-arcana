@@ -55,6 +55,7 @@ final class ShieldBehavior {
             if (absorbed > 0) MasteryService.onHeal(caster, ctx.spellId(), ctx.castId(), holder, absorbed);
             if (broken && impulse) impulse(ctx, holder, caster);
         });
+        com.orbisarcana.school.EchoService.onSupport(caster, amount);
         Vec3 p = target.position();
         ctx.level().sendParticles(STONE, p.x, p.y + 1, p.z, 30, 0.5, 0.8, 0.5, 0.1);
     }

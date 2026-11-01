@@ -44,7 +44,8 @@ public final class TalentEffects {
             "air/echo", "air/root", "air/a1", "air/a2", "air/b1", "air/b2",
             "ice/echo", "ice/root", "ice/a1", "ice/a2", "ice/b1", "ice/b2",
             "lightning/echo", "lightning/root", "lightning/a1", "lightning/a2", "lightning/b1", "lightning/b2",
-            "nature/echo", "nature/root", "nature/a1", "nature/a2", "nature/b1", "nature/b2");
+            "nature/echo", "nature/root", "nature/a1", "nature/a2", "nature/b1", "nature/b2",
+            "light/echo", "light/root", "light/a1", "light/a2", "light/b1", "light/b2");
 
     public static final double EMBERS_IGNITE_MULT = 1.3;
     public static final double LIVING_WAVE_HEAL_MULT = 1.1;
@@ -240,6 +241,45 @@ public final class TalentEffects {
                 && AttunementService.hasTalent(p, Schools.AIR, TalentRules.B2) && p.getRandom().nextDouble() < EVASIVE_CHANCE) {
             event.setCanceled(true);
             p.level().sendParticles(ParticleTypes.CLOUD, p.getX(), p.getY() + 1, p.getZ(), 10, 0.3, 0.5, 0.3, 0.05);
+        }
+    }
+
+    // ---- Light ----
+
+    public static final double SPARK_SHARE = 0.25;
+    public static final float SPARK_MAX_SHIELD = 4f;
+    public static final int SPARK_TICKS = 10 * 20;
+    public static final double EXPOSURE_MULT = 1.2;
+    public static final double SOLAR_VOW_MULT = 0.95;
+    public static final double SOLAR_VOW_RADIUS = 6;
+
+    public static boolean isUndead(LivingEntity e) {
+        return e.getType().builtInRegistryHolder().is(net.minecraft.tags.EntityTypeTags.UNDEAD);
+    }
+
+    /** Root "Spark": 25% of overheal becomes a shield (up to 4 HP of shields on the target). */
+    public static void spark(ServerPlayer caster, LivingEntity target, float overheal) {
+        if (overheal <= 0 || !AttunementService.hasTalent(caster, Schools.LIGHT, TalentRules.ROOT)) return;
+        float room = SPARK_MAX_SHIELD - Shields.total(target);
+        float amount = Math.min(room, (float) (overheal * SPARK_SHARE));
+        if (amount > 0.05f) Shields.grant(target, amount, SPARK_TICKS, null);
+    }
+
+    /**
+     * A1 "Exposure": +20% damage to undead and marked (glowing) targets. B2 "Solar Vow": players within 6 blocks of a
+     * vow keeper (the keeper too) take 5% less damage.
+     */
+    @SubscribeEvent
+    static void onIncomingLight(LivingIncomingDamageEvent event) {
+        LivingEntity victim = event.getEntity();
+        if (event.getSource().getEntity() instanceof ServerPlayer p && p != victim
+                && (isUndead(victim) || victim.hasEffect(MobEffects.GLOWING)) && AttunementService.hasTalent(p, Schools.LIGHT, TalentRules.A1)) {
+            event.setAmount((float) (event.getAmount() * EXPOSURE_MULT));
+        }
+        if (victim instanceof ServerPlayer target && !target.level().getEntitiesOfClass(ServerPlayer.class,
+                target.getBoundingBox().inflate(SOLAR_VOW_RADIUS),
+                k -> k.isAlive() && k.distanceTo(target) <= SOLAR_VOW_RADIUS && AttunementService.hasTalent(k, Schools.LIGHT, TalentRules.B2)).isEmpty()) {
+            event.setAmount((float) (event.getAmount() * SOLAR_VOW_MULT));
         }
     }
 

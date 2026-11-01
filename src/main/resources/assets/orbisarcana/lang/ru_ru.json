@@ -414,5 +414,20 @@
   "spell.orbisarcana.thorn_seed.desc": "Семя прорастает терновником там, куда попало.",
   "spell.orbisarcana.thorn_seed.m5": "терновник — барьер",
   "spell.orbisarcana.thorn_seed.m10": "выпускает боковые шипы",
-  "spell.orbisarcana.thorn_seed.m15": "вырастает Страж-древень на 8 с"
+  "spell.orbisarcana.thorn_seed.m15": "вырастает Страж-древень на 8 с",
+  "spell.orbisarcana.dawn_ray": "Луч рассвета",
+  "spell.orbisarcana.dawn_ray.desc": "Луч света жжёт первого врага на линии, нежить — вдвое сильнее.",
+  "spell.orbisarcana.dawn_ray.m5": "проходит сквозь врагов",
+  "spell.orbisarcana.dawn_ray.m10": "лечит союзников на линии",
+  "spell.orbisarcana.dawn_ray.m15": "ослепляет нежить, финальная вспышка",
+  "spell.orbisarcana.purifying_aura": "Аура очищения",
+  "spell.orbisarcana.purifying_aura.desc": "Аура r5: союзники получают на 10% меньше урона.",
+  "spell.orbisarcana.purifying_aura.m5": "раз в 8 с снимает дебафф",
+  "spell.orbisarcana.purifying_aura.m10": "удар по союзнику — щит",
+  "spell.orbisarcana.purifying_aura.m15": "нежить в ауре горит",
+  "spell.orbisarcana.heavens_judgment": "Суд небес",
+  "spell.orbisarcana.heavens_judgment.desc": "Колонна света бьёт с неба в точку (r3) и подсвечивает врагов.",
+  "spell.orbisarcana.heavens_judgment.m5": "колонна держится 2 с",
+  "spell.orbisarcana.heavens_judgment.m10": "3 малые колонны вокруг",
+  "spell.orbisarcana.heavens_judgment.m15": "освящённая земля лечит союзников"
 }

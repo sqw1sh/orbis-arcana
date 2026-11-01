@@ -39,6 +39,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
@@ -130,6 +131,12 @@ public final class OrbisGameTests {
         test("thorn_seed_sprouts_a_thicket", 100, OrbisGameTests::thornSeed);
         test("thorn_seed_grows_a_guardian", 100, OrbisGameTests::thornGuardian);
         test("sprouting_matures_and_heals", 160, OrbisGameTests::sprouting);
+        test("dawn_ray_burns_the_first_enemy", 60, OrbisGameTests::dawnRay);
+        test("dawn_ray_pierces_at_m5", 60, OrbisGameTests::dawnRayPierce);
+        test("purifying_aura_softens_and_wards", 40, OrbisGameTests::purifyingAura);
+        test("heavens_judgment_strikes_and_marks", 100, OrbisGameTests::heavensJudgment);
+        test("heavens_judgment_hallows_ground", 140, OrbisGameTests::hallowedGround);
+        test("radiance_pulse_cleanses_and_veils", 20, OrbisGameTests::radiance);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1079,6 +1086,101 @@ public final class OrbisGameTests {
         EchoService.onEffectiveCast(p, Schools.NATURE, p.position(), 500); // one sprout per cast
         h.assertValueEqual(EchoService.sprouts(p), 1, "one sprout per cast");
         succeedWhen(h, p, () -> h.assertTrue(p.getHealth() > 10f, "the sprout matures and heals the wounded player"));
+    }
+
+    private static final Identifier DAWN_RAY = OrbisArcana.id("dawn_ray");
+    private static final Identifier PURIFYING_AURA = OrbisArcana.id("purifying_aura");
+    private static final Identifier HEAVENS_JUDGMENT = OrbisArcana.id("heavens_judgment");
+
+    private static void dawnRay(GameTestHelper h) {
+        Pig front = h.spawn(EntityTypes.PIG, new Vec3(4.5, 1, 4.5));
+        Pig back = h.spawn(EntityTypes.PIG, new Vec3(7.5, 1, 4.5));
+        front.setNoAi(true);
+        back.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 10f);
+        KnowledgeService.learn(p, DAWN_RAY);
+        CastService.request(p, DAWN_RAY);
+        h.assertTrue(CastService.isCasting(p), "channel starts");
+        h.runAfterDelay(21, () -> {
+            CastService.stop(p, CastService.activeCastId(p), false);
+            h.assertTrue(front.getHealth() < front.getMaxHealth(), "the beam burns the first pig");
+            h.assertValueEqual(back.getHealth(), back.getMaxHealth(), "and stops there");
+            cleanup(h, p);
+            h.succeed();
+        });
+    }
+
+    private static void dawnRayPierce(GameTestHelper h) {
+        Pig front = h.spawn(EntityTypes.PIG, new Vec3(4.5, 1, 4.5));
+        Pig back = h.spawn(EntityTypes.PIG, new Vec3(7.5, 1, 4.5));
+        front.setNoAi(true);
+        back.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 7f);
+        KnowledgeService.learn(p, DAWN_RAY);
+        KnowledgeService.setMastery(p, DAWN_RAY, 5);
+        CastService.request(p, DAWN_RAY);
+        h.runAfterDelay(21, () -> {
+            CastService.stop(p, CastService.activeCastId(p), false);
+            h.assertTrue(front.getHealth() < front.getMaxHealth(), "the beam burns the first pig");
+            h.assertTrue(back.getHealth() < back.getMaxHealth(), "and pierces to the second (m5)");
+            cleanup(h, p);
+            h.succeed();
+        });
+    }
+
+    private static void purifyingAura(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        KnowledgeService.learn(p, PURIFYING_AURA);
+        KnowledgeService.setMastery(p, PURIFYING_AURA, 10);
+        p.connection.markClientLoaded(); // mock players are invulnerable until the client "loads"
+        CastService.request(p, PURIFYING_AURA);
+        h.assertTrue(Toggles.isOn(p, PURIFYING_AURA), "the aura turns on");
+        p.hurtServer(h.getLevel(), h.getLevel().damageSources().fellOutOfWorld(), 10f); // mock players are creative
+        h.assertTrue(p.getHealth() >= 10.9f && p.getHealth() < 12f, "the aura takes 10% off, health " + p.getHealth());
+        h.assertTrue(Shields.total(p) > 0, "a hit in the aura grants a ward shield (m10)");
+        CastService.request(p, PURIFYING_AURA);
+        h.assertFalse(Toggles.isOn(p, PURIFYING_AURA), "second press turns it off");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void heavensJudgment(GameTestHelper h) {
+        var golem = h.spawn(EntityTypes.IRON_GOLEM, new Vec3(4.5, 1, 7.5)); // survives the column, so the mark shows
+        golem.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 2.5), 0f, 35f);
+        KnowledgeService.learn(p, HEAVENS_JUDGMENT);
+        CastService.request(p, HEAVENS_JUDGMENT);
+        h.assertTrue(CastService.isCasting(p), "a charged cast starts");
+        release(h, p, 62);
+        succeedWhen(h, p, () -> {
+            h.assertTrue(golem.getHealth() < golem.getMaxHealth(), "the column strikes the golem");
+            h.assertTrue(golem.hasEffect(MobEffects.GLOWING), "and marks it");
+            golem.discard();
+        });
+    }
+
+    private static void hallowedGround(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 90f);
+        KnowledgeService.learn(p, HEAVENS_JUDGMENT);
+        KnowledgeService.setMastery(p, HEAVENS_JUDGMENT, 15);
+        p.setHealth(10f);
+        CastService.request(p, HEAVENS_JUDGMENT);
+        release(h, p, 62);
+        succeedWhen(h, p, () -> h.assertTrue(p.getHealth() > 10.5f, "hallowed ground heals the caster standing in it (m15)"));
+    }
+
+    private static void radiance(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.LIGHT, DAWN_RAY, 3);
+        h.assertTrue(AttunementService.pickTalent(p, Schools.LIGHT, "b1").isEmpty(), "Veil picked");
+        p.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 0));
+        EchoService.onSupport(p, 10f);
+        h.assertTrue(p.hasEffect(MobEffects.POISON), "half a charge does nothing yet");
+        EchoService.onSupport(p, 10f);
+        h.assertFalse(p.hasEffect(MobEffects.POISON), "a full charge pulses and cleanses");
+        h.assertTrue(Shields.total(p) >= 4f, "Veil shields the allies around");
+        h.assertValueEqual(EchoService.radiance(p), 0.0, "the charge is spent");
+        cleanup(h, p);
+        h.succeed();
     }
 
     private OrbisGameTests() {}

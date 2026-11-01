@@ -68,6 +68,21 @@ public final class EchoRules {
         return dissonance ? p * SchoolRules.DISSONANCE_ECHO_MULT : p;
     }
 
+    // Light: Radiance
+    /** Charge = HP healed, shielded or prevented. */
+    public static final double RADIANCE_MAX = 20;
+    public static final double RADIANCE_RADIUS = 5;
+    public static final double RADIANCE_TIER2_RADIUS = 7;
+    /** B1 "Veil": the pulse shields allies. */
+    public static final float VEIL_SHIELD = 4f;
+    public static final int VEIL_TICKS = 10 * 20;
+
+    /** A2 "Retribution Ray": pulse damage, 4 or 6 at tier 2; Dissonance halves it. */
+    public static double retributionDamage(int tier, boolean dissonance) {
+        double dmg = tier >= 2 ? 6.0 : 4.0;
+        return dissonance ? dmg * SchoolRules.DISSONANCE_ECHO_MULT : dmg;
+    }
+
     // Air: Impulse
     public static final double IMPULSE_MAX = 10;
     /** Charge per block moved while in combat. */

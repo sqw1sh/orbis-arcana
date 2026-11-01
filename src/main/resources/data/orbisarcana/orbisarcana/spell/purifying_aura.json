@@ -1,0 +1,38 @@
+{
+  "school": "orbisarcana:light",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:aura",
+  "targeting": "self",
+  "cast": {
+    "mode": "toggle"
+  },
+  "cost": 3,
+  "cooldown_ticks": 200,
+  "primary_stat": "damage_reduction",
+  "params": {
+    "radius": 5,
+    "damage_reduction": 0.1,
+    "cleanse_interval": 0,
+    "ward_shield": 0,
+    "undead_burn": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "cleanse_interval": 160
+      }
+    },
+    "10": {
+      "params": {
+        "ward_shield": 3
+      }
+    },
+    "15": {
+      "params": {
+        "undead_burn": 1
+      }
+    }
+  },
+  "circle": "orbisarcana:purifying_aura",
+  "xp_category": "shield"
+}
