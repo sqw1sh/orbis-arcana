@@ -1,0 +1,18 @@
+{
+  "school": "orbisarcana:air",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:dome",
+  "targeting": "ground",
+  "cast": { "mode": "charged", "ticks": 22, "min_ticks": 14 },
+  "cost": 26,
+  "cooldown_ticks": 300,
+  "primary_stat": "duration_ticks",
+  "params": { "radius": 4.0, "duration_ticks": 100, "range": 16, "edge_push": 0, "ally_speed": 0, "burst_damage": 0 },
+  "milestones": {
+    "5":  { "params": { "edge_push": 1 } },
+    "10": { "params": { "ally_speed": 1 } },
+    "15": { "params": { "burst_damage": 6.0 } }
+  },
+  "circle": "orbisarcana:gust_dome",
+  "xp_category": "control"
+}

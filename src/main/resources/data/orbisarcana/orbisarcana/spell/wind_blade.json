@@ -1,0 +1,18 @@
+{
+  "school": "orbisarcana:air",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:blade",
+  "targeting": "directional",
+  "cast": { "mode": "instant" },
+  "cost": 9,
+  "cooldown_ticks": 40,
+  "primary_stat": "damage",
+  "params": { "damage": 5.0, "speed": 0.9, "range": 14, "width": 1.3, "returns": 0, "return_hits": 0, "tornado_ticks": 0 },
+  "milestones": {
+    "5":  { "params": { "returns": 1 } },
+    "10": { "params": { "return_hits": 1 } },
+    "15": { "params": { "tornado_ticks": 40 } }
+  },
+  "circle": "orbisarcana:wind_blade",
+  "xp_category": "attack"
+}

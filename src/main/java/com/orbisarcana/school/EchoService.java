@@ -13,7 +13,10 @@ import com.orbisarcana.network.CastPayloads.HeatMark;
 import com.orbisarcana.network.Net;
 import com.orbisarcana.registry.ModDamageTypes;
 
+import com.orbisarcana.mana.ManaService;
 import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -46,6 +49,9 @@ public final class EchoService {
     private static final Map<UUID, Integer> FLOW_CAST = new HashMap<>();
     /** player -> Bulwark charge. */
     private static final Map<UUID, Double> BULWARK = new HashMap<>();
+    /** player -> Impulse charge, and the position last tick. */
+    private static final Map<UUID, Double> IMPULSE = new HashMap<>();
+    private static final Map<UUID, Vec3> LAST_POS = new HashMap<>();
 
     /** Echo tier of {@code school} for the player: 0 unless it is dominant with resonance >= 1. */
     public static int tier(ServerPlayer player, Identifier school) {
@@ -166,12 +172,51 @@ public final class EchoService {
                 player.getX(), player.getY() + 0.2, player.getZ(), 80, radius * 0.5, 0.2, radius * 0.5, 0.2);
     }
 
+    // ---- Air: Impulse ----
+
+    /** Moving while in combat charges Impulse (real players only: they tick). */
+    @SubscribeEvent
+    static void onPlayerTick(PlayerTickEvent.Post event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        Vec3 now = player.position();
+        Vec3 last = LAST_POS.put(player.getUUID(), now);
+        if (last == null || !ManaService.inCombat(player) || tier(player, Schools.AIR) <= 0) return;
+        double moved = Math.sqrt(Math.pow(now.x - last.x, 2) + Math.pow(now.z - last.z, 2));
+        if (moved < 0.05 || moved > 4) return; // standing still, or a teleport
+        double before = impulse(player);
+        double charge = Math.min(EchoRules.IMPULSE_MAX,
+                before + moved * EchoRules.IMPULSE_PER_BLOCK * EchoRules.stackGain(AttunementService.isDissonant(player)));
+        IMPULSE.put(player.getUUID(), charge);
+        if ((int) charge != (int) before) Net.toPlayer(player, new EchoState(Schools.AIR, (float) Math.floor(charge), (int) EchoRules.IMPULSE_MAX));
+    }
+
+    public static double impulse(ServerPlayer player) {
+        return IMPULSE.getOrDefault(player.getUUID(), 0.0);
+    }
+
+    /** For tests and admin tools. */
+    public static void setImpulse(ServerPlayer player, double charge) {
+        IMPULSE.put(player.getUUID(), charge);
+    }
+
+    /** A dash starts: spends Impulse and returns its distance multiplier (1 without Air Echo). */
+    public static double consumeImpulse(ServerPlayer player) {
+        int tier = tier(player, Schools.AIR);
+        double charge = impulse(player);
+        if (tier <= 0 || charge <= 0) return 1.0;
+        IMPULSE.put(player.getUUID(), 0.0);
+        Net.toPlayer(player, new EchoState(Schools.AIR, 0f, (int) EchoRules.IMPULSE_MAX));
+        return EchoRules.impulseMult(charge, tier, AttunementService.isDissonant(player));
+    }
+
     @SubscribeEvent
     static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         UUID id = event.getEntity().getUUID();
         FLOW.remove(id);
         FLOW_CAST.remove(id);
         BULWARK.remove(id);
+        IMPULSE.remove(id);
+        LAST_POS.remove(id);
         HEAT.values().removeIf(h -> h.caster().equals(id));
     }
 
@@ -181,6 +226,8 @@ public final class EchoService {
         FLOW.clear();
         FLOW_CAST.clear();
         BULWARK.clear();
+        IMPULSE.clear();
+        LAST_POS.clear();
     }
 
     private EchoService() {}

@@ -361,5 +361,15 @@
   "spell.orbisarcana.fault_line.m5": "трещина длиннее",
   "spell.orbisarcana.fault_line.m10": "трещина поворачивает к ближайшему врагу",
   "spell.orbisarcana.fault_line.m15": "в конце — каменная клетка на 2 с",
-  "stat.orbisarcana.shield": "Щит"
+  "stat.orbisarcana.shield": "Щит",
+  "spell.orbisarcana.wind_blade": "Вихревое лезвие",
+  "spell.orbisarcana.wind_blade.desc": "Режущая дуга ветра летит вперёд.",
+  "spell.orbisarcana.wind_blade.m5": "дуга возвращается",
+  "spell.orbisarcana.wind_blade.m10": "на возврате режет повторно",
+  "spell.orbisarcana.wind_blade.m15": "оставляет мини-торнадо на 2 с",
+  "spell.orbisarcana.gust_dome": "Купол порывов",
+  "spell.orbisarcana.gust_dome.desc": "Купол ветра r4 отклоняет вражеские снаряды 5 с.",
+  "spell.orbisarcana.gust_dome.m5": "отталкивает врагов с границы",
+  "spell.orbisarcana.gust_dome.m10": "союзники внутри быстрее",
+  "spell.orbisarcana.gust_dome.m15": "при окончании взрывается порывом"
 }

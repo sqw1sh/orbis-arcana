@@ -20,6 +20,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
@@ -35,7 +38,8 @@ public final class TalentEffects {
     public static final Set<String> IMPLEMENTED = Set.of(
             "fire/echo", "fire/root", "fire/a1", "fire/a2", "fire/b1", "fire/b2",
             "water/echo", "water/root", "water/a1", "water/a2", "water/b1", "water/b2",
-            "earth/echo", "earth/root", "earth/a1", "earth/a2", "earth/b1", "earth/b2");
+            "earth/echo", "earth/root", "earth/a1", "earth/a2", "earth/b1", "earth/b2",
+            "air/echo", "air/root", "air/a1", "air/a2", "air/b1", "air/b2");
 
     public static final double EMBERS_IGNITE_MULT = 1.3;
     public static final double LIVING_WAVE_HEAL_MULT = 1.1;
@@ -116,6 +120,36 @@ public final class TalentEffects {
         UNBREAKABLE_READY.put(p.getUUID(), now + UNBREAKABLE_COOLDOWN);
         event.setCanceled(true);
         p.setHealth(1f);
+    }
+
+    // ---- Air ----
+
+    public static final double LIGHT_STEP_MAX_FALL = 10.0;
+    public static final double VORTEX_EDGE_SPEED_MULT = 1.3;
+    public static final double EVASIVE_CHANCE = 0.1;
+
+    /** A1 "Vortex Edge": your spell projectiles fly 30% faster. */
+    public static double projectileSpeedMult(ServerPlayer caster) {
+        return AttunementService.hasTalent(caster, Schools.AIR, TalentRules.A1) ? VORTEX_EDGE_SPEED_MULT : 1.0;
+    }
+
+    /** Root "Light Step": no fall damage from up to 10 blocks. */
+    @SubscribeEvent
+    static void onFall(LivingFallEvent event) {
+        if (event.getEntity() instanceof ServerPlayer p && event.getDistance() <= LIGHT_STEP_MAX_FALL
+                && AttunementService.hasTalent(p, Schools.AIR, TalentRules.ROOT)) {
+            event.setCanceled(true);
+        }
+    }
+
+    /** B2 "Evasive Pattern": 10% chance to dodge a projectile. */
+    @SubscribeEvent
+    static void onProjectileHit(LivingIncomingDamageEvent event) {
+        if (event.getEntity() instanceof ServerPlayer p && event.getSource().getDirectEntity() instanceof Projectile
+                && AttunementService.hasTalent(p, Schools.AIR, TalentRules.B2) && p.getRandom().nextDouble() < EVASIVE_CHANCE) {
+            event.setCanceled(true);
+            p.level().sendParticles(ParticleTypes.CLOUD, p.getX(), p.getY() + 1, p.getZ(), 10, 0.3, 0.5, 0.3, 0.05);
+        }
     }
 
     // ---- Water ----

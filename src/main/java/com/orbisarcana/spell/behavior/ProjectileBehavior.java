@@ -10,7 +10,7 @@ final class ProjectileBehavior {
     static void release(CastContext ctx) {
         int count = Math.max(1, ctx.ticks("count"));
         double spread = ctx.param("spread_deg");
-        float speed = (float) Math.max(0.1, ctx.param("speed"));
+        float speed = (float) (Math.max(0.1, ctx.param("speed")) * TalentEffects.projectileSpeedMult(ctx.caster()));
         int maxAge = (int) Math.ceil(Math.max(1, ctx.param("range")) / speed);
 
         for (int i = 0; i < count; i++) {

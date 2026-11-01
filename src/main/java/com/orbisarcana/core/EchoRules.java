@@ -24,6 +24,20 @@ public final class EchoRules {
     /** Fortress: -10% damage while Bulwark is at 50% or more. */
     public static final double FORTRESS_MULT = 0.9;
 
+    // Air: Impulse
+    public static final double IMPULSE_MAX = 10;
+    /** Charge per block moved while in combat. */
+    public static final double IMPULSE_PER_BLOCK = 0.5;
+    /** Dash distance bonus at full charge: +40%, +60% at tier 2. */
+    public static final double IMPULSE_BONUS_TIER1 = 0.4;
+    public static final double IMPULSE_BONUS_TIER2 = 0.6;
+
+    /** Dash distance multiplier for {@code charge}; Dissonance halves the bonus. */
+    public static double impulseMult(double charge, int tier, boolean dissonance) {
+        double bonus = (tier >= 2 ? IMPULSE_BONUS_TIER2 : IMPULSE_BONUS_TIER1) * Math.min(1, charge / IMPULSE_MAX);
+        return 1 + (dissonance ? bonus * SchoolRules.DISSONANCE_ECHO_MULT : bonus);
+    }
+
     /** Bulwark wave damage for {@code charge}; Dissonance halves it. */
     public static double bulwarkDamage(double charge, boolean dissonance) {
         double dmg = charge * BULWARK_DAMAGE_PER_CHARGE;

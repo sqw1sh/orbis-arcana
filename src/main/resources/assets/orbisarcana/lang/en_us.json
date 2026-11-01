@@ -361,5 +361,15 @@
   "spell.orbisarcana.fault_line.m5": "a longer crack",
   "spell.orbisarcana.fault_line.m10": "the crack turns towards the nearest enemy",
   "spell.orbisarcana.fault_line.m15": "ends with a stone cage for 2 s",
-  "stat.orbisarcana.shield": "Shield"
+  "stat.orbisarcana.shield": "Shield",
+  "spell.orbisarcana.wind_blade": "Wind Blade",
+  "spell.orbisarcana.wind_blade.desc": "A cutting arc of wind flies forward.",
+  "spell.orbisarcana.wind_blade.m5": "the arc returns",
+  "spell.orbisarcana.wind_blade.m10": "cuts again on the way back",
+  "spell.orbisarcana.wind_blade.m15": "leaves a mini-tornado for 2 s",
+  "spell.orbisarcana.gust_dome": "Gust Dome",
+  "spell.orbisarcana.gust_dome.desc": "A wind dome (r4) turns away enemy projectiles for 5 s.",
+  "spell.orbisarcana.gust_dome.m5": "pushes enemies off its edge",
+  "spell.orbisarcana.gust_dome.m10": "allies inside move faster",
+  "spell.orbisarcana.gust_dome.m15": "bursts in a gust when it ends"
 }

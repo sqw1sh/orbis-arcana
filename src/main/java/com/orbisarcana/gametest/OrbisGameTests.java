@@ -35,6 +35,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.animal.pig.Pig;
 import net.minecraft.world.entity.decoration.ArmorStand;
@@ -102,6 +104,11 @@ public final class OrbisGameTests {
         test("granite_oath_gives_real_absorption", 20, OrbisGameTests::graniteOath);
         test("overheal_shield_really_absorbs", 60, OrbisGameTests::overhealShield);
         test("bulwark_bursts_on_attack_cast", 60, OrbisGameTests::bulwarkBurst);
+        test("wind_blade_cuts", 40, OrbisGameTests::windBlade);
+        test("wind_blade_returns_and_cuts_again", 80, OrbisGameTests::windBladeReturn);
+        test("gust_dome_deflects_projectiles", 80, OrbisGameTests::gustDome);
+        test("impulse_lengthens_dash", 20, OrbisGameTests::impulseDash);
+        test("light_step_cancels_short_falls", 20, OrbisGameTests::lightStep);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -746,6 +753,70 @@ public final class OrbisGameTests {
             h.assertTrue(pig.getHealth() <= pig.getMaxHealth() - 4.9f, "a charged Bulwark bursts on the attack cast, health " + pig.getHealth());
             h.assertValueEqual(EchoService.bulwark(p), 0.0, "Bulwark spent");
         });
+    }
+
+    private static final Identifier WIND_BLADE = OrbisArcana.id("wind_blade");
+    private static final Identifier GUST_DOME = OrbisArcana.id("gust_dome");
+
+    private static void windBlade(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(6.5, 1, 4.5));
+        pig.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 0f);
+        KnowledgeService.learn(p, WIND_BLADE);
+        CastService.request(p, WIND_BLADE);
+        h.assertFalse(CastService.isCasting(p), "wind blade is instant");
+        succeedWhen(h, p, () -> h.assertTrue(pig.getHealth() < pig.getMaxHealth(), "the arc cuts the pig"));
+    }
+
+    private static void windBladeReturn(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(6.5, 1, 4.5));
+        pig.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 0f);
+        KnowledgeService.learn(p, WIND_BLADE);
+        KnowledgeService.setMastery(p, WIND_BLADE, 10);
+        CastService.request(p, WIND_BLADE);
+        h.runAfterDelay(8, () -> h.assertTrue(pig.isAlive(), "one pass does not kill a pig"));
+        succeedWhen(h, p, () -> h.assertFalse(pig.isAlive(), "the returning arc cuts the pig a second time, health " + pig.getHealth()));
+    }
+
+    private static void gustDome(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 90f); // looking straight down: dome on the caster
+        KnowledgeService.learn(p, GUST_DOME);
+        CastService.request(p, GUST_DOME);
+        h.assertTrue(CastService.isCasting(p), "gust dome needs a ground point and starts");
+        release(h, p, 24);
+        Entity[] ball = new Entity[1];
+        h.runAfterDelay(27, () -> {
+            ball[0] = h.spawn(EntityTypes.SNOWBALL, new Vec3(8.5, 2, 4.5));
+            ball[0].setDeltaMovement(-1.0, 0, 0);
+        });
+        succeedWhen(h, p, () -> {
+            h.assertTrue(ball[0] != null, "snowball thrown");
+            h.assertTrue(ball[0].getDeltaMovement().x > 0, "the dome turns the snowball away, motion " + ball[0].getDeltaMovement());
+        });
+    }
+
+    private static void impulseDash(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.AIR, WIND_STEP, 1);
+        EchoService.setImpulse(p, 10);
+        CastService.request(p, WIND_STEP);
+        double speed = p.getDeltaMovement().horizontalDistance();
+        h.assertTrue(speed > 1.6, "a full Impulse makes the dash 40% longer, speed " + speed);
+        h.assertValueEqual(EchoService.impulse(p), 0.0, "Impulse spent");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void lightStep(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.AIR, WIND_STEP, 1);
+        var shortFall = new LivingFallEvent(p, 8, 1f);
+        NeoForge.EVENT_BUS.post(shortFall);
+        h.assertTrue(shortFall.isCanceled(), "Light Step: no fall damage from 8 blocks");
+        var longFall = new LivingFallEvent(p, 14, 1f);
+        NeoForge.EVENT_BUS.post(longFall);
+        h.assertFalse(longFall.isCanceled(), "a 14 block fall still hurts");
+        cleanup(h, p);
+        h.succeed();
     }
 
     private OrbisGameTests() {}

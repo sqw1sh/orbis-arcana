@@ -46,6 +46,8 @@
 - Iris: свои пайплайны регистрировать через `IrisApi.assignPipeline(pipeline, IrisProgram.X)` (иначе под шейдерами не рисуются). В dev Iris падает на строгой валидации GPU — `-Dneoforge.disableBlaze3DValidation=true`.
 - Dev-клиент: в `run/options.txt` `onboardAccessibility:false`, в `run/config/neoforge-client.toml` `showLoadWarnings = false` — иначе quickPlay висит на экранах.
 - В Bash нет python — для JSON-скриптов использовать node.
+- I-фреймы мобов: `LivingEntity.damageCooldownTime` (публичное поле), а не `Entity#setInvulnerableTime`.
+- `new ClipContext(..., CollisionContext.empty())`, если сущности может не быть (ClipContext с null-entity падает).
 
 ## Архитектура (§15)
 `api/ core/ registry/ spell/ school/ progression/ mana/ data/ network/ item/ block/ world/ client/ compat/ gametest/`
