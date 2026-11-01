@@ -127,10 +127,11 @@ public class RadialMenuScreen extends Screen {
             outline(g, x, y, CARD_W, CARD_H, isSelected ? SELECTED : rarityColor);
             g.centeredText(font, ellipsize(SpellScrollItem.spellName(spell.get()).getString(), CARD_W - 6), x + CARD_W / 2, y + 4, TEXT);
 
-            var cd = ClientCastState.cooldown(spell.get(), now);
-            if (cd.isPresent()) {
-                float left = (cd.get().untilTick() - now) / (float) Math.max(1, cd.get().totalTicks());
-                g.fill(x + 1, y + CARD_H - 4, x + 1 + (int) ((CARD_W - 2) * left), y + CARD_H - 2, 0xC0A0A0B0);
+            var charges = ClientCastState.charges(minecraft.player, spell.get(), now);
+            if (charges.nextChargeAt() > now) {
+                float left = (charges.nextChargeAt() - now) / (float) Math.max(1, charges.cooldownTicks());
+                g.fill(x + 1, y + CARD_H - 4, x + 1 + (int) ((CARD_W - 2) * left), y + CARD_H - 2,
+                        charges.blocked(now) ? 0xC0A0A0B0 : 0x80607090);
             }
             def.ifPresent(d -> g.centeredText(font, Component.literal((int) d.cost() + " ✦"), x + CARD_W / 2, y + 13, TEXT_DIM));
         }

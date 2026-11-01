@@ -199,8 +199,7 @@ public final class CastService {
                 var cooldowns = player.getData(ModAttachments.RESOURCES).cooldowns();
                 long fullAt = Charges.afterUse(cooldowns.getOrDefault(cast.spellId(), 0L), now, cooldown);
                 cooldowns.put(cast.spellId(), fullAt);
-                // The client shows the time until the next charge (none while charges remain)
-                Net.toPlayer(player, new CooldownSet(cast.spellId(), Charges.readyAt(fullAt, charges(cast.params()), cooldown), cooldown));
+                Net.toPlayer(player, new CooldownSet(cast.spellId(), fullAt, cooldown));
             }
         } else {
             double refund = core.cost - core.manaSpent(outcome, now);
@@ -319,15 +318,8 @@ public final class CastService {
         long now = player.level().getGameTime();
         var cooldowns = player.getData(ModAttachments.RESOURCES).cooldowns();
         cooldowns.values().removeIf(until -> until <= now);
-        var knowledge = player.getData(ModAttachments.KNOWLEDGE);
-        cooldowns.forEach((spellId, fullAt) -> {
-            var def = SpellRegistry.get(player.registryAccess(), spellId);
-            var progress = knowledge.progress(spellId);
-            if (def.isEmpty() || progress.isEmpty()) return;
-            int cooldown = def.get().cooldownTicks();
-            long ready = Charges.readyAt(fullAt, charges(params(def.get(), progress.get())), cooldown);
-            if (ready > now) Net.toPlayer(player, new CooldownSet(spellId, ready, cooldown));
-        });
+        cooldowns.forEach((spellId, fullAt) -> SpellRegistry.get(player.registryAccess(), spellId)
+                .ifPresent(def -> Net.toPlayer(player, new CooldownSet(spellId, fullAt, def.cooldownTicks()))));
     }
 
     @SubscribeEvent

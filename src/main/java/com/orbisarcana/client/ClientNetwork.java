@@ -44,7 +44,7 @@ public final class ClientNetwork {
             if (msg.reason() >= 0 && msg.reason() < values.length) ClientCastState.deny(values[msg.reason()]);
         });
         event.register(CooldownSet.TYPE, (msg, ctx) ->
-                ClientCastState.setCooldown(msg.spell(), new ClientCastState.Cooldown(msg.untilTick(), msg.totalTicks())));
+                ClientCastState.setCooldown(msg.spell(), new ClientCastState.Cooldown(msg.fullAt(), msg.cooldownTicks())));
     }
 
     @SubscribeEvent

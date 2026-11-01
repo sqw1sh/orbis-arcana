@@ -43,7 +43,9 @@ public final class DevShot {
             new Scene("grimoire", () -> Minecraft.getInstance().gui.setScreen(new GrimoireScreen())),
             ownCircle("own_down_yaw0", 0, 88),
             ownCircle("own_down_yaw120", 120, 88),
-            ownCircle("own_ahead", 45, 10));
+            ownCircle("own_ahead", 45, 10),
+            new Scene("hud_one_charge", () -> castWindStep(true)),
+            new Scene("hud_no_charges", () -> castWindStep(false)));
 
     private static int ticks;
     private static int waiting;
@@ -70,6 +72,26 @@ public final class DevShot {
             mc.player.setXRot(pitch);
             ClientCircles.start(new CastStarted(-5000 - name.hashCode() % 1000, mc.player.getId(), OrbisArcana.id("fireball"),
                     mc.level.getGameTime(), 30, 7, Optional.empty(), -1));
+        });
+    }
+
+    /** Server-side wind step cast at mastery 15 (two charges); the HUD should show the charges. */
+    private static void castWindStep(boolean setup) {
+        Minecraft mc = Minecraft.getInstance();
+        var server = mc.getSingleplayerServer();
+        if (server == null || mc.player == null) return;
+        server.execute(() -> {
+            ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+            if (sp == null) return;
+            var id = OrbisArcana.id("wind_step");
+            if (setup) {
+                KnowledgeService.setMastery(sp, id, 15);
+                var loadout = sp.getData(com.orbisarcana.data.ModAttachments.LOADOUT);
+                for (int slot = 0; slot < com.orbisarcana.progression.Loadout.SLOTS; slot++) {
+                    if (loadout.get(0, slot).filter(id::equals).isPresent()) KnowledgeService.select(sp, 0, slot);
+                }
+            }
+            com.orbisarcana.spell.CastService.request(sp, id);
         });
     }
 

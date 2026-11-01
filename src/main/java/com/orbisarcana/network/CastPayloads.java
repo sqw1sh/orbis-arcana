@@ -140,13 +140,16 @@ public final class CastPayloads {
         }
     }
 
-    /** Spell cooldown: ready at {@code untilTick} (server game time), lasting {@code totalTicks}. */
-    public record CooldownSet(Identifier spell, long untilTick, int totalTicks) implements CustomPacketPayload {
+    /**
+     * Spell cooldown/charges state: {@code fullAt} is the server tick when all charges are back
+     * ({@code core.Charges}); one charge returns per {@code cooldownTicks}.
+     */
+    public record CooldownSet(Identifier spell, long fullAt, int cooldownTicks) implements CustomPacketPayload {
         public static final Type<CooldownSet> TYPE = new Type<>(OrbisArcana.id("cooldown_set"));
         public static final StreamCodec<ByteBuf, CooldownSet> CODEC = StreamCodec.composite(
                 Identifier.STREAM_CODEC, CooldownSet::spell,
-                ByteBufCodecs.VAR_LONG, CooldownSet::untilTick,
-                ByteBufCodecs.VAR_INT, CooldownSet::totalTicks,
+                ByteBufCodecs.VAR_LONG, CooldownSet::fullAt,
+                ByteBufCodecs.VAR_INT, CooldownSet::cooldownTicks,
                 CooldownSet::new);
 
         @Override

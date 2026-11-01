@@ -151,5 +151,7 @@
   "spell.orbisarcana.wind_step.m10": "allies on your path get speed",
   "spell.orbisarcana.wind_step.m15": "two charges",
   "message.orbisarcana.level_up": "%s: mastery %s",
-  "message.orbisarcana.milestone": "%s reached mastery %s — %s: %s"
+  "message.orbisarcana.milestone": "%s reached mastery %s — %s: %s",
+  "hud.orbisarcana.mastery": " · lv. %s",
+  "hud.orbisarcana.set": "Set %s/%s"
 }

@@ -7,10 +7,12 @@ import java.util.Optional;
 import org.jspecify.annotations.Nullable;
 
 import com.orbisarcana.core.CastDenial;
+import com.orbisarcana.core.Charges;
 import com.orbisarcana.data.ModAttachments;
 import com.orbisarcana.network.CastPayloads.LoadoutSelect;
 import com.orbisarcana.network.CastPayloads.LoadoutSet;
 import com.orbisarcana.progression.Loadout;
+import com.orbisarcana.spell.SpellRegistry;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -25,7 +27,18 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 public final class ClientCastState {
     public record OwnCast(int castId, Identifier spell, long startTick, int durationTicks) {}
 
-    public record Cooldown(long untilTick, int totalTicks) {}
+    /** {@code fullAt}: tick when all charges are back; one charge per {@code cooldownTicks}. */
+    public record Cooldown(long fullAt, int cooldownTicks) {}
+
+    /**
+     * Charges of a spell right now: {@code readyAt} is when at least one charge is available,
+     * {@code nextChargeAt} when the next missing charge returns (-1 when all are full).
+     */
+    public record ChargeState(int max, int available, long readyAt, long nextChargeAt, int cooldownTicks) {
+        public boolean blocked(long now) {
+            return available <= 0 && readyAt > now;
+        }
+    }
 
     private static @Nullable OwnCast ownCast;
     private static final Map<Identifier, Cooldown> COOLDOWNS = new HashMap<>();
@@ -91,9 +104,24 @@ public final class ClientCastState {
         ownCast = cast;
     }
 
-    public static Optional<Cooldown> cooldown(Identifier spell, long now) {
+    public static ChargeState charges(Player player, Identifier spell, long now) {
+        int max = maxCharges(player, spell);
         Cooldown cd = COOLDOWNS.get(spell);
-        return cd != null && cd.untilTick() > now ? Optional.of(cd) : Optional.empty();
+        if (cd == null || cd.fullAt() <= now || cd.cooldownTicks() <= 0) return new ChargeState(max, max, now, -1, 0);
+        int available = Charges.available(cd.fullAt(), now, max, cd.cooldownTicks());
+        int missing = max - available;
+        long next = missing <= 0 ? -1 : cd.fullAt() - (long) (missing - 1) * cd.cooldownTicks();
+        return new ChargeState(max, available, Charges.readyAt(cd.fullAt(), max, cd.cooldownTicks()), next, cd.cooldownTicks());
+    }
+
+    /** Charges from the synced spell definition, own mastery and enabled milestones (same rule as the server). */
+    public static int maxCharges(Player player, Identifier spell) {
+        var def = SpellRegistry.get(player.registryAccess(), spell);
+        var progress = player.getData(ModAttachments.KNOWLEDGE).progress(spell);
+        if (def.isEmpty() || progress.isEmpty()) return 1;
+        var p = progress.get();
+        double charges = def.get().paramsAt(p.level(), l -> !p.isMilestoneEnabled(l)).getOrDefault("charges", 1.0);
+        return Math.max(1, (int) Math.round(charges));
     }
 
     static void setCooldown(Identifier spell, Cooldown cd) {

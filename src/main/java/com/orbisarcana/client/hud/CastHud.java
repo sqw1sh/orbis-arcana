@@ -3,12 +3,15 @@ package com.orbisarcana.client.hud;
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.client.ClientCastState;
 import com.orbisarcana.core.CastDenial;
+import com.orbisarcana.data.ModAttachments;
+import com.orbisarcana.progression.Loadout;
 import com.orbisarcana.spell.SpellRegistry;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -24,6 +27,7 @@ public final class CastHud {
     private static final int BAR_FILL = 0xFFE0C060;
     private static final int TEXT_DIM = 0xFF9A9AAA;
     private static final int TEXT_DENIED = 0xFFFF6A5A;
+    private static final int CHARGE_READY = 0xFF8FD8FF;
 
     @SubscribeEvent
     static void registerLayers(RegisterGuiLayersEvent event) {
@@ -43,16 +47,32 @@ public final class CastHud {
         }
         Identifier spell = selected.get();
         int color = SpellRegistry.get(mc.player.registryAccess(), spell).map(d -> 0xFF000000 | d.rarity().color).orElse(0xFFFFFFFF);
-        int page = ClientCastState.loadout(mc.player).page() + 1;
-        Component name = Component.literal("[" + page + "] ").withColor(TEXT_DIM)
-                .append(Component.translatable("spell." + spell.getNamespace() + "." + spell.getPath()).withColor(color));
+        int mastery = mc.player.getData(ModAttachments.KNOWLEDGE).progress(spell).map(p -> p.level()).orElse(1);
+
+        // Line 1: spell name, mastery level, charges and the time until the next charge
+        MutableComponent line = Component.translatable("spell." + spell.getNamespace() + "." + spell.getPath()).withColor(color)
+                .append(Component.translatable("hud.orbisarcana.mastery", mastery).withColor(TEXT_DIM));
         long now = ClientCastState.gameTime();
-        var cd = ClientCastState.cooldown(spell, now);
-        if (cd.isPresent()) {
-            double secs = (cd.get().untilTick() - now) / 20.0;
-            name = name.copy().append(Component.literal(String.format(" %.1fs", secs)).withColor(TEXT_DIM));
+        var charges = ClientCastState.charges(mc.player, spell, now);
+        if (charges.max() > 1) {
+            line.append(Component.literal(" " + "◆".repeat(charges.available()) + "◇".repeat(charges.max() - charges.available()))
+                    .withColor(charges.available() > 0 ? CHARGE_READY : TEXT_DIM));
         }
-        g.text(mc.font, name, x, y, color, true);
+        if (charges.nextChargeAt() > now) {
+            double secs = (charges.nextChargeAt() - now) / 20.0;
+            line.append(Component.literal(String.format(" %.1fs", secs)).withColor(charges.blocked(now) ? TEXT_DENIED : TEXT_DIM));
+        }
+        g.text(mc.font, line, fit(g, mc, line, x), y, color, true);
+
+        // Line 2 (above): radial-menu set, so the number is not mistaken for mastery
+        var loadout = ClientCastState.loadout(mc.player);
+        Component set = Component.translatable("hud.orbisarcana.set", loadout.page() + 1, Loadout.PAGES);
+        g.text(mc.font, set, fit(g, mc, set, x), y - 10, TEXT_DIM, true);
+    }
+
+    /** Shifts text left so it does not run off the right edge on narrow windows. */
+    private static int fit(GuiGraphicsExtractor g, Minecraft mc, Component text, int x) {
+        return Math.min(x, g.guiWidth() - 2 - mc.font.width(text));
     }
 
     private static void renderCastBar(GuiGraphicsExtractor g, DeltaTracker delta) {
