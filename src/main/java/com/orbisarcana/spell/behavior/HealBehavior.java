@@ -5,6 +5,7 @@ import java.util.Comparator;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
+import com.orbisarcana.spell.Shields;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 final class HealBehavior {
     /** Absorption cap for overheal shields (§10.5 uses 4 HP for similar shields). */
     private static final float MAX_SHIELD = 4.0f;
+    private static final int OVERHEAL_SHIELD_TICKS = 10 * 20;
     private static final double BOUNCE_RADIUS = 6.0;
 
     static void release(CastContext ctx) {
@@ -41,7 +43,7 @@ final class HealBehavior {
         TalentEffects.afterHeal(ctx.caster(), target, amount);
         float overheal = amount - missing;
         if (overheal > 0 && ctx.param("overheal_to_shield") > 0) {
-            target.setAbsorptionAmount(Math.min(MAX_SHIELD, Math.max(target.getAbsorptionAmount(), overheal)));
+            Shields.grant(target, Math.min(MAX_SHIELD, overheal), OVERHEAL_SHIELD_TICKS, null);
         }
         double hot = ctx.param("heal_over_time");
         if (hot > 0) {

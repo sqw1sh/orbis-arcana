@@ -27,6 +27,8 @@ public final class SpellBehaviors {
     public static final Supplier<SpellBehavior> VORTEX = BEHAVIORS.register("vortex", () -> VortexBehavior::release);
     public static final Supplier<SpellBehavior> CONE = BEHAVIORS.register("cone", () -> ConeBehavior.INSTANCE);
     public static final Supplier<SpellBehavior> PRISON = BEHAVIORS.register("prison", () -> PrisonBehavior::release);
+    public static final Supplier<SpellBehavior> WAVE = BEHAVIORS.register("wave", () -> WaveBehavior::release);
+    public static final Supplier<SpellBehavior> SHIELD = BEHAVIORS.register("shield", () -> ShieldBehavior::release);
 
     public static void register(IEventBus modBus) {
         modBus.addListener((NewRegistryEvent event) -> event.register(REGISTRY));

@@ -210,6 +210,7 @@ public final class CastService {
 
         if (outcome == Outcome.RELEASED) {
             SpellBehaviors.get(cast.spell().behavior()).ifPresent(b -> b.release(context(player, cast, now)));
+            if (cast.spell().xpCategory() == com.orbisarcana.core.XpCategory.ATTACK) EchoService.onAttackCast(player);
             if (TalentEffects.crownOfFlameFree(player, cast.spell().school())) {
                 ManaService.setMana(player, ManaService.mana(player) + core.cost);
             }
@@ -349,8 +350,10 @@ public final class CastService {
     @SubscribeEvent
     static void onDamage(LivingDamageEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player) || !isCasting(player)) return;
+        // Earth root "Stone Core": +20% cast stability while standing on the ground (§10.5)
+        double chance = INTERRUPT_CHANCE - (player.onGround() ? TalentEffects.stoneCoreStability(player) : 0);
         if (event.getHealthDamage() >= player.getMaxHealth() * INTERRUPT_DAMAGE_SHARE
-                && player.getRandom().nextDouble() < INTERRUPT_CHANCE) {
+                && player.getRandom().nextDouble() < chance) {
             interrupt(player, Outcome.INTERRUPTED);
         }
     }

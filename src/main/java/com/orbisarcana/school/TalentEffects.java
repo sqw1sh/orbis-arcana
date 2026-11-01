@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.core.TalentRules;
+import com.orbisarcana.spell.Shields;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,6 +19,8 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -31,13 +34,15 @@ public final class TalentEffects {
     /** "school/node" keys whose effect is live (Water A1/A2 work through the Tidal Stream cone). */
     public static final Set<String> IMPLEMENTED = Set.of(
             "fire/echo", "fire/root", "fire/a1", "fire/a2", "fire/b1", "fire/b2",
-            "water/echo", "water/root", "water/a1", "water/a2", "water/b1", "water/b2");
+            "water/echo", "water/root", "water/a1", "water/a2", "water/b1", "water/b2",
+            "earth/echo", "earth/root", "earth/a1", "earth/a2", "earth/b1", "earth/b2");
 
     public static final double EMBERS_IGNITE_MULT = 1.3;
     public static final double LIVING_WAVE_HEAL_MULT = 1.1;
     public static final int CROWN_EVERY = 3;
     public static final float ASH_SHIELD = 4f;
     public static final long ASH_SHIELD_COOLDOWN = 20 * 20;
+    public static final int ASH_SHIELD_TICKS = 10 * 20;
     public static final double WELLSPRING_SHARE = 0.3;
     public static final double WELLSPRING_RADIUS = 6.0;
     public static final long TIDAL_MERCY_COOLDOWN = 10 * 20;
@@ -80,7 +85,37 @@ public final class TalentEffects {
         long now = p.level().getGameTime();
         if (now < ASH_READY.getOrDefault(p.getUUID(), 0L)) return;
         ASH_READY.put(p.getUUID(), now + ASH_SHIELD_COOLDOWN);
-        p.setAbsorptionAmount(Math.max(p.getAbsorptionAmount(), ASH_SHIELD));
+        Shields.grant(p, ASH_SHIELD, ASH_SHIELD_TICKS, null);
+    }
+
+    // ---- Earth ----
+
+    public static final double STONE_CORE_STABILITY = 0.2;
+    public static final long UNBREAKABLE_COOLDOWN = 5 * 60 * 20;
+    private static final Map<UUID, Long> UNBREAKABLE_READY = new HashMap<>();
+
+    public static double stoneCoreStability(ServerPlayer player) {
+        return AttunementService.hasTalent(player, Schools.EARTH, TalentRules.ROOT) ? STONE_CORE_STABILITY : 0;
+    }
+
+    /** B1 "Fortress": -10% damage taken while Bulwark is at 50% or more. */
+    @SubscribeEvent
+    static void onIncomingDamage(LivingIncomingDamageEvent event) {
+        if (event.getEntity() instanceof ServerPlayer p && AttunementService.hasTalent(p, Schools.EARTH, TalentRules.B1)
+                && EchoService.bulwark(p) >= com.orbisarcana.core.EchoRules.BULWARK_MAX / 2) {
+            event.setAmount((float) (event.getAmount() * com.orbisarcana.core.EchoRules.FORTRESS_MULT));
+        }
+    }
+
+    /** B2 "Unbreakable Pattern": a lethal hit leaves 1 HP, once per 5 minutes. */
+    @SubscribeEvent
+    static void onDeath(LivingDeathEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer p) || !AttunementService.hasTalent(p, Schools.EARTH, TalentRules.B2)) return;
+        long now = p.level().getGameTime();
+        if (now < UNBREAKABLE_READY.getOrDefault(p.getUUID(), 0L)) return;
+        UNBREAKABLE_READY.put(p.getUUID(), now + UNBREAKABLE_COOLDOWN);
+        event.setCanceled(true);
+        p.setHealth(1f);
     }
 
     // ---- Water ----
@@ -122,6 +157,7 @@ public final class TalentEffects {
         FIRE_CASTS.remove(id);
         ASH_READY.remove(id);
         MERCY_READY.remove(id);
+        UNBREAKABLE_READY.remove(id);
     }
 
     @SubscribeEvent
@@ -129,6 +165,7 @@ public final class TalentEffects {
         FIRE_CASTS.clear();
         ASH_READY.clear();
         MERCY_READY.clear();
+        UNBREAKABLE_READY.clear();
     }
 
     private TalentEffects() {}

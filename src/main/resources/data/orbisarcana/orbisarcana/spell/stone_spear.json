@@ -1,0 +1,44 @@
+{
+  "school": "orbisarcana:earth",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:wave",
+  "targeting": "directional",
+  "cast": {
+    "mode": "charged",
+    "ticks": 14,
+    "min_ticks": 8
+  },
+  "cost": 10,
+  "cooldown_ticks": 50,
+  "primary_stat": "damage",
+  "params": {
+    "damage": 6,
+    "length": 8,
+    "width": 0.8,
+    "waves": 1,
+    "wave_delay": 6,
+    "launch": 0,
+    "stun_end_radius": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "waves": 2
+      }
+    },
+    "10": {
+      "params": {
+        "launch": 1
+      }
+    },
+    "15": {
+      "params": {
+        "waves": 5,
+        "wave_delay": 3,
+        "stun_end_radius": 1.5
+      }
+    }
+  },
+  "circle": "orbisarcana:stone_spear",
+  "xp_category": "attack"
+}

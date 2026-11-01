@@ -345,5 +345,21 @@
   "spell.orbisarcana.water_prison.m5": "+0.5 с",
   "spell.orbisarcana.water_prison.m10": "цель внутри получает урон",
   "spell.orbisarcana.water_prison.m15": "пузырь лопается волной, отталкивая всех рядом",
-  "stat.orbisarcana.hold_ticks": "Удержание (тики)"
+  "stat.orbisarcana.hold_ticks": "Удержание (тики)",
+  "spell.orbisarcana.stone_spear": "Каменное копьё",
+  "spell.orbisarcana.stone_spear.desc": "Шип из земли бежит по линии и ранит всех на пути.",
+  "spell.orbisarcana.stone_spear.m5": "второй шип следом",
+  "spell.orbisarcana.stone_spear.m10": "шипы подбрасывают цели",
+  "spell.orbisarcana.stone_spear.m15": "линия из 5 шипов, последний оглушает",
+  "spell.orbisarcana.granite_oath": "Гранитная клятва",
+  "spell.orbisarcana.granite_oath.desc": "Каменный щит на 6 HP на 8 с.",
+  "spell.orbisarcana.granite_oath.m5": "разрушение щита — каменный импульс",
+  "spell.orbisarcana.granite_oath.m10": "щит +50% и меньше отбрасывания",
+  "spell.orbisarcana.granite_oath.m15": "щит можно наложить на союзника под прицелом",
+  "spell.orbisarcana.fault_line": "Линия разлома",
+  "spell.orbisarcana.fault_line.desc": "Трещина-волна бежит от выбранной точки.",
+  "spell.orbisarcana.fault_line.m5": "трещина длиннее",
+  "spell.orbisarcana.fault_line.m10": "трещина поворачивает к ближайшему врагу",
+  "spell.orbisarcana.fault_line.m15": "в конце — каменная клетка на 2 с",
+  "stat.orbisarcana.shield": "Щит"
 }

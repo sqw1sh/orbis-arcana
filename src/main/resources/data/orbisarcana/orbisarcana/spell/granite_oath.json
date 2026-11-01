@@ -1,0 +1,39 @@
+{
+  "school": "orbisarcana:earth",
+  "rarity": "orbisarcana:uncommon",
+  "behavior": "orbisarcana:shield",
+  "targeting": "self",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 14,
+  "cooldown_ticks": 160,
+  "primary_stat": "shield",
+  "params": {
+    "shield": 6,
+    "duration_ticks": 160,
+    "break_impulse": 0,
+    "knockback_resist": 0,
+    "ally_target": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "break_impulse": 1
+      }
+    },
+    "10": {
+      "params": {
+        "shield": 9,
+        "knockback_resist": 0.5
+      }
+    },
+    "15": {
+      "params": {
+        "ally_target": 1
+      }
+    }
+  },
+  "circle": "orbisarcana:granite_oath",
+  "xp_category": "shield"
+}

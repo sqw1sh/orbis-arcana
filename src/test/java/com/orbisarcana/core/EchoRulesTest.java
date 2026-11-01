@@ -14,5 +14,7 @@ class EchoRulesTest {
         assertEquals(0.5, EchoRules.stackGain(true), 1e-9);
         assertEquals(3, EchoRules.flowNeeded(1));
         assertEquals(2, EchoRules.flowNeeded(2));
+        assertEquals(10.0, EchoRules.bulwarkDamage(20, false), 1e-9);
+        assertEquals(5.0, EchoRules.bulwarkDamage(20, true), 1e-9);
     }
 }

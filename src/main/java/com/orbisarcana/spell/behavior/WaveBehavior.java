@@ -1,0 +1,162 @@
+package com.orbisarcana.spell.behavior;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+import com.orbisarcana.OrbisArcana;
+import com.orbisarcana.core.Targeting;
+import com.orbisarcana.progression.MasteryService;
+import com.orbisarcana.registry.ModDamageTypes;
+import com.orbisarcana.school.EchoService;
+
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.server.ServerStoppingEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
+
+/**
+ * {@code wave}: stone spikes running along the ground one block per tick (Stone Spear, Fault Line, §14.2).
+ * Starts at the caster (DIRECTIONAL) or at the ground point (GROUND) and runs in the look direction.
+ * Params: length, damage, width; waves + wave_delay (extra waves); launch; stun_end_radius;
+ * seek_enemy (turns towards the nearest enemy); cage_end_ticks (holds enemies at the end).
+ */
+@EventBusSubscriber(modid = OrbisArcana.MODID)
+final class WaveBehavior {
+    private static final double SPEED = 1.0;
+    private static final double SEEK_RANGE = 8.0;
+    private static final double SEEK_TURN = 0.25;
+    private static final int STUN_TICKS = 20;
+    private static final double LAUNCH = 0.6;
+    private static final BlockParticleOption STONE = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState());
+    private static final List<Wave> WAVES = new ArrayList<>();
+
+    private static final class Wave {
+        final ServerLevel level;
+        final UUID caster;
+        final Identifier spell, school;
+        final int castId;
+        final double length, width, launch, stunRadius;
+        final float damage;
+        final boolean seek;
+        final int cageTicks;
+        final long startTick;
+        final Set<UUID> hit = new HashSet<>();
+        Vec3 pos, dir;
+        double travelled;
+
+        Wave(CastContext ctx, Vec3 origin, Vec3 dir, long startTick) {
+            this.level = ctx.level();
+            this.caster = ctx.caster().getUUID();
+            this.spell = ctx.spellId();
+            this.school = ctx.spell().school();
+            this.castId = ctx.castId();
+            this.length = ctx.param("length");
+            this.width = Math.max(0.6, ctx.param("width"));
+            this.damage = (float) ctx.scaled("damage");
+            this.launch = ctx.param("launch") > 0 ? LAUNCH : 0;
+            this.stunRadius = ctx.param("stun_end_radius");
+            this.seek = ctx.param("seek_enemy") > 0;
+            this.cageTicks = ctx.ticks("cage_end_ticks");
+            this.startTick = startTick;
+            this.pos = origin;
+            this.dir = dir;
+        }
+    }
+
+    static void release(CastContext ctx) {
+        Vec3 look = ctx.caster().getLookAngle();
+        Vec3 flat = new Vec3(look.x, 0, look.z);
+        Vec3 dir = flat.lengthSqr() < 1.0E-4 ? new Vec3(0, 0, 1) : flat.normalize();
+        Vec3 origin = ctx.spell().targeting() == Targeting.GROUND && ctx.groundPoint() != null
+                ? ctx.groundPoint()
+                : ctx.caster().position().add(dir);
+        int waves = Math.max(1, ctx.ticks("waves"));
+        long now = ctx.level().getGameTime();
+        for (int i = 0; i < waves; i++) {
+            WAVES.add(new Wave(ctx, origin, dir, now + (long) i * ctx.ticks("wave_delay")));
+        }
+    }
+
+    @SubscribeEvent
+    static void onLevelTick(LevelTickEvent.Post event) {
+        if (!(event.getLevel() instanceof ServerLevel level) || WAVES.isEmpty()) return;
+        long now = level.getGameTime();
+        WAVES.removeIf(w -> {
+            if (w.level != level) return false;
+            if (now < w.startTick) return false;
+            ServerPlayer caster = level.getServer().getPlayerList().getPlayer(w.caster);
+            step(w, caster);
+            if (w.travelled >= w.length) {
+                end(w, caster);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    private static void step(Wave w, ServerPlayer caster) {
+        if (w.seek) {
+            w.level.getEntitiesOfClass(LivingEntity.class, new AABB(w.pos, w.pos).inflate(SEEK_RANGE),
+                            e -> e.isAlive() && e != caster && !w.hit.contains(e.getUUID()))
+                    .stream().min(Comparator.comparingDouble(e -> e.distanceToSqr(w.pos)))
+                    .ifPresent(e -> {
+                        Vec3 to = new Vec3(e.getX() - w.pos.x, 0, e.getZ() - w.pos.z);
+                        if (to.lengthSqr() > 0.01) w.dir = w.dir.add(to.normalize().scale(SEEK_TURN)).normalize();
+                    });
+        }
+        w.pos = w.pos.add(w.dir.scale(SPEED));
+        w.travelled += SPEED;
+        w.level.sendParticles(STONE, w.pos.x, w.pos.y + 0.3, w.pos.z, 12, w.width * 0.3, 0.3, w.width * 0.3, 0.1);
+        w.level.sendParticles(ParticleTypes.CRIT, w.pos.x, w.pos.y + 0.6, w.pos.z, 2, 0.1, 0.3, 0.1, 0.05);
+        for (LivingEntity e : w.level.getEntitiesOfClass(LivingEntity.class, new AABB(w.pos, w.pos).inflate(w.width, 1.5, w.width),
+                e -> e.isAlive() && e != caster && !w.hit.contains(e.getUUID()))) {
+            w.hit.add(e.getUUID());
+            hurt(w, caster, e, w.damage);
+            if (w.launch > 0) e.push(0, w.launch, 0);
+        }
+    }
+
+    private static void end(Wave w, ServerPlayer caster) {
+        double radius = Math.max(w.stunRadius, w.cageTicks > 0 ? 2.0 : 0);
+        if (radius <= 0) return;
+        for (LivingEntity e : w.level.getEntitiesOfClass(LivingEntity.class, new AABB(w.pos, w.pos).inflate(radius, 2, radius),
+                e -> e.isAlive() && e != caster)) {
+            int ticks = Math.max(w.stunRadius > 0 ? STUN_TICKS : 0, w.cageTicks);
+            // Stun / stone cage: an overwhelming slowness is the portable "cannot move" (players move client-side)
+            e.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, ticks, 9, false, true), caster);
+            if (caster != null) MasteryService.onControl(caster, w.spell, w.castId, e);
+        }
+        w.level.sendParticles(STONE, w.pos.x, w.pos.y + 0.8, w.pos.z, 50, radius * 0.5, 0.8, radius * 0.5, 0.15);
+    }
+
+    private static void hurt(Wave w, ServerPlayer caster, LivingEntity e, float damage) {
+        float before = e.getHealth();
+        e.hurtServer(w.level, ModDamageTypes.source(e, w.school, null, caster), damage);
+        if (caster != null && e.getHealth() < before) {
+            MasteryService.onHit(caster, w.spell, w.castId, e, !e.isAlive());
+            EchoService.onSpellHit(caster, w.school, e, w.castId);
+        }
+    }
+
+    @SubscribeEvent
+    static void onServerStopping(ServerStoppingEvent event) {
+        WAVES.clear();
+    }
+
+    private WaveBehavior() {}
+}

@@ -21,6 +21,7 @@ import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.registry.ModBlocks;
 import com.orbisarcana.registry.ModItems;
 import com.orbisarcana.spell.CastService;
+import com.orbisarcana.spell.Shields;
 import com.orbisarcana.spell.behavior.BurningGround;
 
 import net.minecraft.core.BlockPos;
@@ -96,6 +97,11 @@ public final class OrbisGameTests {
         test("flame_dash_ignites_path_at_10", 30, OrbisGameTests::flameDash);
         test("tidal_stream_channel_drains_and_hits", 80, OrbisGameTests::tidalStream);
         test("water_prison_holds_target", 80, OrbisGameTests::waterPrison);
+        test("stone_spear_hits_in_line", 60, OrbisGameTests::stoneSpear);
+        test("fault_line_runs_from_point", 80, OrbisGameTests::faultLine);
+        test("granite_oath_gives_real_absorption", 20, OrbisGameTests::graniteOath);
+        test("overheal_shield_really_absorbs", 60, OrbisGameTests::overhealShield);
+        test("bulwark_bursts_on_attack_cast", 60, OrbisGameTests::bulwarkBurst);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -680,6 +686,65 @@ public final class OrbisGameTests {
                 cleanup(h, p);
                 h.succeed();
             });
+        });
+    }
+
+    private static final Identifier STONE_SPEAR = OrbisArcana.id("stone_spear");
+    private static final Identifier FAULT_LINE = OrbisArcana.id("fault_line");
+    private static final Identifier GRANITE_OATH = OrbisArcana.id("granite_oath");
+
+    private static void stoneSpear(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(6.5, 1, 4.5));
+        pig.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 0f);
+        KnowledgeService.learn(p, STONE_SPEAR);
+        CastService.request(p, STONE_SPEAR);
+        release(h, p, 15);
+        succeedWhen(h, p, () -> h.assertTrue(pig.getHealth() < pig.getMaxHealth(), "the spike line hurts the pig"));
+    }
+
+    private static void faultLine(GameTestHelper h) {
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(4.5, 1, 7.5));
+        pig.setNoAi(true);
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 2.5), 0f, 45f); // looking down at the floor ahead
+        KnowledgeService.learn(p, FAULT_LINE);
+        CastService.request(p, FAULT_LINE);
+        h.assertTrue(CastService.isCasting(p), "fault line needs a ground point and starts");
+        release(h, p, 26);
+        succeedWhen(h, p, () -> h.assertTrue(pig.getHealth() < pig.getMaxHealth(), "the crack reaches the pig"));
+    }
+
+    private static void graniteOath(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        KnowledgeService.learn(p, GRANITE_OATH);
+        CastService.request(p, GRANITE_OATH);
+        h.assertTrue(p.getAbsorptionAmount() >= 5.9f, "granite oath gives a 6 HP shield, absorption " + p.getAbsorptionAmount());
+        h.assertTrue(Shields.total(p) >= 5.9f, "the shield is tracked");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    /** Regression: absorption is capped by MAX_ABSORPTION (0 by default), so this shield used to do nothing. */
+    private static void overhealShield(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, -90f);
+        KnowledgeService.learn(p, HEALING_DEW);
+        KnowledgeService.setMastery(p, HEALING_DEW, 15);
+        CastService.request(p, HEALING_DEW); // full health: all of it is overheal
+        release(h, p, 18);
+        succeedWhen(h, p, () -> h.assertTrue(p.getAbsorptionAmount() > 0.5f, "overheal becomes a shield, absorption " + p.getAbsorptionAmount()));
+    }
+
+    private static void bulwarkBurst(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.EARTH, STONE_SPEAR, 1);
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(6.5, 1, 4.5)); // beside the player, not in the spear line
+        pig.setNoAi(true);
+        p.setYRot(180f);
+        EchoService.setBulwark(p, 10);
+        CastService.request(p, STONE_SPEAR);
+        release(h, p, 15);
+        succeedWhen(h, p, () -> {
+            h.assertTrue(pig.getHealth() <= pig.getMaxHealth() - 4.9f, "a charged Bulwark bursts on the attack cast, health " + pig.getHealth());
+            h.assertValueEqual(EchoService.bulwark(p), 0.0, "Bulwark spent");
         });
     }
 

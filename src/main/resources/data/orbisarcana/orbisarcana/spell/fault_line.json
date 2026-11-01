@@ -1,0 +1,43 @@
+{
+  "school": "orbisarcana:earth",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:wave",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 24,
+    "min_ticks": 16
+  },
+  "cost": 28,
+  "cooldown_ticks": 280,
+  "primary_stat": "damage",
+  "params": {
+    "damage": 11,
+    "length": 7,
+    "width": 1.4,
+    "range": 20,
+    "waves": 1,
+    "wave_delay": 0,
+    "seek_enemy": 0,
+    "cage_end_ticks": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "length": 9
+      }
+    },
+    "10": {
+      "params": {
+        "seek_enemy": 1
+      }
+    },
+    "15": {
+      "params": {
+        "cage_end_ticks": 40
+      }
+    }
+  },
+  "circle": "orbisarcana:fault_line",
+  "xp_category": "attack"
+}

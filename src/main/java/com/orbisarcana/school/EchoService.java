@@ -13,7 +13,12 @@ import com.orbisarcana.network.CastPayloads.HeatMark;
 import com.orbisarcana.network.Net;
 import com.orbisarcana.registry.ModDamageTypes;
 
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,6 +44,8 @@ public final class EchoService {
     private static final Map<UUID, Double> FLOW = new HashMap<>();
     /** player -> last cast id that already gave flow (one stack per cast, zones pulse many times). */
     private static final Map<UUID, Integer> FLOW_CAST = new HashMap<>();
+    /** player -> Bulwark charge. */
+    private static final Map<UUID, Double> BULWARK = new HashMap<>();
 
     /** Echo tier of {@code school} for the player: 0 unless it is dominant with resonance >= 1. */
     public static int tier(ServerPlayer player, Identifier school) {
@@ -111,11 +118,60 @@ public final class EchoService {
         return true;
     }
 
+    // ---- Earth: Bulwark ----
+
+    /** Damage absorbed by armour, shields and absorption charges Bulwark. */
+    @SubscribeEvent
+    static void onDamage(LivingDamageEvent.Post event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        int tier = tier(player, Schools.EARTH);
+        if (tier <= 0) return;
+        double absorbed = event.getOriginalDamage() - event.getHealthDamage();
+        if (absorbed <= 0) return;
+        double charge = Math.min(EchoRules.BULWARK_MAX,
+                bulwark(player) + absorbed * EchoRules.stackGain(AttunementService.isDissonant(player)));
+        BULWARK.put(player.getUUID(), charge);
+        Net.toPlayer(player, new EchoState(Schools.EARTH, (float) charge, (int) EchoRules.BULWARK_MAX));
+    }
+
+    public static double bulwark(ServerPlayer player) {
+        return BULWARK.getOrDefault(player.getUUID(), 0.0);
+    }
+
+    /** For tests and admin tools. */
+    public static void setBulwark(ServerPlayer player, double charge) {
+        BULWARK.put(player.getUUID(), charge);
+    }
+
+    /** An attack spell was released: a charged Bulwark bursts as a stone wave around the caster. */
+    public static void onAttackCast(ServerPlayer player) {
+        int tier = tier(player, Schools.EARTH);
+        double charge = bulwark(player);
+        if (tier <= 0 || charge < EchoRules.BULWARK_MIN_RELEASE) return;
+        BULWARK.put(player.getUUID(), 0.0);
+        Net.toPlayer(player, new EchoState(Schools.EARTH, 0f, (int) EchoRules.BULWARK_MAX));
+        double radius = EchoRules.BULWARK_RADIUS + (tier >= 2 ? EchoRules.BULWARK_TIER2_RADIUS_BONUS : 0)
+                + (AttunementService.hasTalent(player, Schools.EARTH, TalentRules.A1) ? EchoRules.RIFT_RADIUS_BONUS : 0);
+        boolean strata = AttunementService.hasTalent(player, Schools.EARTH, TalentRules.A2);
+        float damage = (float) EchoRules.bulwarkDamage(charge, AttunementService.isDissonant(player));
+        ServerLevel level = player.level();
+        for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(radius, 1, radius),
+                e -> e.isAlive() && e != player && !(e instanceof net.minecraft.world.entity.player.Player) && e.distanceTo(player) <= radius)) {
+            e.hurtServer(level, ModDamageTypes.source(e, Schools.EARTH, null, player), damage);
+            var away = e.position().subtract(player.position()).multiply(1, 0, 1);
+            if (away.lengthSqr() > 1.0E-4) e.push(away.normalize().x * 0.6, 0.35, away.normalize().z * 0.6);
+            if (strata) e.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, EchoRules.STRATA_STUN_TICKS, 9), player);
+        }
+        level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState()),
+                player.getX(), player.getY() + 0.2, player.getZ(), 80, radius * 0.5, 0.2, radius * 0.5, 0.2);
+    }
+
     @SubscribeEvent
     static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         UUID id = event.getEntity().getUUID();
         FLOW.remove(id);
         FLOW_CAST.remove(id);
+        BULWARK.remove(id);
         HEAT.values().removeIf(h -> h.caster().equals(id));
     }
 
@@ -124,6 +180,7 @@ public final class EchoService {
         HEAT.clear();
         FLOW.clear();
         FLOW_CAST.clear();
+        BULWARK.clear();
     }
 
     private EchoService() {}
