@@ -58,7 +58,21 @@ public final class DevShot {
                 });
             }),
             new Scene("altar", () -> Minecraft.getInstance().gui.setScreen(new AltarScreen(Minecraft.getInstance().player.blockPosition()))),
-            new Scene("ritual", DevShot::startRitual));
+            new Scene("ritual", DevShot::startRitual),
+            new Scene("schools_setup", () -> {
+                Minecraft mc = Minecraft.getInstance();
+                var server = mc.getSingleplayerServer();
+                if (server != null) server.execute(() -> {
+                    ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+                    if (sp == null) return;
+                    var a = sp.getData(com.orbisarcana.data.ModAttachments.ATTUNEMENT);
+                    a.reset();
+                    com.orbisarcana.school.AttunementService.bind(sp, com.orbisarcana.school.Schools.FIRE);
+                    a.school(com.orbisarcana.school.Schools.FIRE).setResonance(6);
+                    com.orbisarcana.school.AttunementService.pickTalent(sp, com.orbisarcana.school.Schools.FIRE, "a1");
+                });
+            }),
+            new Scene("schools", () -> Minecraft.getInstance().gui.setScreen(new SchoolsScreen())));
 
     private static int ticks;
     private static int waiting;

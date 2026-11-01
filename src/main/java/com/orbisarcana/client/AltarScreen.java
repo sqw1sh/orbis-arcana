@@ -53,10 +53,18 @@ public class AltarScreen extends Screen {
             addRenderableWidget(bind);
         }
         if (a.dominant().isPresent()) {
+            Identifier dominant = a.dominant().get();
             addRenderableWidget(Button.builder(Component.translatable("screen.orbisarcana.altar.unbind"), b -> {
                 ClientPacketDistributor.sendToServer(new AltarAction(altar, AltarService.Action.UNBIND.ordinal(), Optional.empty()));
                 onClose();
-            }).bounds(width / 2 - 50, top + 5 * CELL_H + 6, 100, 18).build());
+            }).bounds(width / 2 - 104, top + 5 * CELL_H + 6, 100, 18).build());
+            Button reset = Button.builder(Component.translatable("screen.orbisarcana.altar.reset")
+                    .append(" (" + com.orbisarcana.core.TalentRules.RESET_INK + ")"), b -> {
+                ClientPacketDistributor.sendToServer(new AltarAction(altar, AltarService.Action.RESET_TALENTS.ordinal(), Optional.of(dominant)));
+                onClose();
+            }).bounds(width / 2 + 4, top + 5 * CELL_H + 6, 100, 18).build();
+            reset.active = a.schools().containsKey(dominant) && !a.schools().get(dominant).talents().isEmpty();
+            addRenderableWidget(reset);
         }
     }
 

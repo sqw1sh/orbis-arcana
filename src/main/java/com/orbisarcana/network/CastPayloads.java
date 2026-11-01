@@ -100,6 +100,20 @@ public final class CastPayloads {
         }
     }
 
+    /** Spend a talent point of the dominant school on {@code node} (§10.4). */
+    public record TalentPick(Identifier school, String node) implements CustomPacketPayload {
+        public static final Type<TalentPick> TYPE = new Type<>(OrbisArcana.id("talent_pick"));
+        public static final StreamCodec<ByteBuf, TalentPick> CODEC = StreamCodec.composite(
+                Identifier.STREAM_CODEC, TalentPick::school,
+                ByteBufCodecs.stringUtf8(8), TalentPick::node,
+                TalentPick::new);
+
+        @Override
+        public Type<TalentPick> type() {
+            return TYPE;
+        }
+    }
+
     // ---- server -> client ----
 
     /**

@@ -12,6 +12,8 @@ import com.orbisarcana.network.CastPayloads.LoadoutSelect;
 import com.orbisarcana.network.CastPayloads.LoadoutSet;
 import com.orbisarcana.network.CastPayloads.MilestoneToggle;
 import com.orbisarcana.network.CastPayloads.RitualCircle;
+import com.orbisarcana.network.CastPayloads.TalentPick;
+import com.orbisarcana.school.AttunementService;
 import com.orbisarcana.progression.KnowledgeService;
 import com.orbisarcana.school.AltarService;
 import com.orbisarcana.spell.CastService;
@@ -54,6 +56,10 @@ public final class ModNetwork {
             if (ctx.player() instanceof ServerPlayer p && msg.action() >= 0 && msg.action() < actions.length) {
                 AltarService.handle(p, msg.altar(), actions[msg.action()], msg.school());
             }
+        });
+
+        r.playToServer(TalentPick.TYPE, TalentPick.CODEC, (msg, ctx) -> {
+            if (ctx.player() instanceof ServerPlayer p) AttunementService.pickTalent(p, msg.school(), msg.node());
         });
 
         r.playToClient(CastStarted.TYPE, CastStarted.CODEC);

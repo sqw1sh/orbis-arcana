@@ -9,6 +9,7 @@ import java.util.UUID;
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.core.ActiveCast;
 import com.orbisarcana.core.SchoolRules;
+import com.orbisarcana.core.TalentRules;
 import com.orbisarcana.network.CastPayloads.CastEnded;
 import com.orbisarcana.network.CastPayloads.RitualCircle;
 import com.orbisarcana.network.Net;
@@ -47,7 +48,9 @@ public final class AltarService {
 
     public enum Action {
         BIND,
-        UNBIND
+        UNBIND,
+        /** Reset the talent points of a school for Aether Ink (§10.4). */
+        RESET_TALENTS
     }
 
     /** {@code circleId}: negative id of the world seal shown to clients (never clashes with cast ids). */
@@ -70,6 +73,7 @@ public final class AltarService {
                 if (AttunementService.attunement(player).dominant().isPresent()) AttunementService.unbind(player);
             }
             case BIND -> school.filter(Schools::exists).ifPresent(s -> bind(player, altar, s));
+            case RESET_TALENTS -> school.filter(Schools::exists).ifPresent(s -> resetTalents(player, altar, s));
         }
     }
 
@@ -103,6 +107,20 @@ public final class AltarService {
         player.sendSystemMessage(Component.translatable("message.orbisarcana.altar.ritual_start", AttunementService.schoolName(school),
                 SchoolRules.RITUAL_TICKS / 20).withStyle(ChatFormatting.LIGHT_PURPLE));
         player.level().playSound(null, altar, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1f, 0.8f);
+    }
+
+    private static void resetTalents(ServerPlayer player, BlockPos altar, Identifier school) {
+        if (AttunementService.attunement(player).school(school).talents().isEmpty()) return;
+        if (!player.hasInfiniteMaterials()) {
+            if (countInk(player) < TalentRules.RESET_INK) {
+                fail(player, Component.translatable("message.orbisarcana.altar.reset_cost", TalentRules.RESET_INK));
+                return;
+            }
+            takeInk(player, TalentRules.RESET_INK);
+        }
+        AttunementService.resetTalents(player, school);
+        player.sendSystemMessage(Component.translatable("message.orbisarcana.altar.reset", AttunementService.schoolName(school)).withStyle(ChatFormatting.LIGHT_PURPLE));
+        effects(player, altar, true);
     }
 
     public static boolean inRitual(ServerPlayer player) {

@@ -3,6 +3,7 @@ package com.orbisarcana.school;
 import java.util.Optional;
 
 import com.orbisarcana.core.SchoolRules;
+import com.orbisarcana.core.TalentRules;
 import com.orbisarcana.data.ModAttachments;
 
 import net.minecraft.ChatFormatting;
@@ -91,6 +92,33 @@ public final class AttunementService {
         a.setDominant(Optional.empty());
         player.syncData(ModAttachments.ATTUNEMENT);
         player.sendSystemMessage(Component.translatable("message.orbisarcana.school.unbound").withStyle(ChatFormatting.GRAY));
+    }
+
+    // ---- talents (§10.4) ----
+
+    /** True while {@code school} is dominant and the player picked {@code node} in it. */
+    public static boolean hasTalent(ServerPlayer player, Identifier school, String node) {
+        Attunement a = attunement(player);
+        if (a.dominant().filter(school::equals).isEmpty()) return false;
+        Attunement.SchoolProgress p = a.schools().get(school);
+        if (p == null) return false;
+        return TalentRules.ROOT.equals(node) ? TalentRules.rootActive(p.resonance()) : p.talents().contains(node);
+    }
+
+    public static Optional<TalentRules.Denial> pickTalent(ServerPlayer player, Identifier school, String node) {
+        Attunement a = attunement(player);
+        Attunement.SchoolProgress p = a.school(school);
+        Optional<TalentRules.Denial> denial = TalentRules.check(a.dominant().filter(school::equals).isPresent(), node, p.talents(), p.resonance());
+        if (denial.isEmpty()) {
+            p.talents().add(node);
+            player.syncData(ModAttachments.ATTUNEMENT);
+        }
+        return denial;
+    }
+
+    public static void resetTalents(ServerPlayer player, Identifier school) {
+        attunement(player).school(school).talents().clear();
+        player.syncData(ModAttachments.ATTUNEMENT);
     }
 
     // ---- resonance (§10.3) ----

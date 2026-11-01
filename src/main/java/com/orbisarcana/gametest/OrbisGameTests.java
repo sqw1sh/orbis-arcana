@@ -84,6 +84,8 @@ public final class OrbisGameTests {
         test("altar_switch_ritual_and_dissonance", 260, OrbisGameTests::altarSwitchRitual);
         test("altar_ritual_breaks_when_leaving", 60, OrbisGameTests::altarRitualBroken);
         test("mastery_feeds_resonance_and_dominant_discount", 40, OrbisGameTests::resonanceAndDiscount);
+        test("talents_follow_points_and_reset", 20, OrbisGameTests::talentsAndReset);
+        test("water_root_heals_more", 60, OrbisGameTests::waterRoot);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -502,6 +504,36 @@ public final class OrbisGameTests {
         h.assertTrue(Math.abs(spentAir - 12.0) < 0.01, "wind step costs full mana, spent " + spentAir);
         cleanup(h, p);
         h.succeed();
+    }
+
+    private static void talentsAndReset(GameTestHelper h) {
+        ServerPlayer p = altarPlayer(h);
+        BlockPos altar = h.absolutePos(ALTAR);
+        h.assertTrue(AttunementService.pickTalent(p, Schools.FIRE, "a1").isPresent(), "no talents without the dominant school");
+        AltarService.handle(p, altar, AltarService.Action.BIND, Optional.of(Schools.FIRE));
+        var fire = p.getData(ModAttachments.ATTUNEMENT).school(Schools.FIRE);
+        fire.setResonance(3);
+        h.assertTrue(AttunementService.pickTalent(p, Schools.FIRE, "a2").isPresent(), "second node needs the first");
+        h.assertTrue(AttunementService.pickTalent(p, Schools.FIRE, "a1").isEmpty(), "first node with one point");
+        h.assertTrue(AttunementService.pickTalent(p, Schools.FIRE, "b1").isPresent(), "no points left at resonance 3");
+        h.assertTrue(AttunementService.hasTalent(p, Schools.FIRE, "a1"), "picked talent is active");
+        AltarService.handle(p, altar, AltarService.Action.RESET_TALENTS, Optional.of(Schools.FIRE));
+        h.assertTrue(fire.talents().isEmpty(), "talents reset at the altar");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void waterRoot(GameTestHelper h) {
+        h.setBlock(ALTAR, ModBlocks.RESONANCE_ALTAR.get());
+        ServerPlayer p = player(h, new Vec3(5.5, 1, 4.5), 0f, -90f);
+        KnowledgeService.learn(p, HEALING_DEW);
+        AltarService.handle(p, h.absolutePos(ALTAR), AltarService.Action.BIND, Optional.of(Schools.WATER));
+        p.getData(ModAttachments.ATTUNEMENT).school(Schools.WATER).setResonance(1);
+        p.setHealth(4f);
+        CastService.request(p, HEALING_DEW);
+        release(h, p, 18);
+        // 6 HP x mastery 1 x dominant water power 1.10 x Living Wave 1.10 = 7.26
+        succeedWhen(h, p, () -> h.assertTrue(p.getHealth() >= 4f + 7.2f, "Living Wave and dominant power should heal ~7.26, health " + p.getHealth()));
     }
 
     private OrbisGameTests() {}

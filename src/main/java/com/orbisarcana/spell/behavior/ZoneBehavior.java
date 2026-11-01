@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
+import com.orbisarcana.school.TalentEffects;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
@@ -52,10 +53,11 @@ final class ZoneBehavior {
             this.castId = ctx.castId();
             this.center = center;
             this.radius = ctx.param("radius");
-            this.healPerPulse = (float) ctx.scaled("heal_per_second");
+            double healMult = TalentEffects.healMult(ctx.caster());
+            this.healPerPulse = (float) (ctx.scaled("heal_per_second") * healMult);
             this.regenTicks = ctx.ticks("regen_ticks");
             this.followWounded = ctx.param("follow_wounded") > 0;
-            this.finalBurst = (float) ctx.scaled("final_burst_heal");
+            this.finalBurst = (float) (ctx.scaled("final_burst_heal") * healMult);
             this.endTick = ctx.level().getGameTime() + ctx.ticks("duration_ticks");
         }
 

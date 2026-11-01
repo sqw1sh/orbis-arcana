@@ -55,6 +55,7 @@ public class GrimoireScreen extends Screen {
     protected void init() {
         if (minecraft.player == null) return;
         assignPage = ClientCastState.loadout(minecraft.player).page();
+        SchoolsScreen.addTabs(this, this::addRenderableWidget);
         int left = (width - LIST_W - CARD_W - 10) / 2;
         int top = 30;
 
@@ -191,7 +192,7 @@ public class GrimoireScreen extends Screen {
 
         KnownSpells known = minecraft.player.getData(com.orbisarcana.data.ModAttachments.KNOWLEDGE);
         int total = SpellRegistry.ids(minecraft.player.registryAccess()).size();
-        g.centeredText(font, Component.translatable("screen.orbisarcana.grimoire.title", known.spells().size(), total), width / 2, 10, TEXT);
+        g.centeredText(font, Component.translatable("screen.orbisarcana.grimoire.title", known.spells().size(), total), width / 2 + 40, 10, TEXT);
         g.text(font, Component.translatable("screen.orbisarcana.grimoire.assign"), cardX, height - 76, DIM, false);
 
         if (selected == null) {

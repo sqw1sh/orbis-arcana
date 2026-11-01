@@ -3,6 +3,7 @@ package com.orbisarcana.spell.behavior;
 import java.util.Comparator;
 
 import com.orbisarcana.progression.MasteryService;
+import com.orbisarcana.school.TalentEffects;
 
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -18,7 +19,7 @@ final class HealBehavior {
 
     static void release(CastContext ctx) {
         LivingEntity target = ctx.target() != null ? ctx.target() : ctx.caster();
-        float amount = (float) ctx.scaled("heal");
+        float amount = (float) (ctx.scaled("heal") * TalentEffects.healMult(ctx.caster()));
         heal(ctx, target, amount);
 
         double bounce = ctx.param("bounce_fraction");
