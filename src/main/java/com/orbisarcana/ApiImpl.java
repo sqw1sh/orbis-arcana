@@ -6,11 +6,15 @@ import com.orbisarcana.api.OrbisArcanaAPI;
 import com.orbisarcana.data.ModAttachments;
 import com.orbisarcana.mana.ManaService;
 import com.orbisarcana.progression.KnowledgeService;
+import com.orbisarcana.progression.MasteryService;
+import com.orbisarcana.school.EchoService;
+import com.orbisarcana.spell.SpellRegistry;
 import com.orbisarcana.school.AttunementService;
 import com.orbisarcana.spell.CastService;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 
 /** The implementation behind {@link OrbisArcanaAPI#get()}: thin calls into the mod's services. */
 final class ApiImpl implements OrbisArcanaAPI {
@@ -63,5 +67,18 @@ final class ApiImpl implements OrbisArcanaAPI {
     @Override
     public void cast(ServerPlayer player, Identifier spell) {
         CastService.request(player, spell);
+    }
+
+    @Override
+    public void reportHit(ServerPlayer caster, Identifier spell, int castId, LivingEntity target) {
+        MasteryService.onHit(caster, spell, castId, target, !target.isAlive());
+        SpellRegistry.get(caster.registryAccess(), spell).ifPresent(d -> EchoService.onSpellHit(caster, d.school(), target, castId));
+    }
+
+    @Override
+    public void reportHeal(ServerPlayer caster, Identifier spell, int castId, LivingEntity target, float healed) {
+        if (healed <= 0) return;
+        MasteryService.onHeal(caster, spell, castId, target, healed);
+        EchoService.onSupport(caster, healed);
     }
 }

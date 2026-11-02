@@ -1,0 +1,35 @@
+{
+  "layers": [
+    {
+      "type": "ring",
+      "radius": 0.85,
+      "width": 0.022
+    },
+    {
+      "type": "polygon",
+      "sides": 3,
+      "radius": 0.8,
+      "width": 0.016,
+      "rotate_speed": -30,
+      "count": 2
+    },
+    {
+      "type": "glyph_ring",
+      "radius": 0.56,
+      "count": 6,
+      "size": 0.055,
+      "progress": true,
+      "rotate_speed": 20
+    }
+  ],
+  "milestone_layers": {
+    "15": [
+      {
+        "type": "ring",
+        "radius": 1.12,
+        "width": 0.02,
+        "color": "#FF4060"
+      }
+    ]
+  }
+}

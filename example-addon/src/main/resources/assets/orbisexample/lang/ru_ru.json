@@ -1,0 +1,10 @@
+{
+  "school.orbisexample.blood": "Кровь",
+  "talent.orbisexample.blood.echo": "Жажда крови",
+  "talent.orbisexample.blood.echo.desc": "Каждое попадание заклинанием Крови лечит вас на 1 HP (2 на ур. 2)",
+  "spell.orbisexample.blood_bolt": "Кровавая стрела",
+  "spell.orbisexample.blood_bolt.desc": "Иссушает цель: 30% урона лечит вас.",
+  "spell.orbisexample.blood_bolt.m5": "иссушает 45%",
+  "spell.orbisexample.blood_bolt.m10": "бьёт дальше",
+  "spell.orbisexample.blood_bolt.m15": "иссушает 60%"
+}

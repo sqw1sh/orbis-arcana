@@ -24,6 +24,7 @@
 - `./gradlew runClient -PwithCurios` — dev-запуск с Curios (по умолчанию без него: Curios ломает мок-игроков GameTest).
 - `node tools/textures.cjs` — пересобрать PNG-текстуры предметов и блоков.
 - `node tools/structures.cjs` — пересобрать NBT-шаблоны структур (обсерватория, скрипторий).
+- `./gradlew :runGameTestServer` — GameTest-ы мода; без `:` запускаются и тесты `example-addon` (мод + аддон, 92).
 - `./gradlew runGameTestServer` — все GameTest-ы (`gametest/OrbisGameTests`), код выхода ≠ 0 при падении. Итог в логе: `All N required tests passed`.
 
 ## Особенности API 26.3 (найдено на практике)

@@ -1,0 +1,38 @@
+{
+  "school": "orbisexample:blood",
+  "rarity": "orbisarcana:uncommon",
+  "behavior": "orbisexample:life_drain",
+  "targeting": "target",
+  "cast": {
+    "mode": "charged",
+    "ticks": 16,
+    "min_ticks": 10
+  },
+  "cost": 14,
+  "cooldown_ticks": 100,
+  "primary_stat": "damage",
+  "params": {
+    "damage": 6,
+    "heal_share": 0.3,
+    "range": 16
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "heal_share": 0.45
+      }
+    },
+    "10": {
+      "params": {
+        "range": 22
+      }
+    },
+    "15": {
+      "params": {
+        "heal_share": 0.6
+      }
+    }
+  },
+  "circle": "orbisexample:blood_bolt",
+  "xp_category": "attack"
+}

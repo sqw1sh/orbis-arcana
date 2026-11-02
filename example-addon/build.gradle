@@ -1,0 +1,36 @@
+// Example addon for Orbis Arcana (§16). Tests: ./gradlew :example-addon:runGameTestServer
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev'
+}
+
+version = '0.0.1'
+group = 'com.orbisarcana.example'
+base { archivesName = 'orbisexample' }
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+neoForge {
+    version = rootProject.neo_version
+    runs {
+        client {
+            client()
+        }
+        gameTestServer {
+            type = "gameTestServer"
+            systemProperty 'neoforge.enabledGameTestNamespaces', 'orbisexample'
+        }
+    }
+    mods {
+        orbisexample {
+            sourceSet(sourceSets.main)
+        }
+        orbisarcana {
+            sourceSet(project(':').sourceSets.main)
+        }
+    }
+}
+
+dependencies {
+    // An addon compiles against Orbis Arcana; in a modpack it is simply another mod jar
+    implementation project(':')
+}

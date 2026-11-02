@@ -1,0 +1,16 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license="MIT"
+
+[[mods]]
+modId="orbisexample"
+version="0.0.1"
+displayName="Orbis Arcana Example Addon"
+description='''An example addon: the school of Blood with its Echo and the Blood Bolt spell.'''
+
+[[dependencies.orbisexample]]
+    modId="orbisarcana"
+    type="required"
+    versionRange="[0.0.1,)"
+    ordering="AFTER"
+    side="BOTH"

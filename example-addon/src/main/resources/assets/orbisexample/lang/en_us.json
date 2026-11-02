@@ -1,0 +1,10 @@
+{
+  "school.orbisexample.blood": "Blood",
+  "talent.orbisexample.blood.echo": "Bloodlust",
+  "talent.orbisexample.blood.echo.desc": "Every hit of a Blood spell heals you 1 HP (2 at tier 2)",
+  "spell.orbisexample.blood_bolt": "Blood Bolt",
+  "spell.orbisexample.blood_bolt.desc": "Drains the target: 30% of the damage heals you.",
+  "spell.orbisexample.blood_bolt.m5": "drains 45%",
+  "spell.orbisexample.blood_bolt.m10": "longer reach",
+  "spell.orbisexample.blood_bolt.m15": "drains 60%"
+}

@@ -8,6 +8,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 
 /**
  * Entry point for addons (§16). All methods are server-side and work on a {@link ServerPlayer}. Events live in
@@ -54,6 +55,15 @@ public interface OrbisArcanaAPI {
 
     /** Starts a cast as if the player pressed the key: every usual rule applies. */
     void cast(ServerPlayer player, Identifier spell);
+
+    /**
+     * An addon behavior reports that its spell damaged {@code target}: grants mastery XP (§7.2) and feeds the school's
+     * Echo, as the built-in behaviors do. Call it after the damage, once per target per cast.
+     */
+    void reportHit(ServerPlayer caster, Identifier spell, int castId, LivingEntity target);
+
+    /** An addon behavior reports {@code healed} HP of real healing on {@code target}: mastery XP and support Echoes. */
+    void reportHeal(ServerPlayer caster, Identifier spell, int castId, LivingEntity target, float healed);
 
     /** Set by the mod on construction. */
     @ApiStatus.Internal

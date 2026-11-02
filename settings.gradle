@@ -9,3 +9,6 @@ plugins {
 }
 
 rootProject.name = 'orbisarcana'
+
+// An addon built on the public API (§16): a school with an Echo and a spell on its own behavior
+include 'example-addon'
