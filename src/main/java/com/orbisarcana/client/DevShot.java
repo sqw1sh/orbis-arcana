@@ -76,6 +76,7 @@ public final class DevShot {
             new Scene("curios", DevShot::curiosCheck),
             new Scene("items", DevShot::showItems),
             new Scene("blocks", DevShot::showBlocks),
+            new Scene("creatures", DevShot::showCreatures),
             structure("ruined_observatory", 14),
             structure("flooded_scriptorium", 9),
             book(1),
@@ -152,6 +153,38 @@ public final class DevShot {
             sp.getInventory().setItem(35, com.orbisarcana.item.SpellScrollItem.of(OrbisArcana.id("fireball")));
             sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.AMETHYST_STAFF.get()));
             mc.execute(() -> mc.gui.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player)));
+        });
+    }
+
+    /** The Guardian Treant and a shadow decoy ahead, at noon (model and texture check). */
+    private static void showCreatures() {
+        Minecraft mc = Minecraft.getInstance();
+        mc.gui.setScreen(null);
+        mc.player.setYRot(0);
+        mc.player.setYHeadRot(0);
+        mc.player.setXRot(5);
+        var server = mc.getSingleplayerServer();
+        if (server == null) return;
+        server.execute(() -> {
+            ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+            if (sp == null) return;
+            server.getCommands().performPrefixedCommand(sp.createCommandSourceStack().withSuppressedOutput(), "time set noon");
+            // a clean stage in the sky: the dev world below is dug up by older scenes
+            var stage = net.minecraft.core.BlockPos.containing(sp.getX(), 150, sp.getZ());
+            for (var pos : net.minecraft.core.BlockPos.betweenClosed(stage.offset(-6, -1, -2), stage.offset(6, -1, 10))) {
+                sp.level().setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.MOSS_BLOCK.defaultBlockState());
+            }
+            sp.teleportTo(stage.getX() + 0.5, stage.getY(), stage.getZ() + 0.5);
+            var treant = com.orbisarcana.registry.ModEntities.GUARDIAN_TREANT.get().create(sp.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+            var decoy = com.orbisarcana.registry.ModEntities.SHADOW_DECOY.get().create(sp.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+            if (treant == null || decoy == null) return;
+            treant.snapTo(stage.getX() - 1.5, stage.getY(), stage.getZ() + 6, 180, 0);
+            treant.setNoAi(true);
+            decoy.snapTo(stage.getX() + 2, stage.getY(), stage.getZ() + 4, 180, 0);
+            decoy.setYHeadRot(180);
+            decoy.setYBodyRot(180);
+            sp.level().addFreshEntity(treant);
+            sp.level().addFreshEntity(decoy);
         });
     }
 

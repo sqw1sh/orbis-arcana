@@ -156,12 +156,10 @@ final class SeedBehavior {
             }
         }
         if (c.guardianTicks() > 0 && owner != null) {
-            IronGolem guardian = EntityTypes.IRON_GOLEM.create(c.level(), EntitySpawnReason.MOB_SUMMONED);
+            var guardian = com.orbisarcana.registry.ModEntities.GUARDIAN_TREANT.get().create(c.level(), EntitySpawnReason.MOB_SUMMONED);
             if (guardian != null) {
-                guardian.setPlayerCreated(true);
                 guardian.addTag(GUARDIAN_TAG);
                 guardian.setPos(center);
-                guardian.setCustomName(Component.translatable("entity.orbisarcana.guardian_treant"));
                 c.level().addFreshEntity(guardian);
                 GUARDIANS.put(guardian.getUUID(), now + c.guardianTicks());
             }

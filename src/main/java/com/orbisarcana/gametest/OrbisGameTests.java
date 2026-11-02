@@ -163,6 +163,7 @@ public final class OrbisGameTests {
         test("glyph_puzzle_breaks_the_seals", 20, OrbisGameTests::glyphPuzzle);
         test("structure_templates_load", 40, OrbisGameTests::structureTemplates);
         test("accessories_work_from_curios_slots", 20, OrbisGameTests::accessories);
+        test("shadow_decoy_lures_and_fades", 140, OrbisGameTests::shadowDecoy);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1099,7 +1100,7 @@ public final class OrbisGameTests {
         CastService.request(p, THORN_SEED);
         release(h, p, 26);
         succeedWhen(h, p, () -> {
-            var golems = h.getLevel().getEntitiesOfClass(net.minecraft.world.entity.animal.golem.IronGolem.class, new net.minecraft.world.phys.AABB(h.absolutePos(new BlockPos(4, 1, 4))).inflate(8));
+            var golems = h.getLevel().getEntitiesOfClass(com.orbisarcana.entity.GuardianTreant.class, new net.minecraft.world.phys.AABB(h.absolutePos(new BlockPos(4, 1, 4))).inflate(8));
             h.assertTrue(!golems.isEmpty(), "a guardian grows (m15)");
             golems.forEach(Entity::discard);
         });
@@ -1331,6 +1332,8 @@ public final class OrbisGameTests {
 
     private static void constellationShift(GameTestHelper h) {
         Pig pig = h.spawn(EntityTypes.PIG, new Vec3(7.5, 1, 4.5));
+        // It must not wander off on its own (the pull is velocity, slowness only stops walking)
+        pig.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 400, 10));
         ServerPlayer p = player(h, new Vec3(3.5, 1, 4.5), 0f, 90f);
         KnowledgeService.learn(p, CONSTELLATION_SHIFT);
         double start = pig.position().distanceTo(p.position());
@@ -1529,6 +1532,28 @@ public final class OrbisGameTests {
         h.assertValueEqual(ManaService.maxMana(p), mana, "taking it off removes the bonus");
         cleanup(h, p);
         h.succeed();
+    }
+
+    private static void shadowDecoy(GameTestHelper h) {
+        var zombie = h.spawn(EntityTypes.ZOMBIE, new Vec3(7.5, 1, 4.5));
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 0f);
+        KnowledgeService.learn(p, SHADOW_STEP);
+        KnowledgeService.setMastery(p, SHADOW_STEP, 5);
+        CastService.request(p, SHADOW_STEP);
+        var decoys = h.getLevel().getEntitiesOfClass(com.orbisarcana.entity.ShadowDecoy.class, new net.minecraft.world.phys.AABB(h.absolutePos(new BlockPos(1, 1, 4))).inflate(3));
+        h.assertTrue(decoys.size() == 1, "a decoy stays behind (m5)");
+        var decoy = decoys.getFirst();
+        // Mock players are creative, so no mob hunts them; check the decoy is a valid target instead
+        zombie.setTarget(decoy);
+        h.assertTrue(zombie.getTarget() == decoy, "a zombie can hunt the decoy");
+        h.assertFalse(decoy.hurtServer(h.getLevel(), h.getLevel().damageSources().mobAttack(zombie), 5f), "blows pass through it");
+        h.assertTrue(zombie.canAttack(decoy), "yet mobs keep it as a target");
+        h.runAfterDelay(110, () -> {
+            h.assertTrue(decoy.isRemoved(), "the decoy fades after 5 s");
+            zombie.discard();
+            cleanup(h, p);
+            h.succeed();
+        });
     }
 
     private OrbisGameTests() {}

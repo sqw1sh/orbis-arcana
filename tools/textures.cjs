@@ -29,10 +29,10 @@ function png(w, h, rgba) {
 // ---- image helpers ----
 const hex = s => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16), s.length > 7 ? parseInt(s.slice(7, 9), 16) : 255];
 class Img {
-  constructor() { this.px = Buffer.alloc(16 * 16 * 4); }
-  set(x, y, c) { if (x < 0 || y < 0 || x > 15 || y > 15 || !c) return; const [r, g, b, a] = typeof c === "string" ? hex(c) : c; const i = (y * 16 + x) * 4; this.px[i] = r; this.px[i + 1] = g; this.px[i + 2] = b; this.px[i + 3] = a; }
-  get(x, y) { const i = (y * 16 + x) * 4; return [this.px[i], this.px[i + 1], this.px[i + 2], this.px[i + 3]]; }
-  save(path) { fs.writeFileSync(OUT + path + ".png", png(16, 16, this.px)); }
+  constructor(w = 16, h = 16) { this.w = w; this.h = h; this.px = Buffer.alloc(w * h * 4); }
+  set(x, y, c) { if (x < 0 || y < 0 || x >= this.w || y >= this.h || !c) return; const [r, g, b, a] = typeof c === "string" ? hex(c) : c; const i = (y * this.w + x) * 4; this.px[i] = r; this.px[i + 1] = g; this.px[i + 2] = b; this.px[i + 3] = a; }
+  get(x, y) { const i = (y * this.w + x) * 4; return [this.px[i], this.px[i + 1], this.px[i + 2], this.px[i + 3]]; }
+  save(path) { fs.writeFileSync(OUT + path + ".png", png(this.w, this.h, this.px)); }
 }
 /** An ASCII sprite: rows are padded to 16 with '.', which is transparent. */
 function sprite(rows, palette) {
@@ -296,6 +296,62 @@ function blocks() {
   noise(["#26262c", "#2e2e35", "#33333a"], 32).save("block/resonance_altar_bottom");
 }
 
+// ---- entities: painted over the UV layout of vanilla models (box faces), no vanilla pixels ----
+/** Paints a model box at texture offset (u, v) of size w x h x d; paint(face, x, y, fw, fh) gives each pixel's colour. */
+function box(img, u, v, w, h, d, paint) {
+  const faces = { top: [u + d, v, w, d], bottom: [u + d + w, v, w, d], right: [u, v + d, d, h], front: [u + d, v + d, w, h],
+    left: [u + d + w, v + d, d, h], back: [u + 2 * d + w, v + d, w, h] };
+  for (const [face, [fx, fy, fw, fh]] of Object.entries(faces)) {
+    for (let y = 0; y < fh; y++) for (let x = 0; x < fw; x++) img.set(fx + x, fy + y, paint(face, x, y, fw, fh));
+  }
+}
+const BARK = ["#4a3220", "#5a3d26", "#664630", "#3e2a1b", "#71503a"];
+const LEAVES = ["#2f6b28", "#3c8a30", "#4fa33c", "#27581f"];
+function treant() {
+  const img = new Img(128, 128);
+  let salt = 0;
+  const bark = (face, x, y) => {
+    if (face === "top" && salt < 3) return pick(LEAVES, hash(x, y, 90 + salt));
+    const grain = (hash(x, 0, 70 + salt) + hash(x, Math.floor(y / 4), 71 + salt)) / 2;
+    if (hash(x, y, 72 + salt) < 0.08) return pick(LEAVES, hash(y, x, 73));
+    return pick(BARK, grain);
+  };
+  salt = 0;
+  box(img, 0, 0, 8, 10, 8, (face, x, y, w, h) => {
+    if (face === "front") {
+      if (y === 4 && (x === 1 || x === 2 || x === 5 || x === 6)) return "#b6ff7a";
+      if (y === 3 && (x === 1 || x === 2 || x === 5 || x === 6)) return "#2a1a10";
+      if (y === 7 && x >= 2 && x <= 5) return "#1e140c";
+    }
+    if (face !== "bottom" && y < 2) return pick(LEAVES, hash(x, y, 91));
+    return bark(face, x, y);
+  });
+  box(img, 24, 0, 2, 4, 2, (f, x, y) => pick(BARK, hash(x, y, 74)));
+  salt = 1; box(img, 0, 40, 18, 12, 11, bark);
+  salt = 4; box(img, 0, 70, 9, 5, 6, bark);
+  salt = 5; box(img, 60, 21, 4, 30, 6, (face, x, y) => y > 25 && face !== "top" ? pick(["#2e1f14", "#3a281a"], hash(x, y, 75)) : bark(face, x, y));
+  salt = 6; box(img, 60, 58, 4, 30, 6, (face, x, y) => y > 25 && face !== "top" ? pick(["#2e1f14", "#3a281a"], hash(x, y, 76)) : bark(face, x, y));
+  salt = 7; box(img, 37, 0, 6, 16, 5, bark);
+  salt = 8; box(img, 60, 0, 6, 16, 5, bark);
+  img.save("entity/guardian_treant");
+}
+function decoy() {
+  const img = new Img(64, 64);
+  const shadow = (face, x, y, w, h) => {
+    const edge = x === 0 || y === 0 || x === w - 1 || y === h - 1;
+    const r = hash(x, y, 80 + w * 7 + h);
+    const [cr, cg, cb] = hex(pick(["#1a0f26", "#21132f", "#281838", "#160c20"], r));
+    return [cr, cg, cb, edge ? 120 : 190];
+  };
+  box(img, 0, 0, 8, 8, 8, (face, x, y, w, h) => face === "front" && y === 4 && (x === 1 || x === 2 || x === 5 || x === 6) ? "#d29bff" : shadow(face, x, y, w, h));
+  box(img, 16, 16, 8, 12, 4, shadow);
+  for (const [u, v] of [[40, 16], [0, 16], [32, 48], [16, 48]]) box(img, u, v, 4, 12, 4, shadow);
+  img.save("entity/shadow_decoy");
+}
+
+fs.mkdirSync(OUT + "entity", { recursive: true });
+treant();
+decoy();
 fs.mkdirSync(OUT + "item", { recursive: true });
 fs.mkdirSync(OUT + "block", { recursive: true });
 items();

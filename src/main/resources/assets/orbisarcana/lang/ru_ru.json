@@ -522,5 +522,6 @@
   "accessory.orbisarcana.focus_amulet": "−15% к шансу прерывания каста",
   "accessory.orbisarcana.echo_ring": "Отзвук копится на 20% быстрее",
   "accessory.orbisarcana.scribe_ring": "+10% к скорости каста",
-  "accessory.orbisarcana.needs_curios": "Носится в слотах Curios (мод не установлен)"
+  "accessory.orbisarcana.needs_curios": "Носится в слотах Curios (мод не установлен)",
+  "entity.orbisarcana.shadow_decoy": "Теневая иллюзия"
 }

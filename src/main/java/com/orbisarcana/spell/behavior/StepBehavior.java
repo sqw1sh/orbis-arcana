@@ -23,7 +23,8 @@ import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
-import net.minecraft.world.entity.decoration.ArmorStand;
+import com.orbisarcana.entity.ShadowDecoy;
+import com.orbisarcana.registry.ModEntities;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -129,12 +130,12 @@ public final class StepBehavior {
 
     private static void decoy(ServerPlayer p, Vec3 at, long until) {
         ServerLevel level = p.level();
-        ArmorStand stand = EntityTypes.ARMOR_STAND.create(level, EntitySpawnReason.TRIGGERED);
+        ShadowDecoy stand = ModEntities.SHADOW_DECOY.get().create(level, EntitySpawnReason.TRIGGERED);
         if (stand == null) return;
-        stand.setPos(at.x, at.y, at.z);
-        stand.setYRot(p.getYRot());
-        stand.setNoBasePlate(true);
-        stand.setPermanentlyInvulnerable(true);
+        stand.snapTo(at.x, at.y, at.z, p.getYRot(), 0);
+        stand.setYHeadRot(p.getYRot());
+        stand.setYBodyRot(p.getYRot());
+        stand.setLife((int) (until - level.getGameTime()));
         stand.addTag(DECOY_TAG);
         stand.setCustomName(p.getName().copy().append(Component.literal("?")));
         level.addFreshEntity(stand);
@@ -174,21 +175,6 @@ public final class StepBehavior {
 
     public static boolean isFeared(Mob mob) {
         return FEARS.stream().anyMatch(f -> f.mob() == mob);
-    }
-
-    /** Decoys hold nothing and give nothing: no taking or placing items. */
-    @SubscribeEvent
-    static void onInteract(net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteract event) {
-        if (event.getTarget().entityTags().contains(DECOY_TAG)) event.setCanceled(true);
-    }
-
-    /** A decoy saved with the chunk outlived its spell. */
-    @SubscribeEvent
-    static void onJoin(EntityJoinLevelEvent event) {
-        if (event.loadedFromDisk() && event.getEntity().entityTags().contains(DECOY_TAG)
-                && DECOYS.stream().noneMatch(d -> d.id().equals(event.getEntity().getUUID()))) {
-            event.setCanceled(true);
-        }
     }
 
     @SubscribeEvent
