@@ -135,16 +135,16 @@ public class RadialMenuScreen extends Screen {
         }
 
         // centre: the hovered spell (name, rarity, cost, cooldown) or the set
-        Ui.sprite(g, "radial_center", cx - 32, cy - 32, 64, 64);
+        Ui.sprite(g, "radial_center", cx - 42, cy - 42, 84, 84);
         Optional<Identifier> centre = hovered >= 0 ? loadout.get(page, hovered) : Optional.empty();
         if (centre.isPresent()) {
             Optional<SpellDefinition> def = SpellRegistry.get(minecraft.player.registryAccess(), centre.get());
             int rarity = def.map(d -> Ui.opaque(d.rarity().color)).orElse(Ui.TEXT);
-            var lines = font.split(SpellScrollItem.spellName(centre.get()), 58);
-            int top = cy - 4 - (Math.min(2, lines.size()) * 9) / 2 - 6;
+            var lines = font.split(SpellScrollItem.spellName(centre.get()), 70);
+            int top = lines.size() > 1 ? cy - 24 : cy - 18;
             for (int i = 0; i < Math.min(2, lines.size()); i++) g.centeredText(font, lines.get(i), cx, top + i * 9, rarity);
             def.ifPresent(d -> {
-                int y = cy + 8;
+                int y = cy + 3;
                 String cost = Integer.toString((int) d.cost());
                 String cd = d.cooldownTicks() > 0 ? String.format("%.0fs", d.cooldownTicks() / 20.0) : "";
                 int w = 9 + 1 + font.width(cost) + (cd.isEmpty() ? 0 : 5 + 9 + 1 + font.width(cd));
@@ -156,7 +156,7 @@ public class RadialMenuScreen extends Screen {
                     Ui.icon(g, "cooldown", x2, y - 1, Ui.TEXT_DIM);
                     g.text(font, cd, x2 + 10, y, Ui.TEXT_DIM, true);
                 }
-                g.centeredText(font, Component.translatable("rarity.orbisarcana." + d.rarity().id), cx, cy + 18, Ui.TEXT_DIM);
+                g.centeredText(font, Component.translatable("rarity.orbisarcana." + d.rarity().id), cx, cy + 16, Ui.TEXT_DIM);
             });
         } else {
             // the set: its number and one dot per set

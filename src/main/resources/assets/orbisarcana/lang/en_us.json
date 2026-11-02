@@ -55,7 +55,7 @@
   "cast.orbisarcana.denied.not_enough_mana": "Not enough mana",
   "cast.orbisarcana.denied.no_target": "No target",
   "cast.orbisarcana.denied.out_of_range": "Out of range",
-  "hud.orbisarcana.no_spell": "No spell selected — learn a scroll, assign it in the grimoire (G)",
+  "hud.orbisarcana.no_spell": "No spell — open the grimoire (G)",
   "entity.orbisarcana.spell_projectile": "Spell Projectile",
   "commands.orbisarcana.circles.spawned": "Spawned %s demo circles (local only). Measuring FPS for 10 s...",
   "commands.orbisarcana.circles.fps": "%s circles: average %s FPS",

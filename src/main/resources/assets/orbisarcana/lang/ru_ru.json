@@ -55,7 +55,7 @@
   "cast.orbisarcana.denied.not_enough_mana": "Мало маны",
   "cast.orbisarcana.denied.no_target": "Нет цели",
   "cast.orbisarcana.denied.out_of_range": "Вне досягаемости",
-  "hud.orbisarcana.no_spell": "Заклинание не выбрано — изучите свиток и назначьте в гримуаре (G)",
+  "hud.orbisarcana.no_spell": "Нет заклинания — гримуар (G)",
   "entity.orbisarcana.spell_projectile": "Магический снаряд",
   "commands.orbisarcana.circles.spawned": "Создано демо-кругов: %s (только у вас). Замер FPS 10 с...",
   "commands.orbisarcana.circles.fps": "%s кругов: в среднем %s FPS",

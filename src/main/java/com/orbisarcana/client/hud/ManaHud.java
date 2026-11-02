@@ -7,7 +7,6 @@ import com.orbisarcana.mana.ManaService;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -16,14 +15,14 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
 /**
- * Mana to the right of the hotbar (§13.2): a gold-rimmed orb whose liquid level is the mana share, and a framed bar
- * with the numbers. Below 20% both turn red. The selected spell card ({@link CastHud}) sits on top of this block.
+ * Mana to the right of the hotbar (§13.2): a framed bar across the whole HUD block with the numbers above it; below 20%
+ * it turns red. The selected spell card ({@link CastHud}) sits on top of this block.
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID, value = Dist.CLIENT)
 public final class ManaHud {
-    static final int ORB = 28, BAR_W = 74, BAR_H = 8;
-    /** Width of the whole block (orb + bar), shared with the spell card above it. */
-    static final int WIDTH = ORB - 2 + BAR_W;
+    /** Height of the mana block (numbers + bar). */
+    static final int HEIGHT = 20;
+    private static final int BAR_H = 8, MIN_W = 110, MAX_W = 150;
     private static final double LOW = 0.2;
 
     @SubscribeEvent
@@ -31,9 +30,14 @@ public final class ManaHud {
         event.registerAbove(VanillaGuiLayers.HOTBAR, OrbisArcana.id("mana_bar"), ManaHud::render);
     }
 
+    /** Width of the HUD block: what fits right of the hotbar, between 110 and 150. */
+    static int width(GuiGraphicsExtractor g) {
+        return Math.max(MIN_W, Math.min(MAX_W, g.guiWidth() - (g.guiWidth() / 2 + 91 + 6) - 2));
+    }
+
     /** Left edge of the HUD block: next to the hotbar, pulled left on narrow windows so it stays on screen. */
     static int left(GuiGraphicsExtractor g) {
-        return Math.min(g.guiWidth() / 2 + 91 + 6, g.guiWidth() - 2 - WIDTH);
+        return Math.min(g.guiWidth() / 2 + 91 + 6, g.guiWidth() - 2 - width(g));
     }
 
     private static void render(GuiGraphicsExtractor g, DeltaTracker delta) {
@@ -45,20 +49,11 @@ public final class ManaHud {
         double mana = ManaService.mana(player), share = Math.min(1, mana / max);
         boolean low = share < LOW;
 
-        int x = left(g), y = g.guiHeight() - ORB - 1;
-        // bar first, so the orb rim overlaps its left end
-        int bx = x + ORB - 4, by = y + ORB - BAR_H - 4;
-        Ui.bar(g, bx, by, BAR_W, BAR_H, share, low ? "bar_fill_danger" : "bar_fill_mana", -1, true);
+        int x = left(g), w = width(g), by = g.guiHeight() - BAR_H - 1;
+        Ui.icon(g, "mana", x + 1, by - 10, low ? Ui.DANGER : Ui.MANA);
         String value = (int) Math.floor(mana) + " / " + (int) max;
-        g.text(mc.font, value, bx + BAR_W - mc.font.width(value), by - 10, low ? Ui.DANGER : Ui.TEXT, true);
-
-        Ui.sprite(g, "orb_frame", x, y, ORB, ORB);
-        // the liquid: crop the 20x20 sphere from the top down to the level
-        int fill = (int) Math.round(20 * share);
-        if (fill > 0) {
-            g.blitSprite(RenderPipelines.GUI_TEXTURED, Ui.sprite(low ? "orb_fill_danger" : "orb_fill"), 20, 20, 0, 20 - fill,
-                    x + 4, y + 4 + 20 - fill, 20, fill);
-        }
+        g.text(mc.font, value, x + w - mc.font.width(value), by - 9, low ? Ui.DANGER : Ui.TEXT, true);
+        Ui.bar(g, x, by, w, BAR_H, share, low ? "bar_fill_danger" : "bar_fill_mana", -1, true);
     }
 
     private ManaHud() {}

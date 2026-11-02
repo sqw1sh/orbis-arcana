@@ -46,14 +46,16 @@ public final class CastHud {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.player.isSpectator() || ClientConfig.HUD_COMPACT.get()) return;
         Font font = mc.font;
-        int x = ManaHud.left(g), w = ManaHud.WIDTH;
-        int y = g.guiHeight() - ManaHud.ORB - 1 - CARD_H - 1;
+        int x = ManaHud.left(g), w = ManaHud.width(g);
+        int y = g.guiHeight() - ManaHud.HEIGHT - 2 - CARD_H;
         Ui.card(g, x, y, w, CARD_H);
 
         var selected = ClientCastState.selected(mc.player);
         if (selected.isEmpty()) {
             Ui.slot(g, x + 2, y + 2, 20, Ui.LINE);
-            g.text(font, Component.translatable("hud.orbisarcana.no_spell"), x + 26, y + 8, Ui.TEXT_DIM, true);
+            // the hint is long: wrap it into the two lines of the card
+            var lines = font.split(Component.translatable("hud.orbisarcana.no_spell"), w - 28);
+            for (int i = 0; i < Math.min(2, lines.size()); i++) g.text(font, lines.get(i), x + 26, y + (lines.size() > 1 ? 3 + i * 10 : 8), Ui.TEXT_DIM, true);
             return;
         }
         Identifier spell = selected.get();

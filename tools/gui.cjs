@@ -206,33 +206,6 @@ function bars() {
   save("bar_spark", s);
 }
 
-/** The mana orb: gold ring with four spikes, a dark well, and the liquid sphere drawn on top (cropped by level). */
-function orb() {
-  const c = canvas(28, 28);
-  c.shape(circle(14, 14, 12), T.void);
-  c.shape(ring(14, 14, 12.2, 1.6), T.goldDark);
-  c.shape(ring(14, 14, 12.4, 0.8), T.gold);
-  for (const [ax, ay, bx, by] of [[14, 0.5, 14, 3], [14, 25, 14, 27.5], [0.5, 14, 3, 14], [25, 14, 27.5, 14]]) c.shape(segment(ax, ay, bx, by, 1.6), T.gold);
-  c.shape(ring(14, 14, 10.4, 0.6), "#1b2433");
-  save("orb_frame", c);
-
-  const sphere = (name, light, mid, dark) => {
-    const s = canvas(20, 20);
-    const [lr, lg, lb] = hex(light), [mr, mg, mb] = hex(mid), [dr, dg, db] = hex(dark);
-    s.shape(circle(10, 10, 9.6), (x, y) => {
-      const t = Math.min(1, Math.hypot(x - 7, y - 6.5) / 12);
-      const k = t < 0.5 ? t / 0.5 : (t - 0.5) / 0.5;
-      const [a, b] = t < 0.5 ? [[lr, lg, lb], [mr, mg, mb]] : [[mr, mg, mb], [dr, dg, db]];
-      return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k, 255].map(Math.round);
-    });
-    s.shape(ellipse(7, 5.5, 3, 1.6), T.white, 0.55);
-    s.shape(arc(10, 10, 8.4, 0.8, 30, 150), T.white, 0.18);
-    save(name, s);
-  };
-  sphere("orb_fill", "#bfe2ff", T.mana, "#13306e");
-  sphere("orb_fill_danger", "#ffd1d1", T.danger, "#5a1316");
-}
-
 /** Rarity frame (white, tinted in code) with corner brackets, and the slot well behind spell icons. */
 function frames() {
   const f = canvas(20, 20);
@@ -300,16 +273,15 @@ function sigils() {
   make("astral", union(polygon([[8, 0.4], [9.6, 6.4], [15.6, 8], [9.6, 9.6], [8, 15.6], [6.4, 9.6], [0.4, 8], [6.4, 6.4]]), circle(13, 3, 0.9), circle(3, 13, 0.7)));
 }
 
-/** Radial menu: the ring (192x192, drawn 1:1), the centre disc and the octagonal slot (bg + tinted edge + glow). */
+/** Radial menu: the ring (192x192, drawn 1:1), the centre disc (84x84) and the octagonal slot (bg + tinted edge + glow). */
 function radial() {
   const S = 192, C = S / 2;
   const r = canvas(S, S);
-  r.shape(minus(circle(C, C, 92), circle(C, C, 34)), T.void, 0.72);
+  r.shape(minus(circle(C, C, 92), circle(C, C, 44)), T.void, 0.72);
   r.shape(ring(C, C, 92, 1.4), T.goldDark);
   r.shape(ring(C, C, 92.6, 0.7), T.gold);
   r.shape(ring(C, C, 88, 0.6), T.line);
-  r.shape(ring(C, C, 50, 0.6), T.line);
-  r.shape(ring(C, C, 35, 1.2), T.goldDark);
+  r.shape(ring(C, C, 45, 1.2), T.goldDark);
   // rune ticks around the rim, longer at the sector boundaries
   for (let a = 0; a < 360; a += 5) {
     const major = (a + 22.5) % 45 === 0, len = major ? 5 : a % 15 === 0 ? 2.5 : 1.2;
@@ -320,10 +292,10 @@ function radial() {
   }
   save("radial_ring", r);
 
-  const c = canvas(64, 64);
-  c.shape(circle(32, 32, 31), T.slate, 0.95);
-  c.shape(ring(32, 32, 31, 1.2), T.gold);
-  c.shape(ring(32, 32, 28, 0.6), T.goldDark);
+  const c = canvas(84, 84);
+  c.shape(circle(42, 42, 41), T.slate, 0.95);
+  c.shape(ring(42, 42, 41, 1.2), T.gold);
+  c.shape(ring(42, 42, 38, 0.6), T.goldDark);
   save("radial_center", c);
 
   const oct = (cx, cy, rad) => polygon([...Array(8)].map((_, i) => {
@@ -365,5 +337,5 @@ function tooltip() {
   save("../tooltip/arcane_frame", f, { type: "nine_slice", width: 100, height: 100, border: 10, stretch_inner: true });
 }
 
-panel(); card(); inset(); buttons(); tabs(); bars(); orb(); frames(); chip(); icons(); sigils(); radial(); tooltip();
+panel(); card(); inset(); buttons(); tabs(); bars(); frames(); chip(); icons(); sigils(); radial(); tooltip();
 console.log(`wrote ${written.length} sprites to ${OUT}`);
