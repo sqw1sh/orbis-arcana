@@ -52,8 +52,10 @@
 ## 3. Совместимость (тестовая сборка)
 
 Список модов пользователя; каждый этап проверяется в сборке со всеми ними (Prism-инстанс + Iris с шейдерпаком).
-Проверено по Modrinth (02.11.2026): у всех есть сборки NeoForge 26.3, кроме Let Me Despawn (не найден под этим
-slug — уточнить источник); Curios, Sodium, Sodium Extra и ScalableLux под 26.3 пока beta/alpha.
+Проверено по Modrinth (02.11.2026): у всех есть сборки NeoForge 26.3, Let Me Despawn — с CurseForge;
+все 26 уже лежат в Prism-инстансе «Test Mod 26.3» — это и есть тестовая сборка; Curios, Sodium, Sodium Extra и ScalableLux под 26.3 пока beta/alpha.
+Смоук-тест этапа: `./gradlew deployJar` → запуск инстанса → лог без ERROR от нашего мода → мир: каст каждого типа
+размещения, гримуар, HUD, круги под шейдерпаком.
 Риски, на которые смотрим особо:
 - **Sodium / Iris / ImmediatelyFast / BadOptimizations** — свои пайплайны кругов и VFX, батчинг GUI (ImmediatelyFast), эмиссив под шейдерами.
 - **Entity Culling / More Culling / Cull Leaves** — сущности-снаряды и призывы не должны пропадать в кадре; круги не сущности.

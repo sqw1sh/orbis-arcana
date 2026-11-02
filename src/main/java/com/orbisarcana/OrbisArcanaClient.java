@@ -20,5 +20,6 @@ public class OrbisArcanaClient {
         container.registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
         ResonanceAltarBlock.clientScreenOpener = pos -> Minecraft.getInstance().gui.setScreen(new AltarScreen(pos));
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+        com.orbisarcana.client.anim.CasterAnimations.init();
     }
 }

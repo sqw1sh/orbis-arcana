@@ -30,6 +30,14 @@ neoForge {
     }
 }
 
+repositories {
+    // GeckoLib and Player Animation Library, required by Orbis Arcana
+    exclusiveContent {
+        forRepository { maven { url = 'https://api.modrinth.com/maven' } }
+        filter { includeGroup 'maven.modrinth' }
+    }
+}
+
 dependencies {
     // An addon compiles against Orbis Arcana; in a modpack it is simply another mod jar
     implementation project(':')

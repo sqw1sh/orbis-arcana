@@ -26,6 +26,9 @@
 - `node tools/balance.cjs` — баланс-таблица `docs/BALANCE.md` (коридоры §14.11, DPS школ против меча); запускать после правки чисел заклинаний.
 - `node tools/lang-check.cjs` — аудит локализации RU/EN (запускать после добавления текстов).
 - `node tools/textures.cjs` — пересобрать PNG-текстуры предметов и блоков.
+- `node tools/art.cjs [--check]` — Blockbench → ресурсы: текстуры и item-JSON из `art/models/*.bbmodel`, проверка, что экспорт GeckoLib не устарел (конвейер — `docs/ART.md`).
+- `node tools/sfx.cjs [имя]` — синтез звуков по рецептам `art/sounds/*.json` → WAV → OGG (нужен ffmpeg в PATH или env `FFMPEG`).
+- `./gradlew :runClientShot -Pshots=geckolib,pose` — проверка GeckoLib-модели в руке и позы PAL.
 - `node tools/structures.cjs` — пересобрать NBT-шаблоны структур (обсерватория, скрипторий).
 - `./gradlew :runGameTestServer` — GameTest-ы мода; без `:` запускаются и тесты `example-addon` (мод + аддон, 92).
 - `./gradlew runGameTestServer` — все GameTest-ы (`gametest/OrbisGameTests`), код выхода ≠ 0 при падении. Итог в логе: `All N required tests passed`.
@@ -60,6 +63,8 @@
 - В Bash нет python — для JSON-скриптов использовать node.
 - Теги типов сущностей: `entity.getType().builtInRegistryHolder().is(tag)`. `PushReaction`: PUSH_PULL/PUSH/POPPED/IMMOVEABLE/IGNORE_ENTITY.
 - I-фреймы мобов: `LivingEntity.damageCooldownTime` (публичное поле), а не `Entity#setInvulnerableTime`.
+- GeckoLib 5.5.7 (пакет `com.geckolib`, maven Modrinth): ассеты `assets/<ns>/geckolib/models|animations/<тип>/<id>.(geo|animation).json`, текстура `textures/<тип>/<id>.png`; 3D-предмет = `items/<id>.json` с `{"type":"minecraft:special","model":{"type":"geckolib:geckolib"}}`; `createGeoRenderer` вызывается лениво только на клиенте. Исходники: cloudsmith `com/geckolib/geckolib-neoforge-26.3/5.5.7/*-sources.jar`.
+- Player Animation Library 1.2.8 (mod id `player_animation_library`): анимации в `assets/<ns>/player_animations/*.json`, ключ = `<ns>:<имя в файле>` (Blockbench даёт префикс `animation.`); слой — `PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory`, запуск — `PlayerAnimationController#triggerAnimation`. Экспорт Blockbench инвертирует X-поворот (редактор −150 → файл 150).
 - `new ClipContext(..., CollisionContext.empty())`, если сущности может не быть (ClipContext с null-entity падает).
 
 ## Архитектура (§15)

@@ -115,6 +115,10 @@ public final class ModItems {
         return ModRegistries.ITEMS.registerSimpleItem("seal_" + school, p -> p.rarity(Rarity.RARE));
     }
 
+    /** Blockbench → GeckoLib pipeline check (art/models/debug_orb.bbmodel); not in the creative tab. */
+    public static final DeferredItem<com.orbisarcana.item.DebugOrbItem> DEBUG_ORB = ModRegistries.ITEMS.registerItem("debug_orb",
+            com.orbisarcana.item.DebugOrbItem::new, p -> p.stacksTo(1));
+
     /** Forces class loading so the deferred entries above are registered. */
     public static void init() {}
 

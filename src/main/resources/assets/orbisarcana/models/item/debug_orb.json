@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "particle": "orbisarcana:item/debug_orb"
+  }
+}

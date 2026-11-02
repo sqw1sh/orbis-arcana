@@ -92,6 +92,10 @@ repositories {
 }
 
 dependencies {
+    // GeckoLib (models, animations of spells, foci, creatures) and Player Animation Library (caster poses): required
+    implementation "maven.modrinth:geckolib:${geckolib_version}"
+    implementation "maven.modrinth:player-animation-library:${pal_version}"
+
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
     // Curios sends its own packets to every joining player, which breaks GameTest mock players: only with -PwithCurios
     if (project.hasProperty('withCurios') || project.hasProperty('withCompat')) localRuntime "top.theillusivec4.curios:curios-neoforge:${curios_version}"

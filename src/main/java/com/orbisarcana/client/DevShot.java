@@ -77,6 +77,8 @@ public final class DevShot {
             new Scene("items", DevShot::showItems),
             new Scene("blocks", DevShot::showBlocks),
             new Scene("creatures", DevShot::showCreatures),
+            new Scene("geckolib", DevShot::showGeckoLib),
+            new Scene("pose", DevShot::showPose),
             new Scene("jei", DevShot::showJei),
             new Scene("jade", DevShot::showJade),
             structure("ruined_observatory", 14),
@@ -156,6 +158,31 @@ public final class DevShot {
             sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.AMETHYST_STAFF.get()));
             mc.execute(() -> mc.gui.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player)));
         });
+    }
+
+    /** The GeckoLib debug orb (art/models/debug_orb.bbmodel) in hand, first person: model, texture, idle animation. */
+    private static void showGeckoLib() {
+        Minecraft mc = Minecraft.getInstance();
+        mc.gui.setScreen(null);
+        mc.player.setXRot(10);
+        var server = mc.getSingleplayerServer();
+        if (server == null) return;
+        server.execute(() -> {
+            ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+            if (sp == null) return;
+            sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+            sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.DEBUG_ORB.get()));
+            sp.getInventory().setItem(1, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.DEBUG_ORB.get()));
+        });
+    }
+
+    /** Player Animation Library: the test pose from player_animations/caster.json, third person from the front. */
+    private static void showPose() {
+        Minecraft mc = Minecraft.getInstance();
+        mc.player.setXRot(0);
+        mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
+        OrbisArcana.LOGGER.info("[devshot] player animations: {}", com.zigythebird.playeranim.animation.PlayerAnimResources.getModAnimations(OrbisArcana.MODID).keySet());
+        OrbisArcana.LOGGER.info("[devshot] pose started: {}", com.orbisarcana.client.anim.CasterAnimations.play(mc.player, com.orbisarcana.client.anim.CasterAnimations.CAST_TEST));
     }
 
     /** With -PwithCompat: the inventory with JEI filtered to the mod. */
@@ -392,6 +419,7 @@ public final class DevShot {
             }
             OrbisArcana.LOGGER.info("[devshot] scene {} (iris={}, shaders={}, pipeline assigned={})", SCENES.get(scene).name(),
                     IrisCompat.isLoaded(), IrisCompat.isShaderPackInUse(), IrisCompat.isPipelineAssigned());
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
             SCENES.get(scene).setup().run();
         } else if (step % SCENE_TICKS == SCENE_TICKS - 5) {
             String name = "devshot_" + SCENES.get(scene).name() + ".png";
