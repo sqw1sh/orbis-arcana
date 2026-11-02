@@ -544,5 +544,16 @@
   "jade.orbisarcana.seal": "Crumbles when the rings show the key glyph",
   "config.jade.plugin_orbisarcana.altar": "Resonance Altar",
   "config.jade.plugin_orbisarcana.glyph_ring": "Glyph Ring",
-  "config.jade.plugin_orbisarcana.arcane_seal": "Arcane Seal"
+  "config.jade.plugin_orbisarcana.arcane_seal": "Arcane Seal",
+  "stat.orbisarcana.damage_per_second": "Damage per second",
+  "stat.orbisarcana.damage_reduction": "Damage reduction",
+  "stat.orbisarcana.duration_ticks": "Duration (ticks)",
+  "stat.orbisarcana.range": "Range",
+  "stat.orbisarcana.shock_damage": "Shock damage",
+  "subtitles.orbisarcana.cast.charge": "Spell being woven",
+  "subtitles.orbisarcana.cast.release": "Spell released",
+  "subtitles.orbisarcana.cast.interrupt": "Spell broken",
+  "subtitles.orbisarcana.cast.fail": "Spell not ready",
+  "subtitles.orbisarcana.toggle.on": "Enchantment on",
+  "subtitles.orbisarcana.toggle.off": "Enchantment fades"
 }

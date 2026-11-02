@@ -1,0 +1,178 @@
+{
+  "cast.charge": {
+    "sounds": [
+      {
+        "name": "minecraft:block.amethyst_block.resonate",
+        "type": "event",
+        "volume": 0.6,
+        "pitch": 1.2
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.charge"
+  },
+  "cast.release": {
+    "sounds": [
+      {
+        "name": "minecraft:block.amethyst_block.chime",
+        "type": "event",
+        "volume": 1,
+        "pitch": 1
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.interrupt": {
+    "sounds": [
+      {
+        "name": "minecraft:block.fire.extinguish",
+        "type": "event",
+        "volume": 0.5,
+        "pitch": 1.4
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.interrupt"
+  },
+  "cast.fail": {
+    "sounds": [
+      {
+        "name": "minecraft:block.dispenser.fail",
+        "type": "event",
+        "volume": 0.5,
+        "pitch": 1.6
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.fail"
+  },
+  "toggle.on": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.power_select",
+        "type": "event",
+        "volume": 0.5,
+        "pitch": 1.5
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.toggle.on"
+  },
+  "toggle.off": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.deactivate",
+        "type": "event",
+        "volume": 0.5,
+        "pitch": 1.5
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.toggle.off"
+  },
+  "cast.release.fire": {
+    "sounds": [
+      {
+        "name": "minecraft:item.firecharge.use",
+        "type": "event",
+        "volume": 0.6,
+        "pitch": 1.1
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.release.earth": {
+    "sounds": [
+      {
+        "name": "minecraft:block.stone.break",
+        "type": "event",
+        "volume": 0.9,
+        "pitch": 0.7
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.release.water": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.generic.splash",
+        "type": "event",
+        "volume": 0.5,
+        "pitch": 1.2
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.release.air": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.breeze.wind_burst",
+        "type": "event",
+        "volume": 0.5,
+        "pitch": 1.2
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.release.ice": {
+    "sounds": [
+      {
+        "name": "minecraft:block.glass.break",
+        "type": "event",
+        "volume": 0.5,
+        "pitch": 1.5
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.release.lightning": {
+    "sounds": [
+      {
+        "name": "minecraft:entity.lightning_bolt.impact",
+        "type": "event",
+        "volume": 0.35,
+        "pitch": 1.6
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.release.nature": {
+    "sounds": [
+      {
+        "name": "minecraft:block.azalea.place",
+        "type": "event",
+        "volume": 1,
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.release.light": {
+    "sounds": [
+      {
+        "name": "minecraft:block.beacon.activate",
+        "type": "event",
+        "volume": 0.5,
+        "pitch": 1.8
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.release.dark": {
+    "sounds": [
+      {
+        "name": "minecraft:particle.soul_escape",
+        "type": "event",
+        "volume": 1,
+        "pitch": 0.6
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.release.astral": {
+    "sounds": [
+      {
+        "name": "minecraft:block.end_portal_frame.fill",
+        "type": "event",
+        "volume": 0.7,
+        "pitch": 1.3
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  }
+}

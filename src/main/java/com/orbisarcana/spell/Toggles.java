@@ -45,6 +45,8 @@ public final class Toggles {
         ACTIVE.computeIfAbsent(player.getUUID(), u -> new LinkedHashMap<>()).put(toggle.spellId(), toggle);
         behavior(toggle).ifPresent(b -> b.release(context(player, toggle)));
         Net.toPlayerAndNearby(player, new ToggleState(player.getId(), toggle.spellId(), true, toggle.mastery()));
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), com.orbisarcana.registry.ModSounds.TOGGLE_ON.get(),
+                net.minecraft.sounds.SoundSource.PLAYERS, 1f, 1f);
     }
 
     /** Turns a toggle off; {@code manual} if the player pressed it again. */
@@ -56,6 +58,8 @@ public final class Toggles {
         int ticks = (int) (player.level().getGameTime() - toggle.startTick());
         behavior(toggle).ifPresent(b -> b.disable(context(player, toggle), ticks, manual));
         CastService.startCooldown(player, toggle.spellId(), toggle.spell());
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), com.orbisarcana.registry.ModSounds.TOGGLE_OFF.get(),
+                net.minecraft.sounds.SoundSource.PLAYERS, 1f, 1f);
         Net.toPlayerAndNearby(player, new ToggleState(player.getId(), toggle.spellId(), false, toggle.mastery()));
     }
 

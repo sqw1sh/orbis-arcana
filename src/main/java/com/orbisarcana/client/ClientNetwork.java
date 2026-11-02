@@ -52,7 +52,13 @@ public final class ClientNetwork {
         event.register(EchoState.TYPE, (msg, ctx) -> ClientCastState.setEcho(msg.school(), msg.stacks(), msg.max()));
         event.register(CastDenied.TYPE, (msg, ctx) -> {
             CastDenial[] values = CastDenial.values();
-            if (msg.reason() >= 0 && msg.reason() < values.length) ClientCastState.deny(values[msg.reason()]);
+            if (msg.reason() < 0 || msg.reason() >= values.length) return;
+            CastDenial reason = values[msg.reason()];
+            ClientCastState.deny(reason);
+            if (reason != CastDenial.GLOBAL_COOLDOWN && reason != CastDenial.ALREADY_CASTING) {
+                net.minecraft.client.Minecraft.getInstance().getSoundManager().play(
+                        net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(com.orbisarcana.registry.ModSounds.CAST_FAIL.get(), 1f));
+            }
         });
         event.register(CooldownSet.TYPE, (msg, ctx) ->
                 ClientCastState.setCooldown(msg.spell(), new ClientCastState.Cooldown(msg.fullAt(), msg.cooldownTicks())));

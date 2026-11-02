@@ -28,6 +28,7 @@ import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.api.event.SpellCastEvent;
 import com.orbisarcana.registry.ModAttributes;
+import com.orbisarcana.registry.ModSounds;
 import net.neoforged.neoforge.common.NeoForge;
 import com.orbisarcana.spell.behavior.CastContext;
 import com.orbisarcana.spell.behavior.ChannelBehavior;
@@ -192,8 +193,9 @@ public final class CastService {
 
         if (core.mode == CastMode.INSTANT) {
             finish(player, cast, Outcome.RELEASED);
-        } else if (!TalentEffects.coldBlood(player, spell.school())) {
-            applySlow(player);
+        } else {
+            playAt(player, ModSounds.CAST_CHARGE.get());
+            if (!TalentEffects.coldBlood(player, spell.school())) applySlow(player);
         }
     }
 
@@ -234,6 +236,7 @@ public final class CastService {
         ActiveCast core = cast.core();
 
         if (outcome == Outcome.RELEASED) {
+            playAt(player, ModSounds.release(cast.spell().school()));
             CastContext ctx = context(player, cast, now);
             SpellBehaviors.get(cast.spell().behavior()).ifPresent(b -> b.release(ctx));
             EchoService.onCastReleased(ctx);
@@ -244,6 +247,7 @@ public final class CastService {
             }
             startCooldown(player, cast.spellId(), cast.spell());
         } else {
+            if (outcome != Outcome.CANCELLED) playAt(player, ModSounds.CAST_INTERRUPT.get());
             double refund = core.cost - core.manaSpent(outcome, now);
             ManaService.setMana(player, ManaService.mana(player) + refund);
         }
@@ -305,6 +309,10 @@ public final class CastService {
 
     private static int charges(Map<String, Double> params) {
         return Math.max(1, (int) Math.round(params.getOrDefault("charges", 1.0)));
+    }
+
+    private static void playAt(ServerPlayer player, net.minecraft.sounds.SoundEvent sound) {
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), sound, net.minecraft.sounds.SoundSource.PLAYERS, 1f, 1f);
     }
 
     private static void deny(ServerPlayer player, Identifier spellId, CastDenial reason) {

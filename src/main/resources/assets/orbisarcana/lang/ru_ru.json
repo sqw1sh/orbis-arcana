@@ -544,5 +544,16 @@
   "jade.orbisarcana.seal": "Рассыплется, когда кольца покажут ключевой глиф",
   "config.jade.plugin_orbisarcana.altar": "Алтарь резонанса",
   "config.jade.plugin_orbisarcana.glyph_ring": "Кольцо-глиф",
-  "config.jade.plugin_orbisarcana.arcane_seal": "Тайная печать"
+  "config.jade.plugin_orbisarcana.arcane_seal": "Тайная печать",
+  "stat.orbisarcana.damage_per_second": "Урон в секунду",
+  "stat.orbisarcana.damage_reduction": "Снижение урона",
+  "stat.orbisarcana.duration_ticks": "Длительность (тики)",
+  "stat.orbisarcana.range": "Дальность",
+  "stat.orbisarcana.shock_damage": "Урон током",
+  "subtitles.orbisarcana.cast.charge": "Плетётся заклинание",
+  "subtitles.orbisarcana.cast.release": "Заклинание выпущено",
+  "subtitles.orbisarcana.cast.interrupt": "Заклинание сорвано",
+  "subtitles.orbisarcana.cast.fail": "Заклинание не готово",
+  "subtitles.orbisarcana.toggle.on": "Чары включены",
+  "subtitles.orbisarcana.toggle.off": "Чары угасли"
 }
