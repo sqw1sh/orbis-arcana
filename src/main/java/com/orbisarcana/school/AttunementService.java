@@ -33,7 +33,8 @@ public final class AttunementService {
         boolean dominant = a.dominant().filter(spellSchool::equals).isPresent();
         boolean previous = a.previous().filter(spellSchool::equals).isPresent();
         int resonance = a.schools().containsKey(spellSchool) ? a.schools().get(spellSchool).resonance() : 0;
-        return SchoolRules.powerMult(dominant, previous, resonance, isDissonant(player));
+        return SchoolRules.powerMult(dominant, previous, resonance, isDissonant(player))
+                * com.orbisarcana.item.Accessories.schoolPowerMult(player, spellSchool);
     }
 
     public static double costMult(ServerPlayer player, Identifier spellSchool) {

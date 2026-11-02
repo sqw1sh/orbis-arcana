@@ -72,6 +72,11 @@ public final class EchoService {
     private static final Map<UUID, Double> IMPULSE = new HashMap<>();
     private static final Map<UUID, Vec3> LAST_POS = new HashMap<>();
 
+    /** Echo charge per effective action: Dissonance halves it (§10.6), the Ring of Echo adds 20% (§11.2). */
+    private static double gain(ServerPlayer player) {
+        return EchoRules.stackGain(AttunementService.isDissonant(player)) * com.orbisarcana.item.Accessories.echoGainMult(player);
+    }
+
     /** Echo tier of {@code school} for the player: 0 unless it is dominant with resonance >= 1. */
     public static int tier(ServerPlayer player, Identifier school) {
         var a = AttunementService.attunement(player);
@@ -106,7 +111,7 @@ public final class EchoService {
         boolean live = old != null && old.caster().equals(caster.getUUID()) && now - old.lastTick() <= EchoRules.HEAT_DECAY_TICKS;
         if (live && old.lastCast() == castId) return;
         double stacks = live ? old.stacks() : 0;
-        stacks += EchoRules.stackGain(AttunementService.isDissonant(caster));
+        stacks += gain(caster);
         if (stacks >= EchoRules.HEAT_MAX) {
             HEAT.remove(target.getUUID());
             heatBurst(caster, target, tier);
@@ -142,7 +147,7 @@ public final class EchoService {
         Heat old = FROST.get(target.getUUID());
         boolean live = old != null && old.caster().equals(caster.getUUID()) && now - old.lastTick() <= EchoRules.FROST_DECAY_TICKS;
         if (live && old.lastCast() == castId) return;
-        double stacks = (live ? old.stacks() : 0) + EchoRules.stackGain(AttunementService.isDissonant(caster));
+        double stacks = (live ? old.stacks() : 0) + gain(caster);
         if (stacks >= EchoRules.FROST_MAX) {
             FROST.remove(target.getUUID());
             Frost.freeze(target, EchoRules.freezeTicks(tier), caster);
@@ -308,7 +313,7 @@ public final class EchoService {
         int tier = tier(player, Schools.LIGHT);
         if (tier <= 0 || amount <= 0) return;
         double before = radiance(player);
-        double charge = before + amount * EchoRules.stackGain(AttunementService.isDissonant(player));
+        double charge = before + amount * gain(player);
         if (charge >= EchoRules.RADIANCE_MAX) {
             charge = 0;
             radiancePulse(player, tier);
@@ -474,7 +479,7 @@ public final class EchoService {
         Integer last = FLOW_CAST.put(player.getUUID(), castId);
         if (last != null && last == castId) return;
         int needed = EchoRules.flowNeeded(tier);
-        double stacks = Math.min(needed, FLOW.getOrDefault(player.getUUID(), 0.0) + EchoRules.stackGain(AttunementService.isDissonant(player)));
+        double stacks = Math.min(needed, FLOW.getOrDefault(player.getUUID(), 0.0) + gain(player));
         FLOW.put(player.getUUID(), stacks);
         Net.toPlayer(player, new EchoState(Schools.WATER, (float) stacks, needed));
     }
@@ -501,7 +506,7 @@ public final class EchoService {
         double absorbed = event.getOriginalDamage() - event.getHealthDamage();
         if (absorbed <= 0) return;
         double charge = Math.min(EchoRules.BULWARK_MAX,
-                bulwark(player) + absorbed * EchoRules.stackGain(AttunementService.isDissonant(player)));
+                bulwark(player) + absorbed * gain(player));
         BULWARK.put(player.getUUID(), charge);
         Net.toPlayer(player, new EchoState(Schools.EARTH, (float) charge, (int) EchoRules.BULWARK_MAX));
     }
@@ -551,7 +556,7 @@ public final class EchoService {
         if (moved < 0.05 || moved > 4) return; // standing still, or a teleport
         double before = impulse(player);
         double charge = Math.min(EchoRules.IMPULSE_MAX,
-                before + moved * EchoRules.IMPULSE_PER_BLOCK * EchoRules.stackGain(AttunementService.isDissonant(player)));
+                before + moved * EchoRules.IMPULSE_PER_BLOCK * gain(player));
         IMPULSE.put(player.getUUID(), charge);
         if ((int) charge != (int) before) Net.toPlayer(player, new EchoState(Schools.AIR, (float) Math.floor(charge), (int) EchoRules.IMPULSE_MAX));
     }

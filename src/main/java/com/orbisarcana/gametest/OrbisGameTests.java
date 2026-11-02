@@ -162,6 +162,7 @@ public final class OrbisGameTests {
         test("onboarding_gives_book_and_scroll_once", 20, OrbisGameTests::onboarding);
         test("glyph_puzzle_breaks_the_seals", 20, OrbisGameTests::glyphPuzzle);
         test("structure_templates_load", 40, OrbisGameTests::structureTemplates);
+        test("accessories_work_from_curios_slots", 20, OrbisGameTests::accessories);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1510,6 +1511,27 @@ public final class OrbisGameTests {
             for (BlockPos p : BlockPos.betweenClosed(origin, origin.offset(12, 6, 10))) h.getLevel().setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2 | 16);
             h.succeed();
         });
+    }
+
+    private static void accessories(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        double mana = ManaService.maxMana(p);
+        double fire = AttunementService.powerMult(p, Schools.FIRE);
+        if (net.neoforged.fml.ModList.get().isLoaded("curios")) {
+            var inv = top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(p).orElseThrow();
+            inv.setEquippedCurio("ring", 0, new ItemStack(ModItems.RING_OF_FLAME.get()));
+            inv.setEquippedCurio("necklace", 0, new ItemStack(ModItems.MANA_AMULET.get()));
+            com.orbisarcana.compat.curios.CuriosCompat.update(p);
+        } else {
+            com.orbisarcana.item.Accessories.setWorn(p, List.of(ModItems.RING_OF_FLAME.get(), ModItems.MANA_AMULET.get()));
+        }
+        h.assertValueEqual(ManaService.maxMana(p), mana + 30, "the amulet adds max mana");
+        h.assertTrue(Math.abs(AttunementService.powerMult(p, Schools.FIRE) - fire * 1.1) < 1e-6, "the ring adds fire power");
+        h.assertValueEqual(AttunementService.powerMult(p, Schools.ICE), AttunementService.powerMult(p, Schools.ICE), "other schools unchanged");
+        com.orbisarcana.item.Accessories.setWorn(p, List.of());
+        h.assertValueEqual(ManaService.maxMana(p), mana, "taking it off removes the bonus");
+        cleanup(h, p);
+        h.succeed();
     }
 
     private OrbisGameTests() {}

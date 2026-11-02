@@ -21,6 +21,7 @@
 - `./gradlew deployJar` — собрать и положить jar в Prism-инстанс (старые `orbisarcana-*.jar` удаляются).
 - `./gradlew runClient` / `runServer` — dev-запуски (папка `run/`, eula уже принята).
 - `./gradlew runClientShot` — визуальная проверка: грузит `run/saves/devtest`, ставит стенд кругов, делает скриншоты `run/screenshots/devshot_<mode>.png` и выходит (`client/DevShot`). Iris/Sodium/шейдерпак лежат в `run/mods`, `run/shaderpacks` (локально). Скриншоты смотреть через Read.
+- `./gradlew runClient -PwithCurios` — dev-запуск с Curios (по умолчанию без него: Curios ломает мок-игроков GameTest).
 - `node tools/structures.cjs` — пересобрать NBT-шаблоны структур (обсерватория, скрипторий).
 - `./gradlew runGameTestServer` — все GameTest-ы (`gametest/OrbisGameTests`), код выхода ≠ 0 при падении. Итог в логе: `All N required tests passed`.
 

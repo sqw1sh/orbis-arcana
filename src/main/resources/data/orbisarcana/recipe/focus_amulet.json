@@ -1,0 +1,23 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "curios"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "X": "#c:gems/diamond",
+    "S": "#c:strings",
+    "A": "#c:gems/aether"
+  },
+  "pattern": [
+    "SSS",
+    "S S",
+    "AXA"
+  ],
+  "result": {
+    "id": "orbisarcana:focus_amulet"
+  }
+}

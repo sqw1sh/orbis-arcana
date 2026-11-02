@@ -73,6 +73,7 @@ public final class DevShot {
                 });
             }),
             new Scene("schools", () -> Minecraft.getInstance().gui.setScreen(new SchoolsScreen())),
+            new Scene("curios", DevShot::curiosCheck),
             structure("ruined_observatory", 14),
             structure("flooded_scriptorium", 9),
             book(1),
@@ -123,6 +124,30 @@ public final class DevShot {
             mc.player.setYRot(0);
             mc.player.setXRot(30);
             ClientCircles.spawnDemo(9);
+        });
+    }
+
+    /** With Curios loaded (-PwithCurios): equips a fire ring and a mana amulet server-side and logs the effect. */
+    private static void curiosCheck() {
+        Minecraft mc = Minecraft.getInstance();
+        var server = mc.getSingleplayerServer();
+        if (server == null || !net.neoforged.fml.ModList.get().isLoaded("curios")) {
+            OrbisArcana.LOGGER.info("[devshot] curios: not loaded");
+            return;
+        }
+        server.execute(() -> {
+            ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+            if (sp == null) return;
+            double mana = com.orbisarcana.mana.ManaService.maxMana(sp);
+            double fire = com.orbisarcana.school.AttunementService.powerMult(sp, com.orbisarcana.school.Schools.FIRE);
+            top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(sp).ifPresent(inv -> {
+                inv.setEquippedCurio("ring", 0, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.RING_OF_FLAME.get()));
+                inv.setEquippedCurio("necklace", 0, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.MANA_AMULET.get()));
+            });
+            com.orbisarcana.compat.curios.CuriosCompat.update(sp);
+            OrbisArcana.LOGGER.info("[devshot] curios: max mana {} -> {}, fire power {} -> {}", mana, com.orbisarcana.mana.ManaService.maxMana(sp),
+                    fire, com.orbisarcana.school.AttunementService.powerMult(sp, com.orbisarcana.school.Schools.FIRE));
+            mc.execute(() -> mc.gui.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player)));
         });
     }
 

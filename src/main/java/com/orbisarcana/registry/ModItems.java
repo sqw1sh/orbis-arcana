@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.core.FocusRules;
+import com.orbisarcana.item.AccessoryItem;
 import com.orbisarcana.item.FocusItem;
 import com.orbisarcana.item.ManaPotionItem;
 import com.orbisarcana.item.SpellScrollItem;
@@ -61,6 +62,21 @@ public final class ModItems {
     public static final java.util.List<DeferredItem<FocusItem>> FOCI = java.util.List.of(APPRENTICE_WAND, AMETHYST_WAND, NETHERITE_WAND,
             APPRENTICE_STAFF, AMETHYST_STAFF, NETHERITE_STAFF, APPRENTICE_TOME, AMETHYST_TOME, NETHERITE_TOME);
 
+    // Accessories (§11.2), worn through Curios (optional)
+    public static final DeferredItem<AccessoryItem> RING_OF_FLAME = accessory("ring_of_flame", AccessoryItem.Kind.SCHOOL_RING, Schools.FIRE, Rarity.UNCOMMON);
+    public static final DeferredItem<AccessoryItem> RING_OF_STONE = accessory("ring_of_stone", AccessoryItem.Kind.SCHOOL_RING, Schools.EARTH, Rarity.UNCOMMON);
+    public static final DeferredItem<AccessoryItem> RING_OF_TIDE = accessory("ring_of_tide", AccessoryItem.Kind.SCHOOL_RING, Schools.WATER, Rarity.UNCOMMON);
+    public static final DeferredItem<AccessoryItem> RING_OF_WIND = accessory("ring_of_wind", AccessoryItem.Kind.SCHOOL_RING, Schools.AIR, Rarity.UNCOMMON);
+    public static final DeferredItem<AccessoryItem> RING_OF_FROST = accessory("ring_of_frost", AccessoryItem.Kind.SCHOOL_RING, Schools.ICE, Rarity.UNCOMMON);
+    public static final DeferredItem<AccessoryItem> RING_OF_STORM = accessory("ring_of_storm", AccessoryItem.Kind.SCHOOL_RING, Schools.LIGHTNING, Rarity.UNCOMMON);
+    public static final DeferredItem<AccessoryItem> RING_OF_LEAF = accessory("ring_of_leaf", AccessoryItem.Kind.SCHOOL_RING, Schools.NATURE, Rarity.UNCOMMON);
+    public static final DeferredItem<AccessoryItem> MANA_AMULET = accessory("mana_amulet", AccessoryItem.Kind.MANA_AMULET, null, Rarity.RARE);
+    public static final DeferredItem<AccessoryItem> FLOW_AMULET = accessory("flow_amulet", AccessoryItem.Kind.FLOW_AMULET, null, Rarity.RARE);
+    public static final DeferredItem<AccessoryItem> FOCUS_AMULET = accessory("focus_amulet", AccessoryItem.Kind.FOCUS_AMULET, null, Rarity.RARE);
+    public static final DeferredItem<AccessoryItem> RING_OF_ECHO = accessory("ring_of_echo", AccessoryItem.Kind.ECHO_RING, null, Rarity.RARE);
+    public static final DeferredItem<AccessoryItem> SCRIBE_RING = accessory("scribe_ring", AccessoryItem.Kind.SCRIBE_RING, null, Rarity.RARE);
+    public static final java.util.List<DeferredItem<AccessoryItem>> ACCESSORIES = java.util.List.of(RING_OF_FLAME, RING_OF_STONE, RING_OF_TIDE, RING_OF_WIND, RING_OF_FROST, RING_OF_STORM, RING_OF_LEAF, MANA_AMULET, FLOW_AMULET, FOCUS_AMULET, RING_OF_ECHO, SCRIBE_RING);
+
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = ModRegistries.CREATIVE_TABS.register("main",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.orbisarcana"))
@@ -79,8 +95,14 @@ public final class ModItems {
                         out.accept(SEAL_ASTRAL.get());
                         FOCI.forEach(item -> out.accept(item.get()));
                         out.accept(MANA_POTION.get());
+                        // Without Curios accessories cannot be worn, so they stay out of sight (§11.2)
+                        if (net.neoforged.fml.ModList.get().isLoaded("curios")) ACCESSORIES.forEach(item -> out.accept(item.get()));
                     })
                     .build());
+
+    private static DeferredItem<AccessoryItem> accessory(String name, AccessoryItem.Kind kind, Identifier school, Rarity rarity) {
+        return ModRegistries.ITEMS.registerItem(name, p -> new AccessoryItem(p, kind, school), p -> p.stacksTo(1).rarity(rarity));
+    }
 
     private static DeferredItem<FocusItem> focus(String name, FocusRules.Type type, int tier, Rarity rarity) {
         return ModRegistries.ITEMS.registerItem(name, p -> new FocusItem(p, type, tier),

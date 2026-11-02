@@ -1,0 +1,74 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.25
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:ring_of_flame",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:ring_of_stone",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:ring_of_tide",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:ring_of_wind",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:ring_of_frost",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:ring_of_storm",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:ring_of_leaf",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:mana_amulet",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:flow_amulet",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:focus_amulet",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:ring_of_echo",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:scribe_ring",
+          "weight": 1
+        }
+      ]
+    }
+  ],
+  "random_sequence": "orbisarcana:accessories/chest"
+}

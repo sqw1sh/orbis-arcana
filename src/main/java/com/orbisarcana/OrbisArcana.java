@@ -32,6 +32,8 @@ public class OrbisArcana {
         ModDataComponents.register(modEventBus);
         ModAttributes.register(modEventBus);
         com.orbisarcana.world.RandomSpellFunction.register(modEventBus);
+        // Curios is optional: its classes are only loaded when it is present (§11.2, §17)
+        if (net.neoforged.fml.ModList.get().isLoaded("curios")) com.orbisarcana.compat.curios.CuriosCompat.init();
         ModAttachments.register(modEventBus);
         SpellRegistry.register(modEventBus);
         SpellBehaviors.register(modEventBus);

@@ -79,7 +79,16 @@ configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
+repositories {
+    // Curios API: optional accessories (§11.2), only compat/curios touches it
+    maven { url = 'https://maven.theillusivec4.top/' }
+}
+
 dependencies {
+    compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
+    // Curios sends its own packets to every joining player, which breaks GameTest mock players: only with -PwithCurios
+    if (project.hasProperty('withCurios')) localRuntime "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+
     // Pure-Java core (com.orbisarcana.core) is unit-tested without Minecraft
     testImplementation platform('org.junit:junit-bom:5.13.4')
     testImplementation 'org.junit.jupiter:junit-jupiter'
