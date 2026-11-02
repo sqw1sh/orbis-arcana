@@ -3,17 +3,16 @@
   "pools": [
     {
       "rolls": 1,
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
       "entries": [
         {
           "type": "minecraft:item",
           "name": "orbisarcana:resonance_altar"
         }
-      ],
-      "conditions": [
-        {
-          "condition": "minecraft:survives_explosion"
-        }
       ]
     }
-  ]
+  ],
+  "random_sequence": "orbisarcana:blocks/resonance_altar"
 }

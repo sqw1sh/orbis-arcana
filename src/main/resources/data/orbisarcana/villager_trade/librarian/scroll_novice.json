@@ -1,0 +1,29 @@
+{
+  "wants": {
+    "id": "minecraft:emerald",
+    "count": 8
+  },
+  "gives": {
+    "id": "orbisarcana:spell_scroll"
+  },
+  "given_item_modifier": [
+    {
+      "type": "orbisarcana:random_spell",
+      "rarities": [
+        "common"
+      ],
+      "schools": [
+        "orbisarcana:fire",
+        "orbisarcana:earth",
+        "orbisarcana:water",
+        "orbisarcana:air",
+        "orbisarcana:ice",
+        "orbisarcana:lightning",
+        "orbisarcana:nature"
+      ]
+    }
+  ],
+  "max_uses": 2,
+  "reputation_discount": 0.1,
+  "xp": 10
+}

@@ -1,0 +1,25 @@
+{
+  "type": "neoforge:add_table",
+  "table": "orbisarcana:scrolls/dungeon",
+  "condition": {
+    "type": "minecraft:any_of",
+    "terms": [
+      {
+        "type": "neoforge:loot_table_id",
+        "loot_table_id": "minecraft:chests/simple_dungeon"
+      },
+      {
+        "type": "neoforge:loot_table_id",
+        "loot_table_id": "minecraft:chests/abandoned_mineshaft"
+      },
+      {
+        "type": "neoforge:loot_table_id",
+        "loot_table_id": "minecraft:chests/pillager_outpost"
+      },
+      {
+        "type": "neoforge:loot_table_id",
+        "loot_table_id": "minecraft:chests/ruined_portal"
+      }
+    ]
+  }
+}

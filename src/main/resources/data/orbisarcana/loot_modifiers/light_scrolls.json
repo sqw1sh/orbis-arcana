@@ -1,0 +1,21 @@
+{
+  "type": "neoforge:add_table",
+  "table": "orbisarcana:scrolls/light",
+  "condition": {
+    "type": "minecraft:any_of",
+    "terms": [
+      {
+        "type": "neoforge:loot_table_id",
+        "loot_table_id": "minecraft:chests/stronghold_library"
+      },
+      {
+        "type": "neoforge:loot_table_id",
+        "loot_table_id": "minecraft:chests/stronghold_corridor"
+      },
+      {
+        "type": "neoforge:loot_table_id",
+        "loot_table_id": "minecraft:chests/woodland_mansion"
+      }
+    ]
+  }
+}

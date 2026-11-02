@@ -1,0 +1,45 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:all_of",
+        "terms": [
+          {
+            "type": "minecraft:killed_by_player"
+          },
+          {
+            "type": "minecraft:random_chance",
+            "chance": 0.04
+          }
+        ]
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:spell_scroll",
+          "modifier": [
+            {
+              "type": "orbisarcana:random_spell",
+              "rarities": [
+                "common",
+                "uncommon",
+                "rare"
+              ],
+              "schools": [
+                "orbisarcana:fire",
+                "orbisarcana:earth",
+                "orbisarcana:water",
+                "orbisarcana:air",
+                "orbisarcana:ice",
+                "orbisarcana:lightning",
+                "orbisarcana:nature"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "orbisarcana:scrolls/witch"
+}

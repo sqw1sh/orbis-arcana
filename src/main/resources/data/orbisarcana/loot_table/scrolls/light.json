@@ -1,0 +1,31 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.45
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:spell_scroll",
+          "modifier": [
+            {
+              "type": "orbisarcana:random_spell",
+              "rarities": [
+                "rare",
+                "epic",
+                "mythic"
+              ],
+              "schools": [
+                "orbisarcana:light"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "orbisarcana:scrolls/light"
+}

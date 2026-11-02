@@ -31,6 +31,7 @@ public class OrbisArcana {
         ModRegistries.register(modEventBus);
         ModDataComponents.register(modEventBus);
         ModAttributes.register(modEventBus);
+        com.orbisarcana.world.RandomSpellFunction.register(modEventBus);
         ModAttachments.register(modEventBus);
         SpellRegistry.register(modEventBus);
         SpellBehaviors.register(modEventBus);

@@ -26,6 +26,7 @@ import com.orbisarcana.spell.CastService;
 import com.orbisarcana.spell.Frost;
 import com.orbisarcana.spell.Shields;
 import com.orbisarcana.spell.Toggles;
+import com.orbisarcana.spell.SpellRegistry;
 import com.orbisarcana.spell.Stars;
 import com.orbisarcana.spell.behavior.CurseBehavior;
 import com.orbisarcana.spell.behavior.OrbitBehavior;
@@ -155,6 +156,8 @@ public final class OrbisGameTests {
         test("mana_potion_restores_mana", 20, OrbisGameTests::manaPotion);
         test("altar_dismantles_duplicates_into_ink", 20, OrbisGameTests::dismantle);
         test("aether_ore_drops_shards", 20, OrbisGameTests::aetherOre);
+        test("dungeon_chests_hold_scrolls", 20, OrbisGameTests::dungeonLoot);
+        test("ancient_cities_hold_dark_scrolls", 20, OrbisGameTests::ancientCityLoot);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1405,6 +1408,42 @@ public final class OrbisGameTests {
         ItemStack pickaxe = new ItemStack(net.minecraft.world.item.Items.IRON_PICKAXE);
         var drops = net.minecraft.world.level.block.Block.getDrops(h.getBlockState(pos), h.getLevel(), h.absolutePos(pos), null, null, pickaxe);
         h.assertTrue(drops.stream().anyMatch(s -> s.is(ModItems.AETHER_SHARD.get())), "the ore drops aether shards, got " + drops);
+        h.succeed();
+    }
+
+    /** Rolls a vanilla chest table (with loot modifiers) many times and returns the scrolls found. */
+    private static List<ItemStack> rollChest(GameTestHelper h, String table, int times) {
+        var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, Identifier.withDefaultNamespace(table));
+        var loot = h.getLevel().getServer().reloadableRegistries().getLootTable(key);
+        List<ItemStack> scrolls = new java.util.ArrayList<>();
+        for (int i = 0; i < times; i++) {
+            var params = new net.minecraft.world.level.storage.loot.LootParams.Builder(h.getLevel())
+                    .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.ORIGIN, h.absoluteVec(new Vec3(4, 1, 4)))
+                    .create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.CHEST);
+            loot.getRandomItems(params).stream().filter(s -> s.is(ModItems.SPELL_SCROLL.get())).forEach(scrolls::add);
+        }
+        return scrolls;
+    }
+
+    private static void dungeonLoot(GameTestHelper h) {
+        List<ItemStack> scrolls = rollChest(h, "chests/simple_dungeon", 60);
+        h.assertTrue(scrolls.size() > 5, "dungeon chests hold scrolls, found " + scrolls.size());
+        for (ItemStack s : scrolls) {
+            var def = SpellScrollItem.spell(s).flatMap(id -> SpellRegistry.get(h.getLevel().registryAccess(), id));
+            h.assertTrue(def.isPresent(), "each scroll carries a spell");
+            h.assertFalse(Schools.isHigher(def.get().school()), "no higher schools in dungeons");
+            h.assertTrue(def.get().rarity().ordinal() <= com.orbisarcana.core.Rarity.RARE.ordinal(), "common to rare only");
+        }
+        h.succeed();
+    }
+
+    private static void ancientCityLoot(GameTestHelper h) {
+        List<ItemStack> scrolls = rollChest(h, "chests/ancient_city", 40);
+        h.assertTrue(!scrolls.isEmpty(), "ancient cities hold scrolls");
+        for (ItemStack s : scrolls) {
+            var def = SpellScrollItem.spell(s).flatMap(id -> SpellRegistry.get(h.getLevel().registryAccess(), id));
+            h.assertTrue(def.isPresent() && def.get().school().equals(Schools.DARK), "of the Dark school");
+        }
         h.succeed();
     }
 
