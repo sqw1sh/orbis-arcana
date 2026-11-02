@@ -29,3 +29,17 @@ ${mod_description}
     versionRange="[17.0.0-beta,)"
     ordering="NONE"
     side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="jei"
+    type="optional"
+    versionRange="[31,)"
+    ordering="NONE"
+    side="CLIENT"
+
+[[dependencies.${mod_id}]]
+    modId="jade"
+    type="optional"
+    versionRange="[26.3,)"
+    ordering="NONE"
+    side="CLIENT"

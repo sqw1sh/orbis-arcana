@@ -77,6 +77,8 @@ public final class DevShot {
             new Scene("items", DevShot::showItems),
             new Scene("blocks", DevShot::showBlocks),
             new Scene("creatures", DevShot::showCreatures),
+            new Scene("jei", DevShot::showJei),
+            new Scene("jade", DevShot::showJade),
             structure("ruined_observatory", 14),
             structure("flooded_scriptorium", 9),
             book(1),
@@ -153,6 +155,37 @@ public final class DevShot {
             sp.getInventory().setItem(35, com.orbisarcana.item.SpellScrollItem.of(OrbisArcana.id("fireball")));
             sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.AMETHYST_STAFF.get()));
             mc.execute(() -> mc.gui.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player)));
+        });
+    }
+
+    /** With -PwithCompat: the inventory with JEI filtered to the mod. */
+    private static void showJei() {
+        showItems();
+        Minecraft.getInstance().execute(() -> {
+            if (net.neoforged.fml.ModList.get().isLoaded("jei")) com.orbisarcana.compat.jei.OrbisJeiPlugin.search("@orbisarcana");
+        });
+    }
+
+    /** With -PwithCompat: a resonance altar under the crosshair, for Jade's tooltip. */
+    private static void showJade() {
+        Minecraft mc = Minecraft.getInstance();
+        mc.gui.setScreen(null);
+        mc.player.setYRot(0);
+        mc.player.setYHeadRot(0);
+        mc.player.setXRot(35);
+        var server = mc.getSingleplayerServer();
+        if (server == null) return;
+        server.execute(() -> {
+            ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+            if (sp == null) return;
+            sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+            var at = net.minecraft.core.BlockPos.containing(sp.getX(), 150, sp.getZ());
+            for (var pos : net.minecraft.core.BlockPos.betweenClosed(at.offset(-3, -1, -1), at.offset(3, -1, 5))) {
+                sp.level().setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.MOSS_BLOCK.defaultBlockState());
+            }
+            sp.level().setBlockAndUpdate(at.offset(0, 0, 2), com.orbisarcana.registry.ModBlocks.RESONANCE_ALTAR.get().defaultBlockState());
+            sp.teleportTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
+            com.orbisarcana.school.AttunementService.bind(sp, com.orbisarcana.school.Schools.FIRE);
         });
     }
 

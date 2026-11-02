@@ -1,5 +1,6 @@
 package com.orbisarcana.registry;
 
+import com.orbisarcana.block.ArcaneSealBlock;
 import com.orbisarcana.block.FrostWallBlock;
 import com.orbisarcana.block.GlyphRingBlock;
 import com.orbisarcana.block.ResonanceAltarBlock;
@@ -36,8 +37,8 @@ public final class ModBlocks {
     public static final DeferredBlock<GlyphRingBlock> GLYPH_RING = ModRegistries.BLOCKS.registerBlock(
             "glyph_ring", GlyphRingBlock::new,
             p -> p.mapColor(MapColor.DEEPSLATE).strength(-1f, 3600000f).noLootTable().sound(SoundType.DEEPSLATE_BRICKS).lightLevel(s -> 4));
-    public static final DeferredBlock<Block> ARCANE_SEAL = ModRegistries.BLOCKS.registerSimpleBlock(
-            "arcane_seal", p -> p.mapColor(MapColor.COLOR_PURPLE).strength(-1f, 3600000f).noLootTable().sound(SoundType.AMETHYST)
+    public static final DeferredBlock<ArcaneSealBlock> ARCANE_SEAL = ModRegistries.BLOCKS.registerBlock(
+            "arcane_seal", ArcaneSealBlock::new, p -> p.mapColor(MapColor.COLOR_PURPLE).strength(-1f, 3600000f).noLootTable().sound(SoundType.AMETHYST)
                     .lightLevel(s -> 10).pushReaction(PushReaction.IMMOVEABLE));
 
     /** Aether Crystal ore (§11.3): the basic magic resource in caves, drops shards and some XP. */

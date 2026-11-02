@@ -82,12 +82,29 @@ configurations {
 repositories {
     // Curios API: optional accessories (§11.2), only compat/curios touches it
     maven { url = 'https://maven.theillusivec4.top/' }
+    // JEI (§17)
+    maven { url = 'https://maven.blamejared.com/' }
+    // Jade (§17), from Modrinth
+    exclusiveContent {
+        forRepository { maven { url = 'https://api.modrinth.com/maven' } }
+        filter { includeGroup 'maven.modrinth' }
+    }
 }
 
 dependencies {
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
     // Curios sends its own packets to every joining player, which breaks GameTest mock players: only with -PwithCurios
-    if (project.hasProperty('withCurios')) localRuntime "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+    if (project.hasProperty('withCurios') || project.hasProperty('withCompat')) localRuntime "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+
+    // JEI and Jade: their plugins in compat/jei and compat/jade are found and loaded by those mods only
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    compileOnly "maven.modrinth:jade:${jade_version}"
+    // In dev runs only with -PwithCompat (JEI + Jade + Curios), so GameTests keep running without them
+    if (project.hasProperty('withCompat')) {
+        localRuntime "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+        localRuntime "maven.modrinth:jade:${jade_version}"
+    }
 
     // Pure-Java core (com.orbisarcana.core) is unit-tested without Minecraft
     testImplementation platform('org.junit:junit-bom:5.13.4')
