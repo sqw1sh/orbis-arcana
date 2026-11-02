@@ -64,6 +64,8 @@ public final class DevShot {
                 vfxAt("arcane_sparkle", 1.6, 0, 0x7A8CFF);
                 vfxAt("arcane_sparkle", 3.0, 0, 0x6BD66B);
             }),
+            new Scene("cast_anim", () -> fakeCast(true)),
+            new Scene("cast_anim_fp", () -> fakeCast(false)),
             new Scene("radial", () -> {
                 learnTestSpells();
                 Minecraft.getInstance().gui.setScreen(new RadialMenuScreen(true));
@@ -114,7 +116,15 @@ public final class DevShot {
             new Scene("blocks", DevShot::showBlocks),
             new Scene("creatures", DevShot::showCreatures),
             new Scene("geckolib", DevShot::showGeckoLib),
-            new Scene("pose", DevShot::showPose),
+            new Scene("pose", () -> {
+                Minecraft mc = Minecraft.getInstance();
+                mc.gui.setScreen(null);
+                var server = mc.getSingleplayerServer();
+                if (server != null) server.execute(() -> server.getCommands().performPrefixedCommand(
+                        server.createCommandSourceStack().withSuppressedOutput(), "time set noon"));
+                mc.player.setYRot(0);
+                mc.player.setXRot(0);
+            }, () -> showPose("cast_test")),
             new Scene("jei", DevShot::showJei),
             new Scene("jade", DevShot::showJade),
             structure("ruined_observatory", 14),
@@ -153,7 +163,19 @@ public final class DevShot {
     private static List<Scene> filterScenes(String only) {
         if (only.isBlank()) return ALL_SCENES;
         var names = java.util.Set.of(only.split(","));
-        return ALL_SCENES.stream().filter(s -> names.contains(s.name())).toList();
+        // "pose" expands to one scene per name in -Dorbisarcana.devshot.pose=a,b (screenshots devshot_pose_<name>.png)
+        var out = new java.util.ArrayList<Scene>();
+        for (Scene s : ALL_SCENES) {
+            if (!names.contains(s.name())) continue;
+            if (!s.name().equals("pose")) {
+                out.add(s);
+                continue;
+            }
+            for (String pose : System.getProperty("orbisarcana.devshot.pose", "cast_test").split(",")) {
+                out.add(new Scene("pose_" + pose, s.setup(), () -> showPose(pose)));
+            }
+        }
+        return out;
     }
 
     private static int ticks;
@@ -213,12 +235,13 @@ public final class DevShot {
     }
 
     /** Player Animation Library: the test pose from player_animations/caster.json, third person from the front. */
-    private static void showPose() {
+    /** The caster animation {@code name}, third person from the front. */
+    private static void showPose(String name) {
         Minecraft mc = Minecraft.getInstance();
         mc.player.setXRot(0);
         mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
         OrbisArcana.LOGGER.info("[devshot] player animations: {}", com.zigythebird.playeranim.animation.PlayerAnimResources.getModAnimations(OrbisArcana.MODID).keySet());
-        OrbisArcana.LOGGER.info("[devshot] pose started: {}", com.orbisarcana.client.anim.CasterAnimations.play(mc.player, com.orbisarcana.client.anim.CasterAnimations.CAST_TEST));
+        OrbisArcana.LOGGER.info("[devshot] pose {} started: {}", name, com.orbisarcana.client.anim.CasterAnimations.play(mc.player, OrbisArcana.id("animation." + name)));
     }
 
     /** With -PwithCompat: the inventory with JEI filtered to the mod. */
@@ -250,6 +273,18 @@ public final class DevShot {
             sp.teleportTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
             com.orbisarcana.school.AttunementService.bind(sp, com.orbisarcana.school.Schools.FIRE);
         });
+    }
+
+    /** A Fireball cast start as the packet would announce it (charge pose and circle), seen from the front or first person. */
+    private static void fakeCast(boolean front) {
+        Minecraft mc = Minecraft.getInstance();
+        mc.gui.setScreen(null);
+        mc.player.setXRot(front ? 0 : 10);
+        if (front) mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
+        var msg = new com.orbisarcana.network.CastPayloads.CastStarted(-77, mc.player.getId(), OrbisArcana.id("fireball"),
+                mc.level.getGameTime(), 200, 15, java.util.Optional.empty(), -1, 0);
+        ClientCircles.start(msg);
+        com.orbisarcana.client.anim.CasterAnimations.castStarted(msg);
     }
 
     /** Plays a VFX effect locally, {@code side} blocks to the right of a point 4 blocks ahead at eye height. */
@@ -490,7 +525,7 @@ public final class DevShot {
             }
             OrbisArcana.LOGGER.info("[devshot] scene {} (iris={}, shaders={}, pipeline assigned={})", SCENES.get(scene).name(),
                     IrisCompat.isLoaded(), IrisCompat.isShaderPackInUse(), IrisCompat.isPipelineAssigned());
-            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            if (!SCENES.get(scene).name().startsWith("pose") && !SCENES.get(scene).name().equals("cast_anim")) mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
             SCENES.get(scene).setup().run();
         } else if (step % SCENE_TICKS == SCENE_TICKS - 8 && SCENES.get(scene).beforeShot() != null) {
             SCENES.get(scene).beforeShot().run();

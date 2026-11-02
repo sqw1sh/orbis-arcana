@@ -91,6 +91,10 @@ public final class ClientConfig {
             .comment("Spell effects quality: how many particles the mod's effects spawn and how many may live at once")
             .defineEnum("vfxQuality", VfxQuality.HIGH);
 
+    public static final ModConfigSpec.BooleanValue FIRST_PERSON_ANIMATIONS = B
+            .comment("Show the animated arms of the caster poses in first person")
+            .define("firstPersonAnimations", true);
+
     public static final ModConfigSpec.BooleanValue HUD_COMPACT = B
             .comment("Compact HUD: only the mana orb and bar, without the selected spell card")
             .define("compact", false);

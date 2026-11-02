@@ -39,6 +39,8 @@ neoForge {
             systemProperty 'orbisarcana.devshot', 'true'
             // ./gradlew runClientShot -Pshots=radial,grimoire  -> only these scenes
             if (project.hasProperty('shots')) systemProperty 'orbisarcana.devshot.only', project.property('shots')
+            // ./gradlew runClientShot -Pshots=gallery_setup,pose -Ppose=charge_directional  -> that caster animation
+            if (project.hasProperty('pose')) systemProperty 'orbisarcana.devshot.pose', project.property('pose')
             // Strict GPU validation is IDE-only; third-party mods like Iris trip it, production never runs it
             systemProperty 'neoforge.disableBlaze3DValidation', 'true'
         }

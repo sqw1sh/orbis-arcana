@@ -605,5 +605,7 @@
   "screen.orbisarcana.atlas.unknown": "Unknown spell",
   "screen.orbisarcana.atlas.hint": "drag to orbit · wheel to zoom",
   "orbisarcana.configuration.vfxQuality": "Effects quality",
-  "orbisarcana.configuration.vfxQuality.tooltip": "How many particles spell effects spawn and how many may live at once"
+  "orbisarcana.configuration.vfxQuality.tooltip": "How many particles spell effects spawn and how many may live at once",
+  "orbisarcana.configuration.firstPersonAnimations": "First-person cast animations",
+  "orbisarcana.configuration.firstPersonAnimations.tooltip": "Show the animated arms of the caster poses in first person"
 }

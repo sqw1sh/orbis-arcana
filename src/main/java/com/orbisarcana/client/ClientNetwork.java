@@ -29,6 +29,7 @@ public final class ClientNetwork {
     static void register(RegisterClientPayloadHandlersEvent event) {
         event.register(CastStarted.TYPE, (msg, ctx) -> {
             ClientCircles.start(msg);
+            com.orbisarcana.client.anim.CasterAnimations.castStarted(msg);
             var player = Minecraft.getInstance().player;
             if (player == null || msg.casterId() != player.getId()) return;
             ClientCastState.setOwnCast(new ClientCastState.OwnCast(msg.castId(), msg.spell(), msg.startTick(), msg.durationTicks()));
@@ -39,7 +40,10 @@ public final class ClientNetwork {
         });
         event.register(CastEnded.TYPE, (msg, ctx) -> {
             Outcome[] outcomes = Outcome.values();
-            if (msg.outcome() >= 0 && msg.outcome() < outcomes.length) ClientCircles.end(msg.castId(), outcomes[msg.outcome()]);
+            if (msg.outcome() >= 0 && msg.outcome() < outcomes.length) {
+                ClientCircles.end(msg.castId(), outcomes[msg.outcome()]);
+                com.orbisarcana.client.anim.CasterAnimations.castEnded(msg.castId(), outcomes[msg.outcome()]);
+            }
             var own = ClientCastState.ownCast();
             if (own != null && own.castId() == msg.castId()) ClientCastState.setOwnCast(null);
         });
