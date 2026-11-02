@@ -44,6 +44,8 @@ public final class ClientNetwork {
             if (own != null && own.castId() == msg.castId()) ClientCastState.setOwnCast(null);
         });
         event.register(RitualCircle.TYPE, (msg, ctx) -> ClientCircles.startRitual(msg));
+        event.register(com.orbisarcana.network.VfxPlay.TYPE, (msg, ctx) -> com.orbisarcana.client.vfx.VfxManager.spawn(msg.effect(),
+                new net.minecraft.world.phys.Vec3(msg.x(), msg.y(), msg.z()), new net.minecraft.world.phys.Vec3(msg.dx(), msg.dy(), msg.dz()), msg.tint(), msg.scale(), msg.attach()));
         event.register(ToggleState.TYPE, (msg, ctx) -> {
             ClientCircles.toggle(msg.playerId(), msg.spell(), msg.on(), msg.mastery());
             ClientCastState.setToggle(msg.playerId(), msg.spell(), msg.on());

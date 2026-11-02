@@ -50,6 +50,20 @@ public final class DevShot {
                 mc.player.setXRot(38);
                 ClientCircles.spawnDemo(8);
             }),
+            new Scene("vfx", () -> {
+                // the looping fire trail is running by the shot; the bursts start just before it
+                Minecraft mc = Minecraft.getInstance();
+                mc.gui.setScreen(null);
+                mc.player.setYRot(0);
+                mc.player.setXRot(20);
+                vfxAt("fire_trail", -1.5, 0, 0);
+            }, () -> {
+                vfxAt("fire_burst", 0, 0, 0);
+                vfxAt("fire_sparks", 0, 0, 0);
+                vfxAt("smoke_puff", 0, 0, 0);
+                vfxAt("arcane_sparkle", 1.6, 0, 0x7A8CFF);
+                vfxAt("arcane_sparkle", 3.0, 0, 0x6BD66B);
+            }),
             new Scene("radial", () -> {
                 learnTestSpells();
                 Minecraft.getInstance().gui.setScreen(new RadialMenuScreen(true));
@@ -236,6 +250,16 @@ public final class DevShot {
             sp.teleportTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
             com.orbisarcana.school.AttunementService.bind(sp, com.orbisarcana.school.Schools.FIRE);
         });
+    }
+
+    /** Plays a VFX effect locally, {@code side} blocks to the right of a point 4 blocks ahead at eye height. */
+    private static void vfxAt(String effect, double side, double up, int tint) {
+        Minecraft mc = Minecraft.getInstance();
+        var look = mc.player.getLookAngle();
+        var flat = new net.minecraft.world.phys.Vec3(look.x, 0, look.z).normalize();
+        var right = new net.minecraft.world.phys.Vec3(-flat.z, 0, flat.x);
+        var at = mc.player.getEyePosition().add(flat.scale(4)).add(right.scale(side)).add(0, up - 0.6, 0);
+        com.orbisarcana.client.vfx.VfxManager.spawn(OrbisArcana.id(effect), at, net.minecraft.world.phys.Vec3.ZERO, tint, 1f, -1);
     }
 
     /** A dark 21x21 stage at y 150, night: the magic circle gallery is shot over it. */

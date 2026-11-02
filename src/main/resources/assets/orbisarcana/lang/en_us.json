@@ -603,5 +603,7 @@
   "screen.orbisarcana.atlas.loop_on": "Loop",
   "screen.orbisarcana.atlas.loop_off": "Once",
   "screen.orbisarcana.atlas.unknown": "Unknown spell",
-  "screen.orbisarcana.atlas.hint": "drag to orbit · wheel to zoom"
+  "screen.orbisarcana.atlas.hint": "drag to orbit · wheel to zoom",
+  "orbisarcana.configuration.vfxQuality": "Effects quality",
+  "orbisarcana.configuration.vfxQuality.tooltip": "How many particles spell effects spawn and how many may live at once"
 }

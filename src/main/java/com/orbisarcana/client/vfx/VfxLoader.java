@@ -1,0 +1,61 @@
+package com.orbisarcana.client.vfx;
+
+import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.jspecify.annotations.Nullable;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.orbisarcana.OrbisArcana;
+
+import net.minecraft.resources.FileToIdConverter;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
+
+/**
+ * Loads VFX effects (Snowstorm JSON from Blockbench) from {@code assets/<ns>/orbisarcana/vfx/*.json}; the id is the file
+ * name ({@code orbisarcana:fire_burst}). Reloads with F3+T; resource packs can replace any effect.
+ */
+@EventBusSubscriber(modid = OrbisArcana.MODID, value = Dist.CLIENT)
+public final class VfxLoader extends SimplePreparableReloadListener<Map<Identifier, VfxEffect>> {
+    private static final FileToIdConverter FILES = FileToIdConverter.json("orbisarcana/vfx");
+    private static Map<Identifier, VfxEffect> effects = Map.of();
+
+    static @Nullable VfxEffect get(Identifier id) {
+        return effects.get(id);
+    }
+
+    @Override
+    protected Map<Identifier, VfxEffect> prepare(ResourceManager manager, ProfilerFiller profiler) {
+        Map<Identifier, VfxEffect> out = new HashMap<>();
+        for (var entry : FILES.listMatchingResources(manager).entrySet()) {
+            Identifier id = FILES.fileToId(entry.getKey());
+            try (Reader reader = entry.getValue().openAsReader()) {
+                JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+                out.put(id, new VfxEffect(id, json));
+            } catch (Exception e) {
+                OrbisArcana.LOGGER.warn("VFX: cannot load {}: {}", entry.getKey(), e.toString());
+            }
+        }
+        return out;
+    }
+
+    @Override
+    protected void apply(Map<Identifier, VfxEffect> loaded, ResourceManager manager, ProfilerFiller profiler) {
+        effects = loaded;
+        OrbisArcana.LOGGER.info("Loaded {} VFX effect(s)", loaded.size());
+    }
+
+    @SubscribeEvent
+    static void register(AddClientReloadListenersEvent event) {
+        event.addListener(OrbisArcana.id("vfx"), new VfxLoader());
+    }
+}

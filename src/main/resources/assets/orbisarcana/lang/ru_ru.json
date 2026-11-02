@@ -603,5 +603,7 @@
   "screen.orbisarcana.atlas.loop_on": "Повтор",
   "screen.orbisarcana.atlas.loop_off": "Один раз",
   "screen.orbisarcana.atlas.unknown": "Неизвестное заклинание",
-  "screen.orbisarcana.atlas.hint": "тянуть — вращать · колесо — масштаб"
+  "screen.orbisarcana.atlas.hint": "тянуть — вращать · колесо — масштаб",
+  "orbisarcana.configuration.vfxQuality": "Качество эффектов",
+  "orbisarcana.configuration.vfxQuality.tooltip": "Сколько частиц создают эффекты заклинаний и сколько может жить одновременно"
 }

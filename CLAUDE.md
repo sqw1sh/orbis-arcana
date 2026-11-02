@@ -32,6 +32,8 @@
 - `node tools/gui.cjs` — пересобрать спрайты UI-кита (`textures/gui/sprites/ui`, стиль подсказок `arcane`).
 - `node tools/circles.cjs` — пересобрать атлас магических кругов (`textures/effect/circle_atlas.png`, ~25 с); раскладка — `client/circle/CircleAtlas`.
 - `./gradlew :runClientShot -Pshots=gallery_setup,gallery` — галерея кругов всех редкостей (ночь, тёмная площадка).
+- `node tools/vfx.cjs` — пересобрать лист спрайтов эффектов (`textures/vfx/sheet.png`).
+- `./gradlew :runClientShot -Pshots=gallery_setup,vfx` — эффекты (VFX) на тёмной площадке.
 - `node tools/structures.cjs` — пересобрать NBT-шаблоны структур (обсерватория, скрипторий).
 - `./gradlew :runGameTestServer` — GameTest-ы мода; без `:` запускаются и тесты `example-addon` (мод + аддон, 92).
 - `./gradlew runGameTestServer` — все GameTest-ы (`gametest/OrbisGameTests`), код выхода ≠ 0 при падении. Итог в логе: `All N required tests passed`.
@@ -70,6 +72,7 @@
 - Player Animation Library 1.2.8 (mod id `player_animation_library`): анимации в `assets/<ns>/player_animations/*.json`, ключ = `<ns>:<имя в файле>` (Blockbench даёт префикс `animation.`); слой — `PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory`, запуск — `PlayerAnimationController#triggerAnimation`. Экспорт Blockbench инвертирует X-поворот (редактор −150 → файл 150).
 - GUI-спрайты: `assets/<ns>/textures/gui/sprites/<путь>.png` + `.png.mcmeta` `{"gui":{"scaling":{"type":"nine_slice","width","height","border","stretch_inner":true}}}`; рисовать `g.blitSprite(RenderPipelines.GUI_TEXTURED, id, x, y, w, h[, argb])`, частично — вариант `(id, texW, texH, u, v, x, y, w, h)`. Стиль подсказок предмета — компонент `DataComponents.TOOLTIP_STYLE` (спрайты `tooltip/<id>_background|_frame`, 100×100, бордер 9/10). Слои HUD при F1 скрываются сами (`options.hideGui` нет).
 - Свой мировой пайплайн с текстурой: `RenderPipeline.builder(GLOBALS_SNIPPET)` + `BindGroupLayouts.PROJECTION/DYNAMIC_TRANSFORMS/SAMPLER0`, шейдер `core/position_tex_color`, формат `POSITION_TEX_COLOR`; текстура — `RenderSetup.builder(p).withTexture("Sampler0", id)`. Под Iris: формат BLOCK + программа TEXTURED теряет цвет вершин, BEACON_BEAM — сильный блум. 3D-сцена в GUI — свой `PictureInPictureRenderer` + `RegisterPictureInPictureRenderersEvent`, `g.submitPictureInPictureRenderState`.
+- VFX (`client/vfx`): свой движок частиц, эффекты — Snowstorm JSON из Blockbench в `assets/<ns>/orbisarcana/vfx/`; сервер запускает их через `spell/Vfx.play/attach` (пакет `VfxPlay`). Камера в `SubmitCustomGeometryEvent`: `event.getLevelRenderState().cameraRenderState` (`pos`, `orientation`). Молanг-цвет 8 знаков в Bedrock — AARRGGBB.
 - `new ClipContext(..., CollisionContext.empty())`, если сущности может не быть (ClipContext с null-entity падает).
 
 ## Архитектура (§15)

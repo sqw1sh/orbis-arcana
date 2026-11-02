@@ -73,6 +73,7 @@ public final class ModNetwork {
         r.playToClient(EchoState.TYPE, EchoState.CODEC);
         r.playToClient(HeatMark.TYPE, HeatMark.CODEC);
         r.playToClient(ToggleState.TYPE, ToggleState.CODEC);
+        r.playToClient(VfxPlay.TYPE, VfxPlay.CODEC);
     }
 
     private ModNetwork() {}

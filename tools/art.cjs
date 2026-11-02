@@ -3,6 +3,7 @@
 //   assets/<modid>/geckolib/models/<type>/<id>.geo.json and geckolib/animations/<type>/<id>.animation.json;
 // this script takes the rest from the .bbmodel: the texture (textures/<type>/<id>.png) and, for items, the item
 // definition (items/<id>.json, GeckoLib special renderer) with its display model (models/item/<id>.json).
+// VFX effects made in Blockbench (art/vfx/particles/*.json, Snowstorm) are copied to assets/orbisarcana/orbisarcana/vfx/.
 // It fails (exit 1) when an export is missing or older than its .bbmodel, so stale models never get committed.
 // Usage: node tools/art.cjs [--check]   (--check writes nothing)
 const fs = require('fs');
@@ -54,6 +55,12 @@ for (const name of fs.existsSync(artDir) ? fs.readdirSync(artDir).filter(f => f.
             parent: 'minecraft:item/handheld', textures: { particle: `${modid}:${type}/${id}` }
         }));
     }
+}
+
+// VFX: Blockbench particle files (pack root art/vfx) are copied as they are into the effects folder of the mod
+const vfxDir = path.join(root, "art", "vfx", "particles");
+for (const name of fs.existsSync(vfxDir) ? fs.readdirSync(vfxDir).filter(f => f.endsWith(".json")) : []) {
+    write(path.join(assets, "orbisarcana", "orbisarcana", "vfx", name), fs.readFileSync(path.join(vfxDir, name)));
 }
 
 if (problems) { console.log(`${problems} problem(s)`); process.exit(1); }

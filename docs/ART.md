@@ -65,6 +65,8 @@
 | UI-кит (панели, кнопки, вкладки, полосы, шар маны, радиальное меню, иконки, сигилы школ, рамка подсказок) | `tools/gui.cjs` | `node tools/gui.cjs` | `textures/gui/sprites/ui/*` (+ `.mcmeta` nine-slice), `textures/gui/sprites/tooltip/arcane_*`; в коде — `client/ui/Ui`, `OrbisButton` |
 | Магические круги | `tools/circles.cjs` (SDF «неон»: пластины 10 школ, орнамент, печать, руны 32 глифа, трубка, филигрань, риски, вспышки) | `node tools/circles.cjs` | `textures/effect/circle_atlas.png` 2048² (раскладка — `client/circle/CircleAtlas`) |
 | Объёмные украшения кругов (кристаллы-спутники) | `art/circle/*.bbmodel` | MCP `risky_eval`: `Cube#getGlobalVertexPositions` → JSON углов кубов | `assets/orbisarcana/orbisarcana/circle_model/*.json` (`CircleModels`) |
+| Эффекты (VFX) | `art/vfx/particles/*.json` — Blockbench (Snowstorm), MCP `create_particle_effect` с `pack_root` = `art/vfx`, текстура `textures/vfx/sheet` | `node tools/art.cjs` копирует | `assets/orbisarcana/orbisarcana/vfx/*.json`; id = имя файла |
+| Лист спрайтов VFX | `tools/vfx.cjs` (ячейки 64 px: точка, свечение, искра, звезда, кольцо, дым, угли; раскадровки пламени и дыма по 8 кадров; осколки, лист, капля, руна; молнии) | `node tools/vfx.cjs` | `textures/vfx/sheet.png` (+ копия в `art/vfx` для превью Blockbench) |
 | 2D-текстуры (иконки, блоки) | `tools/textures.cjs` | `node tools/textures.cjs` | `textures/item`, `textures/block` |
 
 Правила:

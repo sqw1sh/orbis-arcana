@@ -74,6 +74,23 @@ public final class ClientConfig {
         B.push("hud");
     }
 
+    /** Particle budget of the mod's VFX: spawn count multiplier and the cap of live particles. */
+    public enum VfxQuality {
+        LOW(0.35f, 1500), MEDIUM(0.65f, 4000), HIGH(1f, 8000), ULTRA(1.4f, 16000);
+
+        public final float spawnScale;
+        public final int cap;
+
+        VfxQuality(float spawnScale, int cap) {
+            this.spawnScale = spawnScale;
+            this.cap = cap;
+        }
+    }
+
+    public static final ModConfigSpec.EnumValue<VfxQuality> VFX_QUALITY = B
+            .comment("Spell effects quality: how many particles the mod's effects spawn and how many may live at once")
+            .defineEnum("vfxQuality", VfxQuality.HIGH);
+
     public static final ModConfigSpec.BooleanValue HUD_COMPACT = B
             .comment("Compact HUD: only the mana orb and bar, without the selected spell card")
             .define("compact", false);

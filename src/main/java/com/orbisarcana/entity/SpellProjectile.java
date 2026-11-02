@@ -9,9 +9,8 @@ import com.orbisarcana.spell.behavior.BurningGround;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.registry.ModEntities;
 import com.orbisarcana.school.Schools;
+import com.orbisarcana.spell.Vfx;
 
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -29,10 +28,12 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Gravity-less magic projectile. Visuals are server particles for now; a proper renderer comes with S3.
+ * Gravity-less magic projectile. Visuals are the mod's VFX: a trail attached on spawn and an impact burst.
  * Not saved: spell projectiles are short-lived and discarded on unload.
  */
 public class SpellProjectile extends ThrowableProjectile {
+    private static final Identifier TRAIL = Vfx.id("fire_trail"), BURST = Vfx.id("fire_burst"), SPARKS = Vfx.id("fire_sparks"),
+            SMOKE = Vfx.id("smoke_puff");
     private Identifier school = Schools.FIRE;
     private float damage;
     private int igniteTicks;
@@ -80,7 +81,7 @@ public class SpellProjectile extends ThrowableProjectile {
     public void tick() {
         super.tick();
         if (level() instanceof ServerLevel server) {
-            server.sendParticles(particle(), getX(), getY(), getZ(), 3, 0.08, 0.08, 0.08, 0.01);
+            if (tickCount == 1) Vfx.attach(this, TRAIL, tint(), 1f);
             if (tickCount > maxAge) discard();
         }
     }
@@ -96,7 +97,7 @@ public class SpellProjectile extends ThrowableProjectile {
             Vec3 at = direct != null ? direct.position() : hit.getLocation();
             BurningGround.spawn(server, at, GROUND_FIRE_RADIUS, groundFireTicks, player, school, spell, castId);
         }
-        server.sendParticles(particle(), getX(), getY(), getZ(), 12, 0.2, 0.2, 0.2, 0.05);
+        impact(server, explodeRadius > 0 ? 1.6f : 1f);
         discard();
     }
 
@@ -119,11 +120,20 @@ public class SpellProjectile extends ThrowableProjectile {
                 e -> e != getOwner() && e != direct && e.distanceTo(this) <= explodeRadius)) {
             hurt(server, e);
         }
-        server.sendParticles(ParticleTypes.EXPLOSION, getX(), getY(), getZ(), 1, 0, 0, 0, 0);
     }
 
-    private ParticleOptions particle() {
-        return school.equals(Schools.FIRE) ? ParticleTypes.FLAME : ParticleTypes.END_ROD;
+    /** Burst of flames, sparks flying off and a puff of smoke (the mod's VFX, roadmap V4). */
+    private void impact(ServerLevel server, float scale) {
+        Vec3 at = position();
+        Vec3 back = getDeltaMovement().lengthSqr() > 1.0E-6 ? getDeltaMovement().normalize().scale(-1) : Vec3.ZERO;
+        Vfx.play(server, BURST, at, back, tint(), scale);
+        Vfx.play(server, SPARKS, at, back, tint(), scale);
+        Vfx.play(server, SMOKE, at, Vec3.ZERO, 0, scale);
+    }
+
+    /** Fire keeps the effects' own colours; other schools tint them. */
+    private int tint() {
+        return school.equals(Schools.FIRE) ? 0 : Schools.color(school);
     }
 
     @Override
