@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:nether_star",
+    "#c:ingots/gold",
+    "#c:ingots/gold",
+    "minecraft:paper"
+  ],
+  "result": {
+    "id": "orbisarcana:seal_light",
+    "count": 1
+  }
+}

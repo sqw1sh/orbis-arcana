@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:echo_shard",
+    "minecraft:echo_shard",
+    "minecraft:echo_shard",
+    "minecraft:paper"
+  ],
+  "result": {
+    "id": "orbisarcana:seal_dark",
+    "count": 1
+  }
+}

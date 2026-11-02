@@ -138,7 +138,8 @@ public final class MasteryService {
 
     private static double xpFor(ServerPlayer player, Identifier spellId, double weight) {
         return SpellRegistry.get(player.registryAccess(), spellId)
-                .map(d -> MasteryMath.xpGain(weight, d.cast().ticks() / 20.0, d.cooldownTicks() / 20.0, OrbisConfig.MASTERY_XP_RATE.get()))
+                .map(d -> MasteryMath.xpGain(weight, d.cast().ticks() / 20.0, d.cooldownTicks() / 20.0, OrbisConfig.MASTERY_XP_RATE.get())
+                        * player.getAttributeValue(com.orbisarcana.registry.ModAttributes.MASTERY_XP))
                 .orElse(0.0);
     }
 

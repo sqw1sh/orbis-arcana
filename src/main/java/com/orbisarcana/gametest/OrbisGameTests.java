@@ -19,6 +19,8 @@ import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.Schools;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.registry.ModBlocks;
+import com.orbisarcana.item.Foci;
+import com.orbisarcana.registry.ModAttributes;
 import com.orbisarcana.registry.ModItems;
 import com.orbisarcana.spell.CastService;
 import com.orbisarcana.spell.Frost;
@@ -149,6 +151,8 @@ public final class OrbisGameTests {
         test("guardian_orbit_catches_and_launches", 60, OrbisGameTests::guardianOrbit);
         test("constellation_shift_drags_enemies", 100, OrbisGameTests::constellationShift);
         test("constellation_pulses_on_three_stars", 20, OrbisGameTests::constellation);
+        test("foci_apply_attributes_by_hand", 20, OrbisGameTests::foci);
+        test("mana_potion_restores_mana", 20, OrbisGameTests::manaPotion);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1341,6 +1345,40 @@ public final class OrbisGameTests {
         Stars.place(p, c.add(0, 0, -1.5), 0, 0);
         h.assertTrue(pig.getHealth() < pig.getMaxHealth(), "the third star sets off the pulse");
         h.assertValueEqual(Stars.of(p).size(), 0, "the figure is spent");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void foci(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.APPRENTICE_STAFF.get()));
+        Foci.update(p);
+        h.assertValueEqual(p.getAttributeValue(ModAttributes.SPELL_POWER), 1.15, "the staff adds power");
+        p.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, new ItemStack(ModItems.APPRENTICE_TOME.get()));
+        Foci.update(p);
+        h.assertValueEqual(p.getAttributeValue(ModAttributes.SPELL_POWER), 1.0, "a busy off hand switches the two-handed staff off");
+        h.assertValueEqual(p.getAttributeValue(ModAttributes.SPELL_COST), 0.9, "the tome works from the off hand");
+        p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(ModItems.NETHERITE_WAND.get()));
+        Foci.update(p);
+        h.assertTrue(Math.abs(p.getAttributeValue(ModAttributes.CAST_SPEED) - 1.2) < 1e-6, "the wand speeds casts up");
+        double before = ManaService.mana(p);
+        KnowledgeService.learn(p, FIREBALL);
+        CastService.request(p, FIREBALL);
+        h.assertTrue(CastService.isCasting(p), "cast starts");
+        h.assertTrue(before - ManaService.mana(p) < 10.0 * 0.95, "the tome makes it cheaper, spent " + (before - ManaService.mana(p)));
+        CastService.stop(p, CastService.activeCastId(p), true);
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void manaPotion(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        ManaService.setMana(p, 10);
+        ItemStack potion = new ItemStack(ModItems.MANA_POTION.get());
+        ItemStack left = potion.finishUsingItem(h.getLevel(), p);
+        h.assertValueEqual(ManaService.mana(p), 50.0, "the potion restores 40 mana");
+        h.assertTrue(left.is(net.minecraft.world.item.Items.GLASS_BOTTLE) || p.getInventory().contains(new ItemStack(net.minecraft.world.item.Items.GLASS_BOTTLE)) || p.isCreative(),
+                "a bottle is left");
         cleanup(h, p);
         h.succeed();
     }

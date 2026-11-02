@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": "#minecraft:netherite_tool_materials",
+  "base": "orbisarcana:amethyst_tome",
+  "result": {
+    "id": "orbisarcana:netherite_tome"
+  },
+  "template": "minecraft:netherite_upgrade_smithing_template"
+}

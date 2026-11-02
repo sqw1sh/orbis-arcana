@@ -26,6 +26,7 @@ import com.orbisarcana.progression.KnownSpells;
 import com.orbisarcana.school.AttunementService;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
+import com.orbisarcana.registry.ModAttributes;
 import com.orbisarcana.spell.behavior.CastContext;
 import com.orbisarcana.spell.behavior.ChannelBehavior;
 import com.orbisarcana.spell.behavior.SpellBehaviors;
@@ -95,8 +96,12 @@ public final class CastService {
         var progress = knowledge.progress(spellId);
         int mastery = progress.map(KnownSpells.SpellProgress::level).orElse(1);
         // Dominant school: -5% cost (§10.2); snapshotted at start like everything else (§8.2)
-        double cost = def.map(d -> d.cost() * MasteryMath.costMult(mastery) * AttunementService.costMult(player, d.school())).orElse(0.0);
+        double cost = def.map(d -> d.cost() * MasteryMath.costMult(mastery) * AttunementService.costMult(player, d.school())
+                * player.getAttributeValue(ModAttributes.SPELL_COST)).orElse(0.0);
         Map<String, Double> params = def.isPresent() && progress.isPresent() ? params(def.get(), progress.get()) : Map.of();
+        // Foci and accessories stretch or shorten the reach (behaviors read the same "range")
+        double rangeMult = player.getAttributeValue(ModAttributes.SPELL_RANGE);
+        if (!params.isEmpty() && rangeMult != 1.0) params.computeIfPresent("range", (k, v) -> v * rangeMult);
         int cooldown = def.map(SpellDefinition::cooldownTicks).orElse(0);
         long fullAt = player.getData(ModAttachments.RESOURCES).cooldowns().getOrDefault(spellId, 0L);
 
@@ -129,11 +134,11 @@ public final class CastService {
         if (spell.cast().mode() == CastMode.TOGGLE) {
             // "cost" is mana per second; at least one second's worth is needed to turn it on
             Toggles.enable(player, new Toggles.Active(spellId, spell, nextCastId++, mastery, params,
-                    AttunementService.powerMult(player, spell.school()), cost / 20.0, now));
+                    powerMult(player, spell), cost / 20.0, now));
             GCD_UNTIL.put(player.getUUID(), now + CastRules.GCD_TICKS);
             return;
         }
-        double range = params.getOrDefault("range", 24.0);
+        double range = params.getOrDefault("range", 24.0 * rangeMult);
 
         Vec3 ground = null;
         LivingEntity target = null;
@@ -156,7 +161,7 @@ public final class CastService {
             case DIRECTIONAL, SELF -> {}
         }
 
-        double castTimeMult = MasteryMath.castTimeMult(mastery);
+        double castTimeMult = MasteryMath.castTimeMult(mastery) / player.getAttributeValue(ModAttributes.CAST_SPEED);
         int castTicks = (int) Math.round(spell.cast().ticks() * castTimeMult);
         int minTicks = (int) Math.round(spell.cast().minTicks() * castTimeMult);
         CastMode mode = spell.cast().mode();
@@ -174,7 +179,7 @@ public final class CastService {
         if (!channel) ManaService.setMana(player, ManaService.mana(player) - cost);
 
         ServerCast cast = new ServerCast(nextCastId++, spellId, spell, core, mastery, params,
-                AttunementService.powerMult(player, spell.school()), channel ? cost / 20.0 : 0, ground, target);
+                powerMult(player, spell), channel ? cost / 20.0 : 0, ground, target);
         ACTIVE.put(player.getUUID(), cast);
         Net.toPlayerAndNearby(player,
                 new CastStarted(cast.id(), player.getId(), spellId, now, castTicks, mastery,
@@ -272,6 +277,11 @@ public final class CastService {
     }
 
     /** Snapshot of the spell params: enabled milestones applied, primary stat scaled by mastery (§7.4). */
+    /** School power (§10.2) times the spell power attribute (foci, accessories). */
+    private static double powerMult(ServerPlayer player, SpellDefinition spell) {
+        return AttunementService.powerMult(player, spell.school()) * player.getAttributeValue(ModAttributes.SPELL_POWER);
+    }
+
     private static Map<String, Double> params(SpellDefinition spell, KnownSpells.SpellProgress progress) {
         int mastery = progress.level();
         Map<String, Double> params = new HashMap<>(spell.paramsAt(mastery, level -> !progress.isMilestoneEnabled(level)));
@@ -373,7 +383,8 @@ public final class CastService {
     static void onDamage(LivingDamageEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player) || !isCasting(player)) return;
         // Earth root "Stone Core": +20% cast stability while standing on the ground (§10.5)
-        double chance = INTERRUPT_CHANCE - (player.onGround() ? TalentEffects.stoneCoreStability(player) : 0);
+        double chance = INTERRUPT_CHANCE - (player.onGround() ? TalentEffects.stoneCoreStability(player) : 0)
+                - player.getAttributeValue(ModAttributes.CAST_STABILITY);
         if (event.getHealthDamage() >= player.getMaxHealth() * INTERRUPT_DAMAGE_SHARE
                 && player.getRandom().nextDouble() < chance) {
             interrupt(player, Outcome.INTERRUPTED);

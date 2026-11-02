@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "A": "#c:gems/amethyst",
+    "W": "orbisarcana:apprentice_wand",
+    "G": "#c:ingots/gold"
+  },
+  "pattern": [
+    "A",
+    "W",
+    "G"
+  ],
+  "result": {
+    "id": "orbisarcana:amethyst_wand"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "orbisarcana:apprentice_tome",
+    "#c:gems/amethyst",
+    "#c:gems/amethyst",
+    "#c:ingots/gold"
+  ],
+  "result": {
+    "id": "orbisarcana:amethyst_tome",
+    "count": 1
+  }
+}

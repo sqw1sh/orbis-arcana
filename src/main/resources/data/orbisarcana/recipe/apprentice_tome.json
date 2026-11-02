@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:book",
+    "#c:ingots/iron",
+    "#c:gems/lapis"
+  ],
+  "result": {
+    "id": "orbisarcana:apprentice_tome",
+    "count": 1
+  }
+}
