@@ -354,3 +354,7 @@ JEI и Jade (02.11.2026):
 - [x] Сборка, JUnit, GameTest 89 (мод) / 92 (с аддоном), lang-check, balance — всё зелёное; CI зелёный
 - [x] Тег v1.0.0 и GitHub Release (https://github.com/sqw1sh/orbis-arcana/releases/tag/v1.0.0): мод, api-jar, пример аддона; публикуется workflow `.github/workflows/release.yml` на пуш тега `v*` (заметки — из CHANGELOG.md)
 - [ ] Публикация на Modrinth/CurseForge — пользователь (аккаунты)
+
+## 2.0 — план работ (02.11.2026)
+- [x] Дорожная карта `docs/ROADMAP.md`: арт-библия по референсам, этапы V0–V21 (визуальный ребут → релиз 1.1 → фреймворк контента → 10 пакетов школ → лор → 2.0), матрица совместимости
+- [ ] V0. Фундамент — следующий
