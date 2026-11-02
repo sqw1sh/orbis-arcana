@@ -30,7 +30,12 @@ public final class DevShot {
     private static final int WARMUP_TICKS = 200;
     private static final int SCENE_TICKS = 50;
 
-    private record Scene(String name, Runnable setup) {}
+    /** {@code beforeShot} runs a few ticks before the screenshot, for short-lived HUD states. */
+    private record Scene(String name, Runnable setup, @org.jspecify.annotations.Nullable Runnable beforeShot) {
+        Scene(String name, Runnable setup) {
+            this(name, setup, null);
+        }
+    }
 
     private static final List<Scene> ALL_SCENES = List.of(
             circles(ClientConfig.RenderMode.AUTO),
@@ -46,6 +51,11 @@ public final class DevShot {
             ownCircle("own_ahead", 45, 10),
             new Scene("hud_one_charge", () -> castWindStep(true)),
             new Scene("hud_no_charges", () -> castWindStep(false)),
+            new Scene("hud_cast", () -> {}, () -> {
+                // client-side only: a fireball half charged and a denial chip, to see the cast bar and the hint
+                ClientCastState.setOwnCast(new ClientCastState.OwnCast(-1, OrbisArcana.id("fireball"), ClientCastState.gameTime() - 20, 40));
+                ClientCastState.deny(com.orbisarcana.core.CastDenial.NOT_ENOUGH_MANA);
+            }),
             new Scene("altar_setup", () -> {
                 Minecraft mc = Minecraft.getInstance();
                 var server = mc.getSingleplayerServer();
@@ -343,6 +353,7 @@ public final class DevShot {
     /** Server-side wind step cast at mastery 15 (two charges); the HUD should show the charges. */
     private static void castWindStep(boolean setup) {
         Minecraft mc = Minecraft.getInstance();
+        mc.gui.setScreen(null);
         var server = mc.getSingleplayerServer();
         if (server == null || mc.player == null) return;
         server.execute(() -> {
@@ -402,7 +413,7 @@ public final class DevShot {
             if (++waiting % 400 == 0) {
                 var screen = mc.gui.screen();
                 OrbisArcana.LOGGER.info("[devshot] still waiting for the world, screen = {}", screen == null ? "none" : screen.getClass().getName());
-                Screenshot.grab(mc.gameDirectory, "devshot_waiting.png", mc.gameRenderer.mainRenderTarget(), 2, msg -> {});
+                Screenshot.grab(mc.gameDirectory, "devshot_waiting.png", mc.gameRenderer.mainRenderTarget(), 1, msg -> {});
             }
             return;
         }
@@ -421,6 +432,8 @@ public final class DevShot {
                     IrisCompat.isLoaded(), IrisCompat.isShaderPackInUse(), IrisCompat.isPipelineAssigned());
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
             SCENES.get(scene).setup().run();
+        } else if (step % SCENE_TICKS == SCENE_TICKS - 8 && SCENES.get(scene).beforeShot() != null) {
+            SCENES.get(scene).beforeShot().run();
         } else if (step % SCENE_TICKS == SCENE_TICKS - 5) {
             String name = "devshot_" + SCENES.get(scene).name() + ".png";
             Screenshot.grab(mc.gameDirectory, name, mc.gameRenderer.mainRenderTarget(), 2, msg -> OrbisArcana.LOGGER.info("[devshot] saved {}", name));

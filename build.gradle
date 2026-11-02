@@ -35,7 +35,7 @@ neoForge {
         // Put optional mods (e.g. Iris/Sodium) into run/mods and shader packs into run/shaderpacks.
         clientShot {
             client()
-            programArguments.addAll '--quickPlaySingleplayer', 'devtest'
+            programArguments.addAll '--quickPlaySingleplayer', 'devtest', '--width', '1280', '--height', '720'
             systemProperty 'orbisarcana.devshot', 'true'
             // ./gradlew runClientShot -Pshots=radial,grimoire  -> only these scenes
             if (project.hasProperty('shots')) systemProperty 'orbisarcana.devshot.only', project.property('shots')

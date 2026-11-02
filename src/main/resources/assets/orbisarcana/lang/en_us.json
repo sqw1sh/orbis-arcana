@@ -152,8 +152,6 @@
   "spell.orbisarcana.wind_step.m15": "two charges",
   "message.orbisarcana.level_up": "%s: mastery %s",
   "message.orbisarcana.milestone": "%s reached mastery %s — %s: %s",
-  "hud.orbisarcana.mastery": " · lv. %s",
-  "hud.orbisarcana.set": "Set %s/%s",
   "message.orbisarcana.school.already": "This school is already dominant",
   "message.orbisarcana.school.cooldown": "The soul is not ready for another switch: %s min %s s",
   "message.orbisarcana.school.bound": "You attuned to the school of %s",
@@ -561,5 +559,8 @@
   "orbisarcana.configuration.autoCast": "Auto-cast when ready",
   "orbisarcana.configuration.autoCast.tooltip": "Charged spells release themselves once fully charged",
   "orbisarcana.configuration.pressToCast": "Press instead of hold",
-  "orbisarcana.configuration.pressToCast.tooltip": "The first press starts a cast, the second releases or stops it"
+  "orbisarcana.configuration.pressToCast.tooltip": "The first press starts a cast, the second releases or stops it",
+  "orbisarcana.configuration.hud": "HUD",
+  "orbisarcana.configuration.compact": "Compact HUD",
+  "orbisarcana.configuration.compact.tooltip": "Only the mana orb and bar, without the selected spell card"
 }

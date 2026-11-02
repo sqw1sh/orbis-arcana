@@ -28,15 +28,16 @@
 
 **Редкость** (рамка иконки и сложность круга):
 
-| Редкость | Цвет рамки | Круг |
+| Редкость | Цвет рамки (`core/Rarity`) | Круг |
 |---|---|---|
-| Обычное | `#9AA4B2` | 1 кольцо, базовая геометрия |
-| Необычное | `#5FD08A` | 2 кольца, руны |
-| Редкое | `#58A8FF` | 3 кольца, геометрия школы |
-| Эпическое | `#B57CFF` | 3–4 кольца, спутники |
-| Легендарное | `#F2B14C` | 4–5 колец, вращение слоёв в разные стороны |
-| Мифическое | `#FF5D7A` | 5–6 колец, объёмные кольца-арки |
-| Божественное | `#FFF1B8` | 6+ колец, полная сфера-армиллярий |
+| Обычное | `#D9D9D9` | 1 кольцо, базовая геометрия |
+| Необычное | `#55FF55` | 2 кольца, руны |
+| Редкое | `#5599FF` | 2–3 кольца, геометрия школы |
+| Эпическое | `#AA44FF` | 3 кольца, спутники |
+| Легендарное | `#FFAA00` | 3–4 кольца, вращение слоёв в разные стороны |
+| Мифическое | `#FF5555` | 4–5 колец, объёмные кольца-арки |
+| Древнее | `#B5884A` | 4–5 колец, каменные/рунные плиты |
+| Божественное | `#FFF2A8` | 5+ колец, полная сфера-армиллярий |
 
 ## 3. Рунный язык
 
@@ -61,6 +62,7 @@
 | 3D-модели (предметы, сущности, блоки) | `art/models/<id>.bbmodel` (формат GeckoLib, mod id `orbisarcana`, object id = имя файла) | Blockbench + плагин GeckoLib (или MCP: `geckolib_export_model`, `geckolib_export_animations`), затем `node tools/art.cjs` | `assets/orbisarcana/geckolib/models/<тип>/<id>.geo.json`, `geckolib/animations/<тип>/<id>.animation.json`, `textures/<тип>/<id>.png`; для предметов ещё `items/<id>.json` и `models/item/<id>.json` |
 | Анимации мага | `art/animations/caster.bbmodel` (риг игрока: head, torso, right_arm, left_arm, right_leg, left_leg) | `geckolib_export_animations` | `assets/orbisarcana/player_animations/caster.json`; ключ анимации — `orbisarcana:animation.<имя>` |
 | Звуки | `art/sounds/<имя>.json` (рецепт слоёв) | `node tools/sfx.cjs` (нужен ffmpeg в PATH или `FFMPEG`) | `assets/orbisarcana/sounds/<имя>[_N].ogg` (WAV-промежуточные — `art/sounds/out/`, не в git) |
+| UI-кит (панели, кнопки, вкладки, полосы, шар маны, радиальное меню, иконки, сигилы школ, рамка подсказок) | `tools/gui.cjs` | `node tools/gui.cjs` | `textures/gui/sprites/ui/*` (+ `.mcmeta` nine-slice), `textures/gui/sprites/tooltip/arcane_*`; в коде — `client/ui/Ui`, `OrbisButton` |
 | 2D-текстуры (иконки, блоки) | `tools/textures.cjs` | `node tools/textures.cjs` | `textures/item`, `textures/block` |
 
 Правила:

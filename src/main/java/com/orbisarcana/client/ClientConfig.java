@@ -71,6 +71,15 @@ public final class ClientConfig {
 
     static {
         B.pop();
+        B.push("hud");
+    }
+
+    public static final ModConfigSpec.BooleanValue HUD_COMPACT = B
+            .comment("Compact HUD: only the mana orb and bar, without the selected spell card")
+            .define("compact", false);
+
+    static {
+        B.pop();
     }
 
     public static final ModConfigSpec SPEC = B.build();

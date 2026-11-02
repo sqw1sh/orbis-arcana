@@ -87,8 +87,12 @@ function wav(samples) {
 }
 
 function ffmpeg() {
-    const exe = process.env.FFMPEG || 'ffmpeg';
-    try { execFileSync(exe, ['-version'], { stdio: 'ignore' }); return exe; } catch { return null; }
+    // a fresh winget install is not on the PATH of already running shells
+    const winget = process.env.LOCALAPPDATA && path.join(process.env.LOCALAPPDATA, 'Microsoft', 'WinGet', 'Links', 'ffmpeg.exe');
+    for (const exe of [process.env.FFMPEG, 'ffmpeg', winget].filter(Boolean)) {
+        try { execFileSync(exe, ['-version'], { stdio: 'ignore' }); return exe; } catch {}
+    }
+    return null;
 }
 
 const only = process.argv.slice(2);

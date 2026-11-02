@@ -119,6 +119,12 @@ public final class ModItems {
     public static final DeferredItem<com.orbisarcana.item.DebugOrbItem> DEBUG_ORB = ModRegistries.ITEMS.registerItem("debug_orb",
             com.orbisarcana.item.DebugOrbItem::new, p -> p.stacksTo(1));
 
+    /** Every item of the mod shows the arcane tooltip frame (sprites tooltip/arcane_*, tools/gui.cjs). */
+    public static void registerTooltipStyle(net.neoforged.bus.api.IEventBus modBus) {
+        modBus.addListener((net.neoforged.neoforge.event.ModifyDefaultComponentsEvent event) -> ModRegistries.ITEMS.getEntries().forEach(item ->
+                event.modify(item.get(), (components, context, i) -> components.set(net.minecraft.core.component.DataComponents.TOOLTIP_STYLE, OrbisArcana.id("arcane")))));
+    }
+
     /** Forces class loading so the deferred entries above are registered. */
     public static void init() {}
 

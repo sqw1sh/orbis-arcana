@@ -3,8 +3,10 @@ package com.orbisarcana.client;
 import java.util.Optional;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.orbisarcana.client.ui.Ui;
 import com.orbisarcana.item.SpellScrollItem;
 import com.orbisarcana.progression.Loadout;
+import com.orbisarcana.school.Schools;
 import com.orbisarcana.spell.SpellDefinition;
 import com.orbisarcana.spell.SpellRegistry;
 
@@ -21,11 +23,8 @@ import net.minecraft.util.Mth;
  * 1/2/3 switch sets. Empty sectors cannot be picked. The game keeps running while it is open.
  */
 public class RadialMenuScreen extends Screen {
-    private static final int RING_RADIUS = 78;
-    private static final int CARD_W = 74, CARD_H = 24;
+    private static final int SLOT_RADIUS = 66;
     private static final int DEAD_ZONE = 22;
-    private static final int BG = 0xC0101018, BG_HOVER = 0xE0283050, BG_EMPTY = 0x80101018;
-    private static final int TEXT = 0xFFE8E8F0, TEXT_DIM = 0xFF8A8A9A, SELECTED = 0xFFFFD866;
 
     /** Preview (dev screenshots): stays open without R held. */
     private final boolean preview;
@@ -96,7 +95,7 @@ public class RadialMenuScreen extends Screen {
 
     @Override
     public void extractBackground(GuiGraphicsExtractor g, int mouseX, int mouseY, float partial) {
-        g.fill(0, 0, width, height, 0x40000000);
+        g.fill(0, 0, width, height, 0x60000000);
     }
 
     @Override
@@ -108,39 +107,66 @@ public class RadialMenuScreen extends Screen {
         hovered = sectorAt(mouseX - cx, mouseY - cy);
         long now = ClientCastState.gameTime();
 
+        Ui.sprite(g, "radial_ring", cx - 96, cy - 96, 192, 192);
         for (int slot = 0; slot < Loadout.SLOTS; slot++) {
             double angle = Math.toRadians(slot * 360.0 / Loadout.SLOTS - 90);
-            int x = cx + (int) (Math.cos(angle) * RING_RADIUS) - CARD_W / 2;
-            int y = cy + (int) (Math.sin(angle) * RING_RADIUS) - CARD_H / 2;
+            int sx = cx + (int) Math.round(Math.cos(angle) * SLOT_RADIUS), sy = cy + (int) Math.round(Math.sin(angle) * SLOT_RADIUS);
             Optional<Identifier> spell = loadout.get(page, slot);
+            Optional<SpellDefinition> def = spell.flatMap(id -> SpellRegistry.get(minecraft.player.registryAccess(), id));
             boolean isHovered = slot == hovered && spell.isPresent();
             boolean isSelected = page == loadout.page() && slot == loadout.selected();
 
+            if (isHovered) def.ifPresent(d -> Ui.sprite(g, "glow", sx - 24, sy - 24, 48, 48, 0x90000000 | (Schools.color(d.school()) & 0xFFFFFF)));
+            Ui.sprite(g, "radial_slot", sx - 15, sy - 15, 30, 30);
             if (spell.isEmpty()) {
-                g.fill(x, y, x + CARD_W, y + CARD_H, BG_EMPTY);
-                g.centeredText(font, Component.literal("·"), x + CARD_W / 2, y + 8, TEXT_DIM);
+                Ui.sprite(g, "radial_slot_edge", sx - 15, sy - 15, 30, 30, (Ui.LINE & 0xFFFFFF) | 0x80000000);
                 continue;
             }
-            Optional<SpellDefinition> def = SpellRegistry.get(minecraft.player.registryAccess(), spell.get());
-            int rarityColor = def.map(d -> 0xFF000000 | d.rarity().color).orElse(TEXT_DIM);
-            g.fill(x, y, x + CARD_W, y + CARD_H, isHovered ? BG_HOVER : BG);
-            outline(g, x, y, CARD_W, CARD_H, isSelected ? SELECTED : rarityColor);
-            g.centeredText(font, ellipsize(SpellScrollItem.spellName(spell.get()).getString(), CARD_W - 6), x + CARD_W / 2, y + 4, TEXT);
+            int edge = isSelected ? Ui.GOLD : isHovered ? Ui.TEAL : def.map(d -> Ui.opaque(d.rarity().color)).orElse(Ui.TEXT_DIM);
+            Ui.sprite(g, "radial_slot_edge", sx - 15, sy - 15, 30, 30, edge);
+            def.ifPresent(d -> Ui.sigil(g, d.school(), sx - 8, sy - 8, 16, 0xFF));
 
             var charges = ClientCastState.charges(minecraft.player, spell.get(), now);
             if (charges.nextChargeAt() > now) {
                 float left = (charges.nextChargeAt() - now) / (float) Math.max(1, charges.cooldownTicks());
-                g.fill(x + 1, y + CARD_H - 4, x + 1 + (int) ((CARD_W - 2) * left), y + CARD_H - 2,
-                        charges.blocked(now) ? 0xC0A0A0B0 : 0x80607090);
+                g.fill(sx - 9, sy - 9, sx + 9, sy - 9 + Math.round(18 * Math.min(1, left)), charges.blocked(now) ? 0xB0000000 : 0x80000000);
             }
-            def.ifPresent(d -> g.centeredText(font, Component.literal((int) d.cost() + " ✦"), x + CARD_W / 2, y + 13, TEXT_DIM));
+            if (isSelected) Ui.sprite(g, "dot", sx - 2, sy + 9, 5, 5, Ui.GOLD);
         }
 
-        // Centre: hovered spell or the set number
+        // centre: the hovered spell (name, rarity, cost, cooldown) or the set
+        Ui.sprite(g, "radial_center", cx - 32, cy - 32, 64, 64);
         Optional<Identifier> centre = hovered >= 0 ? loadout.get(page, hovered) : Optional.empty();
-        g.centeredText(font, Component.translatable("screen.orbisarcana.radial.page", page + 1, Loadout.PAGES), cx, cy - 4, TEXT_DIM);
-        centre.ifPresent(id -> g.centeredText(font, SpellScrollItem.spellName(id), cx, cy + 8, TEXT));
-        g.centeredText(font, Component.translatable("screen.orbisarcana.radial.hint"), cx, cy + RING_RADIUS + CARD_H, TEXT_DIM);
+        if (centre.isPresent()) {
+            Optional<SpellDefinition> def = SpellRegistry.get(minecraft.player.registryAccess(), centre.get());
+            int rarity = def.map(d -> Ui.opaque(d.rarity().color)).orElse(Ui.TEXT);
+            var lines = font.split(SpellScrollItem.spellName(centre.get()), 58);
+            int top = cy - 4 - (Math.min(2, lines.size()) * 9) / 2 - 6;
+            for (int i = 0; i < Math.min(2, lines.size()); i++) g.centeredText(font, lines.get(i), cx, top + i * 9, rarity);
+            def.ifPresent(d -> {
+                int y = cy + 8;
+                String cost = Integer.toString((int) d.cost());
+                String cd = d.cooldownTicks() > 0 ? String.format("%.0fs", d.cooldownTicks() / 20.0) : "";
+                int w = 9 + 1 + font.width(cost) + (cd.isEmpty() ? 0 : 5 + 9 + 1 + font.width(cd));
+                int x = cx - w / 2;
+                Ui.icon(g, "mana", x, y - 1, Ui.MANA);
+                g.text(font, cost, x + 10, y, Ui.TEXT, true);
+                if (!cd.isEmpty()) {
+                    int x2 = x + 10 + font.width(cost) + 5;
+                    Ui.icon(g, "cooldown", x2, y - 1, Ui.TEXT_DIM);
+                    g.text(font, cd, x2 + 10, y, Ui.TEXT_DIM, true);
+                }
+                g.centeredText(font, Component.translatable("rarity.orbisarcana." + d.rarity().id), cx, cy + 18, Ui.TEXT_DIM);
+            });
+        } else {
+            // the set: its number and one dot per set
+            g.centeredText(font, Component.translatable("screen.orbisarcana.radial.page", page + 1, Loadout.PAGES), cx, cy - 8, Ui.TEXT_DIM);
+            for (int p = 0; p < Loadout.PAGES; p++) {
+                Ui.sprite(g, p == page ? "dot" : "dot_empty", cx - (Loadout.PAGES * 10) / 2 + p * 10 + 1, cy + 5, 7, 7, p == page ? Ui.TEAL : Ui.TEXT_DIM);
+            }
+        }
+        // the hint above the ring: below it the hotbar would cover it in small windows
+        g.centeredText(font, Component.translatable("screen.orbisarcana.radial.hint"), cx, cy - 110, Ui.TEXT_DIM);
     }
 
     /** Sector index under the cursor: 0 at the top, clockwise; -1 inside the dead zone. */
@@ -148,18 +174,5 @@ public class RadialMenuScreen extends Screen {
         if (dx * dx + dy * dy < DEAD_ZONE * DEAD_ZONE) return -1;
         double deg = Math.toDegrees(Math.atan2(dy, dx)) + 90;
         return Mth.positiveModulo((int) Math.round(deg / (360.0 / Loadout.SLOTS)), Loadout.SLOTS);
-    }
-
-    private String ellipsize(String s, int maxWidth) {
-        if (font.width(s) <= maxWidth) return s;
-        while (s.length() > 1 && font.width(s + "…") > maxWidth) s = s.substring(0, s.length() - 1);
-        return s + "…";
-    }
-
-    static void outline(GuiGraphicsExtractor g, int x, int y, int w, int h, int color) {
-        g.fill(x, y, x + w, y + 1, color);
-        g.fill(x, y + h - 1, x + w, y + h, color);
-        g.fill(x, y, x + 1, y + h, color);
-        g.fill(x + w - 1, y, x + w, y + h, color);
     }
 }

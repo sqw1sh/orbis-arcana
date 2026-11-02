@@ -152,8 +152,6 @@
   "spell.orbisarcana.wind_step.m15": "2 заряда",
   "message.orbisarcana.level_up": "%s: мастерство %s",
   "message.orbisarcana.milestone": "%s достигло мастерства %s — %s: %s",
-  "hud.orbisarcana.mastery": " · ур. %s",
-  "hud.orbisarcana.set": "Набор %s/%s",
   "message.orbisarcana.school.already": "Эта школа уже доминантная",
   "message.orbisarcana.school.cooldown": "Душа не готова к новой смене: %s мин %s с",
   "message.orbisarcana.school.bound": "Вы привязались к школе: %s",
@@ -561,5 +559,8 @@
   "orbisarcana.configuration.autoCast": "Автокаст по готовности",
   "orbisarcana.configuration.autoCast.tooltip": "Заряжаемые заклинания выпускаются сами, когда заряд полный",
   "orbisarcana.configuration.pressToCast": "Нажатие вместо удержания",
-  "orbisarcana.configuration.pressToCast.tooltip": "Первое нажатие начинает каст, второе — выпускает или останавливает его"
+  "orbisarcana.configuration.pressToCast.tooltip": "Первое нажатие начинает каст, второе — выпускает или останавливает его",
+  "orbisarcana.configuration.hud": "Интерфейс",
+  "orbisarcana.configuration.compact": "Компактный HUD",
+  "orbisarcana.configuration.compact.tooltip": "Только шар и полоса маны, без карточки выбранного заклинания"
 }

@@ -29,6 +29,7 @@ public class OrbisArcana {
         ModItems.init();
         ModBlocks.init();
         ModRegistries.register(modEventBus);
+        ModItems.registerTooltipStyle(modEventBus);
         ModDataComponents.register(modEventBus);
         ModAttributes.register(modEventBus);
         com.orbisarcana.registry.ModSounds.register(modEventBus);
