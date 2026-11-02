@@ -1,11 +1,13 @@
 package com.orbisarcana.registry;
 
 import com.orbisarcana.block.FrostWallBlock;
+import com.orbisarcana.block.GlyphRingBlock;
 import com.orbisarcana.block.ResonanceAltarBlock;
 import com.orbisarcana.block.ThornHedgeBlock;
 
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
@@ -29,6 +31,14 @@ public final class ModBlocks {
             p -> p.mapColor(MapColor.PLANT).strength(0.6f, 1f).sound(SoundType.SWEET_BERRY_BUSH).noOcclusion().noLootTable().pushReaction(PushReaction.IMMOVEABLE));
 
     public static final DeferredItem<BlockItem> RESONANCE_ALTAR_ITEM = ModRegistries.ITEMS.registerSimpleBlockItem("resonance_altar", RESONANCE_ALTAR);
+
+    /** Ruined Observatory puzzle (§12): turnable glyph rings and the seals they break. Both unbreakable. */
+    public static final DeferredBlock<GlyphRingBlock> GLYPH_RING = ModRegistries.BLOCKS.registerBlock(
+            "glyph_ring", GlyphRingBlock::new,
+            p -> p.mapColor(MapColor.DEEPSLATE).strength(-1f, 3600000f).noLootTable().sound(SoundType.DEEPSLATE_BRICKS).lightLevel(s -> 4));
+    public static final DeferredBlock<Block> ARCANE_SEAL = ModRegistries.BLOCKS.registerSimpleBlock(
+            "arcane_seal", p -> p.mapColor(MapColor.COLOR_PURPLE).strength(-1f, 3600000f).noLootTable().sound(SoundType.AMETHYST)
+                    .lightLevel(s -> 10).pushReaction(PushReaction.IMMOVEABLE));
 
     /** Aether Crystal ore (§11.3): the basic magic resource in caves, drops shards and some XP. */
     public static final DeferredBlock<DropExperienceBlock> AETHER_ORE = ModRegistries.BLOCKS.registerBlock(

@@ -19,6 +19,7 @@ import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.Schools;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.registry.ModBlocks;
+import com.orbisarcana.block.GlyphRingBlock;
 import com.orbisarcana.item.Foci;
 import com.orbisarcana.registry.ModAttributes;
 import com.orbisarcana.registry.ModItems;
@@ -159,6 +160,8 @@ public final class OrbisGameTests {
         test("dungeon_chests_hold_scrolls", 20, OrbisGameTests::dungeonLoot);
         test("ancient_cities_hold_dark_scrolls", 20, OrbisGameTests::ancientCityLoot);
         test("onboarding_gives_book_and_scroll_once", 20, OrbisGameTests::onboarding);
+        test("glyph_puzzle_breaks_the_seals", 20, OrbisGameTests::glyphPuzzle);
+        test("structure_templates_load", 40, OrbisGameTests::structureTemplates);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1462,6 +1465,51 @@ public final class OrbisGameTests {
         h.assertTrue(new ItemStack(ModItems.FIRST_SEALS.get()).has(net.minecraft.core.component.DataComponents.WRITTEN_BOOK_CONTENT), "the book has pages");
         cleanup(h, p);
         h.succeed();
+    }
+
+    private static void glyphPuzzle(GameTestHelper h) {
+        BlockPos key = new BlockPos(2, 3, 2);
+        h.setBlock(key, ModBlocks.GLYPH_RING.get().defaultBlockState().setValue(GlyphRingBlock.KEY, true).setValue(GlyphRingBlock.GLYPH, 2));
+        h.setBlock(new BlockPos(2, 1, 4), ModBlocks.GLYPH_RING.get().defaultBlockState().setValue(GlyphRingBlock.GLYPH, 1));
+        h.setBlock(new BlockPos(5, 1, 4), ModBlocks.GLYPH_RING.get().defaultBlockState().setValue(GlyphRingBlock.GLYPH, 2));
+        BlockPos seal = new BlockPos(6, 1, 6);
+        h.setBlock(seal, ModBlocks.ARCANE_SEAL.get());
+        h.assertFalse(GlyphRingBlock.trySolve(h.getLevel(), h.absolutePos(key)), "rings that differ keep the seal");
+        h.assertBlockPresent(ModBlocks.ARCANE_SEAL.get(), seal);
+        h.setBlock(new BlockPos(2, 1, 4), ModBlocks.GLYPH_RING.get().defaultBlockState().setValue(GlyphRingBlock.GLYPH, 2));
+        h.assertTrue(GlyphRingBlock.trySolve(h.getLevel(), h.absolutePos(key)), "matching rings solve it");
+        h.assertBlockNotPresent(ModBlocks.ARCANE_SEAL.get(), seal);
+        var guardians = h.getLevel().getEntitiesOfClass(net.minecraft.world.entity.Mob.class, new net.minecraft.world.phys.AABB(h.absolutePos(key)).inflate(6),
+                m -> m.hasCustomName());
+        h.assertTrue(guardians.size() == 3, "three guardians wake, got " + guardians.size());
+        guardians.forEach(Entity::discard);
+        h.succeed();
+    }
+
+    private static void structureTemplates(GameTestHelper h) {
+        var manager = h.getLevel().getStructureTemplateManager();
+        for (String name : List.of("ruined_observatory", "flooded_scriptorium")) {
+            var template = manager.get(OrbisArcana.id(name));
+            h.assertTrue(template.isPresent(), name + " template loads");
+            h.assertTrue(template.get().getSize().getX() > 8, name + " has a size");
+        }
+        var registry = h.getLevel().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.STRUCTURE);
+        h.assertTrue(registry.get(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.STRUCTURE, OrbisArcana.id("ruined_observatory"))).isPresent(), "observatory structure registered");
+        h.assertTrue(registry.get(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.STRUCTURE, OrbisArcana.id("flooded_scriptorium"))).isPresent(), "scriptorium structure registered");
+        // The scriptorium's trap survives the water around it
+        var scriptorium = manager.get(OrbisArcana.id("flooded_scriptorium")).get();
+        BlockPos origin = h.absolutePos(new BlockPos(0, 12, 0)); // above, clear of other tests
+        boolean placed = scriptorium.placeInWorld(h.getLevel(), origin, origin, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(),
+                h.getLevel().getRandom(), 2);
+        h.assertTrue(placed, "the scriptorium template places");
+        h.runAfterDelay(1, () -> {
+            h.assertTrue(h.getLevel().getBlockState(origin.offset(9, 1, 5)).is(net.minecraft.world.level.block.Blocks.SCULK_SENSOR), "the trap sensor stays in the water");
+            h.assertTrue(h.getLevel().getBlockState(origin.offset(11, 1, 5)).is(net.minecraft.world.level.block.Blocks.CHEST), "the chest-lectern is there");
+            h.assertTrue(h.getLevel().getBlockEntity(origin.offset(9, 1, 4)) instanceof net.minecraft.world.level.block.entity.DispenserBlockEntity d && !d.isEmpty(), "the trap dispensers are loaded");
+            h.assertTrue(h.getLevel().getBlockEntity(origin.offset(11, 1, 5)) instanceof net.minecraft.world.level.block.entity.ChestBlockEntity c && c.getLootTable() != null, "the chest has its loot table");
+            for (BlockPos p : BlockPos.betweenClosed(origin, origin.offset(12, 6, 10))) h.getLevel().setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2 | 16);
+            h.succeed();
+        });
     }
 
     private OrbisGameTests() {}

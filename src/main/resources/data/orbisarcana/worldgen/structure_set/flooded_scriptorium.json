@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 57120931,
+    "separation": 10,
+    "spacing": 36
+  },
+  "structures": [
+    {
+      "structure": "orbisarcana:flooded_scriptorium",
+      "weight": 1
+    }
+  ]
+}

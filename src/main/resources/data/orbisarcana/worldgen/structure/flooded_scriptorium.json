@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:jigsaw",
+  "biomes": "#orbisarcana:has_structure/flooded_scriptorium",
+  "max_distance_from_center": 80,
+  "project_start_to_heightmap": "OCEAN_FLOOR_WG",
+  "size": 1,
+  "start_height": {
+    "absolute": -4
+  },
+  "spawn_overrides": {
+    "monster": {
+      "bounding_box": "full",
+      "spawns": [
+        {
+          "type": "minecraft:drowned",
+          "count": {
+            "type": "minecraft:uniform",
+            "min_inclusive": 1,
+            "max_inclusive": 2
+          },
+          "weight": 1
+        }
+      ]
+    }
+  },
+  "start_pool": "orbisarcana:flooded_scriptorium",
+  "step": "underground_structures",
+  "terrain_adaptation": "none",
+  "use_expansion_hack": false
+}

@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "glyph=0,key=false": {
+      "model": "orbisarcana:block/glyph_ring_0"
+    },
+    "glyph=0,key=true": {
+      "model": "orbisarcana:block/glyph_ring_0"
+    },
+    "glyph=1,key=false": {
+      "model": "orbisarcana:block/glyph_ring_1"
+    },
+    "glyph=1,key=true": {
+      "model": "orbisarcana:block/glyph_ring_1"
+    },
+    "glyph=2,key=false": {
+      "model": "orbisarcana:block/glyph_ring_2"
+    },
+    "glyph=2,key=true": {
+      "model": "orbisarcana:block/glyph_ring_2"
+    },
+    "glyph=3,key=false": {
+      "model": "orbisarcana:block/glyph_ring_3"
+    },
+    "glyph=3,key=true": {
+      "model": "orbisarcana:block/glyph_ring_3"
+    }
+  }
+}

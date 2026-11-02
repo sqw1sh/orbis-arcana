@@ -499,5 +499,9 @@
   "book.orbisarcana.first_seals.page5": "§lMastery§r\n\nUseful casts — damage, healing, control — give that spell XP.\n\nAt levels 5, 10 and 15 the spell changes: see its milestones in the grimoire.",
   "book.orbisarcana.first_seals.page6": "§lSchools§r\n\nThe Resonance Altar binds you to one of 10 schools. Its magic grows your resonance, which brings talents and the Echo, the school's own power.\n\nSwitching is a ritual paid in ink.",
   "book.orbisarcana.first_seals.page7": "§lHigher Schools§r\n\nLight, Dark and Astral hide in strongholds and mansions, ancient cities and end cities.\n\nTheir first spell needs a Seal of Comprehension.",
-  "book.orbisarcana.first_seals.page8": "§lAether§r\n\nDeep underground glows Aether Crystal ore. Its shards make ink, foci, potions and the altar.\n\nGood luck, mage."
+  "book.orbisarcana.first_seals.page8": "§lAether§r\n\nDeep underground glows Aether Crystal ore. Its shards make ink, foci, potions and the altar.\n\nGood luck, mage.",
+  "block.orbisarcana.glyph_ring": "Glyph Ring",
+  "block.orbisarcana.arcane_seal": "Arcane Seal",
+  "entity.orbisarcana.observatory_guardian": "Observatory Guardian",
+  "message.orbisarcana.observatory.solved": "The glyphs align: the seals crumble and the guardians wake!"
 }

@@ -73,6 +73,8 @@ public final class DevShot {
                 });
             }),
             new Scene("schools", () -> Minecraft.getInstance().gui.setScreen(new SchoolsScreen())),
+            structure("ruined_observatory", 14),
+            structure("flooded_scriptorium", 9),
             book(1),
             book(2),
             book(3),
@@ -121,6 +123,27 @@ public final class DevShot {
             mc.player.setYRot(0);
             mc.player.setXRot(30);
             ClientCircles.spawnDemo(9);
+        });
+    }
+
+    /** Places a structure template a few blocks ahead (server side) and looks at it. */
+    private static Scene structure(String name, int distance) {
+        return new Scene(name, () -> {
+            Minecraft mc = Minecraft.getInstance();
+            mc.gui.setScreen(null);
+            mc.player.setYRot(0);
+            mc.player.setYHeadRot(0);
+            mc.player.setXRot(12);
+            var server = mc.getSingleplayerServer();
+            if (server == null) return;
+            server.execute(() -> {
+                ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp == null) return;
+                sp.level().getStructureTemplateManager().get(OrbisArcana.id(name)).ifPresent(t -> {
+                    var at = sp.blockPosition().offset(-t.getSize().getX() / 2, -1, distance);
+                    t.placeInWorld(sp.level(), at, at, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), sp.getRandom(), 2);
+                });
+            });
         });
     }
 
