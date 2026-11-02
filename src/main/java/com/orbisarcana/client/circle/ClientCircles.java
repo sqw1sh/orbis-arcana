@@ -97,8 +97,8 @@ public final class ClientCircles {
                 if (rel.length() > ClientConfig.HIDE_DISTANCE.getAsInt()) continue;
                 Vec3[] axes = axes(new Vec3(0, 1, 0));
                 int color = Schools.color(c.spell.school());
-                out.add(new CircleRenderState(rel, axes[0], axes[1], (float) TOGGLE_RADIUS, 1f, 0.6f * ClientConfig.OPACITY.get().floatValue(),
-                        1f, (float) (now / 20.0), 0f, color, c.spell.rarity().color, c.spell.rarity().circleLayers, layers(c),
+                out.add(CircleRenderState.simple(rel, axes[0], axes[1], (float) TOGGLE_RADIUS, 0.6f * ClientConfig.OPACITY.get().floatValue(),
+                        1f, (float) (now / 20.0), color, CircleAtlas.plate(c.spell.school()), layers(c),
                         ClientConfig.RIM_ONLY.getAsBoolean(), c.cast.spell().hashCode()));
             }
         }
@@ -245,13 +245,13 @@ public final class ClientCircles {
             if (rel.length() > ClientConfig.HIDE_DISTANCE.getAsInt()) continue;
             Vec3[] axes = axes(rel.lengthSqr() < 1.0E-4 ? new Vec3(0, 0, 1) : rel.normalize());
             int n = (int) Math.min(com.orbisarcana.core.EchoRules.HEAT_MAX, Math.floor(stacks));
-            out.add(new CircleRenderState(rel, axes[0], axes[1], 0.28f, 1f, 0.9f * ClientConfig.OPACITY.get().floatValue(),
-                    (float) (stacks / com.orbisarcana.core.EchoRules.HEAT_MAX), (float) (now / 20.0), 0f,
-                    (int) e.getValue()[2], (int) e.getValue()[2], 1, HEAT_LAYERS.get(n), false, 0));
+            out.add(CircleRenderState.simple(rel, axes[0], axes[1], 0.28f, 0.9f * ClientConfig.OPACITY.get().floatValue(),
+                    (float) (stacks / com.orbisarcana.core.EchoRules.HEAT_MAX), (float) (now / 20.0),
+                    (int) e.getValue()[2], -1, HEAT_LAYERS.get(n), false, 0));
         }
     }
 
-    private static final CircleRenderState REMOVE = new CircleRenderState(Vec3.ZERO, Vec3.ZERO, Vec3.ZERO, 0, 0, 0, 0, 0, 0, 0, 0, 0, List.of(), true, 0);
+    private static final CircleRenderState REMOVE = CircleRenderState.simple(Vec3.ZERO, Vec3.ZERO, Vec3.ZERO, 0, 0, 0, 0, 0, -1, List.of(), true, 0);
 
     private static @Nullable CircleRenderState extractOne(Minecraft mc, Circle c, double now, float partial, Vec3 cam) {
         CastStarted cast = c.cast;
@@ -349,9 +349,10 @@ public final class ClientCircles {
         Rarity rarity = c.spell.rarity();
 
         return new CircleRenderState(rel, axes[0], axes[1], (float) radius, scale, alpha, progress,
-                (float) (now / 20.0), flash, schoolColor, rarity.color, rarity.circleLayers,
+                (float) (now / 20.0), flash, schoolColor, rarity.color, rarity.ordinal(),
                 layers(c), ClientConfig.RIM_ONLY.getAsBoolean() || dist > ClientConfig.RIM_ONLY_DISTANCE.getAsInt(),
-                c.cast.spell().hashCode());
+                c.cast.spell().hashCode(), CircleAtlas.plate(c.spell.school()), c.cast.mastery(), c.cast.seal(),
+                (float) (age / 20.0), sinceEnd >= 0 && !released);
     }
 
     /** §9.4: base radius by rarity, +2% per mastery level; zones/targets use the effect radius. */
@@ -365,19 +366,11 @@ public final class ClientCircles {
         return Math.min(MAX_RADIUS, r);
     }
 
-    /** Dominant seal (§9.5): thin outer ring with six diamonds; a second ring when full (resonance 10). */
-    private static final List<Layer> SEAL = List.of(
-            new Layer(CircleDefinition.LayerType.RING, 1.16, 0.012, 3, 1, 0, false, 0.1, java.util.Optional.empty()),
-            new Layer(CircleDefinition.LayerType.SATELLITE, 1.16, 0.04, 3, 6, 12, false, 0.03, java.util.Optional.empty()));
-    private static final Layer FULL_SEAL = new Layer(CircleDefinition.LayerType.RING, 1.24, 0.008, 3, 1, 0, false, 0.1, java.util.Optional.empty());
-
     private static List<Layer> layers(Circle c) {
         Identifier circleId = c.spell.circle().orElse(c.cast.spell());
         CircleDefinition def = CircleLoader.get(circleId);
-        if (def.milestoneLayers().isEmpty() && c.cast.seal() <= 0) return def.layers();
+        if (def.milestoneLayers().isEmpty()) return def.layers();
         List<Layer> all = new ArrayList<>(def.layers());
-        if (c.cast.seal() >= 1) all.addAll(SEAL);
-        if (c.cast.seal() >= 2) all.add(FULL_SEAL);
         def.milestoneLayers().forEach((level, extra) -> {
             if (c.cast.mastery() >= level) all.addAll(extra);
         });
@@ -422,7 +415,7 @@ public final class ClientCircles {
      */
     public static void submitPreview(com.mojang.blaze3d.vertex.PoseStack pose, net.minecraft.client.renderer.SubmitNodeCollector collector,
                                      Identifier spellId, SpellDefinition spell, int mastery, Vec3 center, Vec3 u, Vec3 v,
-                                     float progress, float timeSec, float flash, float alpha) {
+                                     float progress, float timeSec, float flash, float alpha, float ageSec) {
         Identifier circleId = spell.circle().orElse(spellId);
         CircleDefinition def = CircleLoader.get(circleId);
         List<Layer> layers = new ArrayList<>(def.layers());
@@ -436,9 +429,13 @@ public final class ClientCircles {
         }
         Rarity rarity = spell.rarity();
         CircleRenderState s = new CircleRenderState(center, u, v, (float) radius, 1f, alpha, progress, timeSec, flash,
-                Schools.color(spell.school()), rarity.color, rarity.circleLayers, layers, false, spellId.hashCode());
+                Schools.color(spell.school()), rarity.color, rarity.ordinal(), layers, false, spellId.hashCode(),
+                CircleAtlas.plate(spell.school()), mastery, 0, ageSec, false);
         collector.submitCustomGeometry(pose, CircleRenderTypes.CIRCLE, (p, buffer) -> new CircleRenderer(p, buffer).draw(s));
     }
+
+    /** Brightness of world circles under a shader pack (its bloom makes the additive layers blow out to white). */
+    private static final float SHADER_INTENSITY = 0.8f;
 
     // ---- submit (render state -> geometry) ----
 
@@ -447,7 +444,7 @@ public final class ClientCircles {
         List<CircleRenderState> states = event.getLevelRenderState().getRenderData(RENDER_KEY);
         if (states == null || states.isEmpty()) return;
         event.getSubmitNodeCollector().submitCustomGeometry(event.getPoseStack(), CircleRenderTypes.CIRCLE, (pose, buffer) -> {
-            CircleRenderer renderer = new CircleRenderer(pose, buffer);
+            CircleRenderer renderer = new CircleRenderer(pose, buffer).intensity(IrisCompat.isShaderPackInUse() ? SHADER_INTENSITY : 1f);
             for (CircleRenderState s : states) renderer.draw(s);
         });
     }

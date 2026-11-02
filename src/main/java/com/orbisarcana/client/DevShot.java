@@ -41,6 +41,15 @@ public final class DevShot {
             circles(ClientConfig.RenderMode.AUTO),
             circles(ClientConfig.RenderMode.MESH),
             circles(ClientConfig.RenderMode.PARTICLES),
+            new Scene("gallery_setup", DevShot::galleryStage),
+            new Scene("gallery", () -> {
+                // circles of every rarity on a dark stage at night, seen from above at an angle
+                Minecraft mc = Minecraft.getInstance();
+                mc.gui.setScreen(null);
+                mc.player.setYRot(0);
+                mc.player.setXRot(38);
+                ClientCircles.spawnDemo(8);
+            }),
             new Scene("radial", () -> {
                 learnTestSpells();
                 Minecraft.getInstance().gui.setScreen(new RadialMenuScreen(true));
@@ -226,6 +235,30 @@ public final class DevShot {
             sp.level().setBlockAndUpdate(at.offset(0, 0, 2), com.orbisarcana.registry.ModBlocks.RESONANCE_ALTAR.get().defaultBlockState());
             sp.teleportTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
             com.orbisarcana.school.AttunementService.bind(sp, com.orbisarcana.school.Schools.FIRE);
+        });
+    }
+
+    /** A dark 21x21 stage at y 150, night: the magic circle gallery is shot over it. */
+    private static void galleryStage() {
+        Minecraft mc = Minecraft.getInstance();
+        mc.gui.setScreen(null);
+        var server = mc.getSingleplayerServer();
+        if (server == null) return;
+        server.execute(() -> {
+            ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+            if (sp == null) return;
+            server.getCommands().performPrefixedCommand(sp.createCommandSourceStack().withSuppressedOutput(), "time set midnight");
+            sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+            var stage = net.minecraft.core.BlockPos.containing(sp.getX(), 150, sp.getZ());
+            for (var pos : net.minecraft.core.BlockPos.betweenClosed(stage.offset(-10, -1, -4), stage.offset(10, -1, 18))) {
+                sp.level().setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.POLISHED_DEEPSLATE.defaultBlockState());
+            }
+            for (var pos : net.minecraft.core.BlockPos.betweenClosed(stage.offset(-10, 0, -4), stage.offset(10, 4, 18))) {
+                sp.level().setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+            }
+            sp.teleportTo(stage.getX() + 0.5, stage.getY() + 3, stage.getZ() + 0.5);
+            sp.getAbilities().flying = true;
+            sp.onUpdateAbilities();
         });
     }
 

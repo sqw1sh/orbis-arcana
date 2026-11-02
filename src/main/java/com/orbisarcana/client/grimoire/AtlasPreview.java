@@ -32,11 +32,11 @@ import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEven
 @EventBusSubscriber(modid = OrbisArcana.MODID, value = Dist.CLIENT)
 final class AtlasPreview {
     record State(EntityRenderState mage, Identifier spellId, SpellDefinition spell, int mastery, float progress, float timeSec,
-                 float flash, float yaw, float pitch, int x0, int y0, int x1, int y1, float scale,
+                 float flash, float cycle, float yaw, float pitch, int x0, int y0, int x1, int y1, float scale,
                  @Nullable ScreenRectangle scissorArea, @Nullable ScreenRectangle bounds) implements PictureInPictureRenderState {
         State(EntityRenderState mage, Identifier spellId, SpellDefinition spell, int mastery, float progress, float timeSec, float flash,
-              float yaw, float pitch, int x0, int y0, int x1, int y1, float scale, @Nullable ScreenRectangle scissorArea) {
-            this(mage, spellId, spell, mastery, progress, timeSec, flash, yaw, pitch, x0, y0, x1, y1, scale, scissorArea,
+              float cycle, float yaw, float pitch, int x0, int y0, int x1, int y1, float scale, @Nullable ScreenRectangle scissorArea) {
+            this(mage, spellId, spell, mastery, progress, timeSec, flash, cycle, yaw, pitch, x0, y0, x1, y1, scale, scissorArea,
                     PictureInPictureRenderState.getBounds(x0, y0, x1, y1, scissorArea));
         }
     }
@@ -63,11 +63,11 @@ final class AtlasPreview {
             Vec3 x = new Vec3(1, 0, 0), y = new Vec3(0, 1, 0), z = new Vec3(0, 0, 1);
             switch (s.spell().targeting()) {
                 case DIRECTIONAL -> ClientCircles.submitPreview(pose, collector, s.spellId(), s.spell(), s.mastery(),
-                        new Vec3(0, 1.25, -0.75), x, y, s.progress(), s.timeSec(), s.flash(), 0.95f);
+                        new Vec3(0, 1.25, -1.05), x, y, s.progress(), s.timeSec(), s.flash(), 0.95f, s.cycle());
                 case SELF -> ClientCircles.submitPreview(pose, collector, s.spellId(), s.spell(), s.mastery(),
-                        new Vec3(0, 0.02, 0), x, z, s.progress(), s.timeSec(), s.flash(), 0.95f);
+                        new Vec3(0, 0.02, 0), x, z, s.progress(), s.timeSec(), s.flash(), 0.95f, s.cycle());
                 default -> ClientCircles.submitPreview(pose, collector, s.spellId(), s.spell(), s.mastery(),
-                        new Vec3(0, 0.02, -2.6), x, z, s.progress(), s.timeSec(), s.flash(), 0.95f);
+                        new Vec3(0, 0.02, -2.6), x, z, s.progress(), s.timeSec(), s.flash(), 0.95f, s.cycle());
             }
         }
 

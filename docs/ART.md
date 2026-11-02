@@ -63,6 +63,8 @@
 | Анимации мага | `art/animations/caster.bbmodel` (риг игрока: head, torso, right_arm, left_arm, right_leg, left_leg) | `geckolib_export_animations` | `assets/orbisarcana/player_animations/caster.json`; ключ анимации — `orbisarcana:animation.<имя>` |
 | Звуки | `art/sounds/<имя>.json` (рецепт слоёв) | `node tools/sfx.cjs` (нужен ffmpeg в PATH или `FFMPEG`) | `assets/orbisarcana/sounds/<имя>[_N].ogg` (WAV-промежуточные — `art/sounds/out/`, не в git) |
 | UI-кит (панели, кнопки, вкладки, полосы, шар маны, радиальное меню, иконки, сигилы школ, рамка подсказок) | `tools/gui.cjs` | `node tools/gui.cjs` | `textures/gui/sprites/ui/*` (+ `.mcmeta` nine-slice), `textures/gui/sprites/tooltip/arcane_*`; в коде — `client/ui/Ui`, `OrbisButton` |
+| Магические круги | `tools/circles.cjs` (SDF «неон»: пластины 10 школ, орнамент, печать, руны 32 глифа, трубка, филигрань, риски, вспышки) | `node tools/circles.cjs` | `textures/effect/circle_atlas.png` 2048² (раскладка — `client/circle/CircleAtlas`) |
+| Объёмные украшения кругов (кристаллы-спутники) | `art/circle/*.bbmodel` | MCP `risky_eval`: `Cube#getGlobalVertexPositions` → JSON углов кубов | `assets/orbisarcana/orbisarcana/circle_model/*.json` (`CircleModels`) |
 | 2D-текстуры (иконки, блоки) | `tools/textures.cjs` | `node tools/textures.cjs` | `textures/item`, `textures/block` |
 
 Правила:

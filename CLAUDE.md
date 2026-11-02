@@ -30,6 +30,8 @@
 - `node tools/sfx.cjs [имя]` — синтез звуков по рецептам `art/sounds/*.json` → WAV → OGG (нужен ffmpeg в PATH или env `FFMPEG`).
 - `./gradlew :runClientShot -Pshots=geckolib,pose` — проверка GeckoLib-модели в руке и позы PAL.
 - `node tools/gui.cjs` — пересобрать спрайты UI-кита (`textures/gui/sprites/ui`, стиль подсказок `arcane`).
+- `node tools/circles.cjs` — пересобрать атлас магических кругов (`textures/effect/circle_atlas.png`, ~25 с); раскладка — `client/circle/CircleAtlas`.
+- `./gradlew :runClientShot -Pshots=gallery_setup,gallery` — галерея кругов всех редкостей (ночь, тёмная площадка).
 - `node tools/structures.cjs` — пересобрать NBT-шаблоны структур (обсерватория, скрипторий).
 - `./gradlew :runGameTestServer` — GameTest-ы мода; без `:` запускаются и тесты `example-addon` (мод + аддон, 92).
 - `./gradlew runGameTestServer` — все GameTest-ы (`gametest/OrbisGameTests`), код выхода ≠ 0 при падении. Итог в логе: `All N required tests passed`.
@@ -67,6 +69,7 @@
 - GeckoLib 5.5.7 (пакет `com.geckolib`, maven Modrinth): ассеты `assets/<ns>/geckolib/models|animations/<тип>/<id>.(geo|animation).json`, текстура `textures/<тип>/<id>.png`; 3D-предмет = `items/<id>.json` с `{"type":"minecraft:special","model":{"type":"geckolib:geckolib"}}`; `createGeoRenderer` вызывается лениво только на клиенте. Исходники: cloudsmith `com/geckolib/geckolib-neoforge-26.3/5.5.7/*-sources.jar`.
 - Player Animation Library 1.2.8 (mod id `player_animation_library`): анимации в `assets/<ns>/player_animations/*.json`, ключ = `<ns>:<имя в файле>` (Blockbench даёт префикс `animation.`); слой — `PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory`, запуск — `PlayerAnimationController#triggerAnimation`. Экспорт Blockbench инвертирует X-поворот (редактор −150 → файл 150).
 - GUI-спрайты: `assets/<ns>/textures/gui/sprites/<путь>.png` + `.png.mcmeta` `{"gui":{"scaling":{"type":"nine_slice","width","height","border","stretch_inner":true}}}`; рисовать `g.blitSprite(RenderPipelines.GUI_TEXTURED, id, x, y, w, h[, argb])`, частично — вариант `(id, texW, texH, u, v, x, y, w, h)`. Стиль подсказок предмета — компонент `DataComponents.TOOLTIP_STYLE` (спрайты `tooltip/<id>_background|_frame`, 100×100, бордер 9/10). Слои HUD при F1 скрываются сами (`options.hideGui` нет).
+- Свой мировой пайплайн с текстурой: `RenderPipeline.builder(GLOBALS_SNIPPET)` + `BindGroupLayouts.PROJECTION/DYNAMIC_TRANSFORMS/SAMPLER0`, шейдер `core/position_tex_color`, формат `POSITION_TEX_COLOR`; текстура — `RenderSetup.builder(p).withTexture("Sampler0", id)`. Под Iris: формат BLOCK + программа TEXTURED теряет цвет вершин, BEACON_BEAM — сильный блум. 3D-сцена в GUI — свой `PictureInPictureRenderer` + `RegisterPictureInPictureRenderersEvent`, `g.submitPictureInPictureRenderState`.
 - `new ClipContext(..., CollisionContext.empty())`, если сущности может не быть (ClipContext с null-entity падает).
 
 ## Архитектура (§15)

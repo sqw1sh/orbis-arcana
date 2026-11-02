@@ -137,7 +137,7 @@ class AtlasTab extends GrimoireTab {
             living.scale = 1;
         }
         float scale = Math.min(vw, vh) / 3.4f * zoom;
-        g.submitPictureInPictureRenderState(new AtlasPreview.State(mage, spell, d, level, progress, spin, flash, yaw, pitch,
+        g.submitPictureInPictureRenderState(new AtlasPreview.State(mage, spell, d, level, progress, spin, flash, cycle, yaw, pitch,
                 vx + 1, vy + 1, vx + vw - 1, vy + vh - 1, scale, null));
 
         // overlay: name, school and placement; level; the hint
