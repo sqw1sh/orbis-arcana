@@ -167,11 +167,11 @@ class SpellsTab extends GrimoireTab {
         g.text(font, SpellScrollItem.spellName(id), cx + 36, cy + 3, rarity, true);
         Component sub = Component.translatable(Schools.nameKey(d.school())).withColor(Ui.opaque(Schools.color(d.school())))
                 .append(Component.literal(" · ").withColor(Ui.TEXT_DIM))
-                .append(Component.translatable("rarity.orbisarcana." + d.rarity().id).withColor(rarity))
-                .append(Component.literal(" · ").append(Component.translatable("targeting.orbisarcana." + d.targeting().id()))
-                        .append(" · ").append(Component.translatable("cast_mode.orbisarcana." + d.cast().mode().id())).withColor(Ui.TEXT_DIM));
-        var subLines = font.split(sub, cw - 36);
-        if (!subLines.isEmpty()) g.text(font, subLines.get(0), cx + 36, cy + 16, Ui.TEXT_DIM, false);
+                .append(Component.translatable("rarity.orbisarcana." + d.rarity().id).withColor(rarity));
+        g.text(font, sub, cx + 36, cy + 13, -1, false);
+        String how = Component.translatable("targeting.orbisarcana." + d.targeting().id()).getString() + " · "
+                + Component.translatable("cast_mode.orbisarcana." + d.cast().mode().id()).getString();
+        g.text(font, ellipsize(how, cw - 36), cx + 36, cy + 23, Ui.TEXT_DIM, false);
         cy += 36;
 
         // stat tiles, mastery applied

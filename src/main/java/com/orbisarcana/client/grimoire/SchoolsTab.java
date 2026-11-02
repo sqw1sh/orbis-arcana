@@ -125,9 +125,9 @@ class SchoolsTab extends GrimoireTab {
             cy = wrap(g, Component.translatable(key + ".root.desc"), rx, cy + 11, rw, dominant && TalentRules.rootActive(resonance) ? Ui.TEXT : Ui.TEXT_DIM,
                     Math.max(1, Math.min(2, (bottom - cy - 11) / 10)));
         }
-        if (!dominant) {
-            var hint = font.split(Component.translatable("screen.orbisarcana.schools.not_dominant"), rw - 118);
-            for (int i = 0; i < Math.min(2, hint.size()); i++) g.text(font, hint.get(i), rx, y + h - 18 + i * 9, 0xFFB09060, false);
+        // under the texts, above the button: why the talents do not work
+        if (!dominant && cy + 14 < bottom) {
+            wrap(g, Component.translatable("screen.orbisarcana.schools.not_dominant"), rx, cy + 4, rw, 0xFFB09060, (bottom - cy - 4) / 10);
         }
     }
 

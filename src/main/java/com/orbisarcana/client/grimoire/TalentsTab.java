@@ -61,12 +61,12 @@ class TalentsTab extends GrimoireTab {
 
     // ---- layout ----
     private int graphTop() {
-        return y + 26;
+        return y + 40;
     }
 
     private int[] pos(String node) {
         int gx = x, gw = w - SIDE_W - 14, gy = graphTop(), gh = y + h - gy;
-        int mid = gy + gh / 2, off = Math.min(52, gh / 2 - 22);
+        int mid = gy + gh / 2 - 6, off = Math.max(34, Math.min(50, gh / 2 - 26));
         return switch (node) {
             case ECHO -> new int[] {gx + (int) (gw * 0.08), mid};
             case TalentRules.ROOT -> new int[] {gx + (int) (gw * 0.29), mid};
@@ -109,7 +109,8 @@ class TalentsTab extends GrimoireTab {
         int[] a1 = pos(TalentRules.A1), a2 = pos(TalentRules.A2), b1 = pos(TalentRules.B1), b2 = pos(TalentRules.B2);
         Component ca = Component.translatable("screen.orbisarcana.talents.branch_a"), cb = Component.translatable("screen.orbisarcana.talents.branch_b");
         g.centeredText(font, ca, (a1[0] + a2[0]) / 2, a1[1] - NODE / 2 - 12, Ui.TEXT_DIM);
-        g.centeredText(font, cb, (b1[0] + b2[0]) / 2, b1[1] + NODE / 2 + 13, Ui.TEXT_DIM);
+        // branch B caption above its row too: below, the two-line names would hit it
+        g.centeredText(font, cb, (b1[0] + b2[0]) / 2, b1[1] - NODE / 2 - 12, Ui.TEXT_DIM);
 
         // connectors, drawn under the nodes
         link(g, pos(ECHO), pos(TalentRules.ROOT), Math.min(status(st, ECHO), status(st, TalentRules.ROOT)));
@@ -135,8 +136,18 @@ class TalentsTab extends GrimoireTab {
             Ui.sigil(g, st.school(), p[0] - 8, p[1] - 8, 16, status == 2 ? 0xFF : status == 1 ? 0xC0 : 0x50);
             String name = Component.translatable(nodeKey(st.school(), node)).getString();
             // names must not run into the neighbour node in the same row
-            int gw = w - SIDE_W - 14, maxW = node.equals(ECHO) || node.equals(TalentRules.ROOT) ? (int) (gw * 0.2) : (int) (gw * 0.3);
-            g.centeredText(font, ellipsize(name, maxW), p[0], p[1] + NODE / 2 + 2, status == 0 ? Ui.TEXT_DIM : status == 1 ? Ui.TEAL : Ui.TEXT);
+            int gw = w - SIDE_W - 14, maxW = node.equals(ECHO) || node.equals(TalentRules.ROOT) ? (int) (gw * 0.2) : (int) (gw * 0.31);
+            // up to two lines under the node (split at a space), the full text is in the side panel
+            String first = name, rest = "";
+            if (font.width(name) > maxW) {
+                int fit = font.plainSubstrByWidth(name, maxW).length(), cut = name.lastIndexOf(' ', fit);
+                if (cut <= 0) cut = fit;
+                first = name.substring(0, cut).trim();
+                rest = ellipsize(name.substring(cut).trim(), maxW);
+            }
+            int labelColor = status == 0 ? Ui.TEXT_DIM : status == 1 ? Ui.TEAL : Ui.TEXT;
+            g.centeredText(font, first, p[0], p[1] + NODE / 2 + 2, labelColor);
+            if (!rest.isEmpty()) g.centeredText(font, rest, p[0], p[1] + NODE / 2 + 11, labelColor);
         }
         renderDetail(g, st, hovered != null ? hovered : focused);
     }
@@ -167,7 +178,7 @@ class TalentsTab extends GrimoireTab {
             default -> Component.translatable("screen.orbisarcana.schools.branch_b");
         };
         sy = wrap(g, kind, sx, sy, sw, Ui.TEXT_DIM, 2) + 4;
-        sy = wrap(g, Component.translatable(nodeKey(st.school(), node) + ".desc"), sx, sy, sw, Ui.TEXT, Math.max(1, (y + h - 50 - sy) / 10)) + 4;
+        sy = wrap(g, Component.translatable(nodeKey(st.school(), node) + ".desc"), sx, sy, sw, Ui.TEXT, Math.max(1, (y + h - 52 - sy) / 10)) + 4;
 
         MutableComponent stateLine;
         if (status == 2) stateLine = Component.translatable(node.equals(ECHO) || node.equals(TalentRules.ROOT)
@@ -185,7 +196,7 @@ class TalentsTab extends GrimoireTab {
         if (!node.equals(ECHO) && !TalentEffects.implemented(st.school().getPath(), node)) {
             stateLine.append(" ").append(Component.translatable("screen.orbisarcana.schools.wip").withColor(0xFFB09060));
         }
-        wrap(g, stateLine, sx, Math.min(sy, y + h - 42), sw, -1, 2);
+        wrap(g, stateLine, sx, sy, sw, -1, Math.max(1, (y + h - 22 - sy) / 10));
 
         if (learn != null) {
             boolean talent = TalentRules.NODES.contains(focused);

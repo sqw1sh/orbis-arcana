@@ -110,8 +110,14 @@ public class GrimoireScreen extends Screen {
         // header: title and progress on the left, tabs on the right, a gold rule under them
         int known = minecraft.player.getData(ModAttachments.KNOWLEDGE).spells().size();
         int total = SpellRegistry.ids(minecraft.player.registryAccess()).size();
+        int tabsW = 0;
+        for (Tab t : Tab.values()) tabsW += font.width(t.title()) + 16;
         g.text(font, title, left + 10, top + 9, Ui.GOLD, true);
-        g.text(font, Component.translatable("screen.orbisarcana.grimoire.known", known, total), left + 14 + font.width(title), top + 9, Ui.TEXT_DIM, false);
+        // the counter goes in full, short, or not at all, whatever fits before the tabs
+        int room = winW - 8 - tabsW - (14 + font.width(title)) - 6;
+        Component counter = Component.translatable("screen.orbisarcana.grimoire.known", known, total);
+        if (font.width(counter) > room) counter = Component.literal(known + "/" + total);
+        if (font.width(counter) <= room) g.text(font, counter, left + 14 + font.width(title), top + 9, Ui.TEXT_DIM, false);
         int tx = left + winW - 8;
         for (int i = Tab.values().length - 1; i >= 0; i--) {
             Tab t = Tab.values()[i];

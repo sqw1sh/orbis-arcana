@@ -136,7 +136,7 @@ class AtlasTab extends GrimoireTab {
             living.xRot = 0;
             living.scale = 1;
         }
-        float scale = Math.min(vw, vh) / 4.2f * zoom;
+        float scale = Math.min(vw, vh) / 3.4f * zoom;
         g.submitPictureInPictureRenderState(new AtlasPreview.State(mage, spell, d, level, progress, spin, flash, yaw, pitch,
                 vx + 1, vy + 1, vx + vw - 1, vy + vh - 1, scale, null));
 
@@ -150,9 +150,9 @@ class AtlasTab extends GrimoireTab {
         String lv = Ui.roman(level);
         g.text(font, lv, vx + vw - 6 - font.width(lv), vy + 5, Ui.GOLD, true);
         Component hint = Component.translatable("screen.orbisarcana.atlas.hint");
-        g.text(font, hint, vx + vw - 6 - font.width(hint), vy + vh - 12, Ui.TEXT_DIM, false);
-        // charge bar under the overlay
-        Ui.bar(g, vx + 6, vy + vh - 14, Math.min(80, vw / 3), 6, progress, "bar_fill", Ui.opaque(Schools.color(d.school())), true);
+        // charge bar bottom left, the hint above it (they do not fit side by side in small windows)
+        Ui.bar(g, vx + 6, vy + vh - 12, Math.min(80, vw / 3), 6, progress, "bar_fill", Ui.opaque(Schools.color(d.school())), true);
+        g.text(font, ellipsize(hint.getString(), vw - 12), vx + 6, vy + vh - 24, Ui.TEXT_DIM, false);
     }
 
     private void renderList(GuiGraphicsExtractor g, int mouseX, int mouseY) {
