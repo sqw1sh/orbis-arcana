@@ -77,6 +77,23 @@ for (const k of Object.keys(en)) if (k in ru && placeholders(en[k]) !== placehol
 for (const [name, file] of [["en_us", en], ["ru_ru", ru]]) {
   for (const [k, v] of Object.entries(file)) if (/(^|[^%])%[^%sd0-9]/.test(v) && /%(\d+\$)?s/.test(v)) problems.push(`bare % next to arguments in ${name}: ${k}`);
 }
+// proofreading: typos a reader would notice
+const plain = v => v.replace(/§./g, "").replace(/%(\d+\$)?[sd%]/g, " ");
+for (const [name, file] of [["en_us", en], ["ru_ru", ru]]) {
+  for (const [k, v] of Object.entries(file)) {
+    const text = plain(v);
+    // a Latin letter inside a Cyrillic word (or the other way round): "кoльцо" with a Latin "o"
+    for (const w of text.split(/[^A-Za-zА-Яа-яЁё]+/)) if (/[А-Яа-яЁё]/.test(w) && /[A-Za-z]/.test(w)) problems.push(`mixed alphabets in ${name}: ${k} ("${w}")`);
+    if (/ {2}/.test(v.replace(/\n/g, ""))) problems.push(`double space in ${name}: ${k}`);
+    // " · lv. 5" style suffixes start with their own separator on purpose
+    if (/^\s|\s$/.test(v) && !/^ · /.test(v)) problems.push(`leading/trailing space in ${name}: ${k}`);
+  }
+}
+// left untranslated: the Russian text equals the English one and has English words in it
+// key names and the mod's own name stay as they are
+const keepsEnglish = /^(key|orbisarcana\.configuration\.title|itemGroup\.orbisarcana$)/;
+for (const [k, v] of Object.entries(ru)) if (en[k] === v && /[A-Za-z]{4,}/.test(plain(v)) && !keepsEnglish.test(k)) problems.push(`untranslated in ru_ru: ${k}`);
+
 console.log(`${needed.size} keys needed, ${Object.keys(en).length} en_us, ${Object.keys(ru).length} ru_ru`);
 problems.forEach(p => console.log(p));
 console.log(problems.length ? `${problems.length} problem(s)` : "lang OK");

@@ -58,6 +58,19 @@ public final class ClientConfig {
 
     static {
         B.pop();
+        B.push("accessibility");
+    }
+
+    public static final ModConfigSpec.BooleanValue AUTO_CAST = B
+            .comment("Charged spells release themselves once fully charged (§5.3): no need to time the key release")
+            .define("autoCast", false);
+
+    public static final ModConfigSpec.BooleanValue PRESS_TO_CAST = B
+            .comment("Press the cast key once to start and once more to release or stop, instead of holding it")
+            .define("pressToCast", false);
+
+    static {
+        B.pop();
     }
 
     public static final ModConfigSpec SPEC = B.build();

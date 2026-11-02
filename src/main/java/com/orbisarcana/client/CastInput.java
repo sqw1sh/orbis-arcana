@@ -2,6 +2,8 @@ package com.orbisarcana.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.orbisarcana.OrbisArcana;
+import com.orbisarcana.core.CastMode;
+import com.orbisarcana.spell.SpellRegistry;
 import com.orbisarcana.network.CastPayloads.CastRequest;
 import com.orbisarcana.network.CastPayloads.CastStop;
 import com.orbisarcana.progression.Loadout;
@@ -76,6 +78,17 @@ public final class CastInput {
             return;
         }
         boolean down = CAST.isDown() && mc.gui.screen() == null;
+        autoRelease(mc);
+        if (ClientConfig.PRESS_TO_CAST.get()) {
+            // Accessibility: one press starts, the next releases or stops, nothing has to be held
+            if (down && !wasDown) {
+                var own = ClientCastState.ownCast();
+                if (own != null) ClientPacketDistributor.sendToServer(new CastStop(own.castId(), false));
+                else ClientCastState.selected(mc.player).ifPresent(spell -> ClientPacketDistributor.sendToServer(new CastRequest(spell)));
+            }
+            wasDown = down;
+            return;
+        }
         if (down && !wasDown) {
             releaseQueued = false;
             if (ClientCastState.ownCast() == null) {
@@ -90,6 +103,20 @@ public final class CastInput {
             }
         }
         wasDown = down;
+    }
+
+    /** Auto-cast (§5.3): a charged cast is released as soon as it is full. Sent once per cast. */
+    private static int autoReleased = -1;
+
+    private static void autoRelease(Minecraft mc) {
+        var own = ClientCastState.ownCast();
+        if (own == null || own.castId() == autoReleased || !ClientConfig.AUTO_CAST.get()) return;
+        boolean charged = SpellRegistry.get(mc.player.registryAccess(), own.spell())
+                .map(d -> d.cast().mode() == CastMode.CHARGED).orElse(false);
+        if (charged && mc.level.getGameTime() - own.startTick() >= own.durationTicks()) {
+            autoReleased = own.castId();
+            ClientPacketDistributor.sendToServer(new CastStop(own.castId(), false));
+        }
     }
 
     @SubscribeEvent
