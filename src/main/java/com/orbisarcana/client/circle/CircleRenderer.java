@@ -51,7 +51,8 @@ final class CircleRenderer {
         if (r <= 0) return;
         double dist = c.length();
         lod = Math.max(12, Math.min(96, Math.round(r * 40f / (1f + (float) dist / 12f))));
-        float spin = s.timeSec() * (1f + 2f * s.progress());
+        // slow base turn plus a gentle speed-up while charging; never world time x progress, which jumps with the clock
+        float spin = 0.35f * s.timeSec() + 0.3f * Math.min(s.ageSec(), 30f) * s.progress();
         float a = s.alpha() * intensity;
         if (s.broken()) a *= 0.55f + 0.45f * (float) Math.abs(Math.sin(s.timeSec() * 37.0));
         int school = s.color(), rarityColor = s.outlineColor();
