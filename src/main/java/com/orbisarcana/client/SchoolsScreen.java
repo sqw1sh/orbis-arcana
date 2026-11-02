@@ -56,8 +56,8 @@ public class SchoolsScreen extends Screen {
         if (selected == null) selected = a.dominant().orElse(Schools.FIRE);
         addTabs(this, this::addRenderableWidget);
         int left = left();
-        for (int i = 0; i < Schools.ALL.size(); i++) {
-            Identifier school = Schools.ALL.get(i);
+        for (int i = 0; i < Schools.all().size(); i++) {
+            Identifier school = Schools.all().get(i);
             addRenderableWidget(Button.builder(AttunementService.schoolName(school), b -> {
                 selected = school;
                 rebuildWidgets();
@@ -91,7 +91,7 @@ public class SchoolsScreen extends Screen {
         clickable.clear();
         int left = left();
         int x = left + LIST_W + 10;
-        g.fill(left - 4, 26, left + LIST_W + 4, 30 + Schools.ALL.size() * ROW_H + 4, PANEL);
+        g.fill(left - 4, 26, left + LIST_W + 4, 30 + Schools.all().size() * ROW_H + 4, PANEL);
         g.fill(x - 4, 26, x + CARD_W + 4, height - 8, PANEL);
         super.extractRenderState(g, mouseX, mouseY, partial);
 

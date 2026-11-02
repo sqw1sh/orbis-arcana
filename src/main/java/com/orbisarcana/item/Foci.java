@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.core.FocusRules;
+import com.orbisarcana.api.Focus;
 import com.orbisarcana.registry.ModAttributes;
+import com.orbisarcana.registry.ModDataComponents;
 
 import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
@@ -40,13 +42,15 @@ public final class Foci {
         FocusRules.Stats mainStats = stats(main, FocusRules.Hand.MAIN, off.isEmpty());
         FocusRules.Stats offStats = stats(off, FocusRules.Hand.OFF, true);
         // Two foci of one type do not stack: the main hand wins
-        if (main.getItem() instanceof FocusItem a && off.getItem() instanceof FocusItem b && a.type() == b.type()) offStats = FocusRules.Stats.NONE;
+        Focus a = main.get(ModDataComponents.FOCUS), b = off.get(ModDataComponents.FOCUS);
+        if (a != null && b != null && a.type() == b.type()) offStats = FocusRules.Stats.NONE;
         apply(p, MAIN, mainStats);
         apply(p, OFF, offStats);
     }
 
     private static FocusRules.Stats stats(ItemStack stack, FocusRules.Hand hand, boolean offHandEmpty) {
-        if (!(stack.getItem() instanceof FocusItem focus) || !FocusRules.works(focus.type(), hand, offHandEmpty)) return FocusRules.Stats.NONE;
+        Focus focus = stack.get(ModDataComponents.FOCUS);
+        if (focus == null || !FocusRules.works(focus.type(), hand, offHandEmpty)) return FocusRules.Stats.NONE;
         return FocusRules.stats(focus.type(), focus.tier());
     }
 

@@ -160,7 +160,7 @@ public final class ClientCircles {
         int perRow = (int) Math.ceil(Math.sqrt(count));
         for (int i = 0; i < count; i++) {
             Rarity rarity = rarities[i % rarities.length];
-            Identifier school = Schools.ALL.get(i % Schools.ALL.size());
+            Identifier school = Schools.all().get(i % Schools.all().size());
             SpellDefinition spell = syntheticSpell(school, rarity, OrbisArcana.id("fireball"), rarity.circleBaseRadius * 1.4, 60);
             int row = i / perRow, col = i % perRow;
             Vec3 pos = origin.add(forward.scale(4 + row * 3.5)).add(side.scale((col - (perRow - 1) / 2.0) * 3.5));

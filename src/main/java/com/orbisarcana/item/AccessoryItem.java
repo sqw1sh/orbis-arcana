@@ -4,6 +4,8 @@ import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
 
+import com.orbisarcana.school.Schools;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -50,7 +52,7 @@ public class AccessoryItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> out, TooltipFlag flag) {
         if (kind == Kind.SCHOOL_RING && school != null) {
             out.accept(Component.translatable("accessory.orbisarcana.school_ring",
-                    Component.translatable("school.orbisarcana." + school.getPath())).withStyle(ChatFormatting.BLUE));
+                    Component.translatable(Schools.nameKey(school))).withStyle(ChatFormatting.BLUE));
         } else {
             out.accept(Component.translatable("accessory.orbisarcana." + kind.name().toLowerCase(java.util.Locale.ROOT)).withStyle(ChatFormatting.BLUE));
         }

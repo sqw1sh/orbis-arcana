@@ -305,3 +305,15 @@
 - Отзвуки и таланты остальных 8 школ вместе с их заклинаниями
 - Фокусы (жезл/посох/фолиант), аксессуары Curios (опц.), Чернила эфира (разбор дубликатов на алтаре, крафт), Печати постижения (рецепты), зелье маны
 - Лут-таблицы, торговля, 2 структуры, онбординг (книга «Первые печати» + свиток)
+
+## S8. API и совместимость — 🔶 в работе
+API, часть 1 (02.11.2026):
+- [x] Пакет `com.orbisarcana.api` (`@ApiStatus.Experimental`): `OrbisArcanaAPI.get()` — knows/mastery/learn, mana/maxMana/setMana, dominantSchool/resonance/hasTalent, cast
+- [x] Школы — реестр `orbisarcana:school` (`api.School`: цвет, высшая, Отзвук); `Schools.all()/color/isHigher/exists/nameKey` читают реестр; имена `school.<ns>.<path>`, таланты `talent.<ns>.<path>.<node>`
+- [x] `api.SchoolEcho` — Отзвук аддон-школы: onSpellHit, onSupport (встроенные Отзвуки — в EchoService)
+- [x] События на NeoForge.EVENT_BUS: `SpellCastEvent.Pre` (отменяемый) / `Post`, `SpellLearnEvent`, `MasteryLevelUpEvent` (+ `.Milestone`), `AttunementChangeEvent`
+- [x] Компонент `orbisarcana:focus` (`api.Focus`: тип + тир) — любой предмет становится фокусом; фокусы мода используют его же
+- [x] Артефакт `orbisarcana-<ver>-api.jar` (`./gradlew apiJar`, входит в assemble): пакеты api + core
+- [x] 2 GameTest (всего 89): сервисы API и события (Pre отменяет каст), компонент фокуса на железном мече
+
+Дальше в S8: пример аддона (`example-addon/`: своя школа с Отзвуком + заклинание на своём поведении), JEI (рецепты, информация о свитках), Jade (алтарь).

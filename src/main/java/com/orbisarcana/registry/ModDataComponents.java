@@ -16,6 +16,10 @@ public final class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Identifier>> SPELL = COMPONENTS.registerComponentType(
             "spell", b -> b.persistent(Identifier.CODEC).networkSynchronized(Identifier.STREAM_CODEC));
 
+    /** Makes any item a focus (§11.1, §16). */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<com.orbisarcana.api.Focus>> FOCUS = COMPONENTS.registerComponentType(
+            "focus", b -> b.persistent(com.orbisarcana.api.Focus.CODEC).networkSynchronized(com.orbisarcana.api.Focus.STREAM_CODEC));
+
     public static void register(IEventBus modBus) {
         COMPONENTS.register(modBus);
     }

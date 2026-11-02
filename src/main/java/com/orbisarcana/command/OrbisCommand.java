@@ -49,7 +49,7 @@ public final class OrbisCommand {
             (ctx, builder) -> SharedSuggestionProvider.suggestResource(SpellRegistry.ids(ctx.getSource().registryAccess()), builder);
 
     private static final SuggestionProvider<CommandSourceStack> SCHOOLS =
-            (ctx, builder) -> SharedSuggestionProvider.suggestResource(Schools.ALL, builder);
+            (ctx, builder) -> SharedSuggestionProvider.suggestResource(Schools.all(), builder);
 
     /** Spells known by the executing player. */
     private static final SuggestionProvider<CommandSourceStack> KNOWN_SPELLS = (ctx, builder) -> {

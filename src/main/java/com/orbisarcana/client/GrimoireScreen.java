@@ -60,8 +60,8 @@ public class GrimoireScreen extends Screen {
         int top = 30;
 
         addRenderableWidget(Button.builder(schoolLabel(), b -> {
-            int i = schoolFilter == null ? -1 : Schools.ALL.indexOf(schoolFilter);
-            schoolFilter = i + 1 >= Schools.ALL.size() ? null : Schools.ALL.get(i + 1);
+            int i = schoolFilter == null ? -1 : Schools.all().indexOf(schoolFilter);
+            schoolFilter = i + 1 >= Schools.all().size() ? null : Schools.all().get(i + 1);
             scroll = 0;
             rebuildWidgets();
         }).bounds(left, top, LIST_W, 18).build());
@@ -115,7 +115,7 @@ public class GrimoireScreen extends Screen {
     private Component schoolLabel() {
         return schoolFilter == null
                 ? Component.translatable("screen.orbisarcana.grimoire.all_schools")
-                : Component.translatable("school.orbisarcana." + schoolFilter.getPath());
+                : Component.translatable(Schools.nameKey(schoolFilter));
     }
 
     private List<Identifier> filtered() {
@@ -209,7 +209,7 @@ public class GrimoireScreen extends Screen {
         int level = p.level();
         g.text(font, SpellScrollItem.spellName(id), x, y, 0xFF000000 | d.rarity().color, true);
         y += 12;
-        g.text(font, Component.translatable("school.orbisarcana." + d.school().getPath()).append(" · ")
+        g.text(font, Component.translatable(Schools.nameKey(d.school())).append(" · ")
                 .append(Component.translatable("rarity.orbisarcana." + d.rarity().id)), x, y, DIM, false);
         y += 11;
         g.text(font, Component.translatable("targeting.orbisarcana." + d.targeting().id()).append(" · ")

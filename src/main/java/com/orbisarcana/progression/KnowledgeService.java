@@ -18,6 +18,7 @@ public final class KnowledgeService {
         boolean learned = knowledge(player).learn(spell);
         if (learned) {
             player.syncData(ModAttachments.KNOWLEDGE);
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new com.orbisarcana.api.event.SpellLearnEvent(player, spell));
             if (player.getData(ModAttachments.LOADOUT).assignToFirstEmpty(spell)) player.syncData(ModAttachments.LOADOUT);
         }
         return learned;

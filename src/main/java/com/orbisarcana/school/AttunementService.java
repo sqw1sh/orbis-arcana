@@ -75,7 +75,9 @@ public final class AttunementService {
         long now = player.level().getGameTime();
         boolean first = SchoolRules.isFreeBinding(a.everBound());
         Optional<Identifier> old = a.dominant().or(a::previous);
+        Optional<Identifier> before = a.dominant();
         a.setDominant(Optional.of(school));
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new com.orbisarcana.api.event.AttunementChangeEvent(player, before, Optional.of(school)));
         if (!first) {
             a.setPrevious(old.filter(o -> !o.equals(school)));
             a.setDissonanceUntil(now + SchoolRules.DISSONANCE_TICKS);
@@ -86,15 +88,17 @@ public final class AttunementService {
                 schoolName(school)).withStyle(ChatFormatting.LIGHT_PURPLE));
         if (a.school(school).resonance() < 1) {
             player.sendSystemMessage(Component.translatable("message.orbisarcana.school.echo_hint",
-                    Component.translatable("talent.orbisarcana." + school.getPath() + ".echo")).withStyle(ChatFormatting.GRAY));
+                    Component.translatable("talent." + school.getNamespace() + "." + school.getPath() + ".echo")).withStyle(ChatFormatting.GRAY));
         }
     }
 
     /** Back to the neutral state; free, the school's progress is frozen (§10.6). */
     public static void unbind(ServerPlayer player) {
         Attunement a = attunement(player);
+        Optional<Identifier> before = a.dominant();
         a.dominant().ifPresent(old -> a.setPrevious(Optional.of(old)));
         a.setDominant(Optional.empty());
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new com.orbisarcana.api.event.AttunementChangeEvent(player, before, Optional.empty()));
         player.syncData(ModAttachments.ATTUNEMENT);
         player.sendSystemMessage(Component.translatable("message.orbisarcana.school.unbound").withStyle(ChatFormatting.GRAY));
     }
@@ -162,7 +166,7 @@ public final class AttunementService {
     }
 
     public static Component schoolName(Identifier school) {
-        return Component.translatable("school.orbisarcana." + school.getPath()).withColor(Schools.color(school));
+        return Component.translatable(Schools.nameKey(school)).withColor(Schools.color(school));
     }
 
     private AttunementService() {}

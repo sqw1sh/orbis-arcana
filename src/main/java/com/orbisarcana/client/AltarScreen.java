@@ -40,8 +40,8 @@ public class AltarScreen extends Screen {
         int cellW = Math.min(215, (width - 30) / 2);
         int left = (width - cellW * 2 - 10) / 2;
         int top = 34;
-        for (int i = 0; i < Schools.ALL.size(); i++) {
-            Identifier school = Schools.ALL.get(i);
+        for (int i = 0; i < Schools.all().size(); i++) {
+            Identifier school = Schools.all().get(i);
             int x = left + (i % 2) * (cellW + 10);
             int y = top + (i / 2) * CELL_H;
             boolean dominant = a.dominant().filter(school::equals).isPresent();
@@ -103,8 +103,8 @@ public class AltarScreen extends Screen {
 
         super.extractRenderState(g, mouseX, mouseY, partial);
 
-        for (int i = 0; i < Schools.ALL.size(); i++) {
-            Identifier school = Schools.ALL.get(i);
+        for (int i = 0; i < Schools.all().size(); i++) {
+            Identifier school = Schools.all().get(i);
             int x = left + (i % 2) * (cellW + 10);
             int y = top + (i / 2) * CELL_H;
             Attunement.SchoolProgress p = a.schools().get(school);

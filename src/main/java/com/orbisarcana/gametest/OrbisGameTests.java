@@ -164,6 +164,8 @@ public final class OrbisGameTests {
         test("structure_templates_load", 40, OrbisGameTests::structureTemplates);
         test("accessories_work_from_curios_slots", 20, OrbisGameTests::accessories);
         test("shadow_decoy_lures_and_fades", 140, OrbisGameTests::shadowDecoy);
+        test("api_services_and_events", 20, OrbisGameTests::apiAndEvents);
+        test("focus_component_on_any_item", 20, OrbisGameTests::focusComponent);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1554,6 +1556,43 @@ public final class OrbisGameTests {
             cleanup(h, p);
             h.succeed();
         });
+    }
+
+    private static void apiAndEvents(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        var api = com.orbisarcana.api.OrbisArcanaAPI.get();
+        h.assertTrue(api != null, "the API is available");
+        List<String> seen = new java.util.ArrayList<>();
+        java.util.function.Consumer<com.orbisarcana.api.event.SpellLearnEvent> onLearn = e -> { if (e.getPlayer() == p) seen.add("learn:" + e.getSpell()); };
+        java.util.function.Consumer<com.orbisarcana.api.event.SpellCastEvent.Pre> veto = e -> { if (e.getPlayer() == p) { seen.add("pre"); e.setCanceled(true); } };
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(onLearn);
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(veto);
+        try {
+            h.assertTrue(api.learn(p, FIREBALL), "learn through the API");
+            h.assertTrue(api.knows(p, FIREBALL) && api.mastery(p, FIREBALL).orElse(0) == 1, "known at mastery 1");
+            api.setMana(p, 42);
+            h.assertValueEqual(api.mana(p), 42.0, "mana through the API");
+            api.cast(p, FIREBALL);
+            h.assertFalse(CastService.isCasting(p), "a cancelled Pre event stops the cast");
+            h.assertTrue(seen.contains("learn:" + FIREBALL) && seen.contains("pre"), "events fire, saw " + seen);
+            h.assertTrue(Schools.all().size() >= 10 && Schools.isHigher(Schools.DARK) && !Schools.isHigher(Schools.FIRE), "the school registry");
+        } finally {
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.unregister(onLearn);
+            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.unregister(veto);
+        }
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void focusComponent(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        ItemStack sword = new ItemStack(net.minecraft.world.item.Items.IRON_SWORD);
+        sword.set(com.orbisarcana.registry.ModDataComponents.FOCUS, new com.orbisarcana.api.Focus(com.orbisarcana.core.FocusRules.Type.WAND, 2));
+        p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, sword);
+        Foci.update(p);
+        h.assertTrue(Math.abs(p.getAttributeValue(ModAttributes.CAST_SPEED) - 1.15) < 1e-6, "a sword with the focus component works as a wand");
+        cleanup(h, p);
+        h.succeed();
     }
 
     private OrbisGameTests() {}

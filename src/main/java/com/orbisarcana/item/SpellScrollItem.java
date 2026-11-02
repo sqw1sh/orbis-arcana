@@ -1,5 +1,6 @@
 package com.orbisarcana.item;
 
+import com.orbisarcana.school.Schools;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -106,7 +107,7 @@ public class SpellScrollItem extends Item {
         Rarity rarity = d.rarity();
         out.accept(Component.translatable("rarity.orbisarcana." + rarity.id).withColor(rarity.color)
                 .append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY))
-                .append(Component.translatable("school.orbisarcana." + d.school().getPath()).withStyle(ChatFormatting.GRAY)));
+                .append(Component.translatable(Schools.nameKey(d.school())).withStyle(ChatFormatting.GRAY)));
         out.accept(Component.translatable("tooltip.orbisarcana.scroll.cast",
                 Component.translatable("targeting.orbisarcana." + d.targeting().id()),
                 Component.translatable("cast_mode.orbisarcana." + d.cast().mode().id()),

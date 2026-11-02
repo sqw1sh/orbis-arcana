@@ -105,8 +105,10 @@ public final class ModItems {
     }
 
     private static DeferredItem<FocusItem> focus(String name, FocusRules.Type type, int tier, Rarity rarity) {
-        return ModRegistries.ITEMS.registerItem(name, p -> new FocusItem(p, type, tier),
-                p -> tier == 3 ? p.stacksTo(1).rarity(rarity).fireResistant() : p.stacksTo(1).rarity(rarity));
+        return ModRegistries.ITEMS.registerItem(name, p -> new FocusItem(p, type, tier), p -> {
+            p.stacksTo(1).rarity(rarity).component(ModDataComponents.FOCUS, new com.orbisarcana.api.Focus(type, tier));
+            return tier == 3 ? p.fireResistant() : p;
+        });
     }
 
     private static DeferredItem<Item> seal(String school) {

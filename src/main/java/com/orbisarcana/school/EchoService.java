@@ -89,6 +89,13 @@ public final class EchoService {
 
     /** A spell of {@code school} from cast {@code castId} damaged {@code target}. */
     public static void onSpellHit(ServerPlayer caster, Identifier school, LivingEntity target, int castId) {
+        // An addon school brings its own Echo (§16)
+        var addon = Schools.REGISTRY.getOptional(school).map(com.orbisarcana.api.School::echo);
+        if (addon.isPresent()) {
+            int tier = tier(caster, school);
+            if (tier > 0 && target.isAlive()) addon.get().onSpellHit(caster, target, castId, tier);
+            return;
+        }
         if (school.equals(Schools.ICE)) {
             frost(caster, target, castId);
             return;
@@ -310,6 +317,11 @@ public final class EchoService {
 
     /** The player healed, shielded or spared someone {@code amount} HP: Radiance charges; full, it pulses. */
     public static void onSupport(ServerPlayer player, float amount) {
+        AttunementService.attunement(player).dominant().ifPresent(school -> Schools.REGISTRY.getOptional(school)
+                .map(com.orbisarcana.api.School::echo).ifPresent(echo -> {
+                    int t = tier(player, school);
+                    if (t > 0 && amount > 0) echo.onSupport(player, amount, t);
+                }));
         int tier = tier(player, Schools.LIGHT);
         if (tier <= 0 || amount <= 0) return;
         double before = radiance(player);

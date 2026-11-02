@@ -37,6 +37,8 @@ public class OrbisArcana {
         ModAttachments.register(modEventBus);
         SpellRegistry.register(modEventBus);
         SpellBehaviors.register(modEventBus);
+        com.orbisarcana.school.Schools.register(modEventBus);
+        com.orbisarcana.api.OrbisArcanaAPI.Holder.set(new ApiImpl());
         ModEntities.register(modEventBus);
         OrbisGameTests.register(modEventBus);
         modContainer.registerConfig(ModConfig.Type.SYNCED, OrbisConfig.SERVER_SPEC);

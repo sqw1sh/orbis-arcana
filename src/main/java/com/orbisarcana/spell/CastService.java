@@ -26,7 +26,9 @@ import com.orbisarcana.progression.KnownSpells;
 import com.orbisarcana.school.AttunementService;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
+import com.orbisarcana.api.event.SpellCastEvent;
 import com.orbisarcana.registry.ModAttributes;
+import net.neoforged.neoforge.common.NeoForge;
 import com.orbisarcana.spell.behavior.CastContext;
 import com.orbisarcana.spell.behavior.ChannelBehavior;
 import com.orbisarcana.spell.behavior.SpellBehaviors;
@@ -131,11 +133,14 @@ public final class CastService {
         }
 
         SpellDefinition spell = def.get();
+        // Addons may veto a cast that passed every rule (§16)
+        if (NeoForge.EVENT_BUS.post(new SpellCastEvent.Pre(player, spellId)).isCanceled()) return;
         if (spell.cast().mode() == CastMode.TOGGLE) {
             // "cost" is mana per second; at least one second's worth is needed to turn it on
             Toggles.enable(player, new Toggles.Active(spellId, spell, nextCastId++, mastery, params,
                     powerMult(player, spell), cost / 20.0, now));
             GCD_UNTIL.put(player.getUUID(), now + CastRules.GCD_TICKS);
+            NeoForge.EVENT_BUS.post(new SpellCastEvent.Post(player, spellId));
             return;
         }
         double range = params.getOrDefault("range", 24.0 * rangeMult);
@@ -232,6 +237,7 @@ public final class CastService {
             CastContext ctx = context(player, cast, now);
             SpellBehaviors.get(cast.spell().behavior()).ifPresent(b -> b.release(ctx));
             EchoService.onCastReleased(ctx);
+            NeoForge.EVENT_BUS.post(new SpellCastEvent.Post(player, cast.spellId()));
             if (cast.spell().xpCategory() == com.orbisarcana.core.XpCategory.ATTACK) EchoService.onAttackCast(player);
             if (TalentEffects.crownOfFlameFree(player, cast.spell().school())) {
                 ManaService.setMana(player, ManaService.mana(player) + core.cost);

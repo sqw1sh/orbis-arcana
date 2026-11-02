@@ -146,3 +146,15 @@ idea {
         downloadJavadoc = true
     }
 }
+
+// The addon API (§16) as its own artifact: com.orbisarcana.api and the pure-Java rules in com.orbisarcana.core.
+// Addons that only listen to events, register schools or read services compile against it;
+// new spell behaviors still need the full jar (CastContext and SpellDefinition are not in the API yet).
+var apiJar = tasks.register('apiJar', Jar) {
+    archiveClassifier = 'api'
+    from(sourceSets.main.output) {
+        include 'com/orbisarcana/api/**'
+        include 'com/orbisarcana/core/**'
+    }
+}
+tasks.named('assemble') { dependsOn apiJar }

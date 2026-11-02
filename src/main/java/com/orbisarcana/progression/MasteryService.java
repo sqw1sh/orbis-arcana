@@ -133,7 +133,12 @@ public final class MasteryService {
         p.setXp(result.xp());
         player.syncData(ModAttachments.KNOWLEDGE);
         AttunementService.onMasteryXp(player, spell.get().school(), gained);
-        for (int level = before + 1; level <= result.level(); level++) announce(player, spellId, spell.get(), level);
+        for (int level = before + 1; level <= result.level(); level++) {
+            announce(player, spellId, spell.get(), level);
+            var bus = net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
+            bus.post(new com.orbisarcana.api.event.MasteryLevelUpEvent(player, spellId, level));
+            if (MasteryMath.isMilestone(level)) bus.post(new com.orbisarcana.api.event.MasteryLevelUpEvent.Milestone(player, spellId, level));
+        }
     }
 
     private static double xpFor(ServerPlayer player, Identifier spellId, double weight) {
