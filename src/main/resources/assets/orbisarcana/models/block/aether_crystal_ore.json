@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "minecraft:block/budding_amethyst"
+    "all": "orbisarcana:block/aether_crystal_ore"
   }
 }

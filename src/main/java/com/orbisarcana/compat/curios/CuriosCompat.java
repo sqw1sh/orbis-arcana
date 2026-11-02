@@ -33,5 +33,14 @@ public final class CuriosCompat {
         Accessories.setWorn(p, worn);
     }
 
+    /** Puts the stacks into the first ring and necklace slots and re-reads them (dev checks and tests). */
+    public static void equip(ServerPlayer p, net.minecraft.world.item.ItemStack ring, net.minecraft.world.item.ItemStack necklace) {
+        CuriosApi.getCuriosInventory(p).ifPresent(inv -> {
+            inv.setEquippedCurio("ring", 0, ring);
+            inv.setEquippedCurio("necklace", 0, necklace);
+        });
+        update(p);
+    }
+
     private CuriosCompat() {}
 }

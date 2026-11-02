@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "minecraft:block/amethyst_block"
+    "all": "orbisarcana:block/deepslate_aether_crystal_ore"
   }
 }

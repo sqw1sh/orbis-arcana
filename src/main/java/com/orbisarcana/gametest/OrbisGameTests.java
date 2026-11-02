@@ -1518,10 +1518,7 @@ public final class OrbisGameTests {
         double mana = ManaService.maxMana(p);
         double fire = AttunementService.powerMult(p, Schools.FIRE);
         if (net.neoforged.fml.ModList.get().isLoaded("curios")) {
-            var inv = top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(p).orElseThrow();
-            inv.setEquippedCurio("ring", 0, new ItemStack(ModItems.RING_OF_FLAME.get()));
-            inv.setEquippedCurio("necklace", 0, new ItemStack(ModItems.MANA_AMULET.get()));
-            com.orbisarcana.compat.curios.CuriosCompat.update(p);
+            com.orbisarcana.compat.curios.CuriosCompat.equip(p, new ItemStack(ModItems.RING_OF_FLAME.get()), new ItemStack(ModItems.MANA_AMULET.get()));
         } else {
             com.orbisarcana.item.Accessories.setWorn(p, List.of(ModItems.RING_OF_FLAME.get(), ModItems.MANA_AMULET.get()));
         }

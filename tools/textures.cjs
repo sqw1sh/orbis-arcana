@@ -1,0 +1,303 @@
+// Generates the 16x16 textures of Orbis Arcana. Run from the project root: node tools/textures.cjs
+// Items are drawn as ASCII grids with per-sprite palettes (tiers are palette swaps); blocks are procedural stone with
+// overlays. Output: src/main/resources/assets/orbisarcana/textures/{item,block}/*.png
+const fs = require("fs");
+const zlib = require("zlib");
+
+const OUT = "src/main/resources/assets/orbisarcana/textures/";
+
+// ---- PNG ----
+const CRC = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; }
+  return buf => { let c = 0xffffffff; for (const b of buf) c = t[(c ^ b) & 0xff] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
+})();
+function png(w, h, rgba) {
+  const chunk = (type, data) => {
+    const len = Buffer.alloc(4); len.writeUInt32BE(data.length);
+    const td = Buffer.concat([Buffer.from(type), data]);
+    const crc = Buffer.alloc(4); crc.writeUInt32BE(CRC(td));
+    return Buffer.concat([len, td, crc]);
+  };
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(w, 0); ihdr.writeUInt32BE(h, 4); ihdr[8] = 8; ihdr[9] = 6; ihdr[10] = 0; ihdr[11] = 0; ihdr[12] = 0;
+  const raw = Buffer.alloc((w * 4 + 1) * h);
+  for (let y = 0; y < h; y++) { raw[y * (w * 4 + 1)] = 0; rgba.copy(raw, y * (w * 4 + 1) + 1, y * w * 4, (y + 1) * w * 4); }
+  return Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), chunk("IHDR", ihdr), chunk("IDAT", zlib.deflateSync(raw)), chunk("IEND", Buffer.alloc(0))]);
+}
+
+// ---- image helpers ----
+const hex = s => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16), s.length > 7 ? parseInt(s.slice(7, 9), 16) : 255];
+class Img {
+  constructor() { this.px = Buffer.alloc(16 * 16 * 4); }
+  set(x, y, c) { if (x < 0 || y < 0 || x > 15 || y > 15 || !c) return; const [r, g, b, a] = typeof c === "string" ? hex(c) : c; const i = (y * 16 + x) * 4; this.px[i] = r; this.px[i + 1] = g; this.px[i + 2] = b; this.px[i + 3] = a; }
+  get(x, y) { const i = (y * 16 + x) * 4; return [this.px[i], this.px[i + 1], this.px[i + 2], this.px[i + 3]]; }
+  save(path) { fs.writeFileSync(OUT + path + ".png", png(16, 16, this.px)); }
+}
+/** An ASCII sprite: rows are padded to 16 with '.', which is transparent. */
+function sprite(rows, palette) {
+  if (rows.length > 16) throw new Error("too many rows");
+  const img = new Img();
+  rows.forEach((row, y) => {
+    if (row.length > 16) throw new Error("row too long: " + row);
+    [...row].forEach((ch, x) => { if (ch !== "." && ch !== " ") { if (!(ch in palette)) throw new Error("no colour for " + ch); img.set(x, y, palette[ch]); } });
+  });
+  return img;
+}
+const hash = (x, y, s) => { let h = (x * 374761393 + y * 668265263 + s * 974711) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
+const pick = (list, r) => list[Math.min(list.length - 1, Math.floor(r * list.length))];
+
+// ---- item sprites ----
+const WAND = [
+  "................",
+  "............gG..",
+  "...........gGGG.",
+  "...........GGGd.",
+  "..........mmGd..",
+  ".........WSm....",
+  "........WS......",
+  ".......WS.......",
+  "......WS........",
+  ".....WS.........",
+  "....HH..........",
+  "...HHh..........",
+  "..WSh...........",
+  ".WS.............",
+  ".S..............",
+];
+const STAFF = [
+  "...........gGG..",
+  "..........gGGGd.",
+  "..........GGGGd.",
+  "...........Gdd..",
+  "..........mmm...",
+  ".........WSm....",
+  "........WS......",
+  ".......WS.......",
+  "......WS........",
+  ".....HH.........",
+  "....HHh.........",
+  "...WS...........",
+  "..WS............",
+  ".WS.............",
+  "WS..............",
+  "S...............",
+];
+const TOME = [
+  "................",
+  "..CCCCCCCCCCC...",
+  "..CcccccccccCP..",
+  "..Cc..rrrr.cCP..",
+  "..Cc.r....rcCP..",
+  "..Cc.r.gG.rcCP..",
+  "..Cc.r.Gd.rcCP..",
+  "..Cc.r....rcCP..",
+  "..Cc..rrrr.cCP..",
+  "..Cc.......cCP..",
+  "..CcccccccccCP..",
+  "..CCCCCCCCCCCP..",
+  "...PPPPPPPPPPp..",
+  "....pppppppppp..",
+];
+const FOCUS_TIERS = {
+  apprentice: { W: "#8a6239", S: "#5c3f22", H: "#3d2a19", h: "#2a1c10", m: "#a8a8a8", G: "#8fd8ff", g: "#e6f8ff", d: "#4a8fb8",
+    C: "#6b4428", c: "#8a5a35", P: "#efe6cf", p: "#c9bc9a", r: "#bfe8ff" },
+  amethyst: { W: "#d9b44a", S: "#a07d24", H: "#4b2d6b", h: "#2f1a45", m: "#f2d478", G: "#b26ae6", g: "#f0d9ff", d: "#6a3896",
+    C: "#4b2d6b", c: "#6c44a0", P: "#f3ead6", p: "#cdbf9f", r: "#e3b4ff" },
+  netherite: { W: "#4a4448", S: "#2b2629", H: "#5e1f1f", h: "#3a1010", m: "#7a6f75", G: "#ff6a3d", g: "#ffe0c9", d: "#a83218",
+    C: "#2e2a2d", c: "#4a4448", P: "#e8dfc8", p: "#b9ab88", r: "#ff9b73" },
+};
+
+const SCROLL = [
+  "................",
+  "................",
+  "...RRRRRRRRRR...",
+  "..RrPPPPPPPPrR..",
+  "...pPPPPPPPPp...",
+  "...pPllllllPp...",
+  "...pPPPPPPPPp...",
+  "...pPlllPllPp...",
+  "...pPPPPPPPPp...",
+  "...pPllllPPPp...",
+  "...pPPPPPPPPp...",
+  "...pPPPBBPPPp...",
+  "..RrPPPBbPPPrR..",
+  "...RRRRBBRRRR...",
+  ".......B.B......",
+];
+const SHARD = [
+  "................",
+  ".........A......",
+  "........AaA.....",
+  "........AaA.....",
+  ".......AaaD..A..",
+  ".......AaaD.AaD.",
+  "...A...AaaD.AaD.",
+  "..AaD..AaaDAaaD.",
+  "..AaaD.AaaDAaD..",
+  "..AaaDAaaaDaaD..",
+  "...AaaAaaaDaD...",
+  "....AaaaaaaD....",
+  ".....DDDDDD.....",
+];
+const BOTTLE = [
+  "......kk........",
+  ".....kKKk.......",
+  "......gg........",
+  "......gg........",
+  ".....g..g.......",
+  "....g....g......",
+  "...gLLLLLLg.....",
+  "...gLlLLLLg.....",
+  "...gLLLLLLg.....",
+  "...gLLLLLDg.....",
+  "....gLLLDg......",
+  ".....gggg.......",
+].map(r => ("  " + r).slice(0, 16));
+const SEAL = [
+  "................",
+  ".....WWWWW......",
+  "...WWwwwwwWW....",
+  "..WwwwwwwwwdW...",
+  "..WwwwSSSwwdW...",
+  ".WwwwSwwwSwwdW..",
+  ".WwwSwwSwwSwdW..",
+  ".WwwSwSSSwSwdW..",
+  ".WwwSwwSwwSwdW..",
+  ".WwwwSwwwSwddW..",
+  "..WwwwSSSwwdW...",
+  "..WwwwwwwwddW...",
+  "...WWdddddWW....",
+  ".....WWWWW......",
+];
+const BOOK = [
+  "................",
+  "..BBBBBBBBBBB...",
+  "..BbbbbbbbbbBP..",
+  "..Bb.......bBP..",
+  "..Bb.GGGGG.bBP..",
+  "..Bb.G...G.bBP..",
+  "..Bb.G.G.G.bBP..",
+  "..Bb.G...G.bBP..",
+  "..Bb.GGGGG.bBP..",
+  "..Bb.......bBP..",
+  "..BbbbbbbbbbBP..",
+  "..BBBBBBBBBBBP..",
+  "...PPPPPPPPPPp..",
+  "....pppppppppp..",
+];
+const RING = [
+  "................",
+  "................",
+  "......gGd.......",
+  ".....GGGGd......",
+  ".....dGGdd......",
+  "....YYddYY......",
+  "...Yy....YY.....",
+  "..Yy......YY....",
+  "..Y........Y....",
+  "..Y........O....",
+  "..Yy......OO....",
+  "...YY....OO.....",
+  "....YYOOOO......",
+  "......OO........",
+];
+const AMULET = [
+  "....s......s....",
+  "....s......s....",
+  ".....s....s.....",
+  ".....s....s.....",
+  "......s..s......",
+  "......YYYY......",
+  ".....YyGGYY.....",
+  "....YyGgGGdY....",
+  "....YGGGGGdY....",
+  "....YGGGGddY....",
+  ".....YGddOY.....",
+  "......YOOY......",
+  ".......OO.......",
+];
+const GEMS = {
+  fire: ["#ff7a2e", "#ffd2a6", "#b23a10"], earth: ["#9a7a4a", "#e0c79a", "#5a4424"], water: ["#3a8fe8", "#c6e4ff", "#1c4f94"],
+  air: ["#cfe8e6", "#ffffff", "#7fa8a5"], ice: ["#8fe3ff", "#ffffff", "#3f9bc0"], lightning: ["#ffe44a", "#fffbd0", "#b89a10"],
+  nature: ["#58c24a", "#d4ffc8", "#2a7a22"], echo: ["#1fa3a0", "#a8fff8", "#0a4f5a"], scribe: ["#d9d9d9", "#ffffff", "#7a7a7a"],
+  mana: ["#3c64ff", "#c8d4ff", "#1a2e9a"], flow: ["#4ad6ff", "#e0f8ff", "#1a7aa8"], focus: ["#b45cff", "#f0d8ff", "#5e2a9a"],
+};
+const GOLD = { Y: "#e8c047", y: "#fff1a8", O: "#a87d1a", s: "#8a7a6a" };
+
+function items() {
+  for (const [tier, pal] of Object.entries(FOCUS_TIERS)) {
+    sprite(WAND, pal).save(`item/${tier}_wand`);
+    sprite(STAFF, pal).save(`item/${tier}_staff`);
+    sprite(TOME, pal).save(`item/${tier}_tome`);
+  }
+  sprite(SCROLL, { R: "#c9a46a", r: "#a07d45", P: "#f4e9cc", p: "#d8c7a0", l: "#9a8a6a", B: "#8a2be2", b: "#c08aff" }).save("item/spell_scroll");
+  sprite(SHARD, { A: "#5fe0e8", a: "#c8fbff", D: "#2a8a9a" }).save("item/aether_shard");
+  sprite(BOTTLE, { k: "#8a5a35", K: "#b07a4a", g: "#d6eef5", L: "#5a2a9a", l: "#b98aff", D: "#3a1a66" }).save("item/aether_ink");
+  sprite(BOTTLE, { k: "#8a5a35", K: "#b07a4a", g: "#d6eef5", L: "#2f5cff", l: "#a8c4ff", D: "#1a2e9a" }).save("item/mana_potion");
+  const seals = { light: ["#f2d36b", "#fff6c8", "#b8902a", "#ffffff"], dark: ["#4a2a6b", "#7a4aa8", "#26123a", "#d0a0ff"],
+    astral: ["#2a3f8f", "#5a7ae0", "#141f4f", "#bfe0ff"] };
+  for (const [s, [W, w, d, S]] of Object.entries(seals)) sprite(SEAL, { W: d, w: W, d, S }).save(`item/seal_${s}`);
+  sprite(BOOK, { B: "#5a2a2a", b: "#7a3a3a", P: "#f0e6cc", p: "#c8b994", G: "#e8c047" }).save("item/first_seals");
+  const rings = { fire: "ring_of_flame", earth: "ring_of_stone", water: "ring_of_tide", air: "ring_of_wind", ice: "ring_of_frost",
+    lightning: "ring_of_storm", nature: "ring_of_leaf", echo: "ring_of_echo", scribe: "scribe_ring" };
+  for (const [g, id] of Object.entries(rings)) { const [G, gl, d] = GEMS[g]; sprite(RING, Object.assign({}, GOLD, { G, g: gl, d })).save(`item/${id}`); }
+  for (const g of ["mana", "flow", "focus"]) { const [G, gl, d] = GEMS[g]; sprite(AMULET, Object.assign({}, GOLD, { G, g: gl, d })).save(`item/${g}_amulet`); }
+}
+
+// ---- blocks ----
+const STONE = ["#6f6f6f", "#7a7a7a", "#7f7f7f", "#868686", "#747474"];
+const DEEPSLATE = ["#3c3c44", "#45454d", "#4d4d55", "#36363d", "#505058"];
+function noise(palette, salt, streaks = false) {
+  const img = new Img();
+  for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) {
+    let r = hash(x, y, salt);
+    if (streaks) r = (r + hash(0, y, salt + 1)) / 2;
+    img.set(x, y, pick(palette, r));
+  }
+  return img;
+}
+// Crystal clusters: [x, y, shade] with 0 highlight, 1 body, 2 shadow
+const CRYSTALS = [[3,3,0],[3,4,1],[4,4,1],[4,5,2],[2,5,1],[3,5,2],[10,2,0],[11,2,1],[11,3,1],[10,3,1],[12,4,2],[11,4,2],[12,9,0],[12,10,1],[13,10,1],[11,11,1],[12,11,2],[13,11,2],[5,11,0],[5,12,1],[6,12,1],[4,12,1],[5,13,2],[6,13,2],[8,7,0],[8,8,2]];
+function ore(base, salt, streaks) {
+  const img = noise(base, salt, streaks);
+  CRYSTALS.forEach(([x, y, k]) => img.set(x, y, ["#c8fbff", "#5fe0e8", "#2a8a9a"][k]));
+  return img;
+}
+const GLYPHS = [
+  // star, eye, moon, spiral
+  ["....X.....", "....X.....", "..X.X.X...", "...XXX....", "XXXX.XXXX.", "...XXX....", "..X.X.X...", "....X.....", "....X.....", ".........."],
+  ["..........", "...XXXX...", "..X....X..", ".X..XX..X.", "X..X..X..X", "X..X..X..X", ".X..XX..X.", "..X....X..", "...XXXX...", ".........."],
+  ["...XXXX...", ".XX.......", "XX........", "X.........", "X.........", "X.........", "XX........", ".XX.......", "...XXXX...", ".........."],
+  ["XXXXXXXX..", "X.........", "X.XXXXXX..", "X.X....X..", "X.X.XX.X..", "X.X.X..X..", "X.X.XXXX..", "X.X.......", "X.XXXXXXXX", ".........."],
+];
+function blocks() {
+  ore(STONE, 1).save("block/aether_crystal_ore");
+  ore(DEEPSLATE, 2, true).save("block/deepslate_aether_crystal_ore");
+  GLYPHS.forEach((glyph, i) => {
+    const img = noise(DEEPSLATE, 10 + i);
+    for (let k = 0; k < 16; k++) { img.set(k, 0, "#26262c"); img.set(k, 15, "#26262c"); img.set(0, k, "#26262c"); img.set(15, k, "#26262c"); }
+    glyph.forEach((row, y) => [...row].forEach((ch, x) => { if (ch === "X") img.set(x + 3, y + 3, i === 0 ? "#bfe8ff" : "#d29bff"); }));
+    img.save(`block/glyph_ring_${i}`);
+  });
+  const seal = noise(["#2a1638", "#331a45", "#3b1f52", "#2e1940"], 20);
+  for (let k = 0; k < 16; k++) { seal.set(k, 0, "#1a0d24"); seal.set(k, 15, "#1a0d24"); seal.set(0, k, "#1a0d24"); seal.set(15, k, "#1a0d24"); }
+  for (let k = 3; k <= 12; k++) { seal.set(k, k, "#d29bff"); seal.set(15 - k, k, "#d29bff"); }
+  for (const [x, y] of [[7, 2], [8, 2], [2, 7], [2, 8], [13, 7], [13, 8], [7, 13], [8, 13]]) seal.set(x, y, "#f0d8ff");
+  seal.save("block/arcane_seal");
+  // resonance altar
+  const top = noise(DEEPSLATE, 30);
+  for (let a = 0; a < 64; a++) { const t = a / 64 * Math.PI * 2; top.set(Math.round(7.5 + Math.cos(t) * 5.5), Math.round(7.5 + Math.sin(t) * 5.5), "#b26ae6"); }
+  for (const [x, y] of [[7, 4], [8, 4], [4, 7], [4, 8], [11, 7], [11, 8], [7, 11], [8, 11], [7, 7], [8, 8], [7, 8], [8, 7]]) top.set(x, y, "#f0d9ff");
+  top.save("block/resonance_altar_top");
+  const side = noise(DEEPSLATE, 31);
+  for (let x = 0; x < 16; x++) { side.set(x, 0, "#26262c"); side.set(x, 4, "#6a3896"); side.set(x, 5, x % 3 === 1 ? "#f0d9ff" : "#b26ae6"); side.set(x, 6, "#6a3896"); }
+  side.save("block/resonance_altar_side");
+  noise(["#26262c", "#2e2e35", "#33333a"], 32).save("block/resonance_altar_bottom");
+}
+
+fs.mkdirSync(OUT + "item", { recursive: true });
+fs.mkdirSync(OUT + "block", { recursive: true });
+items();
+blocks();
+console.log("textures written");

@@ -516,7 +516,7 @@
   "item.orbisarcana.focus_amulet": "Amulet of Focus",
   "item.orbisarcana.ring_of_echo": "Ring of Echo",
   "item.orbisarcana.scribe_ring": "Scribe's Ring",
-  "accessory.orbisarcana.school_ring": "+10% %s spell power",
+  "accessory.orbisarcana.school_ring": "+10%% %s spell power",
   "accessory.orbisarcana.mana_amulet": "+30 max mana",
   "accessory.orbisarcana.flow_amulet": "+25% mana regeneration",
   "accessory.orbisarcana.focus_amulet": "-15% chance to be interrupted",

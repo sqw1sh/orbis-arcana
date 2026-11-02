@@ -516,7 +516,7 @@
   "item.orbisarcana.focus_amulet": "Амулет сосредоточения",
   "item.orbisarcana.ring_of_echo": "Кольцо отзвука",
   "item.orbisarcana.scribe_ring": "Кольцо скорописи",
-  "accessory.orbisarcana.school_ring": "+10% к силе школы «%s»",
+  "accessory.orbisarcana.school_ring": "+10%% к силе школы «%s»",
   "accessory.orbisarcana.mana_amulet": "+30 к максимуму маны",
   "accessory.orbisarcana.flow_amulet": "+25% к восстановлению маны",
   "accessory.orbisarcana.focus_amulet": "−15% к шансу прерывания каста",

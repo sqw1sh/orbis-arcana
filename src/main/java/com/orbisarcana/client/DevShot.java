@@ -74,6 +74,8 @@ public final class DevShot {
             }),
             new Scene("schools", () -> Minecraft.getInstance().gui.setScreen(new SchoolsScreen())),
             new Scene("curios", DevShot::curiosCheck),
+            new Scene("items", DevShot::showItems),
+            new Scene("blocks", DevShot::showBlocks),
             structure("ruined_observatory", 14),
             structure("flooded_scriptorium", 9),
             book(1),
@@ -127,6 +129,58 @@ public final class DevShot {
         });
     }
 
+    /** The (survival layout) inventory full of the mod's items (texture check). */
+    private static void showItems() {
+        Minecraft mc = Minecraft.getInstance();
+        var server = mc.getSingleplayerServer();
+        if (server == null) return;
+        server.execute(() -> {
+            ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+            if (sp == null) return;
+            // survival: the creative player would get the creative screen; the next run resets it
+            sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+            sp.getInventory().clearContent();
+            var items = new java.util.ArrayList<net.minecraft.world.item.Item>();
+            com.orbisarcana.registry.ModItems.FOCI.forEach(i -> items.add(i.get()));
+            com.orbisarcana.registry.ModItems.ACCESSORIES.forEach(i -> items.add(i.get()));
+            for (var i : java.util.List.of(com.orbisarcana.registry.ModItems.AETHER_SHARD, com.orbisarcana.registry.ModItems.AETHER_INK,
+                    com.orbisarcana.registry.ModItems.MANA_POTION, com.orbisarcana.registry.ModItems.FIRST_SEALS, com.orbisarcana.registry.ModItems.SEAL_LIGHT,
+                    com.orbisarcana.registry.ModItems.SEAL_DARK, com.orbisarcana.registry.ModItems.SEAL_ASTRAL)) items.add(i.get());
+            items.add(com.orbisarcana.registry.ModBlocks.AETHER_ORE_ITEM.get());
+            items.add(com.orbisarcana.registry.ModBlocks.RESONANCE_ALTAR_ITEM.get());
+            for (int k = 0; k < items.size() && k < 36; k++) sp.getInventory().setItem(k, new net.minecraft.world.item.ItemStack(items.get(k)));
+            sp.getInventory().setItem(35, com.orbisarcana.item.SpellScrollItem.of(OrbisArcana.id("fireball")));
+            sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.AMETHYST_STAFF.get()));
+            mc.execute(() -> mc.gui.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player)));
+        });
+    }
+
+    /** A row of the mod's blocks ahead, at noon (texture check). */
+    private static void showBlocks() {
+        Minecraft mc = Minecraft.getInstance();
+        mc.gui.setScreen(null);
+        mc.player.setYRot(0);
+        mc.player.setYHeadRot(0);
+        mc.player.setXRot(20);
+        var server = mc.getSingleplayerServer();
+        if (server == null) return;
+        server.execute(() -> {
+            ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+            if (sp == null) return;
+            server.getCommands().performPrefixedCommand(sp.createCommandSourceStack().withSuppressedOutput(), "time set noon");
+            var row = java.util.List.of(com.orbisarcana.registry.ModBlocks.AETHER_ORE.get().defaultBlockState(),
+                    com.orbisarcana.registry.ModBlocks.DEEPSLATE_AETHER_ORE.get().defaultBlockState(),
+                    com.orbisarcana.registry.ModBlocks.RESONANCE_ALTAR.get().defaultBlockState(),
+                    com.orbisarcana.registry.ModBlocks.ARCANE_SEAL.get().defaultBlockState(),
+                    com.orbisarcana.registry.ModBlocks.GLYPH_RING.get().defaultBlockState().setValue(com.orbisarcana.block.GlyphRingBlock.GLYPH, 0),
+                    com.orbisarcana.registry.ModBlocks.GLYPH_RING.get().defaultBlockState().setValue(com.orbisarcana.block.GlyphRingBlock.GLYPH, 1),
+                    com.orbisarcana.registry.ModBlocks.GLYPH_RING.get().defaultBlockState().setValue(com.orbisarcana.block.GlyphRingBlock.GLYPH, 2),
+                    com.orbisarcana.registry.ModBlocks.GLYPH_RING.get().defaultBlockState().setValue(com.orbisarcana.block.GlyphRingBlock.GLYPH, 3));
+            var base = sp.blockPosition().offset(-4, 0, 4);
+            for (int k = 0; k < row.size(); k++) sp.level().setBlockAndUpdate(base.offset(k, 0, 0), row.get(k));
+        });
+    }
+
     /** With Curios loaded (-PwithCurios): equips a fire ring and a mana amulet server-side and logs the effect. */
     private static void curiosCheck() {
         Minecraft mc = Minecraft.getInstance();
@@ -140,11 +194,8 @@ public final class DevShot {
             if (sp == null) return;
             double mana = com.orbisarcana.mana.ManaService.maxMana(sp);
             double fire = com.orbisarcana.school.AttunementService.powerMult(sp, com.orbisarcana.school.Schools.FIRE);
-            top.theillusivec4.curios.api.CuriosApi.getCuriosInventory(sp).ifPresent(inv -> {
-                inv.setEquippedCurio("ring", 0, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.RING_OF_FLAME.get()));
-                inv.setEquippedCurio("necklace", 0, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.MANA_AMULET.get()));
-            });
-            com.orbisarcana.compat.curios.CuriosCompat.update(sp);
+            com.orbisarcana.compat.curios.CuriosCompat.equip(sp, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.RING_OF_FLAME.get()),
+                    new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.MANA_AMULET.get()));
             OrbisArcana.LOGGER.info("[devshot] curios: max mana {} -> {}, fire power {} -> {}", mana, com.orbisarcana.mana.ManaService.maxMana(sp),
                     fire, com.orbisarcana.school.AttunementService.powerMult(sp, com.orbisarcana.school.Schools.FIRE));
             mc.execute(() -> mc.gui.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player)));
@@ -263,7 +314,10 @@ public final class DevShot {
             return;
         }
         if (++ticks < WARMUP_TICKS) return;
-        int step = ticks - WARMUP_TICKS;
+        // The first scene slot only resets the player, so respawns and game mode changes settle before any scene
+        if (ticks == WARMUP_TICKS) resetPlayer();
+        int step = ticks - WARMUP_TICKS - SCENE_TICKS;
+        if (step < 0) return;
         if (step % SCENE_TICKS == 0) {
             if (scene >= SCENES.size()) {
                 OrbisArcana.LOGGER.info("[devshot] done, quitting");
@@ -278,6 +332,24 @@ public final class DevShot {
             Screenshot.grab(mc.gameDirectory, name, mc.gameRenderer.mainRenderTarget(), 2, msg -> OrbisArcana.LOGGER.info("[devshot] saved {}", name));
             scene++;
         }
+    }
+
+    /** Scenes may leave the saved dev world changed (survival, damage): start every run from a creative, healthy player. */
+    private static void resetPlayer() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player.isDeadOrDying()) mc.player.respawn();
+        mc.gui.setScreen(null);
+        var server = mc.getSingleplayerServer();
+        if (server == null) return;
+        server.execute(() -> {
+            ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+            if (sp == null) return;
+            sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+            sp.setHealth(sp.getMaxHealth());
+            sp.clearFire();
+            sp.removeAllEffects();
+            server.getCommands().performPrefixedCommand(sp.createCommandSourceStack().withSuppressedOutput(), "kill @e[type=#minecraft:undead,distance=..64]");
+        });
     }
 
     private DevShot() {}

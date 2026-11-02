@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "minecraft:block/lightning_rod"
+    "model": "orbisarcana:item/netherite_staff"
   }
 }

@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "minecraft:item/ink_sac"
+    "model": "orbisarcana:item/aether_ink"
   }
 }

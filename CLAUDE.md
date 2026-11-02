@@ -22,6 +22,7 @@
 - `./gradlew runClient` / `runServer` — dev-запуски (папка `run/`, eula уже принята).
 - `./gradlew runClientShot` — визуальная проверка: грузит `run/saves/devtest`, ставит стенд кругов, делает скриншоты `run/screenshots/devshot_<mode>.png` и выходит (`client/DevShot`). Iris/Sodium/шейдерпак лежат в `run/mods`, `run/shaderpacks` (локально). Скриншоты смотреть через Read.
 - `./gradlew runClient -PwithCurios` — dev-запуск с Curios (по умолчанию без него: Curios ломает мок-игроков GameTest).
+- `node tools/textures.cjs` — пересобрать PNG-текстуры предметов и блоков.
 - `node tools/structures.cjs` — пересобрать NBT-шаблоны структур (обсерватория, скрипторий).
 - `./gradlew runGameTestServer` — все GameTest-ы (`gametest/OrbisGameTests`), код выхода ≠ 0 при падении. Итог в логе: `All N required tests passed`.
 
@@ -50,6 +51,8 @@
 - Ворлдген 26.3: конфигурации фич в `data/<ns>/worldgen/feature/` (не configured_feature), без обёртки `config`, `state` — строка-id. Биом-модификаторы: `data/<ns>/neoforge/biome_modifier/`.
 - Лут-таблицы 26.3: функции — `"modifier": [{"type": ...}]`, условие пула/записи — `"condition": {"type": ...}` (старые `functions`/`conditions` молча игнорируются!). GLM: файлы в `data/<ns>/loot_modifiers/` (без индекса), поле `condition`. Торговля жителей data-driven: `data/<ns>/villager_trade/*.json` + теги `data/minecraft/tags/villager_trade/<профессия>/level_N.json`.
 - NBT-шаблоны 26.3 (DataVersion 5023): в палитре ключи `id` и `properties` (не `Name`/`Properties` — иначе все блоки молча становятся воздухом). `ServerLevel#getStructureTemplateManager()`.
+- Curios-классы трогать ТОЛЬКО из `compat/curios` (даже в dev-коде): любой класс-подписчик с такой ссылкой роняет клиент без Curios. В lang-строках с аргументами `%` писать как `%%`.
+- Время суток: команда `time set` (у ServerLevel нет setDayTime).
 - В Bash нет python — для JSON-скриптов использовать node.
 - Теги типов сущностей: `entity.getType().builtInRegistryHolder().is(tag)`. `PushReaction`: PUSH_PULL/PUSH/POPPED/IMMOVEABLE/IGNORE_ENTITY.
 - I-фреймы мобов: `LivingEntity.damageCooldownTime` (публичное поле), а не `Entity#setInvulnerableTime`.

@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "minecraft:item/bone"
+    "model": "orbisarcana:item/apprentice_staff"
   }
 }

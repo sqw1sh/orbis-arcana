@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "minecraft:item/echo_shard"
+    "model": "orbisarcana:item/seal_dark"
   }
 }
