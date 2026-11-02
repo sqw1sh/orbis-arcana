@@ -158,6 +158,7 @@ public final class OrbisGameTests {
         test("aether_ore_drops_shards", 20, OrbisGameTests::aetherOre);
         test("dungeon_chests_hold_scrolls", 20, OrbisGameTests::dungeonLoot);
         test("ancient_cities_hold_dark_scrolls", 20, OrbisGameTests::ancientCityLoot);
+        test("onboarding_gives_book_and_scroll_once", 20, OrbisGameTests::onboarding);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1444,6 +1445,22 @@ public final class OrbisGameTests {
             var def = SpellScrollItem.spell(s).flatMap(id -> SpellRegistry.get(h.getLevel().registryAccess(), id));
             h.assertTrue(def.isPresent() && def.get().school().equals(Schools.DARK), "of the Dark school");
         }
+        h.succeed();
+    }
+
+    private static void onboarding(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        // Joining already ran the onboarding for this fresh player
+        h.assertTrue(p.getData(ModAttachments.ONBOARDED), "the starter kit is given on the first login");
+        h.assertValueEqual(p.getInventory().countItem(ModItems.FIRST_SEALS.get()), 1, "with the book");
+        var scroll = p.getInventory().getNonEquipmentItems().stream().filter(s -> s.is(ModItems.SPELL_SCROLL.get())).findFirst();
+        h.assertTrue(scroll.isPresent(), "and a scroll");
+        var def = SpellScrollItem.spell(scroll.get()).flatMap(id -> SpellRegistry.get(h.getLevel().registryAccess(), id));
+        h.assertTrue(def.isPresent() && def.get().rarity() == com.orbisarcana.core.Rarity.COMMON && !Schools.isHigher(def.get().school()),
+                "a common elemental one");
+        h.assertFalse(com.orbisarcana.progression.Onboarding.welcome(p), "only once");
+        h.assertTrue(new ItemStack(ModItems.FIRST_SEALS.get()).has(net.minecraft.core.component.DataComponents.WRITTEN_BOOK_CONTENT), "the book has pages");
+        cleanup(h, p);
         h.succeed();
     }
 

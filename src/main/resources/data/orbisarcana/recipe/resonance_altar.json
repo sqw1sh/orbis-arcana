@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "#c:gems/amethyst",
+    "S": "#c:gems/aether",
+    "L": "#c:storage_blocks/lapis",
+    "O": "#c:obsidians"
+  },
+  "pattern": [
+    "ASA",
+    "SLS",
+    "OOO"
+  ],
+  "result": {
+    "id": "orbisarcana:resonance_altar"
+  }
+}

@@ -490,5 +490,14 @@
   "block.orbisarcana.deepslate_aether_crystal_ore": "Deepslate Aether Crystal Ore",
   "item.orbisarcana.aether_shard": "Aether Shard",
   "message.orbisarcana.dismantled": "%s taken apart: +%s Aether Ink",
-  "message.orbisarcana.dismantle.unknown": "Only scrolls of spells you already know can be taken apart"
+  "message.orbisarcana.dismantle.unknown": "Only scrolls of spells you already know can be taken apart",
+  "item.orbisarcana.first_seals": "First Seals",
+  "book.orbisarcana.first_seals.page1": "§lFirst Seals§r\n\nThe magic of this world is written in scrolls. Read a scroll and the spell is yours for good.\n\nThis book is the short road from your first scroll to your own school.",
+  "book.orbisarcana.first_seals.page2": "§lScrolls§r\n\nLook in dungeon, temple and mineshaft chests, and ask librarians and witches.\n\nHold right-click to read.\nA duplicate: sneak + right-click for mastery XP, or right-click the altar for Aether Ink.",
+  "book.orbisarcana.first_seals.page3": "§lCasting§r\n\n%1$s — the grimoire.\n%2$s (hold) — the radial menu: assign your spells.\n%3$s — cast.\n\nCasts are instant, charged, channelled or toggled.",
+  "book.orbisarcana.first_seals.page4": "§lMana§r\n\nEvery spell costs mana; it comes back on its own, faster out of combat.\n\nA Mana Potion is a quick top-up. Foci (wand, staff, tome) strengthen your magic.",
+  "book.orbisarcana.first_seals.page5": "§lMastery§r\n\nUseful casts — damage, healing, control — give that spell XP.\n\nAt levels 5, 10 and 15 the spell changes: see its milestones in the grimoire.",
+  "book.orbisarcana.first_seals.page6": "§lSchools§r\n\nThe Resonance Altar binds you to one of 10 schools. Its magic grows your resonance, which brings talents and the Echo, the school's own power.\n\nSwitching is a ritual paid in ink.",
+  "book.orbisarcana.first_seals.page7": "§lHigher Schools§r\n\nLight, Dark and Astral hide in strongholds and mansions, ancient cities and end cities.\n\nTheir first spell needs a Seal of Comprehension.",
+  "book.orbisarcana.first_seals.page8": "§lAether§r\n\nDeep underground glows Aether Crystal ore. Its shards make ink, foci, potions and the altar.\n\nGood luck, mage."
 }

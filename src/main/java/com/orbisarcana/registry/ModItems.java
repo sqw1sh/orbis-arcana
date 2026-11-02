@@ -47,6 +47,11 @@ public final class ModItems {
     public static final DeferredItem<FocusItem> AMETHYST_TOME = focus("amethyst_tome", FocusRules.Type.TOME, 2, Rarity.UNCOMMON);
     public static final DeferredItem<FocusItem> NETHERITE_TOME = focus("netherite_tome", FocusRules.Type.TOME, 3, Rarity.RARE);
 
+    /** "First Seals" (§4): the tutorial book, a written book whose pages are translated on the client. */
+    public static final DeferredItem<net.minecraft.world.item.WrittenBookItem> FIRST_SEALS = ModRegistries.ITEMS.registerItem("first_seals",
+            net.minecraft.world.item.WrittenBookItem::new, p -> p.stacksTo(1)
+                    .component(net.minecraft.core.component.DataComponents.WRITTEN_BOOK_CONTENT, com.orbisarcana.progression.Onboarding.book()));
+
     /** Mana Potion (§11.4): +40 mana, 10 s cooldown so it tops up rather than replaces regeneration. */
     public static final DeferredItem<ManaPotionItem> MANA_POTION = ModRegistries.ITEMS.registerItem("mana_potion",
             p -> new ManaPotionItem(p, 40), p -> p.stacksTo(16).rarity(Rarity.UNCOMMON)
@@ -63,6 +68,7 @@ public final class ModItems {
                     .displayItems((params, out) -> {
                         SpellRegistry.ids(params.holders()).stream().sorted()
                                 .forEach(id -> out.accept(SpellScrollItem.of(id)));
+                        out.accept(FIRST_SEALS.get());
                         out.accept(ModBlocks.RESONANCE_ALTAR_ITEM.get());
                         out.accept(ModBlocks.AETHER_ORE_ITEM.get());
                         out.accept(ModBlocks.DEEPSLATE_AETHER_ORE_ITEM.get());

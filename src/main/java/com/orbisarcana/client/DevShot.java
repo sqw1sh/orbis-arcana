@@ -73,6 +73,14 @@ public final class DevShot {
                 });
             }),
             new Scene("schools", () -> Minecraft.getInstance().gui.setScreen(new SchoolsScreen())),
+            book(1),
+            book(2),
+            book(3),
+            book(4),
+            book(5),
+            book(6),
+            book(7),
+            book(8),
             new Scene("seal_and_echo", () -> {
                 Minecraft mc = Minecraft.getInstance();
                 mc.gui.setScreen(null);
@@ -113,6 +121,16 @@ public final class DevShot {
             mc.player.setYRot(0);
             mc.player.setXRot(30);
             ClientCircles.spawnDemo(9);
+        });
+    }
+
+    /** Page {@code page} of the "First Seals" book. */
+    private static Scene book(int page) {
+        return new Scene("book" + page, () -> {
+            var screen = new net.minecraft.client.gui.screens.inventory.BookViewScreen(net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess
+                    .fromItem(new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.FIRST_SEALS.get())));
+            Minecraft.getInstance().gui.setScreen(screen);
+            screen.setPage(page - 1);
         });
     }
 

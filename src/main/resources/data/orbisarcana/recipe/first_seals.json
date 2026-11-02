@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:book",
+    "#c:gems/lapis"
+  ],
+  "result": {
+    "id": "orbisarcana:first_seals"
+  }
+}

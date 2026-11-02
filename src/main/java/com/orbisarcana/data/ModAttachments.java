@@ -34,6 +34,10 @@ public final class ModAttachments {
     public static final Supplier<AttachmentType<Loadout>> LOADOUT = ATTACHMENTS.register("loadout",
             () -> ownerSynced(Loadout::new, Loadout.CODEC));
 
+    /** Whether the player already got the starter kit (§4). Server-only. */
+    public static final Supplier<AttachmentType<Boolean>> ONBOARDED = ATTACHMENTS.register("onboarded",
+            () -> AttachmentType.builder(() -> false).serialize(com.mojang.serialization.Codec.BOOL.fieldOf("done")).copyOnDeath().build());
+
     /** Full-state sync; switch to deltas if these grow large (§15.3). */
     private static <T> AttachmentType<T> ownerSynced(Supplier<T> factory, MapCodec<T> codec) {
         return AttachmentType.builder(factory)
