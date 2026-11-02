@@ -1,7 +1,5 @@
 package com.orbisarcana.api.event;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.Event;
@@ -10,7 +8,6 @@ import net.neoforged.bus.api.Event;
  * A spell reached a new mastery level through XP (§7). {@link Milestone} follows for levels 5, 10 and 15. Posted on
  * {@code NeoForge.EVENT_BUS}, server side.
  */
-@ApiStatus.Experimental
 public class MasteryLevelUpEvent extends Event {
     private final ServerPlayer player;
     private final Identifier spell;

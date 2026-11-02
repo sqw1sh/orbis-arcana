@@ -2,14 +2,11 @@ package com.orbisarcana.api.event;
 
 import java.util.Optional;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.Event;
 
 /** The player's dominant school changed: bound, switched or unbound (§10). Posted on {@code NeoForge.EVENT_BUS}. */
-@ApiStatus.Experimental
 public class AttunementChangeEvent extends Event {
     private final ServerPlayer player;
     private final Optional<Identifier> oldSchool;

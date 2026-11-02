@@ -15,7 +15,6 @@ import net.minecraft.world.entity.LivingEntity;
  * {@code com.orbisarcana.api.event} and are posted on {@code NeoForge.EVENT_BUS}. Spell behaviors register in the
  * {@code orbisarcana:spell_behavior} registry, schools in {@link #SCHOOL_REGISTRY}.
  */
-@ApiStatus.Experimental
 public interface OrbisArcanaAPI {
     ResourceKey<Registry<School>> SCHOOL_REGISTRY = ResourceKey.createRegistryKey(Identifier.fromNamespaceAndPath("orbisarcana", "school"));
 

@@ -1,14 +1,11 @@
 package com.orbisarcana.api.event;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.ICancellableEvent;
 
 /** A player casts a spell (§16). Posted on {@code NeoForge.EVENT_BUS}, server side. */
-@ApiStatus.Experimental
 public abstract class SpellCastEvent extends Event {
     private final ServerPlayer player;
     private final Identifier spell;
