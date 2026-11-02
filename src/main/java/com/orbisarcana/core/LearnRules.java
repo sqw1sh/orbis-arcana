@@ -60,5 +60,17 @@ public final class LearnRules {
         return DISSOLVE_SHARE * MasteryMath.xpRequired(level, rarity);
     }
 
+    /** Aether Ink from taking a duplicate scroll apart on the altar (§6.3): rarer scrolls give more. */
+    public static int dismantleInk(Rarity rarity) {
+        return switch (rarity) {
+            case COMMON, UNCOMMON -> 1;
+            case RARE -> 2;
+            case EPIC, LEGENDARY -> 3;
+            case MYTHIC -> 4;
+            case ANCIENT -> 5;
+            case DIVINE -> 6;
+        };
+    }
+
     private LearnRules() {}
 }

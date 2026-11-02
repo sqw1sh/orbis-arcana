@@ -4,7 +4,8 @@
   "ingredients": [
     "minecraft:book",
     "#c:ingots/iron",
-    "#c:gems/lapis"
+    "#c:gems/aether",
+    "#c:gems/aether"
   ],
   "result": {
     "id": "orbisarcana:apprentice_tome",

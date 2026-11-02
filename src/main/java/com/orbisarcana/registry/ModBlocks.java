@@ -4,7 +4,9 @@ import com.orbisarcana.block.FrostWallBlock;
 import com.orbisarcana.block.ResonanceAltarBlock;
 import com.orbisarcana.block.ThornHedgeBlock;
 
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
@@ -27,6 +29,16 @@ public final class ModBlocks {
             p -> p.mapColor(MapColor.PLANT).strength(0.6f, 1f).sound(SoundType.SWEET_BERRY_BUSH).noOcclusion().noLootTable().pushReaction(PushReaction.IMMOVEABLE));
 
     public static final DeferredItem<BlockItem> RESONANCE_ALTAR_ITEM = ModRegistries.ITEMS.registerSimpleBlockItem("resonance_altar", RESONANCE_ALTAR);
+
+    /** Aether Crystal ore (§11.3): the basic magic resource in caves, drops shards and some XP. */
+    public static final DeferredBlock<DropExperienceBlock> AETHER_ORE = ModRegistries.BLOCKS.registerBlock(
+            "aether_crystal_ore", p -> new DropExperienceBlock(UniformInt.of(2, 5), p),
+            p -> p.mapColor(MapColor.STONE).strength(3f, 3f).requiresCorrectToolForDrops().sound(SoundType.AMETHYST).lightLevel(s -> 3));
+    public static final DeferredBlock<DropExperienceBlock> DEEPSLATE_AETHER_ORE = ModRegistries.BLOCKS.registerBlock(
+            "deepslate_aether_crystal_ore", p -> new DropExperienceBlock(UniformInt.of(2, 5), p),
+            p -> p.mapColor(MapColor.DEEPSLATE).strength(4.5f, 3f).requiresCorrectToolForDrops().sound(SoundType.AMETHYST).lightLevel(s -> 3));
+    public static final DeferredItem<BlockItem> AETHER_ORE_ITEM = ModRegistries.ITEMS.registerSimpleBlockItem("aether_crystal_ore", AETHER_ORE);
+    public static final DeferredItem<BlockItem> DEEPSLATE_AETHER_ORE_ITEM = ModRegistries.ITEMS.registerSimpleBlockItem("deepslate_aether_crystal_ore", DEEPSLATE_AETHER_ORE);
 
     /** Forces class loading so the deferred entries above are registered. */
     public static void init() {}

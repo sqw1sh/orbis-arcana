@@ -71,6 +71,28 @@ public final class ScrollService {
         player.level().playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1f);
     }
 
+    /**
+     * Takes a duplicate scroll apart on the altar (§6.3): the scroll becomes Aether Ink. Only scrolls of known spells,
+     * so a scroll still to be learned is never lost by accident. Returns whether it happened.
+     */
+    public static boolean dismantle(ServerPlayer player, ItemStack scroll) {
+        Optional<Identifier> spellId = SpellScrollItem.spell(scroll);
+        if (spellId.isEmpty()) return false;
+        Optional<SpellDefinition> spell = SpellRegistry.get(player.registryAccess(), spellId.get());
+        if (spell.isEmpty()) return false;
+        if (!player.getData(ModAttachments.KNOWLEDGE).knows(spellId.get())) {
+            player.sendOverlayMessage(Component.translatable("message.orbisarcana.dismantle.unknown").withStyle(ChatFormatting.RED));
+            return false;
+        }
+        int ink = LearnRules.dismantleInk(spell.get().rarity());
+        scroll.consume(1, player);
+        player.getInventory().placeItemBackInInventory(new ItemStack(ModItems.AETHER_INK.get(), ink), net.minecraft.util.Prediction.SERVER_ONLY);
+        player.sendOverlayMessage(Component.translatable("message.orbisarcana.dismantled", SpellScrollItem.spellName(spellId.get()), ink)
+                .withStyle(ChatFormatting.LIGHT_PURPLE));
+        player.level().playSound(null, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1f, 1.2f);
+        return true;
+    }
+
     private static Optional<LearnRules.Denial> check(ServerPlayer player, Identifier spellId) {
         Optional<SpellDefinition> spell = SpellRegistry.get(player.registryAccess(), spellId);
         if (spell.isEmpty()) return Optional.empty(); // unknown spells are reported by the tooltip; nothing to learn

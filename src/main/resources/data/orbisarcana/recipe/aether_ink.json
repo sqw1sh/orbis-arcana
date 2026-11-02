@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "#c:gems/aether",
+    "#c:gems/aether",
+    "#c:gems/aether",
+    "#c:gems/aether",
+    "minecraft:ink_sac"
+  ],
+  "result": {
+    "id": "orbisarcana:aether_ink"
+  }
+}

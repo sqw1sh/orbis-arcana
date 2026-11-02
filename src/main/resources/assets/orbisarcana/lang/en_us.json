@@ -485,5 +485,10 @@
   "attribute.orbisarcana.spell_range": "Spell Range",
   "attribute.orbisarcana.cast_stability": "Cast Stability",
   "attribute.orbisarcana.spell_cost": "Spell Cost",
-  "attribute.orbisarcana.mastery_xp": "Mastery XP"
+  "attribute.orbisarcana.mastery_xp": "Mastery XP",
+  "block.orbisarcana.aether_crystal_ore": "Aether Crystal Ore",
+  "block.orbisarcana.deepslate_aether_crystal_ore": "Deepslate Aether Crystal Ore",
+  "item.orbisarcana.aether_shard": "Aether Shard",
+  "message.orbisarcana.dismantled": "%s taken apart: +%s Aether Ink",
+  "message.orbisarcana.dismantle.unknown": "Only scrolls of spells you already know can be taken apart"
 }

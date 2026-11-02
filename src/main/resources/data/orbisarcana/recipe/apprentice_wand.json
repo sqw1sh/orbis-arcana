@@ -3,9 +3,11 @@
   "category": "equipment",
   "key": {
     "I": "#c:ingots/iron",
-    "S": "#c:rods/wooden"
+    "S": "#c:rods/wooden",
+    "A": "#c:gems/aether"
   },
   "pattern": [
+    "A",
     "I",
     "S"
   ],

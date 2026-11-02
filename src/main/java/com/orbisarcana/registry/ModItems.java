@@ -22,7 +22,10 @@ public final class ModItems {
     public static final DeferredItem<SpellScrollItem> SPELL_SCROLL = ModRegistries.ITEMS.registerItem(
             "spell_scroll", SpellScrollItem::new, p -> p.stacksTo(16));
 
-    /** Aether Ink (§11.4): currency of altar rituals. Sources (dissolving duplicates, crafting) arrive in S7. */
+    /** Aether Shard (§11.4): from Aether Crystal ore, the base of magic crafting. */
+    public static final DeferredItem<Item> AETHER_SHARD = ModRegistries.ITEMS.registerSimpleItem("aether_shard", p -> p);
+
+    /** Aether Ink (§11.4): currency of altar rituals. Comes from taking duplicate scrolls apart on the altar and from crafting. */
     public static final DeferredItem<Item> AETHER_INK = ModRegistries.ITEMS.registerSimpleItem("aether_ink", p -> p.rarity(Rarity.UNCOMMON));
 
     /** Seal of Comprehension (§11.4): key to a higher school, consumed by its first scroll. Recipes in S7. */
@@ -61,6 +64,9 @@ public final class ModItems {
                         SpellRegistry.ids(params.holders()).stream().sorted()
                                 .forEach(id -> out.accept(SpellScrollItem.of(id)));
                         out.accept(ModBlocks.RESONANCE_ALTAR_ITEM.get());
+                        out.accept(ModBlocks.AETHER_ORE_ITEM.get());
+                        out.accept(ModBlocks.DEEPSLATE_AETHER_ORE_ITEM.get());
+                        out.accept(AETHER_SHARD.get());
                         out.accept(AETHER_INK.get());
                         out.accept(SEAL_LIGHT.get());
                         out.accept(SEAL_DARK.get());

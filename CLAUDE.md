@@ -45,6 +45,7 @@
 - Клиентские JSON-ресурсы: `SimpleJsonResourceReloadListener` + `AddClientReloadListenersEvent#addListener(id, listener)`.
 - Iris: свои пайплайны регистрировать через `IrisApi.assignPipeline(pipeline, IrisProgram.X)` (иначе под шейдерами не рисуются). В dev Iris падает на строгой валидации GPU — `-Dneoforge.disableBlaze3DValidation=true`.
 - Dev-клиент: в `run/options.txt` `onboardAccessibility:false`, в `run/config/neoforge-client.toml` `showLoadWarnings = false` — иначе quickPlay висит на экранах.
+- Ворлдген 26.3: конфигурации фич в `data/<ns>/worldgen/feature/` (не configured_feature), без обёртки `config`, `state` — строка-id. Биом-модификаторы: `data/<ns>/neoforge/biome_modifier/`.
 - В Bash нет python — для JSON-скриптов использовать node.
 - Теги типов сущностей: `entity.getType().builtInRegistryHolder().is(tag)`. `PushReaction`: PUSH_PULL/PUSH/POPPED/IMMOVEABLE/IGNORE_ENTITY.
 - I-фреймы мобов: `LivingEntity.damageCooldownTime` (публичное поле), а не `Entity#setInvulnerableTime`.

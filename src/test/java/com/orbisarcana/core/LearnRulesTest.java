@@ -11,6 +11,12 @@ import com.orbisarcana.core.LearnRules.Context;
 import com.orbisarcana.core.LearnRules.Denial;
 
 class LearnRulesTest {
+    @org.junit.jupiter.api.Test
+    void dismantleInkGrowsWithRarity() {
+        org.junit.jupiter.api.Assertions.assertEquals(1, LearnRules.dismantleInk(Rarity.COMMON));
+        org.junit.jupiter.api.Assertions.assertEquals(4, LearnRules.dismantleInk(Rarity.MYTHIC));
+    }
+
     private static Optional<Denial> check(Rarity r, int mastery, int res, int peak) {
         return LearnRules.check(new Context(r, false, mastery, res, peak, false, false, true));
     }

@@ -3,8 +3,8 @@
   "category": "misc",
   "ingredients": [
     "minecraft:glass_bottle",
-    "#c:gems/lapis",
-    "#c:gems/amethyst",
+    "#c:gems/aether",
+    "#c:gems/aether",
     "minecraft:glow_berries"
   ],
   "result": {

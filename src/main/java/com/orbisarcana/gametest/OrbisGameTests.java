@@ -153,6 +153,8 @@ public final class OrbisGameTests {
         test("constellation_pulses_on_three_stars", 20, OrbisGameTests::constellation);
         test("foci_apply_attributes_by_hand", 20, OrbisGameTests::foci);
         test("mana_potion_restores_mana", 20, OrbisGameTests::manaPotion);
+        test("altar_dismantles_duplicates_into_ink", 20, OrbisGameTests::dismantle);
+        test("aether_ore_drops_shards", 20, OrbisGameTests::aetherOre);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1380,6 +1382,29 @@ public final class OrbisGameTests {
         h.assertTrue(left.is(net.minecraft.world.item.Items.GLASS_BOTTLE) || p.getInventory().contains(new ItemStack(net.minecraft.world.item.Items.GLASS_BOTTLE)) || p.isCreative(),
                 "a bottle is left");
         cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void dismantle(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(4.5, 1, 4.5), 0f, 0f);
+        ItemStack unknown = SpellScrollItem.of(DAWN_RAY);
+        h.assertFalse(ScrollService.dismantle(p, unknown), "an unknown spell's scroll is kept");
+        h.assertValueEqual(unknown.getCount(), 1, "and not used up");
+        KnowledgeService.learn(p, DAWN_RAY);
+        ItemStack duplicate = SpellScrollItem.of(DAWN_RAY);
+        h.assertTrue(ScrollService.dismantle(p, duplicate), "a duplicate is taken apart");
+        h.assertTrue(duplicate.isEmpty() || p.isCreative(), "the scroll is used up (mock players are creative)");
+        h.assertValueEqual(p.getInventory().countItem(ModItems.AETHER_INK.get()), 2, "a rare scroll gives 2 ink");
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    private static void aetherOre(GameTestHelper h) {
+        BlockPos pos = new BlockPos(4, 1, 4);
+        h.setBlock(pos, ModBlocks.AETHER_ORE.get());
+        ItemStack pickaxe = new ItemStack(net.minecraft.world.item.Items.IRON_PICKAXE);
+        var drops = net.minecraft.world.level.block.Block.getDrops(h.getBlockState(pos), h.getLevel(), h.absolutePos(pos), null, null, pickaxe);
+        h.assertTrue(drops.stream().anyMatch(s -> s.is(ModItems.AETHER_SHARD.get())), "the ore drops aether shards, got " + drops);
         h.succeed();
     }
 

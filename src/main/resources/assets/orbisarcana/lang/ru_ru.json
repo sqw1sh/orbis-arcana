@@ -485,5 +485,10 @@
   "attribute.orbisarcana.spell_range": "Дальность заклинаний",
   "attribute.orbisarcana.cast_stability": "Устойчивость каста",
   "attribute.orbisarcana.spell_cost": "Стоимость заклинаний",
-  "attribute.orbisarcana.mastery_xp": "Опыт мастерства"
+  "attribute.orbisarcana.mastery_xp": "Опыт мастерства",
+  "block.orbisarcana.aether_crystal_ore": "Руда кристалла эфира",
+  "block.orbisarcana.deepslate_aether_crystal_ore": "Глубинносланцевая руда кристалла эфира",
+  "item.orbisarcana.aether_shard": "Осколок эфира",
+  "message.orbisarcana.dismantled": "%s разобран: +%s чернил эфира",
+  "message.orbisarcana.dismantle.unknown": "Разбирать можно только свитки уже изученных заклинаний"
 }
