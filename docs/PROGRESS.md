@@ -347,10 +347,10 @@ JEI и Jade (02.11.2026):
 
 **S9 закрыт**, плейтест пользователя пройден (02.11.2026).
 
-## Релиз 1.0.0 — подготовлен (02.11.2026)
+## Релиз 1.0.0 — выпущен (02.11.2026)
 - [x] Версия 1.0.0 (мод и example-addon), описание мода обновлено
 - [x] API без пометки `@ApiStatus.Experimental` (§16: «до 1.0»)
 - [x] README (возможности, необязательные моды, для авторов аддонов, сборка), CHANGELOG.md
 - [x] Сборка, JUnit, GameTest 89 (мод) / 92 (с аддоном), lang-check, balance — всё зелёное; CI зелёный
-- [ ] Тег v1.0.0 и GitHub Release с jar-файлами — по подтверждению пользователя
+- [x] Тег v1.0.0 и GitHub Release (https://github.com/sqw1sh/orbis-arcana/releases/tag/v1.0.0): мод, api-jar, пример аддона; публикуется workflow `.github/workflows/release.yml` на пуш тега `v*` (заметки — из CHANGELOG.md)
 - [ ] Публикация на Modrinth/CurseForge — пользователь (аккаунты)
