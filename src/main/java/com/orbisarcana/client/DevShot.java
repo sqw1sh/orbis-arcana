@@ -45,7 +45,9 @@ public final class DevShot {
                 learnTestSpells();
                 Minecraft.getInstance().gui.setScreen(new RadialMenuScreen(true));
             }),
-            new Scene("grimoire", () -> Minecraft.getInstance().gui.setScreen(new GrimoireScreen())),
+            new Scene("grimoire", () -> Minecraft.getInstance().gui.setScreen(new com.orbisarcana.client.grimoire.GrimoireScreen(com.orbisarcana.client.grimoire.GrimoireScreen.Tab.SPELLS))),
+            new Scene("atlas", () -> Minecraft.getInstance().gui.setScreen(new com.orbisarcana.client.grimoire.GrimoireScreen(com.orbisarcana.client.grimoire.GrimoireScreen.Tab.ATLAS))),
+            new Scene("overview", () -> Minecraft.getInstance().gui.setScreen(new com.orbisarcana.client.grimoire.GrimoireScreen(com.orbisarcana.client.grimoire.GrimoireScreen.Tab.OVERVIEW))),
             ownCircle("own_down_yaw0", 0, 88),
             ownCircle("own_down_yaw120", 120, 88),
             ownCircle("own_ahead", 45, 10),
@@ -82,7 +84,8 @@ public final class DevShot {
                     com.orbisarcana.school.AttunementService.pickTalent(sp, com.orbisarcana.school.Schools.FIRE, "a1");
                 });
             }),
-            new Scene("schools", () -> Minecraft.getInstance().gui.setScreen(new SchoolsScreen())),
+            new Scene("schools", () -> Minecraft.getInstance().gui.setScreen(new com.orbisarcana.client.grimoire.GrimoireScreen(com.orbisarcana.client.grimoire.GrimoireScreen.Tab.SCHOOLS))),
+            new Scene("talents", () -> Minecraft.getInstance().gui.setScreen(new com.orbisarcana.client.grimoire.GrimoireScreen(com.orbisarcana.client.grimoire.GrimoireScreen.Tab.TALENTS))),
             new Scene("curios", DevShot::curiosCheck),
             new Scene("items", DevShot::showItems),
             new Scene("blocks", DevShot::showBlocks),

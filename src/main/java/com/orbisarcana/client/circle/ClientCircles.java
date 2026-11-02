@@ -414,6 +414,32 @@ public final class ClientCircles {
         return r << 16 | g << 8 | b;
     }
 
+    // ---- preview (grimoire Atlas) ----
+
+    /**
+     * Draws the circle of {@code spell} as cast at {@code mastery} (milestone layers included), centred at the origin of
+     * {@code pose} in the plane of {@code u}/{@code v}: the grimoire Atlas renders it next to a model of the mage.
+     */
+    public static void submitPreview(com.mojang.blaze3d.vertex.PoseStack pose, net.minecraft.client.renderer.SubmitNodeCollector collector,
+                                     Identifier spellId, SpellDefinition spell, int mastery, Vec3 center, Vec3 u, Vec3 v,
+                                     float progress, float timeSec, float flash, float alpha) {
+        Identifier circleId = spell.circle().orElse(spellId);
+        CircleDefinition def = CircleLoader.get(circleId);
+        List<Layer> layers = new ArrayList<>(def.layers());
+        def.milestoneLayers().forEach((level, extra) -> {
+            if (mastery >= level) layers.addAll(extra);
+        });
+        double radius = spell.rarity().circleBaseRadius * (1 + 0.02 * (mastery - 1));
+        if (spell.targeting() == Targeting.GROUND || spell.targeting() == Targeting.TARGET) {
+            Double effect = spell.params().get("radius");
+            if (effect != null) radius = Math.min(3.5, effect);
+        }
+        Rarity rarity = spell.rarity();
+        CircleRenderState s = new CircleRenderState(center, u, v, (float) radius, 1f, alpha, progress, timeSec, flash,
+                Schools.color(spell.school()), rarity.color, rarity.circleLayers, layers, false, spellId.hashCode());
+        collector.submitCustomGeometry(pose, CircleRenderTypes.CIRCLE, (p, buffer) -> new CircleRenderer(p, buffer).draw(s));
+    }
+
     // ---- submit (render state -> geometry) ----
 
     @SubscribeEvent

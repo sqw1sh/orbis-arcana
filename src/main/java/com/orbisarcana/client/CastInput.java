@@ -66,7 +66,7 @@ public final class CastInput {
             mc.gui.setScreen(new RadialMenuScreen());
         }
         while (GRIMOIRE.consumeClick()) {
-            mc.gui.setScreen(new GrimoireScreen());
+            mc.gui.setScreen(new com.orbisarcana.client.grimoire.GrimoireScreen());
         }
     }
 
