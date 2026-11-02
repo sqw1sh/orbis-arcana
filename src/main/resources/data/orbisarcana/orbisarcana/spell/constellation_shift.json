@@ -15,7 +15,7 @@
     "radius": 5,
     "duration_ticks": 100,
     "pull": 0.12,
-    "damage_per_second": 1.5,
+    "damage_per_second": 3,
     "range": 24,
     "second_zone": 0,
     "hop_ticks": 0,

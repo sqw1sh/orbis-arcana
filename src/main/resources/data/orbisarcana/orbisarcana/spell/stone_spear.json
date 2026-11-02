@@ -18,7 +18,8 @@
     "waves": 1,
     "wave_delay": 6,
     "launch": 0,
-    "stun_end_radius": 0
+    "stun_end_radius": 0,
+    "extra_wave_share": 0.35
   },
   "milestones": {
     "5": {

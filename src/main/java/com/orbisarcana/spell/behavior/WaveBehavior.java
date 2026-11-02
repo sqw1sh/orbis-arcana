@@ -32,7 +32,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 /**
  * {@code wave}: stone spikes running along the ground one block per tick (Stone Spear, Fault Line, §14.2).
  * Starts at the caster (DIRECTIONAL) or at the ground point (GROUND) and runs in the look direction.
- * Params: length, damage, width; waves + wave_delay (extra waves); launch; stun_end_radius;
+ * Params: length, damage, width; waves + wave_delay (extra waves) + extra_wave_share (their share of the damage, 1 when
+ * absent); launch; stun_end_radius;
  * seek_enemy (turns towards the nearest enemy); cage_end_ticks (holds enemies at the end).
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
@@ -59,7 +60,7 @@ final class WaveBehavior {
         Vec3 pos, dir;
         double travelled;
 
-        Wave(CastContext ctx, Vec3 origin, Vec3 dir, long startTick) {
+        Wave(CastContext ctx, Vec3 origin, Vec3 dir, long startTick, double damageShare) {
             this.level = ctx.level();
             this.caster = ctx.caster().getUUID();
             this.spell = ctx.spellId();
@@ -67,7 +68,7 @@ final class WaveBehavior {
             this.castId = ctx.castId();
             this.length = ctx.param("length");
             this.width = Math.max(0.6, ctx.param("width"));
-            this.damage = (float) ctx.scaled("damage");
+            this.damage = (float) (ctx.scaled("damage") * damageShare);
             this.launch = ctx.param("launch") > 0 ? LAUNCH : 0;
             this.stunRadius = ctx.param("stun_end_radius");
             this.seek = ctx.param("seek_enemy") > 0;
@@ -87,8 +88,10 @@ final class WaveBehavior {
                 : ctx.caster().position().add(dir);
         int waves = Math.max(1, ctx.ticks("waves"));
         long now = ctx.level().getGameTime();
+        // Every wave can hit the same target, so the extra ones deal only a share (a line of spikes, not 5 spears)
+        double extraShare = ctx.param("extra_wave_share") > 0 ? ctx.param("extra_wave_share") : 1.0;
         for (int i = 0; i < waves; i++) {
-            WAVES.add(new Wave(ctx, origin, dir, now + (long) i * ctx.ticks("wave_delay")));
+            WAVES.add(new Wave(ctx, origin, dir, now + (long) i * ctx.ticks("wave_delay"), i == 0 ? 1.0 : extraShare));
         }
     }
 

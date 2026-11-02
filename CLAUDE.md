@@ -23,6 +23,7 @@
 - `./gradlew runClientShot` — визуальная проверка: грузит `run/saves/devtest`, ставит стенд кругов, делает скриншоты `run/screenshots/devshot_<mode>.png` и выходит (`client/DevShot`). Iris/Sodium/шейдерпак лежат в `run/mods`, `run/shaderpacks` (локально). Скриншоты смотреть через Read.
 - `./gradlew :runClientShot -PwithCompat -Pshots=jei,jade` — клиент с JEI, Jade и Curios (`-PwithCompat`).
 - `./gradlew runClient -PwithCurios` — dev-запуск с Curios (по умолчанию без него: Curios ломает мок-игроков GameTest).
+- `node tools/balance.cjs` — баланс-таблица `docs/BALANCE.md` (коридоры §14.11, DPS школ против меча); запускать после правки чисел заклинаний.
 - `node tools/lang-check.cjs` — аудит локализации RU/EN (запускать после добавления текстов).
 - `node tools/textures.cjs` — пересобрать PNG-текстуры предметов и блоков.
 - `node tools/structures.cjs` — пересобрать NBT-шаблоны структур (обсерватория, скрипторий).
