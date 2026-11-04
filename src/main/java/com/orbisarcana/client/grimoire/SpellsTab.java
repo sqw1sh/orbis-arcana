@@ -201,6 +201,8 @@ class SpellsTab extends GrimoireTab {
         g.fill(px, trackY, px + pw, trackY + 1, Ui.LINE);
         int reachedX = px + (int) (pw * (Math.min(level, MasteryMath.MAX_LEVEL) - 1) / (double) (MasteryMath.MAX_LEVEL - 1));
         g.fill(px, trackY, reachedX, trackY + 1, Ui.GOLD);
+        // the marker goes under the nodes: on a milestone level it hides behind its box instead of crossing the number
+        g.fill(reachedX - 1, trackY - 2, reachedX + 2, trackY + 3, Ui.TEAL);
         hoveredMilestone = 0;
         int focus = 0;
         for (int m : MILESTONES) {
@@ -213,7 +215,6 @@ class SpellsTab extends GrimoireTab {
             g.text(font, num, nx + 8 - font.width(num) / 2, trackY - 4, reachedX >= nx + 8 && enabled ? Ui.GOLD : Ui.TEXT_DIM, false);
             if (focus == 0 && !reached) focus = m;
         }
-        g.fill(reachedX - 1, trackY - 2, reachedX + 2, trackY + 3, Ui.TEAL);
         if (hoveredMilestone != 0) focus = hoveredMilestone;
         if (focus == 0) focus = MILESTONES[MILESTONES.length - 1];
         cy += 20;

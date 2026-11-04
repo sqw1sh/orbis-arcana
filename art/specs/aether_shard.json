@@ -11,15 +11,15 @@
     },
     "gem": {
       "pattern": "gem",
-      "base": "#5fe0e8",
-      "light": "#e0fdff",
-      "dark": "#1a7a8a"
+      "base": "#d85ad0",
+      "light": "#ffc8f4",
+      "dark": "#8a2a86"
     },
     "core": {
       "pattern": "glow",
-      "base": "#c8fbff",
+      "base": "#ffc8f4",
       "light": "#ffffff",
-      "dark": "#5fe0e8"
+      "dark": "#d85ad0"
     }
   },
   "bones": [

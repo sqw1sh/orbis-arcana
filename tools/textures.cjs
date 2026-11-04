@@ -15,14 +15,12 @@ class Img {
   get(x, y) { const i = (y * this.w + x) * 4; return [this.px[i], this.px[i + 1], this.px[i + 2], this.px[i + 3]]; }
   save(path) { fs.writeFileSync(OUT + path + ".png", png(this.w, this.h, this.px)); }
 }
-/** An ASCII sprite: rows are padded to 16 with '.', which is transparent. */
 const hash = (x, y, s) => { let h = (x * 374761393 + y * 668265263 + s * 974711) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
 const pick = (list, r) => list[Math.min(list.length - 1, Math.floor(r * list.length))];
 
 // item textures come from the 3D models (art/specs, tools/specs/*.cjs, tools/art.cjs)
 
 // ---- blocks ----
-const STONE = ["#6f6f6f", "#7a7a7a", "#7f7f7f", "#868686", "#747474"];
 const DEEPSLATE = ["#3c3c44", "#45454d", "#4d4d55", "#36363d", "#505058"];
 function noise(palette, salt, streaks = false) {
   const img = new Img();
@@ -33,11 +31,21 @@ function noise(palette, salt, streaks = false) {
   }
   return img;
 }
-// Crystal clusters: [x, y, shade] with 0 highlight, 1 body, 2 shadow
-const CRYSTALS = [[3,3,0],[3,4,1],[4,4,1],[4,5,2],[2,5,1],[3,5,2],[10,2,0],[11,2,1],[11,3,1],[10,3,1],[12,4,2],[11,4,2],[12,9,0],[12,10,1],[13,10,1],[11,11,1],[12,11,2],[13,11,2],[5,11,0],[5,12,1],[6,12,1],[4,12,1],[5,13,2],[6,13,2],[8,7,0],[8,8,2]];
-function ore(base, salt, streaks) {
-  const img = noise(base, salt, streaks);
-  CRYSTALS.forEach(([x, y, k]) => img.set(x, y, ["#c8fbff", "#5fe0e8", "#2a8a9a"][k]));
+// Aether ore: only the crystals, drawn over vanilla stone and deepslate by the block model (so the stone matches
+// every other ore and follows resource packs). Upright shards in clusters, magenta like aether, never diamond-blue:
+// [x, y, height] of each shard; a dark rim sets them off the stone.
+const SHARDS = [[3,5,3],[4,4,4],[5,6,2],[10,3,3],[11,2,4],[12,4,2],[11,11,3],[12,10,4],[13,12,2],[4,12,2],[5,11,3],[8,8,3],[7,9,2]];
+const AETHER = { rim: "#3a1236", body: "#d85ad0", light: "#ffc8f4", dark: "#8a2a86", glint: "#ffffff" };
+function aetherOverlay() {
+  const img = new Img();
+  for (const [x, top, h] of SHARDS) {
+    const bottom = top + h;
+    for (let y = top - 1; y <= bottom; y++) for (const dx of [-1, 1]) if (img.get(x + dx, y)[3] === 0) img.set(x + dx, y, AETHER.rim);
+    img.set(x, top - 1, AETHER.rim);
+    img.set(x, bottom, AETHER.rim);
+    for (let y = top; y < bottom; y++) img.set(x, y, y === top ? AETHER.light : y === bottom - 1 ? AETHER.dark : AETHER.body);
+  }
+  for (const [x, y] of [[4, 4], [11, 2], [12, 10], [8, 8]]) img.set(x, y, AETHER.glint);
   return img;
 }
 const GLYPHS = [
@@ -48,8 +56,7 @@ const GLYPHS = [
   ["XXXXXXXX..", "X.........", "X.XXXXXX..", "X.X....X..", "X.X.XX.X..", "X.X.X..X..", "X.X.XXXX..", "X.X.......", "X.XXXXXXXX", ".........."],
 ];
 function blocks() {
-  ore(STONE, 1).save("block/aether_crystal_ore");
-  ore(DEEPSLATE, 2, true).save("block/deepslate_aether_crystal_ore");
+  aetherOverlay().save("block/aether_crystal_overlay");
   GLYPHS.forEach((glyph, i) => {
     const img = noise(DEEPSLATE, 10 + i);
     for (let k = 0; k < 16; k++) { img.set(k, 0, "#26262c"); img.set(k, 15, "#26262c"); img.set(0, k, "#26262c"); img.set(15, k, "#26262c"); }

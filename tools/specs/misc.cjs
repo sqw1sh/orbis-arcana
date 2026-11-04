@@ -53,7 +53,7 @@ const wobble = (bone, deg = 3, length = 3) => ({ [bone]: { rotation: [[0, [0, 0,
 // ---- aether shard: a crystal cluster on a lump of stone, the whole cluster turning slowly ----
 put("aether_shard", {
   id: "aether_shard", type: "Item", density: 4,
-  materials: { stone, gem: gem("#5fe0e8", "#e0fdff", "#1a7a8a"), core: glow("#c8fbff", "#ffffff", "#5fe0e8") },
+  materials: { stone, gem: gem("#d85ad0", "#ffc8f4", "#8a2a86"), core: glow("#ffc8f4", "#ffffff", "#d85ad0") },
   bones: [{ name: "cluster", pivot: [0, 0, 0], cubes: [
     { from: [-2.6, -3.6, -1.7], to: [2.6, -2.3, 1.7], mat: "stone" },
     { from: [-1.9, -3.9, -1.2], to: [2.1, -3.4, 1.3], mat: "stone" },

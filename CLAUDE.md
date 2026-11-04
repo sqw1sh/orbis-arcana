@@ -76,6 +76,7 @@
 - VFX (`client/vfx`): свой движок частиц, эффекты — Snowstorm JSON из Blockbench в `assets/<ns>/orbisarcana/vfx/`; сервер запускает их через `spell/Vfx.play/attach` (пакет `VfxPlay`). Камера в `SubmitCustomGeometryEvent`: `event.getLevelRenderState().cameraRenderState` (`pos`, `orientation`). Молanг-цвет 8 знаков в Bedrock — AARRGGBB.
 - Иконки предметов 26.3 рисуются в текстуру 16×16 и обрезаются: 3D-модель в GUI должна помещаться (длинные — по диагонали, голова в угол). PAL THIRD_PERSON_MODEL от первого лица рисует предмет с transforms третьего лица — для длинных (посох) лучше FirstPersonMode.VANILLA. В Blockbench JS: `Animator.buildFile(false, Animation.all.map(a => a.name))`, геометрия — `Codecs.bedrock.compile()`.
 - GeckoLib-блок: `BlockEntity implements GeoBlockEntity`, рендер `new GeoBlockRenderer<>(ctx, type)` в `EntityRenderersEvent.RegisterRenderers#registerBlockEntityRenderer`, блок `RenderShape.INVISIBLE` + `noOcclusion()`, block-модель только с `particle`; предмет блока — `ModelBlockItem` (`DefaultedBlockGeoModel`), `useBlockDescriptionPrefix()`. Существа: `GeoEntity` + `new GeoEntityRenderer<>(ctx, type)`, перед моделью — -Z.
+- Руда поверх ванильного камня: модель из двух элементов 16³ (`#base` = `minecraft:block/stone`, `#overlay` — свой PNG с прозрачностью), прозрачность работает без настройки слоя; `light_emission` у элемента — свечение кристаллов.
 - `new ClipContext(..., CollisionContext.empty())`, если сущности может не быть (ClipContext с null-entity падает).
 
 ## Архитектура (§15)
