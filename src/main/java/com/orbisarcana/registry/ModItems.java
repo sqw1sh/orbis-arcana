@@ -117,9 +117,6 @@ public final class ModItems {
         return ModRegistries.ITEMS.registerItem("seal_" + school, ArtItem::new, p -> p.rarity(Rarity.RARE));
     }
 
-    /** Blockbench → GeckoLib pipeline check (art/models/debug_orb.bbmodel); not in the creative tab. */
-    public static final DeferredItem<com.orbisarcana.item.DebugOrbItem> DEBUG_ORB = ModRegistries.ITEMS.registerItem("debug_orb",
-            com.orbisarcana.item.DebugOrbItem::new, p -> p.stacksTo(1));
 
     /** Every item of the mod shows the arcane tooltip frame (sprites tooltip/arcane_*, tools/gui.cjs). */
     public static void registerTooltipStyle(net.neoforged.bus.api.IEventBus modBus) {

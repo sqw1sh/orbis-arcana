@@ -40,7 +40,7 @@
 - `node tools/vfx-effects.cjs` — объёмные эффекты (раздел MESHES: sphere/cylinder/cone/ring/spiral/trail, `client/vfx/VfxMesh`) и стоковые эффекты (`art/vfx/particles`, затем `node tools/art.cjs`); на сервере — `Fx.<ВИД>.play(level, x, y, z, count, dx, dy, dz[, tint])` вместо `sendParticles`. Проверка: `-Pshots=gallery_setup,stock`.
 - 3D-модели: спецификации `art/specs/<id>.json` (генераторы `node tools/specs/<foci|accessories|misc|world>.cjs`, общие помощники — `tools/specs/lib.cjs`) → в Blockbench (MCP `risky_eval`) `eval(require('fs').readFileSync('<repo>/tools/blockbench/build-model.js','utf8'))('<repo>','<id>')` → `.bbmodel` + GeckoLib-экспорт → `node tools/art.cjs`. Положения 3D-предметов в руке/GUI — `node tools/foci-display.cjs`.
 - `node tools/structures.cjs` — пересобрать NBT-шаблоны структур (обсерватория, скрипторий).
-- `./gradlew :runGameTestServer` — GameTest-ы мода; без `:` запускаются и тесты `example-addon` (мод + аддон, 92).
+- `./gradlew :runGameTestServer` — GameTest-ы мода; без `:` запускаются и тесты `example-addon` (мод + аддон, 94).
 - `./gradlew runGameTestServer` — все GameTest-ы (`gametest/OrbisGameTests`), код выхода ≠ 0 при падении. Итог в логе: `All N required tests passed`.
 
 ## Особенности API 26.3 (найдено на практике)

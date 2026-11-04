@@ -1,9 +1,0 @@
-{
-  "model": {
-    "type": "minecraft:special",
-    "base": "orbisarcana:item/debug_orb",
-    "model": {
-      "type": "geckolib:geckolib"
-    }
-  }
-}

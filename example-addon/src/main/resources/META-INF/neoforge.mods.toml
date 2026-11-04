@@ -4,7 +4,7 @@ license="MIT"
 
 [[mods]]
 modId="orbisexample"
-version="1.0.0"
+version="1.1.0"
 displayName="Orbis Arcana Example Addon"
 description='''An example addon: the school of Blood with its Echo and the Blood Bolt spell.'''
 

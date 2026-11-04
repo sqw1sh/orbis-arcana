@@ -462,7 +462,6 @@
   "item.orbisarcana.netherite_tome": "Незеритовый фолиант",
   "item.orbisarcana.mana_potion": "Зелье маны",
   "item.orbisarcana.mana_potion.tip": "+%s маны",
-  "item.orbisarcana.debug_orb": "Отладочная сфера (проверка моделей)",
   "focus.orbisarcana.wand.hand": "Жезл: в любой руке, можно с оружием",
   "focus.orbisarcana.staff.hand": "Посох: двуручный, вторая рука должна быть пустой",
   "focus.orbisarcana.tome.hand": "Фолиант: во второй руке",

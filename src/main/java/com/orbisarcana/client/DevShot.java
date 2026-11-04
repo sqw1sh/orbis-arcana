@@ -237,14 +237,12 @@ public final class DevShot {
                     for (String fx : new String[] {"ray_core", "ray_glow"})
                         com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id(fx), top.add(down.scale(0.5)), down, 0, (float) down.length());
                     at.accept("dawn_burst", judge.add(0, 0.5, 0));
-                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("bubble"), o.add(0.5, 1.2, 8), zero, 0, 1.3f);
                     com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("dome_wind"), o.add(0.5, 0.2, 8), zero, 0, 1f, 2.5f, 2.5f, 2.5f, 1.4f);
                     var oath = o.add(-3.5, 0.6, 8);
                     com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("stone_guard"), oath, zero, 0, 1f, 1.1f, 1, 1.1f, 1);
                     at.accept("orbit_star", oath.add(0, 1.8, 0));
                     com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("petals"), o.add(1.8, 0.2, 5), zero, 0, 1f, 1.5f, 1, 1.5f, 2);
                     com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("aura_ring"), o.add(-1.5, 0.06, 5), zero, 0, 1.5f);
-                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("curse_rune"), o.add(-1.5, 2, 6), zero, 0, 1f);
                 });
             }),
             new Scene("volumes", () -> {
@@ -454,7 +452,7 @@ public final class DevShot {
         });
     }
 
-    /** The GeckoLib debug orb (art/models/debug_orb.bbmodel) in hand, first person: model, texture, idle animation. */
+    /** A GeckoLib focus (the amethyst wand) in hand, first person: model, texture, idle animation. */
     private static void showGeckoLib() {
         Minecraft mc = Minecraft.getInstance();
         mc.gui.setScreen(null);
@@ -465,12 +463,11 @@ public final class DevShot {
             ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
             if (sp == null) return;
             sp.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
-            sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.DEBUG_ORB.get()));
-            sp.getInventory().setItem(1, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.DEBUG_ORB.get()));
+            sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.AMETHYST_WAND.get()));
+            sp.getInventory().setItem(1, new net.minecraft.world.item.ItemStack(com.orbisarcana.registry.ModItems.AMETHYST_WAND.get()));
         });
     }
 
-    /** Player Animation Library: the test pose from player_animations/caster.json, third person from the front. */
     /**
      * Four armor stands with arms holding an iron sword (the reference grip), the amethyst wand, staff and tome, seen from the front or from their right side:
      * stands use the same third-person hand transforms as players, and can be looked at from any side.

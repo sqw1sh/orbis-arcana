@@ -1,5 +1,35 @@
 # Changelog
 
+## 1.1.0 — visual overhaul
+
+For Minecraft 26.3, NeoForge 26.3.0.100+. **New required dependencies:** GeckoLib 5.5.7+ and Player Animation Library 1.2.8+.
+
+### Spell visuals
+- New effects engine: Snowstorm particle effects plus volumetric shapes. The shapes are textured spheres, beams, cones, shockwave rings, spirals and ribbon trails with scrolling energy textures, plus fresnel glow and camera shake. Works under Iris shader packs. An effects quality option (Low to Ultra) sets the particle count and limit.
+- All 30 spells redone on the new engine, each with its own effects.
+- Magic circles 3.0: a geometry plate per school and more layers by rarity (runes, ornament, floating tier, crystals, armillary rings). The circles phase in, brighten as the spell charges and flash on release.
+
+### Animation and models
+- Casting animations seen by every nearby player: a charge and release pose for each targeting type and signature poses for many spells (dash, teleport, heal, judgment, guard, dome, thrust, toggle). In first person, the arms are animated (can be turned off).
+- 3D animated models for every focus, Curios accessory, misc item, the Resonance Altar, the Guardian Treant and the Shadow Decoy.
+- Foci are held like a sword; tomes are held in one hand by the clasp.
+
+### Sound
+- A synthesised sound set with no vanilla sounds in casting. Each school has a charge loop and its own release, impact and hit sounds. There are also interface sounds and mastery sounds. Every sound has subtitles.
+
+### Interface
+- New UI kit and an arcane tooltip style for all mod items. The mana bar HUD, spell card, radial menu and Resonance Altar screen are redesigned.
+- The grimoire is one window with five tabs. Overview shows the caster model. Spells has search and school filters. Schools and Talents are reworked. The 3D Atlas previews each spell with its circle.
+
+### Content
+- New spell: Searing Bolt (Fire, common).
+- Aether Crystal ore restyled: vanilla stone or deepslate with glowing purple shards.
+
+### For addons and pack makers
+- `orbisarcana:composite` behavior. A spell is built from a shape, effects and visuals in JSON, with no Java. Milestones and mastery scale it like any other spell.
+- `tools/new-spell.cjs` scaffolds a composite spell. Template visuals `tmpl_*` are tinted by school colour.
+- Effects are data: `assets/<ns>/orbisarcana/vfx/*.json`, replaceable by resource packs.
+
 ## 1.0.0 — first release
 
 For Minecraft 26.3, NeoForge 26.3.0.100+.

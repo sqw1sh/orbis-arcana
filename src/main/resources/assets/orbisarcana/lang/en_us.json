@@ -462,7 +462,6 @@
   "item.orbisarcana.netherite_tome": "Netherite Tome",
   "item.orbisarcana.mana_potion": "Mana Potion",
   "item.orbisarcana.mana_potion.tip": "+%s mana",
-  "item.orbisarcana.debug_orb": "Debug Orb (model check)",
   "focus.orbisarcana.wand.hand": "Wand: either hand, works beside a weapon",
   "focus.orbisarcana.staff.hand": "Staff: two-handed, keep the off hand empty",
   "focus.orbisarcana.tome.hand": "Tome: off hand",

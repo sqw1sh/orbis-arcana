@@ -38,7 +38,7 @@ public final class CurseBehavior {
     /** Volumetric effects: shadows closing on the cursed one, a ring of runes over its head. */
     private static final Identifier COLLAPSE = Vfx.id("dusk_sphere"), HALO = Vfx.id("curse_halo");
     /** Signature effects (tools/vfx-effects.cjs): shadows closing on the cursed one, a violet rune over its head. */
-    private static final Identifier IMPLODE = Vfx.id("dusk_implode"), RUNE = Vfx.id("curse_rune");
+    private static final Identifier IMPLODE = Vfx.id("dusk_implode");
     private record Curse(ServerLevel level, UUID caster, Identifier spell, Identifier school, int castId, long until,
             float dps, double weaken, double spread, double healCut, double deathMana, float deathHeal) {}
 

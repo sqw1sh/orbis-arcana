@@ -284,9 +284,6 @@ Object.assign(EFFECTS, {
   heal_drops: { cell: [5, 3], count: 10, disc: true, dir: [0, -1, 0], life: [0.5, 0.7], speed: [1, 2], accel: [0, -6, 0],
     size: [overLife(0.14, 0.1, 0.4), overLife(0.18, 0.12, 0.4)], color: [[0, 0.6, 1, 0.85, 0], [0.2, 0.55, 1, 0.8, 0.9], [1, 0.4, 0.9, 0.8, 0]] },
   heal_glow: { cell: [1, 0], count: 1, sphere: 0, life: [0.45, 0.5], speed: [0, 0], size: [overLife(0.6, 1.8), overLife(0.6, 1.8)], color: HEAL },
-  // Water Prison: a shimmering bubble around the target (re-sent while it holds)
-  bubble: { cell: [4, 0], count: 2, sphere: 0, life: [0.35, 0.45], speed: [0, 0], spin: 30,
-    size: [`1.9 + 0.15 * math.sin(${LIFE} * 360)`, `1.9 + 0.15 * math.sin(${LIFE} * 360)`], color: [[0, 0.5, 0.8, 1, 0], [0.3, 0.55, 0.85, 1, 0.55], [1, 0.45, 0.75, 1, 0]] },
   // Gust Dome: wind streaming over the dome's skin; its burst throws a ring
   dome_wind: { cell: [2, 0], count: 10, sphere: 1, surface: true, dir: [0, 1, 0], life: [0.25, 0.4], speed: [2, 4], drag: 2, facing: "lookat_direction",
     size: [overLife(0.05, 0.02), overLife(0.8, 0.25, 0.4)], color: [[0, 0.9, 1, 0.95, 0.55], [1, 0.8, 1, 0.9, 0]] },
@@ -299,9 +296,6 @@ Object.assign(EFFECTS, {
   // Purifying Aura: a golden ring on the ground around the caster (re-sent while it is on), scaled to its radius
   aura_ring: { cell: [4, 0], count: 1, sphere: 0, life: [0.5, 0.55], speed: [0, 0], facing: "emitter_transform_xz",
     size: ["2", "2"], color: [[0, 1, 0.9, 0.55, 0], [0.3, 1, 0.88, 0.5, 0.55], [1, 1, 0.8, 0.4, 0]] },
-  // Withering Curse: a violet rune turning over the cursed one's head
-  curse_rune: { cell: [6, 3], count: 1, sphere: 0, life: [0.8, 0.85], speed: [0, 0], spin: 0,
-    size: ["0.7", "0.7"], color: [[0, 0.7, 0.35, 1, 0], [0.25, 0.65, 0.3, 0.95, 0.85], [1, 0.5, 0.2, 0.8, 0]] },
   // Guardian Orbit: a star of the orbit (re-sent every tick at its place), and the burst when it catches something
   orbit_star: { cell: [3, 0], count: 1, sphere: 0, life: [0.1, 0.12], speed: [0, 0], spin: 0,
     size: ["0.5", "0.5"], color: [[0, 1, 0.97, 1, 1], [1, 0.75, 0.7, 1, 0.6]] },
