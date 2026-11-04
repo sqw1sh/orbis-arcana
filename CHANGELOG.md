@@ -1,25 +1,41 @@
 # Changelog
 
-## Unreleased
+## 1.2.0 — Fire, Ice and Lightning
 
-### Lightning school pack
-- 17 new Lightning spells (20 in all) across all eight rarities: Spark, Static Shock, Arc Lash, Thunderclap, Chain Lightning, Ball Lightning, Static Field, Surge, Lightning Strike, Arc Beam, Storm Barrier, Thunderstorm, Voltaic Aura, Thunderer's Spear, Tempest, Primordial Thunder, Heaven's Wrath. Each has its own circle, sounds, effects, apogee look and three milestones.
-- Lightning talent tree: third nodes Superconductor (one more jump, 1.5x jump range) and Static Shield (every 4th hit you take is absorbed). Splitting now works on composite chains too.
+For Minecraft 26.3, NeoForge 26.3.0.100+, GeckoLib 5.5.7+, Player Animation Library 1.2.8+. 84 spells (was 30), in all eight rarities.
 
-### All eight rarities
-- Legendary, ancient and divine spells: Meteor and Ice Comet are legendary, Inferno Pillar and Glacial Rampart mythic, Fallen Sun and Absolute Zero divine. New ancient spells: Primordial Flame and Eternal Glacier.
-- Sources: legendary scrolls in the observatory vault, scriptorium, Nether and higher-school loot; ancient ones in vaults and from the Warden and Elder Guardian; divine ones from the Wither; End cities hold all three.
+Every new spell has its own magic circle, its own release and impact sounds, its own effects, an apogee look at mastery 15 and three milestones. Many also have their own release pose.
 
-### Ice school pack
-- 17 new Ice spells (20 in all): Frost Bolt, Chill Touch, Frost Breath, Ice Lance, Hailstorm, Frost Nova, Glacial Spikes, Ice Armor, Frostbite, Cold Ray, Blizzard, Deep Freeze, Frost Vortex, Ice Comet, Winter's Embrace, Glacial Rampart, Absolute Zero. Each has its own circle, sounds, effects, apogee look and three milestones.
-- Ice talent tree: third nodes Permafrost (your freezes last 50% longer) and Frozen Heart (below half health, enemies near you are slowed).
+### Fire (22 spells)
+- New: Ember Spray, Kindle, Heat Wave, Flame Lash, Cinder Volley, Magma Burst, Scorching Ray (channel), Flare, Blazing Ring, Ember Ward, Fire Wall, Scorched Earth, Dragon's Breath (channel), Immolation, Meteor (legendary), Inferno Pillar (mythic), Primordial Flame (ancient), Fallen Sun (divine).
+- Talents: third nodes Cinderfield (enemies killed by your fire leave burning ground) and Flame Skin (melee attackers catch fire).
 
-### Fire school pack
-- 17 new Fire spells (21 in all): Ember Spray, Kindle, Heat Wave, Flame Lash, Cinder Volley, Magma Burst, Scorching Ray, Flare, Blazing Ring, Ember Ward, Fire Wall, Scorched Earth, Dragon's Breath, Meteor, Immolation, Inferno Pillar, Fallen Sun. Each has its own effects and three milestones.
-- Every new Fire spell has its own magic circle, its own release and impact sounds, and an apogee look at mastery 15.
-- Fire talent tree: third nodes Cinderfield (enemies killed by your fire leave burning ground) and Flame Skin (melee attackers catch fire). Still three points: one deep branch or two halves.
-- Fix: composite spells now respect the Embers talent (+30% burning).
-- Composite spells can now be zones, auras that follow the caster, walls, meteors and channels, can leave burning ground, and can grant a shield or speed.
+### Ice (21 spells)
+- New: Frost Bolt, Chill Touch, Frost Breath, Ice Lance, Hailstorm, Frost Nova, Glacial Spikes, Ice Armor, Frostbite, Cold Ray (channel), Blizzard, Deep Freeze, Frost Vortex (channel), Winter's Embrace, Ice Comet (legendary), Glacial Rampart (mythic), Eternal Glacier (ancient), Absolute Zero (divine).
+- Talents: third nodes Permafrost (your freezes last 50% longer) and Frozen Heart (below half health, enemies near you are slowed).
+
+### Lightning (20 spells)
+- New: Spark, Static Shock, Arc Lash, Thunderclap, Chain Lightning, Ball Lightning, Static Field, Surge, Lightning Strike, Arc Beam (channel), Storm Barrier, Thunderstorm, Voltaic Aura, Thunderer's Spear (legendary), Tempest (mythic), Primordial Thunder (ancient), Heaven's Wrath (divine).
+- Talents: third nodes Superconductor (one more jump, 1.5x jump range) and Static Shield (every 4th hit you take is absorbed).
+
+### Talent trees
+- Fire, Ice and Lightning branches have a third node. There are still three points, so you take one whole branch or both halfway. Other schools keep two nodes per branch until their pack.
+
+### Rarities and loot
+- Legendary, ancient and divine spells are in the game now.
+- Legendary scrolls come from the observatory vault, the scriptorium, Nether loot and the higher-school tables. Ancient ones come from vaults and from the Warden and the Elder Guardian. Divine ones drop from the Wither. End cities can hold all three.
+
+### Fixes
+- Composite spells respect the Embers talent (+30% burning) and Splitting (+1 jump).
+
+### For addons and pack makers
+- The `orbisarcana:composite` behavior has new shapes: `zone` (on the ground), `aura` (follows the caster), `wall` (across the aim) and `meteor` (falls from the sky). It also supports channels (`pulse_ticks`) and burning ground (`ground_fire_ticks`).
+- New composite effects: `shield` and `speed`.
+- New composite visuals:
+  - `release_sound` and `impact_sound`: own sound events;
+  - `apogee_travel` and `apogee_impact`: extra effects at mastery 15;
+  - `chain`: a bolt's jump drawn along its length.
+- `tools/new-spell.cjs` knows every shape, channels and all eight rarities. `tools/balance.cjs` has corridors for all eight.
 
 ## 1.1.0 — visual overhaul
 
