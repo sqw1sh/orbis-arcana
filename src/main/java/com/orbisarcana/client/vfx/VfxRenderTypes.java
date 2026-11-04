@@ -49,12 +49,22 @@ public final class VfxRenderTypes {
     static final RenderPipeline ADDITIVE = pipeline("vfx_additive", BlendFunction.LIGHTNING);
     static final RenderPipeline BLEND = pipeline("vfx_blend", BlendFunction.TRANSLUCENT);
 
-    private static final Map<Identifier, RenderType[]> TYPES = new HashMap<>();
+    private static final Map<Identifier, RenderType[]> TYPES = new HashMap<>(), MESH_TYPES = new HashMap<>();
 
     static RenderType get(Identifier texture, boolean additive) {
         RenderType[] pair = TYPES.computeIfAbsent(texture, t -> new RenderType[] {
                 RenderType.create("orbisarcana_vfx_add", RenderSetup.builder(ADDITIVE).withTexture("Sampler0", t).createRenderSetup()),
                 RenderType.create("orbisarcana_vfx_blend", RenderSetup.builder(BLEND).withTexture("Sampler0", t).sortOnUpload().createRenderSetup())});
+        return pair[additive ? 0 : 1];
+    }
+
+    /** For volumetric effects: the texture repeats, so it can scroll over the surface. */
+    static RenderType getMesh(Identifier texture, boolean additive) {
+        java.util.function.Supplier<com.mojang.renderpearl.api.textures.GpuSampler> repeat =
+                () -> com.mojang.blaze3d.systems.RenderSystem.getSamplerCache().getRepeat(com.mojang.renderpearl.api.textures.FilterMode.LINEAR);
+        RenderType[] pair = MESH_TYPES.computeIfAbsent(texture, t -> new RenderType[] {
+                RenderType.create("orbisarcana_vfx_mesh_add", RenderSetup.builder(ADDITIVE).withTexture("Sampler0", t, repeat).createRenderSetup()),
+                RenderType.create("orbisarcana_vfx_mesh_blend", RenderSetup.builder(BLEND).withTexture("Sampler0", t, repeat).sortOnUpload().createRenderSetup())});
         return pair[additive ? 0 : 1];
     }
 

@@ -1,0 +1,38 @@
+{
+	"orbisarcana:mesh": {
+		"shape": "trail",
+		"texture": "textures/vfx/energy/flame",
+		"loop": true,
+		"life": 1,
+		"samples": 9,
+		"width": [
+			[
+				0,
+				0.95
+			],
+			[
+				1,
+				0.1
+			]
+		],
+		"uv": [
+			1.5,
+			1
+		],
+		"scroll": [
+			-3,
+			0
+		],
+		"color": [
+			[
+				0,
+				[
+					1,
+					0.6,
+					0.18,
+					0.9
+				]
+			]
+		]
+	}
+}

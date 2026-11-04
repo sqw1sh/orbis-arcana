@@ -34,11 +34,11 @@ import net.minecraft.world.phys.Vec3;
  * Not saved: spell projectiles are short-lived and discarded on unload.
  */
 public class SpellProjectile extends ThrowableProjectile {
-    /** In flight: white-hot core, mane of flame, dripping embers, soot (tools/vfx-effects.cjs). */
-    private static final List<Identifier> FLIGHT = List.of(Vfx.id("fireball_core"), Vfx.id("fireball_flames"), Vfx.id("fireball_embers"),
-            Vfx.id("fireball_smoke"));
-    /** On impact: flash, burst of flame, ground ring, sparks thrown far; the explosion adds a smoke column and cinders. */
-    private static final List<Identifier> IMPACT = List.of(Vfx.id("fireball_flash"), Vfx.id("fireball_blast"), Vfx.id("fireball_tongues"),
+    /** In flight: a sphere of churning flame in a rim of heat, a ribbon of fire behind, a mane of flame, embers, soot. */
+    private static final List<Identifier> FLIGHT = List.of(Vfx.id("fireball_orb"), Vfx.id("fireball_shell"), Vfx.id("fireball_trail"),
+            Vfx.id("fireball_core"), Vfx.id("fireball_flames"), Vfx.id("fireball_embers"), Vfx.id("fireball_smoke"));
+    /** On impact: a swelling sphere of fire, a shockwave ring, flash, flame, sparks; the explosion adds smoke and cinders. */
+    private static final List<Identifier> IMPACT = List.of(Vfx.id("fireball_nova"), Vfx.id("fireball_wave"), Vfx.id("fireball_flash"), Vfx.id("fireball_blast"), Vfx.id("fireball_tongues"),
             Vfx.id("fireball_ring"), Vfx.id("fireball_sparks")), EXPLOSION = List.of(Vfx.id("fireball_column"), Vfx.id("fireball_cinders"));
     private Identifier school = Schools.FIRE;
     private float damage;

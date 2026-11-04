@@ -303,5 +303,24 @@ Object.assign(EFFECTS, {
     size: [overLife(0.35, 0.05), overLife(0.35, 0.05)], color: [[0, 1, 0.97, 1, 1], [0.6, 0.75, 0.65, 1, 0.8], [1, 0.5, 0.4, 1, 0]] },
 });
 
+// ---- volumetric effects (client/vfx/VfxMesh): textured shapes with scrolling energy textures (tools/vfx-energy.cjs) ----
+const MESHES = {
+  // Fireball in flight: a sphere of churning flame, a rim of heat around it, a ribbon of fire streaming behind
+  fireball_orb: { shape: "sphere", texture: "textures/vfx/energy/flame", loop: true, life: 1, segments: 28, rings: 14, radius: 0.45,
+    uv: [2, 1], scroll: [0.3, -1.8], spin: 140, fresnel: -0.8, color: [[0, [1, 0.85, 0.5, 1]]] },
+  fireball_shell: { shape: "sphere", texture: "textures/vfx/energy/energy", loop: true, life: 1, segments: 28, rings: 14, radius: 0.62,
+    uv: [2, 1], scroll: [-0.5, -1.2], spin: -90, fresnel: 2, color: [[0, [1, 0.45, 0.1, 0.9]]] },
+  fireball_trail: { shape: "trail", texture: "textures/vfx/energy/flame", loop: true, life: 1, samples: 9, width: [[0, 0.95], [1, 0.1]],
+    uv: [1.5, 1], scroll: [-3, 0], color: [[0, [1, 0.6, 0.18, 0.9]]] },
+  // Fireball impact: a sphere of fire swelling and burning out, a shockwave ring racing along the ground, a jolt
+  fireball_nova: { shape: "sphere", texture: "textures/vfx/energy/flame", life: 0.5, segments: 36, rings: 18,
+    radius: [[0, 0.3], [0.3, 2], [1, 2.6]], uv: [3, 1.5], scroll: [0.4, -2.5], spin: 60, fresnel: -0.5,
+    color: [[0, [1, 0.95, 0.75, 1]], [0.4, [1, 0.55, 0.15, 0.85]], [1, [0.6, 0.15, 0.03, 0]]] },
+  fireball_wave: { shape: "ring", texture: "textures/vfx/energy/energy", life: 0.5, segments: 40, radius: [[0, 0.4], [1, 5]],
+    thickness: [[0, 1.2], [1, 0.3]], uv: [6, 1], scroll: [0.8, 0], color: [[0, [1, 0.8, 0.4, 1]], [0.5, [1, 0.45, 0.1, 0.7]], [1, [0.6, 0.15, 0.03, 0]]],
+    shake: { strength: 1.4, radius: 14, time: 0.35 } },
+};
+for (const [id, m] of Object.entries(MESHES)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify({ "orbisarcana:mesh": m }, null, "\t") + "\n");
+
 for (const [id, o] of Object.entries(EFFECTS)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify(effect(id, o), null, "\t") + "\n");
-console.log(`${Object.keys(EFFECTS).length} effects written`);
+console.log(`${Object.keys(EFFECTS).length} effects and ${Object.keys(MESHES).length} volumetric effects written`);

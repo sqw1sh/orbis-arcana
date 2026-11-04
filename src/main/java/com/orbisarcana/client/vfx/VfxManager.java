@@ -117,16 +117,22 @@ public final class VfxManager {
 
     /** As above, the emitter shape stretched by {@code spread} per axis and {@code density} times the particles. */
     public static void spawn(Identifier effect, Vec3 pos, Vec3 forward, int tint, float scale, int attachEntity, Vector3f spread, float density) {
-        VfxEffect fx = VfxLoader.get(effect);
         Minecraft mc = Minecraft.getInstance();
-        if (fx == null || mc.level == null) return;
-        if (mc.gameRenderer.mainCamera().position().distanceToSqr(pos) > MAX_DISTANCE * MAX_DISTANCE) return;
+        if (mc.level == null || mc.gameRenderer.mainCamera().position().distanceToSqr(pos) > MAX_DISTANCE * MAX_DISTANCE) return;
+        VfxMesh mesh = VfxLoader.mesh(effect);
+        if (mesh != null) {
+            VfxMeshes.spawn(mesh, pos, forward, tint, scale, attachEntity);
+            return;
+        }
+        VfxEffect fx = VfxLoader.get(effect);
+        if (fx == null) return;
         EMITTERS.add(new Emitter(fx, pos, forward, tint, scale <= 0 ? 1 : scale, attachEntity, spread, density <= 0 ? 1 : density));
     }
 
     /** Stops the looping emitters attached to an entity (their particles live out their lives). */
     public static void detach(int entityId) {
         for (Emitter e : EMITTERS) if (e.attach == entityId) e.stopped = true;
+        VfxMeshes.detach(entityId);
     }
 
     public static int particleCount() {

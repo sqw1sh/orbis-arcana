@@ -101,7 +101,7 @@ public final class DevShot {
             }, () -> {
                 Minecraft mc = Minecraft.getInstance();
                 var at = mc.player.position().add(4.5, 0.2, 8);
-                for (String fx : new String[] {"fireball_flash", "fireball_blast", "fireball_tongues", "fireball_ring", "fireball_sparks", "fireball_column", "fireball_cinders"})
+                for (String fx : new String[] {"fireball_nova", "fireball_wave", "fireball_flash", "fireball_blast", "fireball_tongues", "fireball_ring", "fireball_sparks", "fireball_column", "fireball_cinders"})
                     com.orbisarcana.client.vfx.VfxManager.spawn(OrbisArcana.id(fx), at, net.minecraft.world.phys.Vec3.ZERO, 0, 1.6f, -1);
             }),
             new Scene("signatures", () -> {
