@@ -5,7 +5,7 @@
 //   row 1: flame flipbook, 8 frames      row 2: smoke flipbook, 8 frames
 //   row 3: 0-3 shards, 4 leaf, 5 droplet, 6 rune circle, 7 cross spark
 //   row 4: lightning arc segments, 4 variants (2 cells wide each)
-//   row 5: 0 stone spike (shaded: grey facets, not only alpha), 1 wind crescent (arc bulging to the top of the cell)
+//   row 5: 0 stone spike (shaded: grey facets, not only alpha), 1 wind crescent (arc bulging to the top of the cell), 2 beam (soft vertical bar, for rays scaled to their length)
 // Run from the project root: node tools/vfx.cjs
 const fs = require("fs");
 const path = require("path");
@@ -105,6 +105,10 @@ cell(1, 5, (u, v) => {
   const d = Math.abs(r - 0.95 + thick / 2) - thick / 2;
   return d < 0 ? Math.min(1, -d * 30) * (0.75 + 0.25 * Math.cos(a)) : Math.exp(-d * 18) * 0.3 * Math.cos(a / 1.25 * Math.PI / 2);
 });
+
+// row 5, cell 2: a beam segment: a soft bar along the cell, bright core, fading at both ends just enough to blend
+// into the next one
+cell(2, 5, (u, v) => (Math.exp(-u * u * 14) * 0.7 + Math.exp(-u * u * 120) * 0.3) * Math.min(1, (1 - Math.abs(v)) * 8));
 
 const rgba = Buffer.alloc(N * N * 4, 255);
 for (let i = 0; i < N * N; i++) {

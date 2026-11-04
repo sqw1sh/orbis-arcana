@@ -157,6 +157,32 @@ public final class DevShot {
                     com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("thorn_spikes"), seed.add(0, 0.15, 0), zero, 0, 1f, 1.4f, 1, 1.4f, 2.5f);
                 });
             }),
+            new Scene("signatures3", () -> {
+                // V8 signature effects: a Star Spike beam crossing the view, the shadows rushing in on a Shadow Dart hit
+                // (left), the Dawn Ray finale (right)
+                Minecraft mc = Minecraft.getInstance();
+                mc.gui.setScreen(null);
+                mc.player.setYRot(0);
+                mc.player.setXRot(10);
+            }, () -> {
+                Minecraft mc = Minecraft.getInstance();
+                var server = mc.getSingleplayerServer();
+                if (server != null) server.execute(() -> {
+                    ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+                    if (sp == null) return;
+                    var level = sp.level();
+                    var o = sp.position();
+                    var zero = net.minecraft.world.phys.Vec3.ZERO;
+                    var a = o.add(-4, 1.2, 4);
+                    var beam = o.add(4, 1.6, 10).subtract(a);
+                    for (String fx : new String[] {"star_core", "star_glow"})
+                        com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id(fx), a.add(beam.scale(0.5)), beam, 0, (float) beam.length());
+                    for (String fx : new String[] {"dusk_implode", "dusk_ring"})
+                        com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id(fx), o.add(3, 1, 7), zero, 0, 1f);
+                    for (String fx : new String[] {"dawn_burst", "dawn_ring"})
+                        com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id(fx), o.add(-3, 1, 8), zero, 0, 1f);
+                });
+            }),
             new Scene("cast_anim", () -> fakeCast(true)),
             new Scene("cast_anim_fp", () -> fakeCast(false)),
             new Scene("vfx_cleanup", () -> {

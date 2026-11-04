@@ -9,7 +9,9 @@ import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.spell.Stars;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -24,6 +26,8 @@ import net.minecraft.world.phys.Vec3;
  * arc to each other), collapse_damage (15: a full set of stars collapses).
  */
 final class SpikeBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): the beam of starlight along the line. */
+    private static final Identifier CORE = Vfx.id("star_core"), GLOW = Vfx.id("star_glow");
     private static final double HIT_WIDTH = 0.35;
 
     static void release(CastContext ctx) {
@@ -46,7 +50,13 @@ final class SpikeBehavior {
             }
         }
         Vec3 d = end.subtract(from);
-        for (double t = 0.5; t < d.length(); t += 0.4) {
+        Vec3 start = from.add(0, -0.2, 0);
+        Vec3 beam = end.add(0, -0.2, 0).subtract(start);
+        if (beam.length() > 0.3) {
+            Vfx.play(ctx.level(), CORE, start.add(beam.scale(0.5)), beam, 0, (float) beam.length());
+            Vfx.play(ctx.level(), GLOW, start.add(beam.scale(0.5)), beam, 0, (float) beam.length());
+        }
+        for (double t = 0.5; t < d.length(); t += 1.2) {
             Vec3 p = from.add(d.normalize().scale(t)).add(0, -0.2, 0);
             Fx.TWINKLE.play(ctx.level(), p.x, p.y, p.z, 1, 0.02, 0.02, 0.02);
         }

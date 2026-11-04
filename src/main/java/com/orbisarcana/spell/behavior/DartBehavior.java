@@ -13,6 +13,7 @@ import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -37,6 +38,9 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class DartBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): the violet streak and its smoke, the shadows rushing in on a hit. */
+    private static final Identifier CORE = Vfx.id("dart_core"), SHADE = Vfx.id("dart_shade"), IMPLODE = Vfx.id("dusk_implode"),
+            RING = Vfx.id("dusk_ring");
     private static final double HIT_INFLATE = 0.3;
     private static final int ECHO_DELAY = 20;
 
@@ -130,11 +134,8 @@ final class DartBehavior {
         d.pos = target != null ? from.add(next.subtract(from).normalize().scale(Math.sqrt(best))) : next;
         d.travelled += c.speed();
         Vec3 trail = d.pos.subtract(from);
-        for (double t = 0; t < 1; t += 0.25) {
-            Vec3 p = from.add(trail.scale(t));
-            Fx.SHADOW.play(c.level(), p.x, p.y, p.z, 1, 0, 0, 0);
-            Fx.SHADOW.play(c.level(), p.x, p.y, p.z, 1, 0, 0, 0, 0x8A3AC0);
-        }
+        if (trail.lengthSqr() > 1.0E-6) Vfx.play(c.level(), CORE, from.add(trail.scale(0.5)), trail, 0, 1f);
+        Vfx.play(c.level(), SHADE, d.pos, Vec3.ZERO, 0, 1f);
         if (target != null) {
             hit(d, owner, target);
             return false;
@@ -158,6 +159,8 @@ final class DartBehavior {
         }
         Vec3 p = target.getBoundingBox().getCenter();
         Fx.SHADOW.play(c.level(), p.x, p.y, p.z, 10, 0.2, 0.3, 0.2);
+        Vfx.play(c.level(), IMPLODE, p, Vec3.ZERO, 0, 1f);
+        Vfx.play(c.level(), RING, p, Vec3.ZERO, 0, 1f);
     }
 
     private static void hurt(Cast c, ServerPlayer owner, LivingEntity target, float damage) {

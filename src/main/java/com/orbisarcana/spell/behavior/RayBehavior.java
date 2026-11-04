@@ -10,7 +10,9 @@ import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -27,6 +29,9 @@ import net.minecraft.world.phys.Vec3;
  * ally_heal (10: heals allies the beam crosses), finale (15: undead are blinded, the end of the channel flashes).
  */
 final class RayBehavior implements ChannelBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): the beam's core and glow, its flare, the finale's burst and ring. */
+    private static final Identifier CORE = Vfx.id("ray_core"), GLOW = Vfx.id("ray_glow"), HIT = Vfx.id("ray_hit"),
+            BURST = Vfx.id("dawn_burst"), RING = Vfx.id("dawn_ring");
     static final RayBehavior INSTANCE = new RayBehavior();
 
     private static final int PULSE_TICKS = 5;
@@ -67,6 +72,8 @@ final class RayBehavior implements ChannelBehavior {
             burn(ctx, e, damage);
         }
         Fx.MOTE.play(ctx.level(), at.x, at.y, at.z, 60, 1, 1, 1);
+        Vfx.play(ctx.level(), BURST, at, Vec3.ZERO, 0, 1f);
+        Vfx.play(ctx.level(), RING, at, Vec3.ZERO, 0, 1f);
     }
 
     private static void burn(CastContext ctx, LivingEntity e, float damage) {
@@ -119,11 +126,14 @@ final class RayBehavior implements ChannelBehavior {
         Vec3 start = from.add(0, -0.2, 0);
         Vec3 d = to.subtract(start);
         double len = d.length();
-        Vec3 step = d.normalize().scale(0.5);
-        Vec3 p = start.add(step);
-        for (double t = 0.5; t < len; t += 0.5, p = p.add(step)) {
-            Fx.MOTE.play(ctx.level(), p.x, p.y, p.z, 1, 0.03, 0.03, 0.03);
-        }
+        if (len < 0.3) return;
+        // one beam from the hand to where it stops (scaled to its length), a flare there, a few motes along it
+        Vec3 mid = start.add(d.scale(0.5));
+        Vfx.play(ctx.level(), CORE, mid, d, 0, (float) len);
+        Vfx.play(ctx.level(), GLOW, mid, d, 0, (float) len);
+        Vfx.play(ctx.level(), HIT, to, Vec3.ZERO, 0, 1f);
+        Vec3 p = start.add(d.scale(ctx.caster().getRandom().nextDouble()));
+        Fx.MOTE.play(ctx.level(), p.x, p.y, p.z, 2, 0.1, 0.1, 0.1);
     }
 
     private RayBehavior() {}

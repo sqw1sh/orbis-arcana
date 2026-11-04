@@ -202,5 +202,35 @@ Object.assign(EFFECTS, {
     color: [[0, 0.42, 0.55, 0.25, 1], [0.85, 0.36, 0.45, 0.2, 1], [1, 0.3, 0.38, 0.18, 0]] },
 });
 
+/** A beam drawn along its emitter's forward, scaled to its length; its width stays put (divided by the scale). */
+const beam = (width, life, color) => ({ cell: [2, 5], count: 1, sphere: 0, dir: [0, 0, 1], life, speed: [0.01, 0.01], facing: "lookat_direction",
+  size: [`${width} / variable.emitter_scale`, "1.02"], color });
+const VIOLET = [[0, 0.75, 0.45, 1, 1], [0.5, 0.55, 0.25, 0.9, 0.8], [1, 0.35, 0.12, 0.6, 0]];
+const SHADE = [[0, 0.2, 0.08, 0.3, 0], [0.15, 0.16, 0.06, 0.26, 0.85], [0.7, 0.1, 0.04, 0.18, 0.5], [1, 0.05, 0.02, 0.1, 0]];
+Object.assign(EFFECTS, {
+  // Dawn Ray (every other tick of the channel, from the hand to where it stops): a white-gold core in a wide golden
+  // glow, a flare where it hits; the finale is a burst of dawn
+  ray_core: beam(0.16, [0.12, 0.14], [[0, 1, 0.98, 0.88, 1], [1, 1, 0.92, 0.7, 0.6]]),
+  ray_glow: beam(0.9, [0.12, 0.14], [[0, 1, 0.82, 0.4, 0.45], [0.5, 1, 0.78, 0.35, 0.38], [1, 1, 0.7, 0.3, 0.2]]),
+  ray_hit: { cell: [1, 0], count: 1, sphere: 0, life: [0.12, 0.14], speed: [0, 0], size: ["0.9", "0.9"],
+    color: [[0, 1, 0.95, 0.75, 0.9], [1, 1, 0.8, 0.4, 0.3]] },
+  dawn_burst: { cell: [1, 0], count: 1, sphere: 0, life: [0.35, 0.4], speed: [0, 0], size: [overLife(1, 5.5), overLife(1, 5.5)],
+    color: [[0, 1, 0.97, 0.85, 1], [0.4, 1, 0.82, 0.45, 0.7], [1, 1, 0.65, 0.2, 0]] },
+  dawn_ring: { cell: [4, 0], count: 1, sphere: 0, life: [0.5, 0.55], speed: [0, 0], size: [overLife(0.8, 7), overLife(0.8, 7)],
+    color: [[0, 1, 0.92, 0.6, 1], [1, 1, 0.7, 0.25, 0]] },
+  // Shadow Dart (every tick at the dart, along its flight): a violet streak trailing dark smoke; on the target the
+  // shadows rush in and a violet ring flares
+  dart_core: { cell: [2, 0], count: 1, sphere: 0, dir: [0, 0, 1], life: [0.1, 0.12], speed: [0.01, 0.01], facing: "lookat_direction",
+    size: ["0.18", "1.3"], color: VIOLET },
+  dart_shade: { flipbook: [0, 2, 8], blend: true, count: 3, sphere: 0.1, life: [0.5, 0.8], speed: [0.1, 0.3], drag: 2, spin: 60,
+    size: [overLife(0.3, 0.7, 0.4), overLife(0.3, 0.7, 0.4)], color: SHADE },
+  dusk_implode: { flipbook: [0, 2, 8], blend: true, count: 14, sphere: 1, dir: "inwards", life: [0.35, 0.5], speed: [2, 3], drag: 2.5, spin: 90,
+    size: [overLife(0.7, 0.2, 0.4), overLife(0.7, 0.2, 0.4)], color: SHADE },
+  dusk_ring: { cell: [4, 0], count: 1, sphere: 0, life: [0.3, 0.35], speed: [0, 0], size: [overLife(0.4, 2.4), overLife(0.4, 2.4)], color: VIOLET },
+  // Star Spike (once, along the whole line): a beam of starlight, white-lavender in a blue-violet haze, slower to fade
+  star_core: beam(0.14, [0.35, 0.4], [[0, 1, 0.97, 1, 1], [0.5, 0.85, 0.8, 1, 0.8], [1, 0.6, 0.55, 1, 0]]),
+  star_glow: beam(0.8, [0.45, 0.5], [[0, 0.55, 0.45, 1, 0.5], [0.5, 0.45, 0.35, 0.95, 0.35], [1, 0.3, 0.2, 0.8, 0]]),
+});
+
 for (const [id, o] of Object.entries(EFFECTS)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify(effect(id, o), null, "\t") + "\n");
 console.log(`${Object.keys(EFFECTS).length} effects written`);

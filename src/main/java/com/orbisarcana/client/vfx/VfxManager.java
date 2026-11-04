@@ -43,6 +43,9 @@ public final class VfxManager {
     private static final int[] S_P_RANDOM = {Molang.slot("particle_random_1"), Molang.slot("particle_random_2"),
             Molang.slot("particle_random_3"), Molang.slot("particle_random_4")};
     private static final int S_E_AGE = Molang.slot("emitter_age"), S_E_LIFE = Molang.slot("emitter_lifetime");
+    /** The emitter's scale, readable by particles: a size divided by it stays the same however the effect is scaled
+     *  (beams scaled to their length keep their width). */
+    private static final int S_E_SCALE = Molang.slot("emitter_scale");
     private static final int[] S_E_RANDOM = {Molang.slot("emitter_random_1"), Molang.slot("emitter_random_2"),
             Molang.slot("emitter_random_3"), Molang.slot("emitter_random_4")};
 
@@ -231,6 +234,7 @@ public final class VfxManager {
         p.scope.inherit(e.scope);
         for (int s : S_P_RANDOM) p.scope.set(s, rnd.nextDouble());
         p.scope.set(S_P_AGE, 0);
+        p.scope.set(S_E_SCALE, e.scale);
         if (fx.particleCreation != null) fx.particleCreation.eval(p.scope);
         p.life = Math.max(0.05f, (float) fx.lifetime.eval(p.scope));
         p.scope.set(S_P_LIFE, p.life);
