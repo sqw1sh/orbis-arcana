@@ -1,0 +1,71 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:composite",
+  "targeting": "directional",
+  "cast": {
+    "mode": "charged",
+    "ticks": 10,
+    "min_ticks": 6
+  },
+  "cost": 10,
+  "cooldown_ticks": 40,
+  "primary_stat": "damage",
+  "params": {
+    "range": 20,
+    "pierce": 0,
+    "damage": 6,
+    "knockback": 1
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "pierce": 2
+      }
+    },
+    "10": {
+      "params": {
+        "knockback": 1.5
+      }
+    },
+    "15": {
+      "params": {
+        "pierce": 4
+      }
+    }
+  },
+  "circle": "orbisarcana:ice_lance",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "beam",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "knockback"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "travel": [
+        "orbisarcana:ice_spear"
+      ],
+      "impact": [
+        "orbisarcana:ice_shatter",
+        "orbisarcana:ice_flash"
+      ],
+      "apogee_travel": [
+        "orbisarcana:frost_ray"
+      ],
+      "apogee_impact": [
+        "orbisarcana:frost_ring"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.ice_lance.release",
+      "impact_sound": "orbisarcana:spell.ice_lance.impact"
+    }
+  }
+}

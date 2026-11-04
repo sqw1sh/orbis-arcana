@@ -1,0 +1,67 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:composite",
+  "targeting": "self",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 30,
+  "cooldown_ticks": 300,
+  "primary_stat": "damage",
+  "params": {
+    "radius": 3,
+    "duration_ticks": 160,
+    "pulse_ticks": 10,
+    "damage": 0.8,
+    "slow_ticks": 60,
+    "slow_level": 2
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 4
+      }
+    },
+    "10": {
+      "params": {
+        "slow_ticks": 90
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 5
+      }
+    }
+  },
+  "circle": "orbisarcana:winter_embrace",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "aura",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "slow"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "travel": [
+        "orbisarcana:frost_mantle",
+        "orbisarcana:snow_swirl"
+      ],
+      "impact": [
+        "orbisarcana:frost_wave"
+      ],
+      "apogee_travel": [
+        "orbisarcana:frost_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.winter_embrace.release"
+    }
+  }
+}

@@ -911,5 +911,269 @@
       }
     ],
     "subtitle": "subtitles.orbisarcana.spell.fallen_sun.impact"
+  },
+  "spell.frost_bolt.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/frost_bolt_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/frost_bolt_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.frost_bolt.release"
+  },
+  "spell.frost_bolt.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/frost_bolt_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/frost_bolt_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.frost_bolt.impact"
+  },
+  "spell.chill_touch.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/chill_touch_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/chill_touch_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.chill_touch.release"
+  },
+  "spell.frost_breath.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/frost_breath_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/frost_breath_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.frost_breath.release"
+  },
+  "spell.ice_lance.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/ice_lance_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/ice_lance_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.ice_lance.release"
+  },
+  "spell.ice_lance.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/ice_lance_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/ice_lance_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.ice_lance.impact"
+  },
+  "spell.hailstorm.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/hailstorm_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/hailstorm_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.hailstorm.release"
+  },
+  "spell.frost_nova.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/frost_nova_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/frost_nova_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.frost_nova.release"
+  },
+  "spell.frost_nova.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/frost_nova_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/frost_nova_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.frost_nova.impact"
+  },
+  "spell.glacial_spikes.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/glacial_spikes_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/glacial_spikes_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.glacial_spikes.release"
+  },
+  "spell.glacial_spikes.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/glacial_spikes_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/glacial_spikes_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.glacial_spikes.impact"
+  },
+  "spell.ice_armor.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/ice_armor_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/ice_armor_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.ice_armor.release"
+  },
+  "spell.frostbite.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/frostbite_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/frostbite_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.frostbite.release"
+  },
+  "spell.cold_ray.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/cold_ray_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/cold_ray_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.cold_ray.release"
+  },
+  "spell.blizzard.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/blizzard_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/blizzard_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.blizzard.release"
+  },
+  "spell.deep_freeze.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/deep_freeze_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/deep_freeze_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.deep_freeze.release"
+  },
+  "spell.deep_freeze.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/deep_freeze_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/deep_freeze_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.deep_freeze.impact"
+  },
+  "spell.frost_vortex.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/frost_vortex_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/frost_vortex_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.frost_vortex.release"
+  },
+  "spell.ice_comet.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/ice_comet_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/ice_comet_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.ice_comet.release"
+  },
+  "spell.ice_comet.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/ice_comet_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/ice_comet_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.ice_comet.impact"
+  },
+  "spell.winter_embrace.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/winter_embrace_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/winter_embrace_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.winter_embrace.release"
+  },
+  "spell.glacial_rampart.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/glacial_rampart_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/glacial_rampart_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.glacial_rampart.release"
+  },
+  "spell.absolute_zero.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/absolute_zero_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/absolute_zero_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.absolute_zero.release"
+  },
+  "spell.absolute_zero.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/absolute_zero_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/absolute_zero_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.absolute_zero.impact"
   }
 }

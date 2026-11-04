@@ -1,0 +1,55 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:uncommon",
+  "behavior": "orbisarcana:composite",
+  "targeting": "self",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 15,
+  "cooldown_ticks": 120,
+  "primary_stat": "shield",
+  "params": {
+    "shield": 6
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "shield": 8
+      }
+    },
+    "10": {
+      "params": {
+        "shield": 10
+      }
+    },
+    "15": {
+      "params": {
+        "shield": 13
+      }
+    }
+  },
+  "circle": "orbisarcana:ice_armor",
+  "xp_category": "support",
+  "allow_self": true,
+  "compose": {
+    "shape": "self",
+    "affects": "self",
+    "effects": [
+      {
+        "type": "shield"
+      }
+    ],
+    "visuals": {
+      "impact": [
+        "orbisarcana:ice_shell",
+        "orbisarcana:frost_trail"
+      ],
+      "apogee_impact": [
+        "orbisarcana:frost_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.ice_armor.release"
+    }
+  }
+}

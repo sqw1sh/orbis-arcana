@@ -42,7 +42,7 @@ public final class TalentEffects {
             "water/echo", "water/root", "water/a1", "water/a2", "water/b1", "water/b2",
             "earth/echo", "earth/root", "earth/a1", "earth/a2", "earth/b1", "earth/b2",
             "air/echo", "air/root", "air/a1", "air/a2", "air/b1", "air/b2",
-            "ice/echo", "ice/root", "ice/a1", "ice/a2", "ice/b1", "ice/b2",
+            "ice/echo", "ice/root", "ice/a1", "ice/a2", "ice/a3", "ice/b1", "ice/b2", "ice/b3",
             "lightning/echo", "lightning/root", "lightning/a1", "lightning/a2", "lightning/b1", "lightning/b2",
             "nature/echo", "nature/root", "nature/a1", "nature/a2", "nature/b1", "nature/b2",
             "light/echo", "light/root", "light/a1", "light/a2", "light/b1", "light/b2",
@@ -190,6 +190,9 @@ public final class TalentEffects {
 
     public static final double CRYSTALLIZATION_MULT = 1.25;
     public static final double ICE_ROSE_RADIUS = 2.5;
+    public static final double PERMAFROST_MULT = 1.5;
+    public static final double FROZEN_HEART_HEALTH_SHARE = 0.5, FROZEN_HEART_RADIUS = 4;
+    public static final int FROZEN_HEART_SLOW_TICKS = 30;
     public static final float ICE_ROSE_DAMAGE = 3f;
     public static final int QUIET_WINTER_TICKS = 60;
     public static final double WHITE_WALL_HEALTH_SHARE = 0.3;
@@ -201,6 +204,27 @@ public final class TalentEffects {
     /** Root "Cold Blood": casting Ice spells does not slow you. */
     public static boolean coldBlood(ServerPlayer caster, Identifier spellSchool) {
         return spellSchool.equals(Schools.ICE) && AttunementService.hasTalent(caster, Schools.ICE, TalentRules.ROOT);
+    }
+
+    /** A3 "Permafrost": freezes you cause last 50% longer. */
+    public static int permafrost(net.minecraft.world.entity.@org.jspecify.annotations.Nullable Entity source, int ticks) {
+        return source instanceof ServerPlayer p && AttunementService.hasTalent(p, Schools.ICE, TalentRules.A3) ? (int) Math.round(ticks * PERMAFROST_MULT) : ticks;
+    }
+
+    /** B3 "Frozen Heart": below half health, every second enemies within 4 blocks are slowed (players are left alone). */
+    @SubscribeEvent
+    static void onFrozenHeart(PlayerTickEvent.Post event) {
+        if (event.getEntity() instanceof ServerPlayer p && p.tickCount % 20 == 0) frozenHeart(p);
+    }
+
+    /** One pulse of Frozen Heart. */
+    public static void frozenHeart(ServerPlayer p) {
+        if (!p.isAlive()) return;
+        if (p.getHealth() >= p.getMaxHealth() * FROZEN_HEART_HEALTH_SHARE || !AttunementService.hasTalent(p, Schools.ICE, TalentRules.B3)) return;
+        var near = p.level().getEntitiesOfClass(LivingEntity.class, p.getBoundingBox().inflate(FROZEN_HEART_RADIUS),
+                e -> e != p && e.isAlive() && !(e instanceof Player) && e.distanceTo(p) <= FROZEN_HEART_RADIUS);
+        for (LivingEntity e : near) e.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, FROZEN_HEART_SLOW_TICKS, 1), p);
+        if (!near.isEmpty()) Fx.FROST.play(p.level(), p.getX(), p.getY() + 1, p.getZ(), 30, 1.5, 0.4, 1.5);
     }
 
     /** A1 "Crystallization": +25% damage to frozen targets. */

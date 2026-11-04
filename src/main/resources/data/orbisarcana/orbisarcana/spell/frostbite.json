@@ -1,0 +1,65 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:uncommon",
+  "behavior": "orbisarcana:composite",
+  "targeting": "target",
+  "cast": {
+    "mode": "charged",
+    "ticks": 15,
+    "min_ticks": 9
+  },
+  "cost": 15,
+  "cooldown_ticks": 120,
+  "primary_stat": "slow_ticks",
+  "params": {
+    "slow_ticks": 60,
+    "slow_level": 2,
+    "weaken_ticks": 80
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "weaken_ticks": 120
+      }
+    },
+    "10": {
+      "params": {
+        "slow_ticks": 90
+      }
+    },
+    "15": {
+      "params": {
+        "slow_ticks": 120,
+        "slow_level": 3
+      }
+    }
+  },
+  "circle": "orbisarcana:frostbite",
+  "xp_category": "control",
+  "compose": {
+    "shape": "target",
+    "effects": [
+      {
+        "type": "slow"
+      },
+      {
+        "type": "weaken"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "impact": [
+        "orbisarcana:frost_field",
+        "orbisarcana:ice_puff",
+        "orbisarcana:frost_ring"
+      ],
+      "apogee_impact": [
+        "orbisarcana:frost_star"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.frostbite.release"
+    }
+  }
+}

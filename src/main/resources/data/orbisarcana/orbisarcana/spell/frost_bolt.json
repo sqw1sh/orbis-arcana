@@ -1,0 +1,78 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:composite",
+  "targeting": "directional",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 10,
+  "cooldown_ticks": 40,
+  "primary_stat": "damage",
+  "params": {
+    "speed": 1.6,
+    "range": 28,
+    "count": 1,
+    "spread_deg": 0,
+    "pierce": 0,
+    "chain": 0,
+    "chain_range": 5,
+    "explode_radius": 0,
+    "damage": 6,
+    "slow_ticks": 60,
+    "slow_level": 2
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "count": 2,
+        "spread_deg": 10
+      }
+    },
+    "10": {
+      "params": {
+        "slow_ticks": 90
+      }
+    },
+    "15": {
+      "params": {
+        "explode_radius": 2.5
+      }
+    }
+  },
+  "circle": "orbisarcana:frost_bolt",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "bolt",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "slow"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "travel": [
+        "orbisarcana:ice_cone",
+        "orbisarcana:frost_trail"
+      ],
+      "impact": [
+        "orbisarcana:ice_shatter",
+        "orbisarcana:ice_flash"
+      ],
+      "apogee_travel": [
+        "orbisarcana:ice_mist"
+      ],
+      "apogee_impact": [
+        "orbisarcana:frost_ring"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.frost_bolt.release",
+      "impact_sound": "orbisarcana:spell.frost_bolt.impact"
+    }
+  }
+}

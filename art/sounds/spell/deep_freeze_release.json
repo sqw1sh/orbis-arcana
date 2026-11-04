@@ -1,0 +1,43 @@
+{
+  "length": 1.4,
+  "loudness": -12,
+  "variants": 2,
+  "layers": [
+    {
+      "type": "noise",
+      "highpass": [
+        6000,
+        4000
+      ],
+      "start": 0,
+      "length": 0.5,
+      "attack": 0.03,
+      "release": 0.15,
+      "gain": 0.4
+    },
+    {
+      "type": "fm",
+      "freq": 1200,
+      "ratio": 3.51,
+      "index": [
+        4,
+        0.3
+      ],
+      "start": 0.05,
+      "length": 0.9,
+      "attack": 0.001,
+      "decay": 0.225,
+      "gain": 0.35
+    }
+  ],
+  "reverb": {
+    "size": 0.35,
+    "mix": 0.2
+  },
+  "compress": {
+    "threshold": -14,
+    "ratio": 3,
+    "attack": 0.003,
+    "release": 0.12
+  }
+}

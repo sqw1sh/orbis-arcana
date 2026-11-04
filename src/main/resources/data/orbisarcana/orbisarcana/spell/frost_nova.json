@@ -1,0 +1,66 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:uncommon",
+  "behavior": "orbisarcana:composite",
+  "targeting": "self",
+  "cast": {
+    "mode": "charged",
+    "ticks": 15,
+    "min_ticks": 9
+  },
+  "cost": 15,
+  "cooldown_ticks": 120,
+  "primary_stat": "damage",
+  "params": {
+    "radius": 4,
+    "damage": 6,
+    "freeze_ticks": 40
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 5
+      }
+    },
+    "10": {
+      "params": {
+        "freeze_ticks": 60
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 6
+      }
+    }
+  },
+  "circle": "orbisarcana:frost_nova",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "nova",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "freeze"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "impact": [
+        "orbisarcana:ice_nova",
+        "orbisarcana:frost_wave",
+        "orbisarcana:rime_burst"
+      ],
+      "apogee_impact": [
+        "orbisarcana:frost_crown",
+        "orbisarcana:frost_star"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.frost_nova.release",
+      "impact_sound": "orbisarcana:spell.frost_nova.impact"
+    }
+  }
+}

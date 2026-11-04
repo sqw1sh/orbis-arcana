@@ -1,0 +1,70 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:mythic",
+  "behavior": "orbisarcana:composite",
+  "targeting": "self",
+  "cast": {
+    "mode": "charged",
+    "ticks": 50,
+    "min_ticks": 30
+  },
+  "cost": 47,
+  "cooldown_ticks": 900,
+  "primary_stat": "damage",
+  "params": {
+    "radius": 6,
+    "damage": 14,
+    "freeze_ticks": 40
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 7
+      }
+    },
+    "10": {
+      "params": {
+        "freeze_ticks": 70
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 9,
+        "freeze_ticks": 90
+      }
+    }
+  },
+  "circle": "orbisarcana:absolute_zero",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "nova",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "freeze"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "impact": [
+        "orbisarcana:zero_dome",
+        "orbisarcana:frost_wave",
+        "orbisarcana:rime_burst",
+        "orbisarcana:frost_ring",
+        "orbisarcana:ice_flash"
+      ],
+      "apogee_impact": [
+        "orbisarcana:frost_crown",
+        "orbisarcana:frost_star",
+        "orbisarcana:frost_field"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.absolute_zero.release",
+      "impact_sound": "orbisarcana:spell.absolute_zero.impact"
+    }
+  }
+}

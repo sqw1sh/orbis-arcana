@@ -170,6 +170,7 @@ public final class OrbisGameTests {
         test("milestones_change_params", 20, OrbisGameTests::milestonesChangeParams);
         test("composite_lasting_and_channel", 100, OrbisGameTests::compositeLastingAndChannel);
         test("fire_deep_talents", 40, OrbisGameTests::fireDeepTalents);
+        test("ice_deep_talents", 60, OrbisGameTests::iceDeepTalents);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1680,6 +1681,26 @@ public final class OrbisGameTests {
                 "water has no third node yet");
         zombie.discard();
         cleanup(h, w);
+        cleanup(h, p);
+        h.succeed();
+    }
+
+    /** Roadmap V11: Permafrost lengthens your freezes; Frozen Heart slows enemies near you below half health. */
+    private static void iceDeepTalents(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.ICE, ICE_SHARD, 9);
+        for (String n : new String[] {"a1", "a2", "a3"}) h.assertTrue(AttunementService.pickTalent(p, Schools.ICE, n).isEmpty(), "picks " + n);
+        h.assertTrue(TalentEffects.permafrost(p, 40) == 60, "Permafrost: 40 ticks become 60");
+        h.assertTrue(TalentEffects.permafrost(null, 40) == 40, "no caster, no bonus");
+        AttunementService.resetTalents(p, Schools.ICE);
+        for (String n : new String[] {"b1", "b2", "b3"}) h.assertTrue(AttunementService.pickTalent(p, Schools.ICE, n).isEmpty(), "picks " + n);
+        Pig pig = h.spawn(EntityTypes.PIG, new Vec3(6.5, 1, 5.5));
+        pig.setNoAi(true);
+        TalentEffects.frozenHeart(p);
+        h.assertFalse(pig.hasEffect(MobEffects.SLOWNESS), "no slow while the mage is healthy");
+        p.setHealth(p.getMaxHealth() * 0.3f);
+        TalentEffects.frozenHeart(p); // the pulse runs every second from the player tick
+        h.assertTrue(pig.hasEffect(MobEffects.SLOWNESS), "Frozen Heart slows the pig next to a wounded mage");
+        pig.discard();
         cleanup(h, p);
         h.succeed();
     }

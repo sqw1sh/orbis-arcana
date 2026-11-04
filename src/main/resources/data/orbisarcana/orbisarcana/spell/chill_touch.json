@@ -1,0 +1,69 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:composite",
+  "targeting": "target",
+  "cast": {
+    "mode": "charged",
+    "ticks": 10,
+    "min_ticks": 6
+  },
+  "cost": 10,
+  "cooldown_ticks": 40,
+  "primary_stat": "damage",
+  "params": {
+    "damage": 6,
+    "slow_ticks": 60,
+    "slow_level": 2,
+    "freeze_ticks": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "slow_ticks": 90
+      }
+    },
+    "10": {
+      "params": {
+        "slow_level": 3
+      }
+    },
+    "15": {
+      "params": {
+        "freeze_ticks": 30
+      }
+    }
+  },
+  "circle": "orbisarcana:chill_touch",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "target",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "slow"
+      },
+      {
+        "type": "freeze"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "impact": [
+        "orbisarcana:ice_flash",
+        "orbisarcana:ice_puff",
+        "orbisarcana:frost_field"
+      ],
+      "apogee_impact": [
+        "orbisarcana:frost_crown",
+        "orbisarcana:frost_star"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.chill_touch.release"
+    }
+  }
+}

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Ice school pack
+- 17 new Ice spells (20 in all): Frost Bolt, Chill Touch, Frost Breath, Ice Lance, Hailstorm, Frost Nova, Glacial Spikes, Ice Armor, Frostbite, Cold Ray, Blizzard, Deep Freeze, Frost Vortex, Ice Comet, Winter's Embrace, Glacial Rampart, Absolute Zero. Each has its own circle, sounds, effects, apogee look and three milestones.
+- Ice talent tree: third nodes Permafrost (your freezes last 50% longer) and Frozen Heart (below half health, enemies near you are slowed).
+
 ### Fire school pack
 - 17 new Fire spells (21 in all): Ember Spray, Kindle, Heat Wave, Flame Lash, Cinder Volley, Magma Burst, Scorching Ray, Flare, Blazing Ring, Ember Ward, Fire Wall, Scorched Earth, Dragon's Breath, Meteor, Immolation, Inferno Pillar, Fallen Sun. Each has its own effects and three milestones.
 - Every new Fire spell has its own magic circle, its own release and impact sounds, and an apogee look at mastery 15.

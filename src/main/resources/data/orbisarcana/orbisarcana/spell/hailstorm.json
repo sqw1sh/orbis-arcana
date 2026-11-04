@@ -1,0 +1,73 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:uncommon",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 15,
+    "min_ticks": 9
+  },
+  "cost": 15,
+  "cooldown_ticks": 120,
+  "primary_stat": "damage",
+  "params": {
+    "range": 20,
+    "radius": 3,
+    "duration_ticks": 100,
+    "pulse_ticks": 10,
+    "damage": 0.8,
+    "slow_ticks": 60,
+    "slow_level": 2
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 4
+      }
+    },
+    "10": {
+      "params": {
+        "slow_ticks": 90
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 5
+      }
+    }
+  },
+  "circle": "orbisarcana:hailstorm",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "zone",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "slow"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "travel": [
+        "orbisarcana:hail_curtain",
+        "orbisarcana:hail_bounce"
+      ],
+      "impact": [
+        "orbisarcana:frost_ring"
+      ],
+      "apogee_travel": [
+        "orbisarcana:frost_mist"
+      ],
+      "apogee_impact": [
+        "orbisarcana:frost_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.hailstorm.release"
+    }
+  }
+}

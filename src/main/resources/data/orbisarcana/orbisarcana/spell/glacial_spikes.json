@@ -1,0 +1,66 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:uncommon",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 15,
+    "min_ticks": 9
+  },
+  "cost": 15,
+  "cooldown_ticks": 120,
+  "primary_stat": "damage",
+  "params": {
+    "radius": 3,
+    "damage": 6,
+    "lift": 0.6
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 4
+      }
+    },
+    "10": {
+      "params": {
+        "lift": 0.9
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 5
+      }
+    }
+  },
+  "circle": "orbisarcana:glacial_spikes",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "burst",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "lift"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "impact": [
+        "orbisarcana:ice_spike",
+        "orbisarcana:spike_shards",
+        "orbisarcana:ice_puff"
+      ],
+      "apogee_impact": [
+        "orbisarcana:frost_wave",
+        "orbisarcana:frost_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.glacial_spikes.release",
+      "impact_sound": "orbisarcana:spell.glacial_spikes.impact"
+    }
+  }
+}

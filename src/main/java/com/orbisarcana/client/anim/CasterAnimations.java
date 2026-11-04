@@ -52,7 +52,11 @@ public final class CasterAnimations {
             // V10 fire pack: calling down the sky, flaring out around oneself, lashing and flashing forward, a guard
             Map.entry("meteor", "release_judgment"), Map.entry("fallen_sun", "release_judgment"), Map.entry("immolation", "release_dome"),
             Map.entry("heat_wave", "release_dome"), Map.entry("blazing_ring", "release_dome"), Map.entry("flame_lash", "release_thrust"),
-            Map.entry("flare", "release_thrust"), Map.entry("ember_ward", "release_guard"));
+            Map.entry("flare", "release_thrust"), Map.entry("ember_ward", "release_guard"),
+            // V11 ice pack
+            Map.entry("ice_comet", "release_judgment"), Map.entry("absolute_zero", "release_dome"), Map.entry("frost_nova", "release_dome"),
+            Map.entry("winter_embrace", "release_dome"), Map.entry("ice_lance", "release_thrust"), Map.entry("chill_touch", "release_thrust"),
+            Map.entry("ice_armor", "release_guard"), Map.entry("glacial_rampart", "release_guard"));
     public static final Identifier TOGGLE_ON = anim("toggle_on");
 
     private static final Map<Integer, Running> RUNNING = new HashMap<>();

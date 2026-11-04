@@ -1,0 +1,66 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:rare",
+  "behavior": "orbisarcana:composite",
+  "targeting": "target",
+  "cast": {
+    "mode": "charged",
+    "ticks": 18,
+    "min_ticks": 11
+  },
+  "cost": 20,
+  "cooldown_ticks": 180,
+  "primary_stat": "damage",
+  "params": {
+    "damage": 9.5,
+    "freeze_ticks": 40
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "freeze_ticks": 60
+      }
+    },
+    "10": {
+      "params": {
+        "damage": 11
+      }
+    },
+    "15": {
+      "params": {
+        "freeze_ticks": 80,
+        "damage": 12
+      }
+    }
+  },
+  "circle": "orbisarcana:deep_freeze",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "target",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "freeze"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "impact": [
+        "orbisarcana:ice_coffin",
+        "orbisarcana:ice_flash",
+        "orbisarcana:rime_burst"
+      ],
+      "apogee_impact": [
+        "orbisarcana:frost_crown",
+        "orbisarcana:frost_star"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.deep_freeze.release",
+      "impact_sound": "orbisarcana:spell.deep_freeze.impact"
+    }
+  }
+}

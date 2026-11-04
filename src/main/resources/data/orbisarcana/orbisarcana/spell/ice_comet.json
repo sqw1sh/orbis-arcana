@@ -1,0 +1,82 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 25,
+    "min_ticks": 15
+  },
+  "cost": 30,
+  "cooldown_ticks": 300,
+  "primary_stat": "damage",
+  "params": {
+    "range": 30,
+    "explode_radius": 3.5,
+    "damage": 10,
+    "freeze_ticks": 40,
+    "knockback": 1
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "explode_radius": 4.5
+      }
+    },
+    "10": {
+      "params": {
+        "freeze_ticks": 60
+      }
+    },
+    "15": {
+      "params": {
+        "explode_radius": 5.5,
+        "damage": 12
+      }
+    }
+  },
+  "circle": "orbisarcana:ice_comet",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "meteor",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "freeze"
+      },
+      {
+        "type": "knockback"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "travel": [
+        "orbisarcana:comet_core",
+        "orbisarcana:comet_trail",
+        "orbisarcana:frost_trail"
+      ],
+      "impact": [
+        "orbisarcana:ice_nova",
+        "orbisarcana:frost_wave",
+        "orbisarcana:rime_burst",
+        "orbisarcana:ice_shatter",
+        "orbisarcana:ice_puff"
+      ],
+      "apogee_travel": [
+        "orbisarcana:ice_mist"
+      ],
+      "apogee_impact": [
+        "orbisarcana:zero_dome",
+        "orbisarcana:frost_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.ice_comet.release",
+      "impact_sound": "orbisarcana:spell.ice_comet.impact"
+    }
+  }
+}

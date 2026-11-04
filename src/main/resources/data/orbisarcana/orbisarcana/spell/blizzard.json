@@ -1,0 +1,78 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:rare",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 18,
+    "min_ticks": 11
+  },
+  "cost": 20,
+  "cooldown_ticks": 180,
+  "primary_stat": "damage",
+  "params": {
+    "range": 20,
+    "radius": 3,
+    "duration_ticks": 100,
+    "pulse_ticks": 10,
+    "damage": 1,
+    "slow_ticks": 60,
+    "slow_level": 2,
+    "blind_ticks": 40
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 4
+      }
+    },
+    "10": {
+      "params": {
+        "slow_ticks": 90
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 5
+      }
+    }
+  },
+  "circle": "orbisarcana:blizzard",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "zone",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "slow"
+      },
+      {
+        "type": "blind"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "travel": [
+        "orbisarcana:blizzard_vortex",
+        "orbisarcana:snow_swirl",
+        "orbisarcana:frost_mist"
+      ],
+      "impact": [
+        "orbisarcana:frost_wave"
+      ],
+      "apogee_travel": [
+        "orbisarcana:hail_bounce"
+      ],
+      "apogee_impact": [
+        "orbisarcana:frost_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.blizzard.release"
+    }
+  }
+}

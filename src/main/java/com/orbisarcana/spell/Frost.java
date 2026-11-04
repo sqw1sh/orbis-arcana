@@ -32,6 +32,7 @@ public final class Frost {
 
     public static void freeze(LivingEntity target, int ticks, @Nullable Entity source) {
         if (!(target.level() instanceof ServerLevel level) || !target.isAlive()) return;
+        ticks = com.orbisarcana.school.TalentEffects.permafrost(source, ticks);
         boolean boss = target.getType().builtInRegistryHolder().is(Tags.EntityTypes.BOSSES);
         target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, ticks, boss ? BOSS_AMPLIFIER : FREEZE_AMPLIFIER, false, false), source);
         if (boss) return;

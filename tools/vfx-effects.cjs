@@ -498,6 +498,54 @@ Object.assign(MESHES, {
     uv: [6, 1], scroll: [0.6, -2], spin: 90, fresnel: 1.2, color: burst([1, 0.85, 0.35, 1], [1, 0.45, 0.05, 0]) },
 });
 
+// ---- V11 ice pack: signature effects of the 17 new Ice spells (own colours, played untinted) ----
+const RIME = [[0, 1, 1, 1, 1], [0.4, 0.8, 0.95, 1, 0.85], [1, 0.5, 0.78, 1, 0]];
+const SNOW = [[0, 1, 1, 1, 0], [0.15, 0.95, 0.98, 1, 0.9], [0.8, 0.85, 0.95, 1, 0.7], [1, 0.8, 0.92, 1, 0]];
+Object.assign(EFFECTS, {
+  frost_hand: { cell: [3, 0], count: 8, sphere: 0.1, dir: [0, 0, 1], life: [0.2, 0.35], speed: [1.5, 4], drag: 5, spin: 180,
+    size: [overLife(0.16, 0.04), overLife(0.16, 0.04)], color: RIME },
+  frost_trail: { cell: [1, 3], count: 3, sphere: 0.1, dir: [0, 0, -1], life: [0.3, 0.5], speed: [0.3, 1], accel: [0, -2, 0], drag: 2, spin: 300,
+    size: [overLife(0.12, 0.04), overLife(0.12, 0.04)], color: RIME },
+  hail_bounce: { cell: [1, 3], count: 14, disc: true, dir: [0, 1, 0], life: [0.4, 0.7], speed: [1.5, 3.5], accel: [0, -14, 0], drag: 0.5, spin: 400,
+    size: [overLife(0.14, 0.08, 0.6), overLife(0.14, 0.08, 0.6)], color: RIME },
+  snow_swirl: { cell: [0, 0], count: 18, disc: true, dir: "outwards", life: [0.6, 1.1], speed: [2, 4], accel: [0, -0.4, 0], drag: 1.2, spin: 200,
+    size: [overLife(0.08, 0.05), overLife(0.08, 0.05)], color: SNOW },
+  rime_burst: { cell: [7, 3], count: 30, sphere: 0.3, life: [0.5, 0.9], speed: [4, 9], drag: 3, spin: 360,
+    size: [overLife(0.3, 0.08, 0.5), overLife(0.3, 0.08, 0.5)], color: RIME },
+  spike_shards: { cell: [0, 3], count: 16, disc: true, dir: [0, 1, 0], life: [0.5, 0.9], speed: [4, 8], accel: [0, -14, 0], drag: 0.8, spin: 500,
+    size: [overLife(0.2, 0.1, 0.5), overLife(0.2, 0.1, 0.5)], color: RIME },
+  comet_trail: { cell: [0, 0], count: 6, sphere: 0.6, dir: [0, 0, -1], life: [0.4, 0.8], speed: [0.4, 1.2], drag: 2, spin: 60,
+    size: [overLife(0.9, 0.3, 0.4), overLife(0.9, 0.3, 0.4)], color: [[0, 0.85, 0.97, 1, 0.8], [0.5, 0.6, 0.85, 1, 0.5], [1, 0.4, 0.7, 1, 0]] },
+  frost_star: { cell: [3, 0], count: 3, sphere: 0, life: [0.35, 0.45], speed: [0, 0], spin: 60,
+    size: [overLife(0.8, 4.2), overLife(0.8, 4.2)], color: [[0, 1, 1, 1, 1], [0.4, 0.7, 0.92, 1, 0.8], [1, 0.4, 0.75, 1, 0]] },
+});
+Object.assign(MESHES, {
+  frost_cone: { shape: "cone", texture: E("ice"), life: 0.35, axis: "forward", segments: 20, rings: 4, radius: 0.15, radius_top: 2.2, height: 6, uv: [2, 2],
+    scroll: [0.2, -3], spin: 60, fresnel: 0.6, color: burst([0.85, 0.97, 1, 0.85], [0.45, 0.75, 1, 0]) },
+  frost_ray: { shape: "cylinder", texture: E("ice"), life: 0.3, axis: "forward", stretch: true, segments: 12, rings: 3, radius: [[0, 0.05], [0.2, 0.14], [1, 0.04]],
+    height: 1, uv: [2, 6], scroll: [0, -6], spin: 90, fresnel: -0.6, color: burst([0.9, 1, 1, 1], [0.4, 0.75, 1, 0]) },
+  ice_spear: { shape: "cylinder", texture: E("ice"), life: 0.4, axis: "forward", stretch: true, segments: 6, rings: 3, radius: [[0, 0.32], [0.3, 0.22], [1, 0.02]],
+    height: 1, uv: [1, 3], scroll: [0, -2], spin: 40, fresnel: -0.3, color: burst([0.8, 0.95, 1, 1], [0.45, 0.75, 1, 0]) },
+  ice_shell: { shape: "sphere", texture: E("ice"), life: 0.9, segments: 24, rings: 12, radius: [[0, 1.6], [0.3, 1.05], [1, 1.1]], uv: [3, 1.5],
+    spin: 30, fresnel: 2, color: hold([0.75, 0.95, 1, 0.8], 0.15, 0.6) },
+  hail_curtain: { shape: "cylinder", texture: E("ice"), life: 0.55, segments: 24, rings: 4, radius: 1.25, height: 4, uv: [6, 1], scroll: [0, 4], spin: 15,
+    fresnel: 1, color: hold([0.8, 0.95, 1, 0.45], 0.15, 0.75) },
+  blizzard_vortex: { shape: "spiral", texture: E("ice"), life: 0.55, segments: 40, arms: 4, turns: 1.2, radius: 1.3, radius_top: 1.6, height: 3,
+    thickness: 0.6, uv: [3, 1], scroll: [-2, 0], spin: 260, color: hold([0.85, 0.97, 1, 0.6], 0.15, 0.75) },
+  ice_spike: { shape: "cone", texture: E("ice"), life: 0.6, segments: 6, rings: 2, radius: [[0, 0.2], [0.15, 0.7], [1, 0.6]], radius_top: 0.02,
+    height: [[0, 0.3], [0.15, 2.4], [1, 2.2]], uv: [1, 2], fresnel: -0.3, color: hold([0.8, 0.95, 1, 0.95], 0.05, 0.75) },
+  frost_mantle: { shape: "cylinder", texture: E("ice"), life: 0.55, segments: 28, rings: 6, radius: [[0, 0.9], [1, 1.05]], height: 2.3, uv: [3, 1.5],
+    scroll: [0, 1.5], spin: -60, fresnel: 1.5, color: hold([0.8, 0.95, 1, 0.6], 0.2, 0.75) },
+  ice_coffin: { shape: "cylinder", texture: E("ice"), life: 2, segments: 8, rings: 2, radius: [[0, 1.1], [0.08, 0.7], [1, 0.7]], height: 2.2, uv: [2, 2],
+    spin: 0, fresnel: 1, color: hold([0.8, 0.95, 1, 0.75], 0.05, 0.85) },
+  comet_core: { shape: "sphere", texture: E("ice"), life: 0.1, segments: 24, rings: 12, radius: 0.9, uv: [2, 1], scroll: [0.3, -1], spin: 90, fresnel: -0.5,
+    color: [[0, [0.85, 0.97, 1, 1]]] },
+  zero_dome: { shape: "sphere", texture: E("ice"), life: 1.2, segments: 32, rings: 16, radius: [[0, 0.3], [0.25, 3], [1, 3.2]], uv: [4, 2], scroll: [0.1, -0.5],
+    spin: 20, fresnel: 1.6, color: hold([0.85, 0.97, 1, 0.85], 0.1, 0.6), shake: { strength: 1.2, radius: 16, time: 0.4 } },
+  frost_crown: { shape: "cylinder", texture: E("ice"), life: 0.7, segments: 6, rings: 3, radius: [[0, 0.6], [1, 2.6]], height: [[0, 0.2], [0.3, 1.4], [1, 0.3]],
+    uv: [3, 1], scroll: [0, -1], spin: 40, fresnel: 1.2, color: burst([0.9, 1, 1, 1], [0.4, 0.75, 1, 0]) },
+});
+
 for (const [id, m] of Object.entries(MESHES)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify({ "orbisarcana:mesh": m }, null, "\t") + "\n");
 
 for (const [id, o] of Object.entries(EFFECTS)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify(effect(id, o), null, "\t") + "\n");

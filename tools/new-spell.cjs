@@ -111,10 +111,11 @@ const effectBonus = lvl => {
   const free = Object.keys(params).filter(k => EFFECT_WORD[k] && !used().has(k));
   const p = free.find(k => k !== primary) || free[0];
   if (!p) return null;
-  return set(lvl, p, Math.round(params[p] * 1.5 * 10) / 10, p.endsWith("_ticks") ? "ticks:" + p : "amount:" + p);
+  // the main stat grows gently (mastery already scales it), side effects by half
+  return set(lvl, p, Math.round(params[p] * (p === primary ? 1.25 : 1.5) * 10) / 10, p.endsWith("_ticks") ? "ticks:" + p : "amount:" + p);
 };
 shapeBonus(5, false) ?? effectBonus(5);
-effectBonus(10) ?? shapeBonus(10, false);
+effectBonus(10) ?? shapeBonus(10, false) ?? (primary in params && set(10, primary, Math.round(params[primary] * 1.25 * 10) / 10, (primary.endsWith("_ticks") ? "ticks:" : "amount:") + primary));
 if (!shapeBonus(15, true)) { const p = Object.keys(params).find(k => EFFECT_WORD[k]) || primary; set(15, p, Math.round(params[p] * 2 * 10) / 10, (p.endsWith("_ticks") ? "ticks:" : "amount:") + p); }
 for (const lvl of Object.keys(ms)) for (const k of Object.keys(ms[lvl])) if (!(k in params)) delete ms[lvl][k];
 

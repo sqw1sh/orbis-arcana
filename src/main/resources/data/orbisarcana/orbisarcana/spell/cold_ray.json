@@ -1,0 +1,65 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:uncommon",
+  "behavior": "orbisarcana:composite",
+  "targeting": "directional",
+  "cast": {
+    "mode": "channel",
+    "ticks": 60
+  },
+  "cost": 15,
+  "cooldown_ticks": 120,
+  "primary_stat": "damage",
+  "params": {
+    "range": 20,
+    "pierce": 0,
+    "pulse_ticks": 5,
+    "damage": 0.6,
+    "slow_ticks": 60,
+    "slow_level": 2
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "pierce": 2
+      }
+    },
+    "10": {
+      "params": {
+        "slow_ticks": 90
+      }
+    },
+    "15": {
+      "params": {
+        "pierce": 4
+      }
+    }
+  },
+  "circle": "orbisarcana:cold_ray",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "beam",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "slow"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "travel": [
+        "orbisarcana:frost_ray"
+      ],
+      "impact": [],
+      "apogee_travel": [
+        "orbisarcana:ice_spear"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.cold_ray.release"
+    }
+  }
+}

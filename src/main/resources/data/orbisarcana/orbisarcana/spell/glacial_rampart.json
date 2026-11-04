@@ -1,0 +1,76 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 25,
+    "min_ticks": 15
+  },
+  "cost": 30,
+  "cooldown_ticks": 300,
+  "primary_stat": "damage",
+  "params": {
+    "range": 20,
+    "length": 7,
+    "width": 1.5,
+    "height": 3,
+    "duration_ticks": 120,
+    "pulse_ticks": 10,
+    "damage": 1,
+    "slow_ticks": 60,
+    "slow_level": 2,
+    "knockback": 1
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "length": 10
+      }
+    },
+    "10": {
+      "params": {
+        "slow_ticks": 90
+      }
+    },
+    "15": {
+      "params": {
+        "duration_ticks": 180
+      }
+    }
+  },
+  "circle": "orbisarcana:glacial_rampart",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "wall",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "slow"
+      },
+      {
+        "type": "knockback"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "travel": [
+        "orbisarcana:ice_spike",
+        "orbisarcana:ice_mist"
+      ],
+      "impact": [
+        "orbisarcana:ice_shatter"
+      ],
+      "apogee_travel": [
+        "orbisarcana:spike_shards"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.glacial_rampart.release"
+    }
+  }
+}

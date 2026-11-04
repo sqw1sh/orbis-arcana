@@ -1,0 +1,96 @@
+{
+  "length": 2.2,
+  "loudness": -12,
+  "variants": 2,
+  "layers": [
+    {
+      "type": "saw",
+      "freq": [
+        90,
+        60
+      ],
+      "lowpass": 900,
+      "start": 0,
+      "length": 1.6,
+      "attack": 0.05,
+      "decay": 0.8,
+      "gain": 0.55,
+      "vibrato": [
+        11,
+        40
+      ],
+      "drive": 1.5
+    },
+    {
+      "type": "sine",
+      "freq": [
+        70,
+        35
+      ],
+      "start": 0.2,
+      "length": 1.4,
+      "attack": 0.003,
+      "decay": 0.48999999999999994,
+      "gain": 0.9,
+      "drive": 3
+    },
+    {
+      "type": "noise",
+      "bandpass": 3500,
+      "q": 1.2,
+      "start": 0.25,
+      "length": 0.08,
+      "attack": 0.0005,
+      "decay": 0.015,
+      "gain": 1
+    },
+    {
+      "type": "noise",
+      "bandpass": 3500,
+      "q": 1.2,
+      "start": 0.4,
+      "length": 0.08,
+      "attack": 0.0005,
+      "decay": 0.015,
+      "gain": 0.8
+    },
+    {
+      "type": "noise",
+      "bandpass": 3500,
+      "q": 1.2,
+      "start": 0.55,
+      "length": 0.08,
+      "attack": 0.0005,
+      "decay": 0.015,
+      "gain": 0.7
+    },
+    {
+      "type": "sine",
+      "freq": 3200,
+      "start": 0.3,
+      "length": 0.12,
+      "attack": 0.001,
+      "decay": 0.04,
+      "gain": 0.35,
+      "repeat": {
+        "count": 12,
+        "every": 0.08,
+        "jitter": 0.032,
+        "freq": [
+          0.7,
+          1.6
+        ]
+      }
+    }
+  ],
+  "reverb": {
+    "size": 0.35,
+    "mix": 0.2
+  },
+  "compress": {
+    "threshold": -14,
+    "ratio": 3,
+    "attack": 0.003,
+    "release": 0.12
+  }
+}
