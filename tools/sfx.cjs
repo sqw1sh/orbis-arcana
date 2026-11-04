@@ -3,11 +3,11 @@
 // with ffmpeg (PATH, env FFMPEG, or the winget link). Mono, because Minecraft only positions mono sounds in 3D.
 //
 // Recipe: { "length": s, "loudness": dB RMS (default -16), "variants": n, "loop": bool, "layers": [layer...],
-//           "reverb": {"size": 0..1, "mix": 0..1}, "echo": {"delay": s, "feedback": 0..1, "mix": 0..1} }
+//           "reverb": {"size": 0..1, "mix": 0..1}, "compress": {"threshold": dB, "ratio": n, "attack": s, "release": s}, "echo": {"delay": s, "feedback": 0..1, "mix": 0..1} }
 // Layer:  { "type": "sine"|"triangle"|"saw"|"square"|"noise"|"fm"|"crackle",
 //           "freq": [startHz, endHz] (or a number), "curve": "exp"|"lin", "detune": cents, "vibrato": [Hz, cents],
 //           "start": s, "length": s, "attack": s, "release": s, "decay": s (exponential fade time constant), "gain": 0..1,
-//           "tremolo": [Hz, depth],
+//           "tremolo": [Hz, depth], "drive": saturation amount (1 = gentle, 4 = gritty),
 //           "lowpass" / "highpass": Hz or [startHz, endHz], "bandpass": Hz or [startHz, endHz], "q": resonance (default 0.8),
 //           fm: "ratio" (modulator/carrier), "index": [start, end];  crackle: "density" (pops per second),
 //           "repeat": {"count": n, "every": s, "jitter": s, "freq": [lo, hi]} — the layer is played n times (glints, bubbles) }
@@ -108,6 +108,7 @@ function renderOne(out, l, random, pitch, startSec, freq) {
             bq.set(type, sweep(v, t), type === 'bandpass' ? q * 2 : q);
             x = bq.run(x);
         }
+        if (l.drive) x = Math.tanh(x * l.drive) / Math.tanh(l.drive);
         let env = Math.min(1, i / attack) * Math.min(1, (n - i) / release);
         if (l.decay) env *= Math.exp(-i / RATE / l.decay);
         if (l.tremolo) env *= 1 - l.tremolo[1] * (0.5 + 0.5 * Math.sin(2 * Math.PI * l.tremolo[0] * i / RATE));
@@ -142,6 +143,18 @@ function reverb(x, size, mix) {
     for (let n = 0; n < x.length; n++) x[n] = x[n] * (1 - mix * 0.5) + out[n] * mix;
 }
 
+/** Feed-forward compressor ({threshold dB, ratio, attack s, release s}): evens the body out so hits feel dense and loud. */
+function compress(x, c) {
+    const th = Math.pow(10, (c.threshold ?? -18) / 20), ratio = c.ratio ?? 4;
+    const at = Math.exp(-1 / ((c.attack ?? 0.005) * RATE)), rl = Math.exp(-1 / ((c.release ?? 0.15) * RATE));
+    let env = 0;
+    for (let i = 0; i < x.length; i++) {
+        const a = Math.abs(x[i]);
+        env = a > env ? at * env + (1 - at) * a : rl * env + (1 - rl) * a;
+        if (env > th) x[i] *= Math.pow(env / th, 1 / ratio - 1);
+    }
+}
+
 function render(recipe, seed, pitch) {
     let out = new Float32Array(Math.ceil(recipe.length * RATE));
     const random = rng(seed);
@@ -152,6 +165,7 @@ function render(recipe, seed, pitch) {
         for (let i = 0; i < out.length; i++) out[i] += wet[i] * recipe.echo.mix;
     }
     if (recipe.reverb) reverb(out, recipe.reverb.size ?? 0.5, recipe.reverb.mix ?? 0.3);
+    if (recipe.compress) compress(out, recipe.compress);
     if (recipe.loop) {
         // blend the last 0.25 s into the start and cut it off: the end meets the start seamlessly
         const fade = Math.min(Math.floor(0.25 * RATE), Math.floor(out.length / 4));

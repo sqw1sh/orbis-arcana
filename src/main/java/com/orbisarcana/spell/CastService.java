@@ -311,8 +311,10 @@ public final class CastService {
         return Math.max(1, (int) Math.round(params.getOrDefault("charges", 1.0)));
     }
 
+    /** Volume above 1 widens the range (16 blocks per unit): a release carries ~24 blocks. */
     private static void playAt(ServerPlayer player, net.minecraft.sounds.SoundEvent sound) {
-        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), sound, net.minecraft.sounds.SoundSource.PLAYERS, 1f, 1f);
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(), sound, net.minecraft.sounds.SoundSource.PLAYERS, 1.5f,
+                0.96f + player.getRandom().nextFloat() * 0.08f);
     }
 
     private static void deny(ServerPlayer player, Identifier spellId, CastDenial reason) {

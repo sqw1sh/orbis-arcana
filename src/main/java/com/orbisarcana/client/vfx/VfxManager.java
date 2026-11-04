@@ -38,6 +38,7 @@ import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 public final class VfxManager {
     private static final float DT = 0.05f;
     private static final double MAX_DISTANCE = 96;
+    private static final float LOOSE_LOOP_SECONDS = 30;
     private static final int S_P_AGE = Molang.slot("particle_age"), S_P_LIFE = Molang.slot("particle_lifetime");
     private static final int[] S_P_RANDOM = {Molang.slot("particle_random_1"), Molang.slot("particle_random_2"),
             Molang.slot("particle_random_3"), Molang.slot("particle_random_4")};
@@ -91,8 +92,11 @@ public final class VfxManager {
             scope.set(S_E_LIFE, activeTime);
         }
 
+        /** Stopped: no more particles; the emitter goes once the last ones die (looping effects only end this way). */
+        boolean stopped;
+
         boolean done() {
-            return !fx.looping && age > activeTime && particles.isEmpty();
+            return (stopped || !fx.looping && age > activeTime) && particles.isEmpty();
         }
     }
 
@@ -109,10 +113,10 @@ public final class VfxManager {
 
     /** Stops the looping emitters attached to an entity (their particles live out their lives). */
     public static void detach(int entityId) {
-        for (Emitter e : EMITTERS) if (e.attach == entityId) e.activeTime = Math.min(e.activeTime, e.age);
+        for (Emitter e : EMITTERS) if (e.attach == entityId) e.stopped = true;
     }
 
-    static int particleCount() {
+    public static int particleCount() {
         return particleCount;
     }
 
@@ -133,8 +137,7 @@ public final class VfxManager {
                 if (entity == null && e.age < 0.5f) {
                     // keep the spawn position meanwhile
                 } else if (entity == null || !entity.isAlive()) {
-                    e.activeTime = Math.min(e.activeTime, e.age);
-                    e.instantDone = true;
+                    e.stopped = true;
                 } else {
                     e.x = entity.getX();
                     e.y = entity.getY() + entity.getBbHeight() / 2;
@@ -154,7 +157,9 @@ public final class VfxManager {
         if (fx.perUpdate != null) fx.perUpdate.eval(e.scope);
         float cycle = e.activeTime + e.sleepTime;
         float local = fx.looping && cycle > 0 ? e.age % cycle : e.age;
-        boolean active = fx.looping ? local < e.activeTime : e.age <= e.activeTime;
+        // loops not tied to an entity stop on their own after 30 s, so nothing can be left glowing forever
+        if (fx.looping && e.attach < 0 && e.age > LOOSE_LOOP_SECONDS) e.stopped = true;
+        boolean active = !e.stopped && (fx.looping ? local < e.activeTime : e.age <= e.activeTime);
         if (active && room > 0) {
             if (fx.instantCount != null && !e.instantDone) {
                 int n = (int) Math.round(fx.instantCount.eval(e.scope) * spawnScale);

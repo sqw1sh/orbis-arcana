@@ -1,43 +1,98 @@
 {
-  "length": 0.9,
-  "loudness": -15,
+  "length": 2.2,
+  "loudness": -11,
+  "variants": 3,
   "layers": [
     {
-      "type": "triangle",
-      "freq": [
-        320,
-        290
+      "type": "noise",
+      "bandpass": [
+        400,
+        3500
       ],
-      "decay": 0.18,
-      "gain": 0.5
+      "q": 1.4,
+      "length": 0.22,
+      "attack": 0.198,
+      "release": 0.02,
+      "gain": 0.35
+    },
+    {
+      "type": "noise",
+      "highpass": 2500,
+      "start": 0.2,
+      "length": 0.05,
+      "attack": 0.001,
+      "decay": 0.012,
+      "gain": 0.9
+    },
+    {
+      "type": "noise",
+      "bandpass": [
+        3000,
+        350
+      ],
+      "q": 0.9,
+      "start": 0.2,
+      "length": 0.7,
+      "attack": 0.01,
+      "decay": 0.22,
+      "gain": 0.7,
+      "drive": 1.5
     },
     {
       "type": "sine",
       "freq": [
-        640,
-        600
+        110,
+        38
       ],
-      "decay": 0.12,
-      "gain": 0.25
+      "start": 0.2,
+      "length": 1,
+      "attack": 0.003,
+      "decay": 0.32,
+      "gain": 1,
+      "drive": 2.2
+    },
+    {
+      "type": "triangle",
+      "freq": [
+        340,
+        300
+      ],
+      "start": 0.2,
+      "length": 0.8,
+      "decay": 0.25,
+      "gain": 0.55,
+      "drive": 1.5
     },
     {
       "type": "noise",
-      "highpass": 3500,
-      "attack": 0.01,
-      "decay": 0.15,
-      "gain": 0.35
+      "highpass": 3000,
+      "start": 0.2,
+      "length": 1,
+      "decay": 0.35,
+      "gain": 0.45,
+      "tremolo": [
+        14,
+        0.5
+      ]
     },
     {
       "type": "crackle",
-      "density": 60,
-      "highpass": 3000,
-      "decay": 0.2,
-      "gain": 0.3
+      "density": 180,
+      "highpass": 2500,
+      "start": 0.22,
+      "length": 0.9,
+      "decay": 0.3,
+      "gain": 0.6
     }
   ],
-  "variants": 3,
   "reverb": {
-    "size": 0.45,
-    "mix": 0.25
+    "size": 0.9,
+    "mix": 0.42
+  },
+  "compress": {
+    "threshold": -20,
+    "ratio": 4,
+    "attack": 0.004,
+    "release": 0.2
   }
 }

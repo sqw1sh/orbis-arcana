@@ -1,6 +1,6 @@
 {
   "length": 2.25,
-  "loudness": -20,
+  "loudness": -16,
   "loop": true,
   "layers": [
     {
@@ -38,10 +38,38 @@
         3,
         0.5
       ]
+    },
+    {
+      "_pulse": true,
+      "type": "sine",
+      "freq": 46,
+      "gain": 0.45,
+      "drive": 1.8,
+      "tremolo": [
+        2,
+        0.7
+      ]
+    },
+    {
+      "_pulse": true,
+      "type": "noise",
+      "bandpass": 3200,
+      "q": 3,
+      "gain": 0.12,
+      "tremolo": [
+        0.5,
+        0.8
+      ]
     }
   ],
   "reverb": {
     "size": 0.5,
     "mix": 0.25
+  },
+  "compress": {
+    "threshold": -22,
+    "ratio": 3,
+    "attack": 0.01,
+    "release": 0.2
   }
 }

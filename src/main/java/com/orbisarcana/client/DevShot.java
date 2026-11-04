@@ -66,6 +66,12 @@ public final class DevShot {
             }),
             new Scene("cast_anim", () -> fakeCast(true)),
             new Scene("cast_anim_fp", () -> fakeCast(false)),
+            new Scene("vfx_cleanup", () -> {
+                // a trail attached to an entity that never shows up must stop and vanish after its grace time
+                Minecraft mc = Minecraft.getInstance();
+                com.orbisarcana.client.vfx.VfxManager.spawn(OrbisArcana.id("fire_trail"), mc.player.getEyePosition().add(mc.player.getLookAngle().scale(3)),
+                        net.minecraft.world.phys.Vec3.ZERO, 0, 1f, 987654);
+            }, () -> OrbisArcana.LOGGER.info("[devshot] vfx particles alive: {}", com.orbisarcana.client.vfx.VfxManager.particleCount())),
             new Scene("radial", () -> {
                 learnTestSpells();
                 Minecraft.getInstance().gui.setScreen(new RadialMenuScreen(true));

@@ -130,7 +130,7 @@ public class SpellProjectile extends ThrowableProjectile {
         Vfx.play(server, SPARKS, at, back, tint(), scale);
         Vfx.play(server, SMOKE, at, Vec3.ZERO, 0, scale);
         server.playSound(null, at.x, at.y, at.z, com.orbisarcana.registry.ModSounds.impact(school), net.minecraft.sounds.SoundSource.PLAYERS,
-                0.8f + 0.2f * scale, 0.95f + random.nextFloat() * 0.1f);
+                2f * scale, 0.95f + random.nextFloat() * 0.1f); // ~32 blocks, more for the milestone explosion
     }
 
     /** Fire keeps the effects' own colours; other schools tint them. */

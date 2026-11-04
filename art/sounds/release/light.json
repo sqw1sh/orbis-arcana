@@ -1,45 +1,110 @@
 {
-  "length": 1.2,
-  "loudness": -15,
+  "length": 2.2,
+  "loudness": -11,
+  "variants": 3,
   "layers": [
+    {
+      "type": "noise",
+      "bandpass": [
+        400,
+        3500
+      ],
+      "q": 1.4,
+      "length": 0.22,
+      "attack": 0.198,
+      "release": 0.02,
+      "gain": 0.35
+    },
+    {
+      "type": "noise",
+      "highpass": 2500,
+      "start": 0.2,
+      "length": 0.05,
+      "attack": 0.001,
+      "decay": 0.012,
+      "gain": 0.9
+    },
+    {
+      "type": "noise",
+      "bandpass": [
+        3000,
+        350
+      ],
+      "q": 0.9,
+      "start": 0.2,
+      "length": 0.7,
+      "attack": 0.01,
+      "decay": 0.22,
+      "gain": 0.7,
+      "drive": 1.5
+    },
+    {
+      "type": "sine",
+      "freq": [
+        110,
+        38
+      ],
+      "start": 0.2,
+      "length": 1,
+      "attack": 0.003,
+      "decay": 0.32,
+      "gain": 1,
+      "drive": 2.2
+    },
     {
       "type": "sine",
       "freq": 523,
-      "decay": 0.4,
-      "gain": 0.3
+      "start": 0.2,
+      "length": 2,
+      "decay": 0.7,
+      "gain": 0.4
     },
     {
       "type": "sine",
       "freq": 659,
-      "start": 0.03,
-      "decay": 0.4,
-      "gain": 0.25
+      "start": 0.22,
+      "length": 2,
+      "decay": 0.7,
+      "gain": 0.35
     },
     {
       "type": "sine",
       "freq": 784,
-      "start": 0.06,
-      "decay": 0.4,
-      "gain": 0.25
+      "start": 0.24,
+      "length": 2,
+      "decay": 0.7,
+      "gain": 0.35
     },
     {
       "type": "sine",
       "freq": 1046,
-      "start": 0.09,
-      "decay": 0.35,
-      "gain": 0.2
+      "start": 0.26,
+      "length": 2,
+      "decay": 0.7,
+      "gain": 0.3
     },
     {
-      "type": "noise",
-      "highpass": 6000,
-      "attack": 0.01,
-      "decay": 0.2,
-      "gain": 0.2
+      "type": "fm",
+      "freq": 2093,
+      "ratio": 2,
+      "index": [
+        3,
+        0
+      ],
+      "start": 0.2,
+      "length": 1.5,
+      "decay": 0.5,
+      "gain": 0.25
     }
   ],
-  "variants": 3,
   "reverb": {
-    "size": 0.45,
-    "mix": 0.25
+    "size": 0.9,
+    "mix": 0.42
+  },
+  "compress": {
+    "threshold": -20,
+    "ratio": 4,
+    "attack": 0.004,
+    "release": 0.2
   }
 }

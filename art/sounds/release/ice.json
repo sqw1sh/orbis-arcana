@@ -1,49 +1,99 @@
 {
-  "length": 1,
-  "loudness": -15,
+  "length": 2.2,
+  "loudness": -11,
+  "variants": 3,
   "layers": [
     {
-      "type": "fm",
-      "freq": [
-        1400,
-        1200
+      "type": "noise",
+      "bandpass": [
+        400,
+        3500
       ],
-      "ratio": 3.5,
-      "index": [
-        3,
-        0.2
-      ],
-      "decay": 0.35,
-      "gain": 0.45
+      "q": 1.4,
+      "length": 0.22,
+      "attack": 0.198,
+      "release": 0.02,
+      "gain": 0.35
     },
     {
       "type": "noise",
-      "highpass": 4000,
-      "attack": 0.005,
-      "decay": 0.15,
-      "gain": 0.4
+      "highpass": 2500,
+      "start": 0.2,
+      "length": 0.05,
+      "attack": 0.001,
+      "decay": 0.012,
+      "gain": 0.9
+    },
+    {
+      "type": "noise",
+      "bandpass": [
+        3000,
+        350
+      ],
+      "q": 0.9,
+      "start": 0.2,
+      "length": 0.7,
+      "attack": 0.01,
+      "decay": 0.22,
+      "gain": 0.7,
+      "drive": 1.5
     },
     {
       "type": "sine",
-      "freq": 2400,
+      "freq": [
+        110,
+        38
+      ],
+      "start": 0.2,
+      "length": 1,
+      "attack": 0.003,
+      "decay": 0.32,
+      "gain": 1,
+      "drive": 2.2
+    },
+    {
+      "type": "fm",
+      "freq": [
+        1600,
+        1100
+      ],
+      "ratio": 3.5,
+      "index": [
+        5,
+        0.4
+      ],
+      "start": 0.2,
+      "length": 1.4,
+      "decay": 0.45,
+      "gain": 0.55
+    },
+    {
+      "type": "sine",
+      "freq": 3000,
       "length": 0.12,
-      "attack": 0.002,
+      "attack": 0.001,
       "decay": 0.05,
-      "gain": 0.25,
+      "gain": 0.35,
+      "start": 0.22,
       "repeat": {
-        "count": 5,
-        "every": 0.06,
+        "count": 9,
+        "every": 0.045,
         "jitter": 0.02,
         "freq": [
           1800,
-          4200
+          6000
         ]
       }
     }
   ],
-  "variants": 3,
   "reverb": {
-    "size": 0.45,
-    "mix": 0.25
+    "size": 0.9,
+    "mix": 0.42
+  },
+  "compress": {
+    "threshold": -20,
+    "ratio": 4,
+    "attack": 0.004,
+    "release": 0.2
   }
 }
