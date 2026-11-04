@@ -13,6 +13,7 @@ import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.Frost;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -37,6 +38,10 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class ShardBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): the streak and mist of a shard in flight, the shatter on impact. */
+    private static final Identifier STREAK = Vfx.id("ice_streak"), MIST = Vfx.id("ice_mist"), FLASH = Vfx.id("ice_flash"),
+            SHATTER = Vfx.id("ice_shatter"), PUFF = Vfx.id("ice_puff");
+
     private static final double HIT_INFLATE = 0.3;
     private static final double SPLIT_SHARE = 0.4;
     private static final double SPLIT_RANGE = 6;
@@ -128,19 +133,24 @@ final class ShardBehavior {
         s.pos = target != null ? from.add(next.subtract(from).normalize().scale(Math.sqrt(best))) : next;
         s.travelled += c.speed();
         Vec3 trail = s.pos.subtract(from);
-        for (double t = 0; t < 1; t += 0.34) {
-            Vec3 p = from.add(trail.scale(t));
-            Fx.FROST.play(c.level(), p.x, p.y, p.z, 1, 0, 0, 0);
-        }
+        if (trail.lengthSqr() > 1.0E-6) Vfx.play(c.level(), STREAK, from.add(trail.scale(0.5)), trail, 0, 1f);
+        Vfx.play(c.level(), MIST, s.pos, Vec3.ZERO, 0, 1f);
         if (target != null) {
             hit(s, owner, target);
             return false;
         }
         if (clip.getType() != HitResult.Type.MISS) {
-            Fx.FROST.play(c.level(), s.pos.x, s.pos.y, s.pos.z, 8, 0.1, 0.1, 0.1);
+            shatter(c.level(), s.pos, 0.7f);
             return false;
         }
         return s.travelled < s.range;
+    }
+
+    /** A shard breaking: cold flash, ice splinters, a puff of frost. */
+    private static void shatter(ServerLevel level, Vec3 at, float scale) {
+        Vfx.play(level, FLASH, at, Vec3.ZERO, 0, scale);
+        Vfx.play(level, SHATTER, at, Vec3.ZERO, 0, scale);
+        Vfx.play(level, PUFF, at, Vec3.ZERO, 0, scale);
     }
 
     private static void hit(Shard s, @Nullable ServerPlayer owner, LivingEntity target) {
@@ -148,7 +158,7 @@ final class ShardBehavior {
         boolean wasFrozen = Frost.isFrozen(target);
         hurt(c, owner, target, s.damage);
         if (c.slowTicks() > 0) target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, c.slowTicks(), 0), owner);
-        Fx.FROST.play(c.level(), s.pos.x, s.pos.y, s.pos.z, 12, 0.15, 0.15, 0.15);
+        shatter(c.level(), s.pos, 1f);
         if (wasFrozen && c.burstRadius() > 0) {
             for (LivingEntity e : c.level().getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(c.burstRadius()),
                     e -> e.isAlive() && e != owner && e != target && e.distanceTo(target) <= c.burstRadius() + target.getBbWidth())) {
@@ -156,6 +166,7 @@ final class ShardBehavior {
             }
             Fx.FROST.play(c.level(), target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), 60, c.burstRadius() / 2, 0.5, c.burstRadius() / 2);
             Fx.FROST.play(c.level(), target.getX(), target.getY() + 1, target.getZ(), 40, c.burstRadius() / 2, 0.5, c.burstRadius() / 2);
+            shatter(c.level(), target.position().add(0, target.getBbHeight() / 2, 0), (float) Math.max(1, c.burstRadius() / 1.5));
         }
         if (s.split) {
             long now = c.level().getGameTime();

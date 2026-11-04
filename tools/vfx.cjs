@@ -5,6 +5,7 @@
 //   row 1: flame flipbook, 8 frames      row 2: smoke flipbook, 8 frames
 //   row 3: 0-3 shards, 4 leaf, 5 droplet, 6 rune circle, 7 cross spark
 //   row 4: lightning arc segments, 4 variants (2 cells wide each)
+//   row 5: 0 stone spike (shaded: grey facets, not only alpha)
 // Run from the project root: node tools/vfx.cjs
 const fs = require("fs");
 const path = require("path");
@@ -13,6 +14,8 @@ const S = require("./lib/sdf.cjs");
 
 const N = 512, C = 64;
 const alpha = new Float32Array(N * N);
+/** Brightness of the white (1 everywhere but shaded cells): lets a tinted sprite show facets. */
+const lum = new Float32Array(N * N).fill(1);
 
 /** Deterministic value noise in [0, 1). */
 function hash(x, y, s) { let h = (x * 374761393 + y * 668265263 + s * 974711) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; }
@@ -81,8 +84,24 @@ for (let k = 0; k < 4; k++) {
   cell(k * 2, 4, (u, v, x, y) => neon(d(x + 0.5, y + 0.5), 1.4, 5), 2);
 }
 
+// row 5: a stone spike rising from the ground: apex up, a lit and a shaded facet split by a ridge, a dark rim,
+// chips of noise; it fades out at the bottom, where it meets the ground
+for (let y = 0; y < C; y++) for (let x = 0; x < C; x++) {
+  const u = ((x + 0.5) / C) * 2 - 1, t = (y + 0.5) / C;          // t: 0 apex .. 1 base
+  const half = 0.06 + 0.5 * t, edge = half - Math.abs(u);
+  const i = (5 * C + y) * N + x;
+  if (edge <= 0) continue;
+  alpha[i] = Math.min(1, edge * 40) * Math.min(1, (1 - t) * 7);
+  const facet = u < 0 ? 0.62 : 0.92, ridge = Math.exp(-u * u * 900) * 0.25, rim = edge < 0.05 ? -0.25 : 0;
+  lum[i] = Math.max(0.2, Math.min(1, facet + ridge + rim + (hash(x >> 2, y >> 2, 51) - 0.5) * 0.18));
+}
+
 const rgba = Buffer.alloc(N * N * 4, 255);
-for (let i = 0; i < N * N; i++) rgba[i * 4 + 3] = Math.round(alpha[i] * 255);
+for (let i = 0; i < N * N; i++) {
+  const l = Math.round(lum[i] * 255);
+  rgba[i * 4] = rgba[i * 4 + 1] = rgba[i * 4 + 2] = l;
+  rgba[i * 4 + 3] = Math.round(alpha[i] * 255);
+}
 const out = png(N, N, rgba);
 for (const file of ["src/main/resources/assets/orbisarcana/textures/vfx/sheet.png", "art/vfx/textures/vfx/sheet.png"]) {
   fs.mkdirSync(path.dirname(file), { recursive: true });

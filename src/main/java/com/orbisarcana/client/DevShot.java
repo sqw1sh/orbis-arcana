@@ -104,6 +104,33 @@ public final class DevShot {
                 for (String fx : new String[] {"fireball_flash", "fireball_blast", "fireball_tongues", "fireball_ring", "fireball_sparks", "fireball_column", "fireball_cinders"})
                     com.orbisarcana.client.vfx.VfxManager.spawn(OrbisArcana.id(fx), at, net.minecraft.world.phys.Vec3.ZERO, 0, 1.6f, -1);
             }),
+            new Scene("signatures", () -> {
+                // V8 signature effects: a Discharge bolt with its strike (left), an ice shard breaking (middle), a line of
+                // Stone Spear spikes (right), all started on the server just before the shot
+                Minecraft mc = Minecraft.getInstance();
+                mc.gui.setScreen(null);
+                mc.player.setYRot(0);
+                mc.player.setXRot(10);
+            }, () -> {
+                Minecraft mc = Minecraft.getInstance();
+                var server = mc.getSingleplayerServer();
+                if (server != null) server.execute(() -> {
+                    ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+                    if (sp == null) return;
+                    var level = sp.level();
+                    var o = sp.position();
+                    com.orbisarcana.spell.Arcs.draw(level, o.add(5, 2.2, 7), o.add(2.2, 0.9, 7.5));
+                    com.orbisarcana.spell.Arcs.strike(level, o.add(2.2, 0.9, 7.5));
+                    var ice = o.add(0, 1, 7);
+                    for (String fx : new String[] {"ice_flash", "ice_shatter", "ice_puff"})
+                        com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id(fx), ice, net.minecraft.world.phys.Vec3.ZERO, 0, 1f);
+                    for (int i = 0; i < 4; i++) {
+                        var at = o.add(-1.5 - i * 0.9, 0.7, 5 + i * 0.8);
+                        com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("stone_spikes"), at, net.minecraft.world.phys.Vec3.ZERO, 0, 1f, 0.4f, 1, 0.4f, 1);
+                        com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("earth_dust"), at.add(0, -0.5, 0), net.minecraft.world.phys.Vec3.ZERO, 0, 1f, 0.4f, 1, 0.4f, 1);
+                    }
+                });
+            }),
             new Scene("cast_anim", () -> fakeCast(true)),
             new Scene("cast_anim_fp", () -> fakeCast(false)),
             new Scene("vfx_cleanup", () -> {

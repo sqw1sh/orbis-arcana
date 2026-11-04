@@ -13,6 +13,7 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -37,6 +38,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class WaveBehavior {
     private static final double SPEED = 1.0;
+    /** Signature effects (tools/vfx-effects.cjs): stone spikes thrusting up, dust thrown along the ground. */
+    private static final Identifier SPIKES = Vfx.id("stone_spikes"), DUST = Vfx.id("earth_dust");
     private static final double SEEK_RANGE = 8.0;
     private static final double SEEK_TURN = 0.25;
     private static final int STUN_TICKS = 20;
@@ -121,8 +124,10 @@ final class WaveBehavior {
         }
         w.pos = w.pos.add(w.dir.scale(SPEED));
         w.travelled += SPEED;
-        Fx.DEBRIS.play(w.level, w.pos.x, w.pos.y + 0.3, w.pos.z, 12, w.width * 0.3, 0.3, w.width * 0.3);
-        Fx.SPARK.play(w.level, w.pos.x, w.pos.y + 0.6, w.pos.z, 2, 0.1, 0.3, 0.1);
+        float half = (float) Math.max(0.3, w.width * 0.5);
+        Vfx.play(w.level, SPIKES, w.pos.add(0, 0.7, 0), Vec3.ZERO, 0, 1f, half, 1, half, 1);
+        Vfx.play(w.level, DUST, w.pos.add(0, 0.2, 0), Vec3.ZERO, 0, 1f, half, 1, half, 1);
+        Fx.DEBRIS.play(w.level, w.pos.x, w.pos.y + 0.3, w.pos.z, 6, w.width * 0.3, 0.3, w.width * 0.3);
         for (LivingEntity e : w.level.getEntitiesOfClass(LivingEntity.class, new AABB(w.pos, w.pos).inflate(w.width, 1.5, w.width),
                 e -> e.isAlive() && e != caster && !w.hit.contains(e.getUUID()))) {
             w.hit.add(e.getUUID());
@@ -142,6 +147,9 @@ final class WaveBehavior {
             if (caster != null) MasteryService.onControl(caster, w.spell, w.castId, e);
         }
         Fx.DEBRIS.play(w.level, w.pos.x, w.pos.y + 0.8, w.pos.z, 50, radius * 0.5, 0.8, radius * 0.5);
+        // the eruption at the end of the line: a ring of bigger spikes and a wave of dust
+        Vfx.play(w.level, SPIKES, w.pos.add(0, 0.9, 0), Vec3.ZERO, 0, 1.3f, (float) radius * 0.6f, 1, (float) radius * 0.6f, 3);
+        Vfx.play(w.level, DUST, w.pos.add(0, 0.2, 0), Vec3.ZERO, 0, 1.2f, (float) radius * 0.5f, 1, (float) radius * 0.5f, 2.5f);
     }
 
     private static void hurt(Wave w, ServerPlayer caster, LivingEntity e, float damage) {

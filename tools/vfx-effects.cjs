@@ -137,5 +137,40 @@ Object.assign(EFFECTS, {
     color: [[0, 1, 0.75, 0.3, 0], [0.1, 1, 0.7, 0.25, 1], [0.8, 0.9, 0.3, 0.05, 0.8], [1, 0.5, 0.1, 0.02, 0]] },
 });
 
+const ICE = [[0, 0.95, 1, 1, 1], [0.5, 0.7, 0.92, 1, 0.8], [1, 0.45, 0.75, 1, 0]];
+const STONE = [[0, 0.46, 0.42, 0.38, 1], [0.85, 0.4, 0.37, 0.33, 1], [1, 0.34, 0.31, 0.28, 0]];
+const DUST = [[0, 0.55, 0.47, 0.38, 0], [0.15, 0.5, 0.43, 0.35, 0.7], [1, 0.42, 0.36, 0.3, 0]];
+Object.assign(EFFECTS, {
+  // Ice Shard in flight (played every tick at the shard, pointing along its flight): a white-cyan streak and frost mist
+  ice_streak: { cell: [2, 0], count: 1, sphere: 0, dir: [0, 0, 1], life: [0.1, 0.12], speed: [0.001, 0.001], facing: "lookat_direction",
+    size: [overLife(0.16, 0.1), overLife(1.3, 1)], color: ICE },
+  ice_mist: { cell: [0, 0], count: 2, sphere: 0.1, life: [0.35, 0.6], speed: [0.05, 0.2], drag: 2,
+    size: [overLife(0.25, 0.6, 0.4), overLife(0.25, 0.6, 0.4)], color: [[0, 0.7, 0.9, 1, 0.3], [1, 0.6, 0.85, 1, 0]] },
+  // ...and when it hits: a cold flash, shards scattering under gravity, a puff of frost
+  ice_shatter: { cell: [0, 3], count: 18, sphere: 0.2, life: [0.4, 0.8], speed: [2.5, 6], accel: [0, -12, 0], drag: 1.2, spin: 500,
+    size: [overLife(0.22, 0.12, 0.5), overLife(0.22, 0.12, 0.5)], color: ICE },
+  ice_flash: { cell: [1, 0], count: 1, sphere: 0, life: [0.12, 0.14], speed: [0, 0],
+    size: [overLife(0.4, 1.8), overLife(0.4, 1.8)], color: [[0, 0.9, 1, 1, 0.9], [1, 0.5, 0.8, 1, 0]] },
+  ice_puff: { flipbook: [0, 2, 8], count: 6, sphere: 0.3, life: [0.6, 1], speed: [0.5, 1.5], drag: 3, spin: 40,
+    size: [overLife(0.4, 1, 0.4), overLife(0.4, 1, 0.4)], color: [[0, 0.8, 0.95, 1, 0], [0.15, 0.8, 0.95, 1, 0.45], [1, 0.7, 0.9, 1, 0]] },
+  // Discharge: a lightning bolt drawn segment by segment (each pointing along its segment, scaled to its length): a
+  // thin white core and a wide blue glow that flicker; at the target a blue-white flash and sparks
+  bolt: { cell: [2, 0], count: 1, sphere: 0, dir: [0, 0, 1], life: [0.2, 0.26], speed: [0.01, 0.01], facing: "lookat_direction",
+    size: ["0.13", "1.2"], color: [[0, 1, 1, 1, 1], [0.25, 0.85, 0.95, 1, 0.5], [0.45, 1, 1, 1, 1], [1, 0.6, 0.8, 1, 0]] },
+  bolt_glow: { cell: [2, 0], count: 1, sphere: 0, dir: [0, 0, 1], life: [0.24, 0.3], speed: [0.01, 0.01], facing: "lookat_direction",
+    size: ["0.55", "1.3"], color: [[0, 0.45, 0.7, 1, 0.8], [0.3, 0.4, 0.65, 1, 0.45], [0.5, 0.45, 0.7, 1, 0.75], [1, 0.3, 0.5, 1, 0]] },
+  discharge_hit: { cell: [1, 0], count: 2, sphere: 0, life: [0.14, 0.18], speed: [0, 0],
+    size: [overLife(0.6, 2.2), overLife(0.6, 2.2)], color: [[0, 0.85, 0.95, 1, 0.9], [1, 0.4, 0.6, 1, 0]] },
+  discharge_sparks: { cell: [2, 0], count: 16, sphere: 0.2, life: [0.2, 0.45], speed: [4, 9], accel: [0, -6, 0], drag: 4, facing: "lookat_direction",
+    size: [overLife(0.05, 0.02), overLife(0.45, 0.12, 0.5)], color: [[0, 1, 1, 1, 1], [0.5, 0.7, 0.85, 1, 0.9], [1, 0.4, 0.6, 1, 0]] },
+  // Stone Spear: stone spikes thrusting up from the ground (upright, turning to the camera), dust thrown along it;
+  // the eruption at the end of the line is bigger
+  stone_spikes: { cell: [0, 5], blend: true, count: 3, disc: true, life: [0.55, 0.75], speed: [0, 0], facing: "lookat_y", spin: 0,
+    size: [`0.75 * math.min(1, ${LIFE} * 5) * (1 - math.max(0, ${LIFE} - 0.75) * 4)`, `1.7 * math.min(1, ${LIFE} * 5) * (1 - math.max(0, ${LIFE} - 0.75) * 4)`],
+    color: STONE },
+  earth_dust: { flipbook: [0, 2, 8], blend: true, count: 6, disc: true, ringOnly: true, life: [0.7, 1.1], speed: [1, 2.2], accel: [0, 0.3, 0], drag: 3, spin: 30,
+    size: [overLife(0.4, 1.1, 0.4), overLife(0.4, 1.1, 0.4)], color: DUST },
+});
+
 for (const [id, o] of Object.entries(EFFECTS)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify(effect(id, o), null, "\t") + "\n");
 console.log(`${Object.keys(EFFECTS).length} effects written`);
