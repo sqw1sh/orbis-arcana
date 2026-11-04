@@ -14,9 +14,9 @@ import com.orbisarcana.registry.ModBlocks;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
+import com.orbisarcana.spell.Fx;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -96,7 +96,7 @@ final class SeedBehavior {
                 if (now < e.getValue()) return false;
                 var g = level.getEntity(e.getKey());
                 if (g == null) return now > e.getValue() + 200; // maybe in another level; forget it eventually
-                level.sendParticles(ParticleTypes.HAPPY_VILLAGER, g.getX(), g.getY() + 1.4, g.getZ(), 30, 0.6, 1, 0.6, 0);
+                Fx.LEAF.play(level, g.getX(), g.getY() + 1.4, g.getZ(), 30, 0.6, 1, 0.6);
                 g.discard();
                 return true;
             });
@@ -114,7 +114,7 @@ final class SeedBehavior {
             sprout(c, owner, e.position(), now);
             return false;
         }
-        c.level().sendParticles(ParticleTypes.HAPPY_VILLAGER, next.x, next.y, next.z, 1, 0, 0, 0, 0);
+        Fx.LEAF.play(c.level(), next.x, next.y, next.z, 1, 0, 0, 0);
         s.travelled += s.pos.distanceTo(next);
         s.pos = next;
         s.vel = s.vel.add(0, -GRAVITY, 0);
@@ -130,7 +130,7 @@ final class SeedBehavior {
         var floor = c.level().clip(new ClipContext(at.add(0, 0.5, 0), at.add(0, -6, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
         Vec3 center = floor.getType() == HitResult.Type.MISS ? at : floor.getLocation();
         THICKETS.add(new Thicket(c, center, now + c.duration()));
-        c.level().sendParticles(ParticleTypes.HAPPY_VILLAGER, center.x, center.y + 0.5, center.z, 40, c.radius() / 2, 0.4, c.radius() / 2, 0);
+        Fx.LEAF.play(c.level(), center.x, center.y + 0.5, center.z, 40, c.radius() / 2, 0.4, c.radius() / 2);
         if (owner != null) EchoService.onEffectiveCast(owner, c.school(), center, c.castId());
 
         if (c.barrier()) {
@@ -151,7 +151,7 @@ final class SeedBehavior {
                 Vec3 d = e.position().subtract(center);
                 for (double t = 0.2; t < 1; t += 0.2) {
                     Vec3 p = center.add(d.scale(t));
-                    c.level().sendParticles(ParticleTypes.CRIT, p.x, p.y + 0.4, p.z, 1, 0, 0, 0, 0);
+                    Fx.SPARK.play(c.level(), p.x, p.y + 0.4, p.z, 1, 0, 0, 0);
                 }
             }
         }
@@ -179,7 +179,7 @@ final class SeedBehavior {
         if (now % 4 == 0) {
             var rnd = c.level().getRandom();
             double a = rnd.nextDouble() * Math.PI * 2, r = Math.sqrt(rnd.nextDouble()) * c.radius();
-            c.level().sendParticles(ParticleTypes.SPORE_BLOSSOM_AIR, t.center().x + Math.cos(a) * r, t.center().y + 0.3, t.center().z + Math.sin(a) * r, 2, 0.1, 0.2, 0.1, 0);
+            Fx.LEAF.play(c.level(), t.center().x + Math.cos(a) * r, t.center().y + 0.3, t.center().z + Math.sin(a) * r, 2, 0.1, 0.2, 0.1, 0xFFB0D8);
         }
         return true;
     }

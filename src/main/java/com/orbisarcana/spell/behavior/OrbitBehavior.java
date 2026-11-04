@@ -9,8 +9,8 @@ import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -90,7 +90,7 @@ public final class OrbitBehavior {
             Vec3 d = at.subtract(from);
             for (double t = 0; t < d.length(); t += 0.5) {
                 Vec3 q = from.add(d.normalize().scale(t));
-                p.level().sendParticles(ParticleTypes.END_ROD, q.x, q.y, q.z, 1, 0, 0, 0, 0);
+                Fx.TWINKLE.play(p.level(), q.x, q.y, q.z, 1, 0, 0, 0);
             }
             if (target != null) {
                 float before = target.getHealth();
@@ -124,7 +124,7 @@ public final class OrbitBehavior {
             }
             for (int i = 0; i < o.stars; i++) {
                 Vec3 s = starPos(p, o, i, now);
-                level.sendParticles(ParticleTypes.END_ROD, s.x, s.y, s.z, 1, 0, 0, 0, 0);
+                Fx.TWINKLE.play(level, s.x, s.y, s.z, 1, 0, 0, 0);
             }
             catchProjectiles(p, o, level, now);
         }
@@ -139,7 +139,7 @@ public final class OrbitBehavior {
             if (!caught) continue;
             o.stars--;
             MasteryService.award(p, o.spell, 1);
-            level.sendParticles(ParticleTypes.END_ROD, at.x, at.y, at.z, 15, 0.1, 0.1, 0.1, 0.1);
+            Fx.TWINKLE.play(level, at.x, at.y, at.z, 15, 0.1, 0.1, 0.1);
             if (o.reflect) {
                 proj.setDeltaMovement(proj.getDeltaMovement().scale(-1));
                 proj.setOwner(p);

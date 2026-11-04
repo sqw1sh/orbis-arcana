@@ -14,7 +14,6 @@ import com.orbisarcana.school.AttunementService;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.Schools;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -50,7 +49,7 @@ public final class Stars {
         List<Star> own = of(caster);
         if (own.size() >= max) STARS.remove(own.getFirst());
         STARS.add(new Star(caster.getUUID(), level, pos, level.getGameTime() + life, arc));
-        level.sendParticles(ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 12, 0.1, 0.1, 0.1, 0.08);
+        Fx.TWINKLE.play(level, pos.x, pos.y, pos.z, 12, 0.1, 0.1, 0.1);
         own = of(caster);
         int tier = EchoService.tier(caster, Schools.ASTRAL);
         if (own.size() >= EchoRules.STARS_FOR_PULSE && (tier > 0 || collapse > 0)) {
@@ -96,17 +95,17 @@ public final class Stars {
             caster.setDeltaMovement(to.normalize().scale(Math.min(2.0, to.length() * 0.3)).add(0, 0.4, 0));
             caster.syncVelocity = true;
         }
-        for (Star s : figure) line(level, s.pos(), centre, ParticleTypes.REVERSE_PORTAL);
-        level.sendParticles(ParticleTypes.REVERSE_PORTAL, centre.x, centre.y + 0.5, centre.z, 80, radius / 2, 0.5, radius / 2, 0.1);
-        level.sendParticles(ParticleTypes.END_ROD, centre.x, centre.y + 0.5, centre.z, 30, 0.3, 0.3, 0.3, 0.2);
+        for (Star s : figure) line(level, s.pos(), centre, Fx.TWINKLE, 0xB08CFF);
+        Fx.TWINKLE.play(level, centre.x, centre.y + 0.5, centre.z, 80, radius / 2, 0.5, radius / 2, 0xB08CFF);
+        Fx.TWINKLE.play(level, centre.x, centre.y + 0.5, centre.z, 30, 0.3, 0.3, 0.3);
     }
 
-    private static void line(ServerLevel level, Vec3 a, Vec3 b, net.minecraft.core.particles.SimpleParticleType type) {
+    private static void line(ServerLevel level, Vec3 a, Vec3 b, Fx type, int tint) {
         Vec3 d = b.subtract(a);
         int n = (int) Math.ceil(d.length() / 0.4);
         for (int i = 0; i <= n; i++) {
             Vec3 p = a.add(d.scale((double) i / Math.max(1, n)));
-            level.sendParticles(type, p.x, p.y, p.z, 1, 0, 0, 0, 0);
+            type.play(level, p.x, p.y, p.z, 1, 0, 0, 0, tint);
         }
     }
 
@@ -128,7 +127,7 @@ public final class Stars {
         }
         if (now % 4 == 0) {
             for (Star s : STARS) {
-                if (s.level() == level) level.sendParticles(ParticleTypes.END_ROD, s.pos().x, s.pos().y, s.pos().z, 1, 0.05, 0.05, 0.05, 0);
+                if (s.level() == level) Fx.TWINKLE.play(level, s.pos().x, s.pos().y, s.pos().z, 1, 0.05, 0.05, 0.05);
             }
         }
         if (now % 20 != 0) return;
@@ -146,7 +145,7 @@ public final class Stars {
                         e -> e.isAlive() && !(e instanceof Player) && e.getBoundingBox().inflate(0.3).clip(a.pos(), b.pos()).isPresent())) {
                     e.hurtServer(level, ModDamageTypes.source(e, Schools.ASTRAL, null, caster), dmg);
                 }
-                line(level, a.pos(), b.pos(), ParticleTypes.ELECTRIC_SPARK);
+                line(level, a.pos(), b.pos(), Fx.ARC, 0x9FD8FF);
             }
         }
     }

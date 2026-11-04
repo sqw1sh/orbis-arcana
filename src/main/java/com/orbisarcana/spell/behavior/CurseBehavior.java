@@ -11,8 +11,8 @@ import com.orbisarcana.mana.ManaService;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -51,7 +51,7 @@ public final class CurseBehavior {
         CURSES.put(target, curse);
         MasteryService.onControl(caster, curse.spell(), curse.castId(), target);
         EchoService.markDusk(caster, target);
-        curse.level().sendParticles(ParticleTypes.SOUL, target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 15, 0.3, 0.4, 0.3, 0.02);
+        Fx.SHADOW.play(curse.level(), target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 15, 0.3, 0.4, 0.3);
     }
 
     public static boolean isCursed(LivingEntity e) {
@@ -81,7 +81,7 @@ public final class CurseBehavior {
                     EchoService.onSpellHit(caster, c.school(), t, c.castId());
                 }
             }
-            if (now % 8 == 0) level.sendParticles(ParticleTypes.SMOKE, t.getX(), t.getY() + t.getBbHeight() * 0.8, t.getZ(), 2, 0.2, 0.2, 0.2, 0.01);
+            if (now % 8 == 0) Fx.SHADOW.play(level, t.getX(), t.getY() + t.getBbHeight() * 0.8, t.getZ(), 2, 0.2, 0.2, 0.2);
         }
     }
 

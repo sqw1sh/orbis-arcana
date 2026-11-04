@@ -7,8 +7,8 @@ import java.util.UUID;
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -98,7 +98,7 @@ final class DomeBehavior {
             p.setDeltaMovement(v.subtract(n.scale(2 * inward)));
             p.syncVelocity = true;
             p.needsSync = true;
-            d.level.sendParticles(ParticleTypes.CLOUD, p.getX(), p.getY(), p.getZ(), 4, 0.1, 0.1, 0.1, 0.02);
+            Fx.CLOUD.play(d.level, p.getX(), p.getY(), p.getZ(), 4, 0.1, 0.1, 0.1);
             if (caster != null && p.getOwner() instanceof LivingEntity shooter) {
                 MasteryService.onControl(caster, d.spell, d.castId, shooter);
             }
@@ -125,8 +125,7 @@ final class DomeBehavior {
                 double yaw = rnd.nextDouble() * Math.PI * 2;
                 double pitch = rnd.nextDouble() * Math.PI / 2;
                 double r = d.radius;
-                d.level.sendParticles(ParticleTypes.CLOUD, d.center.x + Math.cos(yaw) * Math.cos(pitch) * r,
-                        d.center.y + Math.sin(pitch) * r, d.center.z + Math.sin(yaw) * Math.cos(pitch) * r, 1, 0, 0, 0, 0);
+                Fx.CLOUD.play(d.level, d.center.x + Math.cos(yaw) * Math.cos(pitch) * r, d.center.y + Math.sin(pitch) * r, d.center.z + Math.sin(yaw) * Math.cos(pitch) * r, 1, 0, 0, 0);
             }
         }
     }
@@ -140,8 +139,8 @@ final class DomeBehavior {
             e.hurtServer(d.level, ModDamageTypes.source(e, d.school, null, caster), d.burst);
             if (caster != null && e.getHealth() < before) MasteryService.onHit(caster, d.spell, d.castId, e, !e.isAlive());
         }
-        d.level.sendParticles(ParticleTypes.EXPLOSION, d.center.x, d.center.y + 1, d.center.z, 3, d.radius * 0.4, 0.5, d.radius * 0.4, 0);
-        d.level.sendParticles(ParticleTypes.CLOUD, d.center.x, d.center.y + 1, d.center.z, 80, d.radius * 0.5, 0.8, d.radius * 0.5, 0.3);
+        Fx.SHOCKWAVE.play(d.level, d.center.x, d.center.y + 1, d.center.z, 3, d.radius * 0.4, 0.5, d.radius * 0.4);
+        Fx.CLOUD.play(d.level, d.center.x, d.center.y + 1, d.center.z, 80, d.radius * 0.5, 0.8, d.radius * 0.5);
     }
 
     private static List<LivingEntity> enemies(Dome d, ServerPlayer caster, double radius) {

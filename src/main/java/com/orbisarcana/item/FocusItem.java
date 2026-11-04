@@ -28,12 +28,10 @@ public class FocusItem extends Item implements ModelItem {
         this.tier = tier;
     }
 
-
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
     }
-
 
     public FocusRules.Type type() {
         return type;

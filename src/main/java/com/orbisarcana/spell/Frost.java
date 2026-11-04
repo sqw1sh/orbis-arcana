@@ -8,14 +8,11 @@ import org.jspecify.annotations.Nullable;
 
 import com.orbisarcana.OrbisArcana;
 
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.Tags;
@@ -29,7 +26,6 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 public final class Frost {
     private static final int FREEZE_AMPLIFIER = 9;
     private static final int BOSS_AMPLIFIER = 3;
-    public static final BlockParticleOption ICE = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.ICE.defaultBlockState());
 
     /** entity -> game tick when the freeze ends. */
     private static final Map<UUID, Long> FROZEN = new HashMap<>();
@@ -44,8 +40,7 @@ public final class Frost {
         FROZEN.merge(target.getUUID(), now + ticks, Math::max);
         target.setTicksFrozen(Math.max(target.getTicksFrozen(), target.getTicksRequiredToFreeze() + ticks / 2)); // the frosty look
         target.setDeltaMovement(0, Math.min(0, target.getDeltaMovement().y), 0);
-        level.sendParticles(ICE, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), 25,
-                target.getBbWidth() / 2, target.getBbHeight() / 3, target.getBbWidth() / 2, 0.05);
+        Fx.FROST.play(level, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), 25, target.getBbWidth() / 2, target.getBbHeight() / 3, target.getBbWidth() / 2);
     }
 
     public static boolean isFrozen(LivingEntity target) {

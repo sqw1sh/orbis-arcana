@@ -12,8 +12,8 @@ import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.Frost;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -130,14 +130,14 @@ final class ShardBehavior {
         Vec3 trail = s.pos.subtract(from);
         for (double t = 0; t < 1; t += 0.34) {
             Vec3 p = from.add(trail.scale(t));
-            c.level().sendParticles(ParticleTypes.SNOWFLAKE, p.x, p.y, p.z, 1, 0, 0, 0, 0);
+            Fx.FROST.play(c.level(), p.x, p.y, p.z, 1, 0, 0, 0);
         }
         if (target != null) {
             hit(s, owner, target);
             return false;
         }
         if (clip.getType() != HitResult.Type.MISS) {
-            c.level().sendParticles(Frost.ICE, s.pos.x, s.pos.y, s.pos.z, 8, 0.1, 0.1, 0.1, 0.05);
+            Fx.FROST.play(c.level(), s.pos.x, s.pos.y, s.pos.z, 8, 0.1, 0.1, 0.1);
             return false;
         }
         return s.travelled < s.range;
@@ -148,15 +148,14 @@ final class ShardBehavior {
         boolean wasFrozen = Frost.isFrozen(target);
         hurt(c, owner, target, s.damage);
         if (c.slowTicks() > 0) target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, c.slowTicks(), 0), owner);
-        c.level().sendParticles(Frost.ICE, s.pos.x, s.pos.y, s.pos.z, 12, 0.15, 0.15, 0.15, 0.08);
+        Fx.FROST.play(c.level(), s.pos.x, s.pos.y, s.pos.z, 12, 0.15, 0.15, 0.15);
         if (wasFrozen && c.burstRadius() > 0) {
             for (LivingEntity e : c.level().getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(c.burstRadius()),
                     e -> e.isAlive() && e != owner && e != target && e.distanceTo(target) <= c.burstRadius() + target.getBbWidth())) {
                 hurt(c, owner, e, (float) (c.damage() * BURST_MULT));
             }
-            c.level().sendParticles(Frost.ICE, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), 60,
-                    c.burstRadius() / 2, 0.5, c.burstRadius() / 2, 0.2);
-            c.level().sendParticles(ParticleTypes.SNOWFLAKE, target.getX(), target.getY() + 1, target.getZ(), 40, c.burstRadius() / 2, 0.5, c.burstRadius() / 2, 0.05);
+            Fx.FROST.play(c.level(), target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), 60, c.burstRadius() / 2, 0.5, c.burstRadius() / 2);
+            Fx.FROST.play(c.level(), target.getX(), target.getY() + 1, target.getZ(), 40, c.burstRadius() / 2, 0.5, c.burstRadius() / 2);
         }
         if (s.split) {
             long now = c.level().getGameTime();

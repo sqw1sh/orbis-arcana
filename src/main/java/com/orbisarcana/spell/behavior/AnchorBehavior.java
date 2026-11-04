@@ -11,8 +11,8 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.spell.Arcs;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -59,7 +59,7 @@ final class AnchorBehavior {
         ANCHORS.add(new Anchor(ctx.level(), caster, ctx.spellId(), ctx.spell().school(), ctx.castId(), pos,
                 (float) ctx.scaled("damage"), ctx.param("trigger_radius"), (float) ctx.scaled("arc_damage"), ctx.ticks("storm_ticks"),
                 now + ARM_TICKS, now + ctx.ticks("life_ticks")));
-        ctx.level().sendParticles(ParticleTypes.ELECTRIC_SPARK, pos.x, pos.y + 0.3, pos.z, 20, 0.3, 0.2, 0.3, 0.1);
+        Fx.ARC.play(ctx.level(), pos.x, pos.y + 0.3, pos.z, 20, 0.3, 0.2, 0.3);
     }
 
     /** For tests: anchors the player has out. */
@@ -78,7 +78,7 @@ final class AnchorBehavior {
                 ANCHORS.remove(a);
                 continue;
             }
-            if (now % 8 == 0) level.sendParticles(ParticleTypes.ELECTRIC_SPARK, a.pos().x, a.pos().y + 0.15, a.pos().z, 2, 0.15, 0.05, 0.15, 0.02);
+            if (now % 8 == 0) Fx.ARC.play(level, a.pos().x, a.pos().y + 0.15, a.pos().z, 2, 0.15, 0.05, 0.15);
             if (now < a.armedAt()) continue;
             List<LivingEntity> near = enemies(a, caster, a.radius());
             if (!near.isEmpty()) {
@@ -100,8 +100,7 @@ final class AnchorBehavior {
             }
             if (now % 2 == 0) {
                 var rnd = level.getRandom();
-                level.sendParticles(ParticleTypes.ELECTRIC_SPARK, c.x + (rnd.nextDouble() - 0.5) * STORM_RADIUS * 2, c.y + 0.2 + rnd.nextDouble() * 2.5,
-                        c.z + (rnd.nextDouble() - 0.5) * STORM_RADIUS * 2, 2, 0, 0, 0, 0.05);
+                Fx.ARC.play(level, c.x + (rnd.nextDouble() - 0.5) * STORM_RADIUS * 2, c.y + 0.2 + rnd.nextDouble() * 2.5, c.z + (rnd.nextDouble() - 0.5) * STORM_RADIUS * 2, 2, 0, 0, 0);
             }
             return false;
         });

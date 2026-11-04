@@ -34,6 +34,7 @@
 - `./gradlew :runClientShot -Pshots=gallery_setup,gallery` — галерея кругов всех редкостей (ночь, тёмная площадка).
 - `node tools/vfx.cjs` — пересобрать лист спрайтов эффектов (`textures/vfx/sheet.png`).
 - `./gradlew :runClientShot -Pshots=gallery_setup,vfx` — эффекты (VFX) на тёмной площадке.
+- `node tools/vfx-effects.cjs` — стоковые эффекты (`art/vfx/particles`, затем `node tools/art.cjs`); на сервере — `Fx.<ВИД>.play(level, x, y, z, count, dx, dy, dz[, tint])` вместо `sendParticles`. Проверка: `-Pshots=gallery_setup,stock`.
 - 3D-модели: спецификации `art/specs/<id>.json` (генераторы `node tools/specs/<foci|accessories|misc|world>.cjs`, общие помощники — `tools/specs/lib.cjs`) → в Blockbench (MCP `risky_eval`) `eval(require('fs').readFileSync('<repo>/tools/blockbench/build-model.js','utf8'))('<repo>','<id>')` → `.bbmodel` + GeckoLib-экспорт → `node tools/art.cjs`. Положения 3D-предметов в руке/GUI — `node tools/foci-display.cjs`.
 - `node tools/structures.cjs` — пересобрать NBT-шаблоны структур (обсерватория, скрипторий).
 - `./gradlew :runGameTestServer` — GameTest-ы мода; без `:` запускаются и тесты `example-addon` (мод + аддон, 92).

@@ -9,8 +9,8 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.spell.Stars;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -93,7 +93,7 @@ public final class ShiftBehavior {
                 var stars = Stars.of(caster);
                 if (!stars.isEmpty()) {
                     z.centre = stars.get(z.hop++ % stars.size()).pos();
-                    level.sendParticles(ParticleTypes.REVERSE_PORTAL, z.centre.x, z.centre.y + 0.5, z.centre.z, 40, 0.5, 0.5, 0.5, 0.1);
+                    Fx.TWINKLE.play(level, z.centre.x, z.centre.y + 0.5, z.centre.z, 40, 0.5, 0.5, 0.5, 0xB08CFF);
                 }
             }
             if (now >= z.until) {
@@ -112,7 +112,7 @@ public final class ShiftBehavior {
                 for (int i = 0; i < 6; i++) {
                     double a = level.getRandom().nextDouble() * Math.PI * 2;
                     double d = level.getRandom().nextDouble() * z.radius;
-                    level.sendParticles(ParticleTypes.REVERSE_PORTAL, z.centre.x + Math.cos(a) * d, z.centre.y + 0.2, z.centre.z + Math.sin(a) * d, 1, 0, 0, 0, 0);
+                    Fx.TWINKLE.play(level, z.centre.x + Math.cos(a) * d, z.centre.y + 0.2, z.centre.z + Math.sin(a) * d, 1, 0, 0, 0, 0xB08CFF);
                 }
             }
             return false;
@@ -130,7 +130,7 @@ public final class ShiftBehavior {
             hurt(z, caster, e, z.collapse);
             e.push(0, LAUNCH, 0);
         }
-        z.level.sendParticles(ParticleTypes.END_ROD, z.centre.x, z.centre.y + 0.5, z.centre.z, 60, z.radius / 2, 0.5, z.radius / 2, 0.2);
+        Fx.TWINKLE.play(z.level, z.centre.x, z.centre.y + 0.5, z.centre.z, 60, z.radius / 2, 0.5, z.radius / 2);
     }
 
     private static void hurt(Zone z, ServerPlayer caster, LivingEntity e, float damage) {

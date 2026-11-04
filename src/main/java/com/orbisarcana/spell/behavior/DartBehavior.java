@@ -12,8 +12,8 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -91,7 +91,7 @@ final class DartBehavior {
             e.target().damageCooldownTime = 0;
             hurt(e.cast(), owner, e.target(), e.damage());
             Vec3 c = e.target().getBoundingBox().getCenter();
-            level.sendParticles(ParticleTypes.SQUID_INK, c.x, c.y, c.z, 12, 0.3, 0.4, 0.3, 0.02);
+            Fx.SHADOW.play(level, c.x, c.y, c.z, 12, 0.3, 0.4, 0.3);
         }
     }
 
@@ -132,8 +132,8 @@ final class DartBehavior {
         Vec3 trail = d.pos.subtract(from);
         for (double t = 0; t < 1; t += 0.25) {
             Vec3 p = from.add(trail.scale(t));
-            c.level().sendParticles(ParticleTypes.SMOKE, p.x, p.y, p.z, 1, 0, 0, 0, 0);
-            c.level().sendParticles(ParticleTypes.WITCH, p.x, p.y, p.z, 1, 0, 0, 0, 0);
+            Fx.SHADOW.play(c.level(), p.x, p.y, p.z, 1, 0, 0, 0);
+            Fx.SHADOW.play(c.level(), p.x, p.y, p.z, 1, 0, 0, 0, 0x8A3AC0);
         }
         if (target != null) {
             hit(d, owner, target);
@@ -157,7 +157,7 @@ final class DartBehavior {
                             next.getBoundingBox().getCenter().subtract(at).normalize(), target.getUUID())));
         }
         Vec3 p = target.getBoundingBox().getCenter();
-        c.level().sendParticles(ParticleTypes.SQUID_INK, p.x, p.y, p.z, 10, 0.2, 0.3, 0.2, 0.02);
+        Fx.SHADOW.play(c.level(), p.x, p.y, p.z, 10, 0.2, 0.3, 0.2);
     }
 
     private static void hurt(Cast c, ServerPlayer owner, LivingEntity target, float damage) {

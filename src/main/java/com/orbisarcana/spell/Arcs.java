@@ -1,6 +1,5 @@
 package com.orbisarcana.spell;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -18,8 +17,7 @@ public final class Arcs {
         for (int i = 0; i <= n; i++) {
             Vec3 p = a.add(d.scale((double) i / n));
             double j = i == 0 || i == n ? 0 : JITTER;
-            level.sendParticles(ParticleTypes.ELECTRIC_SPARK, p.x + (rnd.nextDouble() - 0.5) * j, p.y + (rnd.nextDouble() - 0.5) * j,
-                    p.z + (rnd.nextDouble() - 0.5) * j, 1, 0, 0, 0, 0);
+            Fx.ARC.play(level, p.x + (rnd.nextDouble() - 0.5) * j, p.y + (rnd.nextDouble() - 0.5) * j, p.z + (rnd.nextDouble() - 0.5) * j, 1, 0, 0, 0);
         }
     }
 

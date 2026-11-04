@@ -18,14 +18,12 @@ import java.util.List;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import com.orbisarcana.mana.ManaService;
-import net.minecraft.core.particles.BlockParticleOption;
+import com.orbisarcana.spell.Fx;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -139,8 +137,8 @@ public final class EchoService {
             e.hurtServer(level, ModDamageTypes.source(e, Schools.FIRE, null, caster), damage);
             if (fanning) e.igniteForTicks(EchoRules.FANNING_IGNITE_TICKS);
         }
-        level.sendParticles(ParticleTypes.FLAME, centre.getX(), centre.getY() + centre.getBbHeight() / 2, centre.getZ(), 40, 0.8, 0.5, 0.8, 0.08);
-        level.sendParticles(ParticleTypes.EXPLOSION, centre.getX(), centre.getY() + centre.getBbHeight() / 2, centre.getZ(), 1, 0, 0, 0, 0);
+        Fx.FLAME.play(level, centre.getX(), centre.getY() + centre.getBbHeight() / 2, centre.getZ(), 40, 0.8, 0.5, 0.8);
+        Fx.SHOCKWAVE.play(level, centre.getX(), centre.getY() + centre.getBbHeight() / 2, centre.getZ(), 1, 0, 0, 0);
     }
 
     // ---- Ice: Frost ----
@@ -272,7 +270,7 @@ public final class EchoService {
                 continue;
             }
             if (now < s.matureAt()) {
-                if (now % 10 == 0) level.sendParticles(ParticleTypes.HAPPY_VILLAGER, s.pos().x, s.pos().y + 0.3, s.pos().z, 2, 0.15, 0.1, 0.15, 0);
+                if (now % 10 == 0) Fx.LEAF.play(level, s.pos().x, s.pos().y + 0.3, s.pos().z, 2, 0.15, 0.1, 0.15);
                 continue;
             }
             SPROUTS.remove(s);
@@ -309,8 +307,8 @@ public final class EchoService {
                 }
             }
         }
-        level.sendParticles(ParticleTypes.SPORE_BLOSSOM_AIR, s.pos().x, s.pos().y + 0.5, s.pos().z, 25, 1, 0.4, 1, 0);
-        level.sendParticles(ParticleTypes.HAPPY_VILLAGER, s.pos().x, s.pos().y + 0.5, s.pos().z, 15, 0.8, 0.4, 0.8, 0);
+        Fx.LEAF.play(level, s.pos().x, s.pos().y + 0.5, s.pos().z, 25, 1, 0.4, 1, 0xFFB0D8);
+        Fx.LEAF.play(level, s.pos().x, s.pos().y + 0.5, s.pos().z, 15, 0.8, 0.4, 0.8);
     }
 
     // ---- Light: Radiance ----
@@ -363,9 +361,9 @@ public final class EchoService {
         }
         for (int i = 0; i < 24; i++) {
             double a = Math.PI * 2 * i / 24;
-            level.sendParticles(ParticleTypes.END_ROD, player.getX() + Math.cos(a) * r, player.getY() + 0.5, player.getZ() + Math.sin(a) * r, 1, 0, 0.1, 0, 0.02);
+            Fx.MOTE.play(level, player.getX() + Math.cos(a) * r, player.getY() + 0.5, player.getZ() + Math.sin(a) * r, 1, 0, 0.1, 0);
         }
-        level.sendParticles(ParticleTypes.END_ROD, player.getX(), player.getY() + 1, player.getZ(), 40, 0.5, 0.8, 0.5, 0.15);
+        Fx.MOTE.play(level, player.getX(), player.getY() + 1, player.getZ(), 40, 0.5, 0.8, 0.5);
     }
 
     // ---- Dark: Dusk ----
@@ -439,7 +437,7 @@ public final class EchoService {
         double mana = EchoRules.duskMana(dissonant, AttunementService.hasTalent(p, Schools.DARK, TalentRules.ROOT));
         ManaService.setMana(p, Math.min(ManaService.maxMana(p), ManaService.mana(p) + mana));
         Vec3 c = victim.getBoundingBox().getCenter();
-        level.sendParticles(ParticleTypes.SQUID_INK, c.x, c.y, c.z, 15, 0.3, 0.4, 0.3, 0.05);
+        Fx.SHADOW.play(level, c.x, c.y, c.z, 15, 0.3, 0.4, 0.3);
         if (AttunementService.hasTalent(p, Schools.DARK, TalentRules.A2)
                 && ECLIPSE.merge(p.getUUID(), 1, Integer::sum) >= EchoRules.ECLIPSE_EVERY) {
             ECLIPSE.put(p.getUUID(), 0);
@@ -448,7 +446,7 @@ public final class EchoService {
                 e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, EchoRules.ECLIPSE_BLIND_TICKS, 0), p);
                 if (e instanceof net.minecraft.world.entity.Mob mob) mob.setTarget(null);
             }
-            level.sendParticles(ParticleTypes.SQUID_INK, c.x, c.y, c.z, 60, EchoRules.ECLIPSE_RADIUS / 2, 0.8, EchoRules.ECLIPSE_RADIUS / 2, 0.1);
+            Fx.SHADOW.play(level, c.x, c.y, c.z, 60, EchoRules.ECLIPSE_RADIUS / 2, 0.8, EchoRules.ECLIPSE_RADIUS / 2);
         }
         sendDusk(p, level.getGameTime());
     }
@@ -551,8 +549,7 @@ public final class EchoService {
             if (away.lengthSqr() > 1.0E-4) e.push(away.normalize().x * 0.6, 0.35, away.normalize().z * 0.6);
             if (strata) e.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, EchoRules.STRATA_STUN_TICKS, 9), player);
         }
-        level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState()),
-                player.getX(), player.getY() + 0.2, player.getZ(), 80, radius * 0.5, 0.2, radius * 0.5, 0.2);
+        Fx.DEBRIS.play(level, player.getX(), player.getY() + 0.2, player.getZ(), 80, radius * 0.5, 0.2, radius * 0.5);
     }
 
     // ---- Air: Impulse ----

@@ -11,8 +11,8 @@ import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.Shields;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -49,7 +49,7 @@ public final class AuraBehavior implements ToggleBehavior {
         ServerPlayer p = ctx.caster();
         AURAS.put(p.getUUID(), new Aura(p.getUUID(), ctx.spellId(), ctx.castId(), ctx.param("radius"), ctx.param("damage_reduction"),
                 (float) ctx.param("ward_shield")));
-        p.level().sendParticles(ParticleTypes.END_ROD, p.getX(), p.getY() + 1, p.getZ(), 30, 0.6, 0.6, 0.6, 0.08);
+        Fx.MOTE.play(p.level(), p.getX(), p.getY() + 1, p.getZ(), 30, 0.6, 0.6, 0.6);
     }
 
     @Override
@@ -60,7 +60,7 @@ public final class AuraBehavior implements ToggleBehavior {
         if (ticks % 5 == 0) {
             for (int i = 0; i < 3; i++) {
                 double a = p.getRandom().nextDouble() * Math.PI * 2;
-                level.sendParticles(ParticleTypes.END_ROD, p.getX() + Math.cos(a) * r, p.getY() + 0.2, p.getZ() + Math.sin(a) * r, 1, 0, 0.05, 0, 0);
+                Fx.MOTE.play(level, p.getX() + Math.cos(a) * r, p.getY() + 0.2, p.getZ() + Math.sin(a) * r, 1, 0, 0.05, 0);
             }
         }
         int cleanse = ctx.ticks("cleanse_interval");
@@ -72,7 +72,7 @@ public final class AuraBehavior implements ToggleBehavior {
                         .ifPresent(effect -> {
                             ally.removeEffect(effect);
                             MasteryService.award(p, ctx.spellId(), 1);
-                            level.sendParticles(ParticleTypes.END_ROD, ally.getX(), ally.getY() + 1, ally.getZ(), 10, 0.3, 0.5, 0.3, 0.05);
+                            Fx.MOTE.play(level, ally.getX(), ally.getY() + 1, ally.getZ(), 10, 0.3, 0.5, 0.3);
                         });
             }
         }
@@ -134,7 +134,7 @@ public final class AuraBehavior implements ToggleBehavior {
             if (absorbed > 0) MasteryService.onHeal(caster, a.spell(), a.castId(), holder, absorbed);
         });
         EchoService.onSupport(caster, a.ward());
-        victim.level().sendParticles(ParticleTypes.END_ROD, victim.getX(), victim.getY() + 1, victim.getZ(), 15, 0.4, 0.6, 0.4, 0.05);
+        Fx.MOTE.play(victim.level(), victim.getX(), victim.getY() + 1, victim.getZ(), 15, 0.4, 0.6, 0.4);
     }
 
     @SubscribeEvent

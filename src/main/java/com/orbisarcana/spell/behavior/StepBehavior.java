@@ -12,7 +12,6 @@ import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.school.TalentEffects;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -25,6 +24,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import com.orbisarcana.entity.ShadowDecoy;
 import com.orbisarcana.registry.ModEntities;
+import com.orbisarcana.spell.Fx;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -76,8 +76,7 @@ public final class StepBehavior {
                 FEARS.add(new Fear(mob, dest, now + fear));
                 mob.setTarget(null);
             }
-            ctx.level().sendParticles(ParticleTypes.SCULK_SOUL, dest.x, dest.y + 0.5, dest.z, 30, ctx.param("fear_radius") / 2, 0.3,
-                    ctx.param("fear_radius") / 2, 0.02);
+            Fx.SHADOW.play(ctx.level(), dest.x, dest.y + 0.5, dest.z, 30, ctx.param("fear_radius") / 2, 0.3, ctx.param("fear_radius") / 2);
         }
     }
 
@@ -97,10 +96,10 @@ public final class StepBehavior {
     /** Teleports with shadow puffs at both ends; Dark B2 "Blind Spot" makes mobs lose you. */
     private static void jump(ServerPlayer p, Vec3 to) {
         ServerLevel level = p.level();
-        level.sendParticles(ParticleTypes.LARGE_SMOKE, p.getX(), p.getY() + 1, p.getZ(), 25, 0.3, 0.6, 0.3, 0.02);
+        Fx.SHADOW.play(level, p.getX(), p.getY() + 1, p.getZ(), 25, 0.3, 0.6, 0.3);
         p.teleportTo(to.x, to.y, to.z);
         p.resetFallDistance();
-        level.sendParticles(ParticleTypes.LARGE_SMOKE, to.x, to.y + 1, to.z, 25, 0.3, 0.6, 0.3, 0.02);
+        Fx.SHADOW.play(level, to.x, to.y + 1, to.z, 25, 0.3, 0.6, 0.3);
         level.playSound(null, to.x, to.y, to.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.8f, 0.6f);
         TalentEffects.blindSpot(p);
     }
@@ -153,7 +152,7 @@ public final class StepBehavior {
             if (d.level() != level || now < d.until()) return false;
             var e = level.getEntity(d.id());
             if (e != null) {
-                level.sendParticles(ParticleTypes.LARGE_SMOKE, e.getX(), e.getY() + 1, e.getZ(), 20, 0.3, 0.6, 0.3, 0.02);
+                Fx.SHADOW.play(level, e.getX(), e.getY() + 1, e.getZ(), 20, 0.3, 0.6, 0.3);
                 e.discard();
             }
             return true;

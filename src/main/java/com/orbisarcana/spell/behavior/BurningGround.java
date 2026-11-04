@@ -8,8 +8,8 @@ import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -48,8 +48,7 @@ public final class BurningGround {
         for (Patch p : PATCHES) {
             if (p.level() != level) continue;
             if (now % 4 == 0) {
-                level.sendParticles(ParticleTypes.FLAME, p.center().x, p.center().y + 0.1, p.center().z,
-                        (int) (p.radius() * 4), p.radius() / 2, 0.05, p.radius() / 2, 0.01);
+                Fx.FLAME.play(level, p.center().x, p.center().y + 0.1, p.center().z, (int) (p.radius() * 4), p.radius() / 2, 0.05, p.radius() / 2);
             }
             if (now % PULSE_TICKS == 0) burn(level, p);
         }

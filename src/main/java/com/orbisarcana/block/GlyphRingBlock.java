@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.orbisarcana.registry.ModBlocks;
+import com.orbisarcana.spell.Fx;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -82,7 +82,7 @@ public class GlyphRingBlock extends Block {
         for (BlockPos p : BlockPos.betweenClosed(key.offset(-REACH, -REACH, -REACH), key.offset(REACH, REACH, REACH))) {
             if (level.getBlockState(p).is(ModBlocks.ARCANE_SEAL.get())) {
                 level.setBlockAndUpdate(p, Blocks.AIR.defaultBlockState());
-                level.sendParticles(ParticleTypes.END_ROD, p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5, 8, 0.3, 0.3, 0.3, 0.05);
+                Fx.RUNE.play(level, p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5, 8, 0.3, 0.3, 0.3);
                 broken++;
             }
         }
@@ -107,7 +107,7 @@ public class GlyphRingBlock extends Block {
             mob.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 20 * 60 * 10, 0));
             mob.setPersistenceRequired();
             level.addFreshEntity(mob);
-            level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, mob.getX(), mob.getY() + 1, mob.getZ(), 20, 0.3, 0.6, 0.3, 0.02);
+            Fx.MOTE.play(level, mob.getX(), mob.getY() + 1, mob.getZ(), 20, 0.3, 0.6, 0.3, 0x6AE0FF);
         }
     }
 }

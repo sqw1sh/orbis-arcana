@@ -6,8 +6,8 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.Shields;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -55,8 +55,7 @@ final class HealBehavior {
             // Regeneration I heals 1 HP per 50 ticks
             target.addEffect(new MobEffectInstance(MobEffects.REGENERATION, (int) (hot * 50), 0), ctx.caster());
         }
-        ctx.level().sendParticles(ParticleTypes.HAPPY_VILLAGER, target.getX(), target.getY() + target.getBbHeight() * 0.6,
-                target.getZ(), 10, 0.4, 0.4, 0.4, 0.0);
+        Fx.MOTE.play(ctx.level(), target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 10, 0.4, 0.4, 0.4, 0x9CFF8A);
     }
 
     private HealBehavior() {}

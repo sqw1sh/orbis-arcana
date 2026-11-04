@@ -10,8 +10,8 @@ import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.spell.Frost;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -86,7 +86,7 @@ final class PatternBehavior {
             if (now >= p.endTick) {
                 if (p.freezeTicks > 0) {
                     for (LivingEntity e : p.inside(caster)) Frost.freeze(e, p.freezeTicks, caster);
-                    level.sendParticles(Frost.ICE, p.center.x, p.center.y + 0.3, p.center.z, 100, p.radius / 2, 0.3, p.radius / 2, 0.1);
+                    Fx.FROST.play(level, p.center.x, p.center.y + 0.3, p.center.z, 100, p.radius / 2, 0.3, p.radius / 2);
                 }
                 return true;
             }
@@ -106,10 +106,10 @@ final class PatternBehavior {
         for (int arm = 0; arm < 6; arm++) {
             double a = spin + arm * Math.PI / 3;
             double r = p.radius * ((now / 3 + arm) % 6 + 1) / 6.0;
-            p.level.sendParticles(ParticleTypes.SNOWFLAKE, p.center.x + Math.cos(a) * r, p.center.y + 0.1, p.center.z + Math.sin(a) * r, 1, 0, 0, 0, 0);
+            Fx.FROST.play(p.level, p.center.x + Math.cos(a) * r, p.center.y + 0.1, p.center.z + Math.sin(a) * r, 1, 0, 0, 0);
         }
         double a = now * 0.15;
-        p.level.sendParticles(ParticleTypes.SNOWFLAKE, p.center.x + Math.cos(a) * p.radius, p.center.y + 0.1, p.center.z + Math.sin(a) * p.radius, 1, 0, 0, 0, 0);
+        Fx.FROST.play(p.level, p.center.x + Math.cos(a) * p.radius, p.center.y + 0.1, p.center.z + Math.sin(a) * p.radius, 1, 0, 0, 0);
     }
 
     /** Milestone 10: damage taken by one linked target is shared with the others in the pattern. */
@@ -128,7 +128,7 @@ final class PatternBehavior {
                 for (LivingEntity e : linked) {
                     if (e == hurt) continue;
                     e.hurtServer(level, ModDamageTypes.source(e, p.school, null, caster), share);
-                    level.sendParticles(ParticleTypes.SNOWFLAKE, e.getX(), e.getY() + e.getBbHeight(), e.getZ(), 6, 0.2, 0.2, 0.2, 0.02);
+                    Fx.FROST.play(level, e.getX(), e.getY() + e.getBbHeight(), e.getZ(), 6, 0.2, 0.2, 0.2);
                 }
             } finally {
                 sharing = false;

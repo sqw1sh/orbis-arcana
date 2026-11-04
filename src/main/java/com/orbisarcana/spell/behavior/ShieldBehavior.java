@@ -6,9 +6,8 @@ import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.spell.Shields;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -16,7 +15,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -30,7 +28,6 @@ final class ShieldBehavior {
     private static final double IMPULSE_RADIUS = 3.0;
     private static final float IMPULSE_DAMAGE = 3.0f;
     private static final double IMPULSE_PUSH = 0.8;
-    private static final BlockParticleOption STONE = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.GRANITE.defaultBlockState());
 
     static void release(CastContext ctx) {
         ServerPlayer caster = ctx.caster();
@@ -57,7 +54,7 @@ final class ShieldBehavior {
         });
         com.orbisarcana.school.EchoService.onSupport(caster, amount);
         Vec3 p = target.position();
-        ctx.level().sendParticles(STONE, p.x, p.y + 1, p.z, 30, 0.5, 0.8, 0.5, 0.1);
+        Fx.DEBRIS.play(ctx.level(), p.x, p.y + 1, p.z, 30, 0.5, 0.8, 0.5);
     }
 
     private static void impulse(CastContext ctx, LivingEntity holder, ServerPlayer caster) {
@@ -69,7 +66,7 @@ final class ShieldBehavior {
             e.hurtServer(ctx.level(), ModDamageTypes.source(e, ctx.spell().school(), null, caster), IMPULSE_DAMAGE);
         }
         Vec3 p = holder.position();
-        ctx.level().sendParticles(STONE, p.x, p.y + 0.5, p.z, 60, 1.5, 0.4, 1.5, 0.2);
+        Fx.DEBRIS.play(ctx.level(), p.x, p.y + 0.5, p.z, 60, 1.5, 0.4, 1.5);
     }
 
     private static @Nullable LivingEntity lookedAtAlly(ServerPlayer caster) {

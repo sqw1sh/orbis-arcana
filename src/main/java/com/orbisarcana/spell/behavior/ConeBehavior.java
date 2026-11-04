@@ -8,8 +8,8 @@ import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.AttunementService;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.Schools;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -48,7 +48,7 @@ final class ConeBehavior implements ChannelBehavior {
         Vec3 eye = ctx.caster().getEyePosition();
         for (int i = 1; i <= 6; i++) {
             Vec3 p = eye.add(dir.scale(i));
-            ctx.level().sendParticles(ParticleTypes.SPLASH, p.x, p.y - 0.3, p.z, 25, 0.6, 0.4, 0.6, 0.2);
+            Fx.SPLASH.play(ctx.level(), p.x, p.y - 0.3, p.z, 25, 0.6, 0.4, 0.6);
         }
     }
 
@@ -99,8 +99,8 @@ final class ConeBehavior implements ChannelBehavior {
             double d = 1 + ctx.caster().getRandom().nextDouble() * (range - 1);
             Vec3 p = eye.add(dir.scale(d));
             double r = spread * d;
-            ctx.level().sendParticles(ParticleTypes.SPLASH, p.x, p.y, p.z, 3, r * 0.4, r * 0.3, r * 0.4, 0.05);
-            ctx.level().sendParticles(ParticleTypes.BUBBLE, p.x, p.y, p.z, 1, r * 0.3, r * 0.3, r * 0.3, 0.02);
+            Fx.SPLASH.play(ctx.level(), p.x, p.y, p.z, 3, r * 0.4, r * 0.3, r * 0.4);
+            Fx.SPLASH.play(ctx.level(), p.x, p.y, p.z, 1, r * 0.3, r * 0.3, r * 0.3);
         }
     }
 

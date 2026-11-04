@@ -7,8 +7,8 @@ import java.util.UUID;
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -79,7 +79,7 @@ final class PrisonBehavior {
         }
         if (now % 3 == 0) {
             double h = t.getBbHeight() / 2;
-            p.level().sendParticles(ParticleTypes.BUBBLE, t.getX(), t.getY() + h, t.getZ(), 8, t.getBbWidth() * 0.6, h, t.getBbWidth() * 0.6, 0.02);
+            Fx.SPLASH.play(p.level(), t.getX(), t.getY() + h, t.getZ(), 8, t.getBbWidth() * 0.6, h, t.getBbWidth() * 0.6);
         }
     }
 
@@ -92,7 +92,7 @@ final class PrisonBehavior {
             e.push(dir.x * POP_PUSH, 0.35, dir.z * POP_PUSH);
             e.hurtServer(p.level(), ModDamageTypes.source(e, p.school(), null, caster), POP_DAMAGE);
         }
-        p.level().sendParticles(ParticleTypes.SPLASH, c.x, c.y + 1, c.z, 60, 1.2, 0.6, 1.2, 0.3);
+        Fx.SPLASH.play(p.level(), c.x, c.y + 1, c.z, 60, 1.2, 0.6, 1.2);
     }
 
     @SubscribeEvent

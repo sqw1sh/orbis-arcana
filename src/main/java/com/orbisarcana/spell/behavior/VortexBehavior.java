@@ -8,8 +8,8 @@ import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -112,8 +112,7 @@ final class VortexBehavior {
                 double ang = a + arm * Math.PI * 2 / 3;
                 for (double r = 0.4; r <= v.radius; r += 0.6) {
                     double t = ang + r * 0.9;
-                    v.level.sendParticles(ParticleTypes.FLAME, v.center.x + Math.cos(t) * r, v.center.y + 0.15 + r * 0.25,
-                            v.center.z + Math.sin(t) * r, 1, 0, 0.02, 0, 0.0);
+                    Fx.FLAME.play(v.level, v.center.x + Math.cos(t) * r, v.center.y + 0.15 + r * 0.25, v.center.z + Math.sin(t) * r, 1, 0, 0.02, 0);
                 }
             }
         }
@@ -121,8 +120,8 @@ final class VortexBehavior {
 
     private static void pillar(Vortex v, ServerPlayer caster) {
         for (LivingEntity e : targets(v, caster, PILLAR_RADIUS)) hurt(v, caster, e, (float) (v.damage * PILLAR_MULT));
-        v.level.sendParticles(ParticleTypes.LAVA, v.center.x, v.center.y + 0.5, v.center.z, 25, 0.4, 1.2, 0.4, 0.1);
-        v.level.sendParticles(ParticleTypes.FLAME, v.center.x, v.center.y + 1.5, v.center.z, 60, 0.3, 1.5, 0.3, 0.05);
+        Fx.FLAME.play(v.level, v.center.x, v.center.y + 0.5, v.center.z, 25, 0.4, 1.2, 0.4);
+        Fx.FLAME.play(v.level, v.center.x, v.center.y + 1.5, v.center.z, 60, 0.3, 1.5, 0.3);
     }
 
     private static List<LivingEntity> targets(Vortex v, ServerPlayer caster, double radius) {

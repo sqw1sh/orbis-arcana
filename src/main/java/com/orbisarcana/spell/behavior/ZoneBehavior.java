@@ -9,8 +9,8 @@ import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -82,7 +82,7 @@ final class ZoneBehavior {
             if (zone.level != level) return false;
             if (now >= zone.endTick) {
                 if (zone.finalBurst > 0) zone.alliesInside().forEach(p -> heal(zone, p, zone.finalBurst));
-                level.sendParticles(ParticleTypes.HAPPY_VILLAGER, zone.center.x, zone.center.y + 0.5, zone.center.z, 30, zone.radius / 2, 0.3, zone.radius / 2, 0);
+                Fx.LEAF.play(level, zone.center.x, zone.center.y + 0.5, zone.center.z, 30, zone.radius / 2, 0.3, zone.radius / 2);
                 return true;
             }
             tick(zone, now);
@@ -108,8 +108,7 @@ final class ZoneBehavior {
             int points = (int) (zone.radius * 8);
             for (int i = 0; i < points; i++) {
                 double a = Math.PI * 2 * i / points;
-                zone.level.sendParticles(ParticleTypes.HAPPY_VILLAGER, zone.center.x + Math.cos(a) * zone.radius,
-                        zone.center.y + 0.1, zone.center.z + Math.sin(a) * zone.radius, 1, 0, 0, 0, 0);
+                Fx.LEAF.play(zone.level, zone.center.x + Math.cos(a) * zone.radius, zone.center.y + 0.1, zone.center.z + Math.sin(a) * zone.radius, 1, 0, 0, 0);
             }
         }
     }

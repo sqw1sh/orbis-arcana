@@ -6,8 +6,8 @@ import com.orbisarcana.school.AttunementService;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.Schools;
 import com.orbisarcana.spell.CastService;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -39,7 +39,7 @@ final class DashBehavior {
 
         player.setDeltaMovement(dir.x * speed, Math.max(player.getDeltaMovement().y, 0.25), dir.z * speed);
         player.syncVelocity = true;
-        ctx.level().sendParticles(ParticleTypes.CLOUD, player.getX(), player.getY() + 0.5, player.getZ(), 15, 0.3, 0.3, 0.3, 0.02);
+        Fx.CLOUD.play(ctx.level(), player.getX(), player.getY() + 0.5, player.getZ(), 15, 0.3, 0.3, 0.3);
 
         MasteryService.onMove(player, ctx.spellId(), distance);
         if (AttunementService.hasTalent(player, Schools.AIR, TalentRules.A2)) BladeBehavior.stormTrail(player, start, start.add(dir.scale(distance)));

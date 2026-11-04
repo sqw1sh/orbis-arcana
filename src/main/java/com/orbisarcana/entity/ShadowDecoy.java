@@ -6,8 +6,8 @@ import com.geckolib.animatable.manager.AnimatableManager;
 import com.geckolib.animation.AnimationController;
 import com.geckolib.util.GeckoLibUtil;
 import com.orbisarcana.item.ModelItem;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
@@ -52,16 +52,16 @@ public class ShadowDecoy extends PathfinderMob implements GeoEntity {
     public void tick() {
         super.tick();
         if (!(level() instanceof ServerLevel server)) return;
-        if (tickCount % 5 == 0) server.sendParticles(ParticleTypes.SMOKE, getX(), getY() + 1, getZ(), 2, 0.25, 0.5, 0.25, 0.01);
+        if (tickCount % 5 == 0) Fx.SHADOW.play(server, getX(), getY() + 1, getZ(), 2, 0.25, 0.5, 0.25);
         if (tickCount >= life) {
-            server.sendParticles(ParticleTypes.LARGE_SMOKE, getX(), getY() + 1, getZ(), 20, 0.3, 0.6, 0.3, 0.02);
+            Fx.SHADOW.play(server, getX(), getY() + 1, getZ(), 20, 0.3, 0.6, 0.3);
             discard();
         }
     }
 
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
-        level.sendParticles(ParticleTypes.SQUID_INK, getX(), getY() + 1, getZ(), 6, 0.2, 0.4, 0.2, 0.02);
+        Fx.SHADOW.play(level, getX(), getY() + 1, getZ(), 6, 0.2, 0.4, 0.2);
         return false;
     }
 

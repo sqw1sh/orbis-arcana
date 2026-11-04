@@ -17,10 +17,10 @@ import com.orbisarcana.data.ModAttachments;
 import com.orbisarcana.registry.ModBlocks;
 import com.orbisarcana.registry.ModItems;
 import com.orbisarcana.spell.SpellRegistry;
+import com.orbisarcana.spell.Fx;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -151,7 +151,7 @@ public final class AltarService {
             return;
         }
         if (elapsed % 10 == 0) {
-            player.level().sendParticles(ParticleTypes.ENCHANT, centre.x, centre.y + 1.5, centre.z, 6, 0.4, 0.4, 0.4, 0.5);
+            Fx.RUNE.play(player.level(), centre.x, centre.y + 1.5, centre.z, 6, 0.4, 0.4, 0.4);
         }
         if (elapsed % 20 == 0 && elapsed < SchoolRules.RITUAL_TICKS) {
             player.sendOverlayMessage(Component.translatable("message.orbisarcana.altar.ritual_progress",
@@ -221,7 +221,7 @@ public final class AltarService {
 
     private static void effects(ServerPlayer player, BlockPos altar, boolean success) {
         Vec3 c = Vec3.atCenterOf(altar);
-        player.level().sendParticles(success ? ParticleTypes.END_ROD : ParticleTypes.SMOKE, c.x, c.y + 0.8, c.z, 30, 0.6, 0.6, 0.6, 0.05);
+        (success ? Fx.MOTE : Fx.SMOKE).play(player.level(), c.x, c.y + 0.8, c.z, 30, 0.6, 0.6, 0.6);
         player.level().playSound(null, altar, success ? SoundEvents.BEACON_POWER_SELECT : SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 1f, 1f);
     }
 

@@ -25,7 +25,12 @@ public final class Vfx {
 
     /** Plays {@code effect} at {@code pos}, oriented by {@code dir}, tinted with {@code tint} (0 = own colours). */
     public static void play(ServerLevel level, Identifier effect, Vec3 pos, Vec3 dir, int tint, float scale) {
-        send(level, pos, new VfxPlay(effect, pos.x, pos.y, pos.z, (float) dir.x, (float) dir.y, (float) dir.z, tint & 0xFFFFFF, scale, -1));
+        play(level, effect, pos, dir, tint, scale, 1, 1, 1, 1);
+    }
+
+    /** As above, the emitter shape stretched by (sx, sy, sz) and {@code density} times the particles. */
+    public static void play(ServerLevel level, Identifier effect, Vec3 pos, Vec3 dir, int tint, float scale, float sx, float sy, float sz, float density) {
+        send(level, pos, new VfxPlay(effect, pos.x, pos.y, pos.z, (float) dir.x, (float) dir.y, (float) dir.z, tint & 0xFFFFFF, scale, -1, sx, sy, sz, density));
     }
 
     public static void play(ServerLevel level, Identifier effect, Vec3 pos, int tint) {
@@ -37,7 +42,7 @@ public final class Vfx {
         if (!(entity.level() instanceof ServerLevel level)) return;
         Vec3 pos = entity.position().add(0, entity.getBbHeight() / 2, 0);
         Vec3 dir = entity.getDeltaMovement();
-        send(level, pos, new VfxPlay(effect, pos.x, pos.y, pos.z, (float) dir.x, (float) dir.y, (float) dir.z, tint & 0xFFFFFF, scale, entity.getId()));
+        send(level, pos, new VfxPlay(effect, pos.x, pos.y, pos.z, (float) dir.x, (float) dir.y, (float) dir.z, tint & 0xFFFFFF, scale, entity.getId(), 1, 1, 1, 1));
     }
 
     private static void send(ServerLevel level, Vec3 pos, VfxPlay payload) {

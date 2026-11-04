@@ -11,9 +11,8 @@ import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,7 +20,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -35,7 +33,6 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class RootsBehavior {
-    private static final BlockParticleOption ROOT = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.ROOTED_DIRT.defaultBlockState());
     private static final List<Hold> HOLDS = new ArrayList<>();
 
     private record Hold(ServerLevel level, LivingEntity target, @Nullable UUID caster, Vec3 anchor, long endTick,
@@ -72,7 +69,7 @@ public final class RootsBehavior {
         HOLDS.removeIf(h -> h.target() == target);
         HOLDS.add(new Hold(level, target, caster == null ? null : caster.getUUID(), target.position(), level.getGameTime() + ticks,
                 dps, afterSlow, spell, school, castId));
-        level.sendParticles(ROOT, target.getX(), target.getY() + 0.2, target.getZ(), 25, target.getBbWidth() / 2, 0.2, target.getBbWidth() / 2, 0.1);
+        Fx.DEBRIS.play(level, target.getX(), target.getY() + 0.2, target.getZ(), 25, target.getBbWidth() / 2, 0.2, target.getBbWidth() / 2, 0x6A4A2A);
     }
 
     public static boolean isHeld(LivingEntity e) {
@@ -106,7 +103,7 @@ public final class RootsBehavior {
                     EchoService.onSpellHit(caster, h.school(), t, h.castId());
                 }
             }
-            if (now % 4 == 0) level.sendParticles(ROOT, t.getX(), t.getY() + 0.1, t.getZ(), 4, t.getBbWidth() / 2, 0.1, t.getBbWidth() / 2, 0.02);
+            if (now % 4 == 0) Fx.DEBRIS.play(level, t.getX(), t.getY() + 0.1, t.getZ(), 4, t.getBbWidth() / 2, 0.1, t.getBbWidth() / 2, 0x6A4A2A);
             return false;
         });
     }

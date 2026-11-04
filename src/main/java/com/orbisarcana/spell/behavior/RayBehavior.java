@@ -9,8 +9,8 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -66,7 +66,7 @@ final class RayBehavior implements ChannelBehavior {
                 e -> e.isAlive() && !(e instanceof Player) && e.getBoundingBox().getCenter().distanceTo(at) <= FLASH_RADIUS + e.getBbWidth())) {
             burn(ctx, e, damage);
         }
-        ctx.level().sendParticles(ParticleTypes.END_ROD, at.x, at.y, at.z, 60, 1, 1, 1, 0.25);
+        Fx.MOTE.play(ctx.level(), at.x, at.y, at.z, 60, 1, 1, 1);
     }
 
     private static void burn(CastContext ctx, LivingEntity e, float damage) {
@@ -92,7 +92,7 @@ final class RayBehavior implements ChannelBehavior {
         float healed = Math.min(amount, missing);
         MasteryService.onHeal(ctx.caster(), ctx.spellId(), ctx.castId(), ally, healed);
         EchoService.onSupport(ctx.caster(), healed);
-        ctx.level().sendParticles(ParticleTypes.HAPPY_VILLAGER, ally.getX(), ally.getY() + 1, ally.getZ(), 3, 0.3, 0.4, 0.3, 0);
+        Fx.MOTE.play(ctx.level(), ally.getX(), ally.getY() + 1, ally.getZ(), 3, 0.3, 0.4, 0.3, 0x9CFF8A);
     }
 
     /** Where the beam stops: the first block, or full range. */
@@ -122,7 +122,7 @@ final class RayBehavior implements ChannelBehavior {
         Vec3 step = d.normalize().scale(0.5);
         Vec3 p = start.add(step);
         for (double t = 0.5; t < len; t += 0.5, p = p.add(step)) {
-            ctx.level().sendParticles(ParticleTypes.END_ROD, p.x, p.y, p.z, 1, 0.03, 0.03, 0.03, 0);
+            Fx.MOTE.play(ctx.level(), p.x, p.y, p.z, 1, 0.03, 0.03, 0.03);
         }
     }
 

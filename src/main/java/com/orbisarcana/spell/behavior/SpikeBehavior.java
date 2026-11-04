@@ -8,8 +8,8 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.spell.Stars;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -48,7 +48,7 @@ final class SpikeBehavior {
         Vec3 d = end.subtract(from);
         for (double t = 0.5; t < d.length(); t += 0.4) {
             Vec3 p = from.add(d.normalize().scale(t)).add(0, -0.2, 0);
-            ctx.level().sendParticles(ParticleTypes.END_ROD, p.x, p.y, p.z, 1, 0.02, 0.02, 0.02, 0);
+            Fx.TWINKLE.play(ctx.level(), p.x, p.y, p.z, 1, 0.02, 0.02, 0.02);
         }
         float arc = (float) ctx.param("arc_damage");
         float collapse = (float) ctx.scaled("collapse_damage");

@@ -43,12 +43,10 @@ public class AccessoryItem extends Item implements ModelItem {
         this.school = school;
     }
 
-
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
     }
-
 
     public Kind kind() {
         return kind;

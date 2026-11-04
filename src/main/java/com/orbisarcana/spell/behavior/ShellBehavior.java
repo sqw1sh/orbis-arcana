@@ -10,8 +10,8 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.spell.Arcs;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -53,13 +53,13 @@ public final class ShellBehavior implements ToggleBehavior {
         ServerPlayer p = ctx.caster();
         give(p, new Shell(p.getUUID(), ctx.spellId(), ctx.spell().school(), ctx.castId(), ctx.param("speed_bonus"),
                 (float) ctx.scaled("shock_damage"), (float) ctx.scaled("return_spark"), ctx.ticks("transfer_ticks"), Long.MAX_VALUE));
-        p.level().sendParticles(ParticleTypes.ELECTRIC_SPARK, p.getX(), p.getY() + 1, p.getZ(), 30, 0.4, 0.6, 0.4, 0.2);
+        Fx.ARC.play(p.level(), p.getX(), p.getY() + 1, p.getZ(), 30, 0.4, 0.6, 0.4);
     }
 
     @Override
     public void tick(CastContext ctx, int ticks) {
         ServerPlayer p = ctx.caster();
-        if (ticks % 4 == 0) p.level().sendParticles(ParticleTypes.ELECTRIC_SPARK, p.getX(), p.getY() + 1, p.getZ(), 2, 0.35, 0.6, 0.35, 0.05);
+        if (ticks % 4 == 0) Fx.ARC.play(p.level(), p.getX(), p.getY() + 1, p.getZ(), 2, 0.35, 0.6, 0.35);
     }
 
     @Override
@@ -75,7 +75,7 @@ public final class ShellBehavior implements ToggleBehavior {
             hurt(level, p, ctx.spellId(), ctx.spell().school(), ctx.castId(), e, damage);
             Arcs.draw(level, Arcs.body(p), Arcs.body(e));
         }
-        level.sendParticles(ParticleTypes.ELECTRIC_SPARK, p.getX(), p.getY() + 1, p.getZ(), 80, BURST_RADIUS / 2, 0.6, BURST_RADIUS / 2, 0.3);
+        Fx.ARC.play(level, p.getX(), p.getY() + 1, p.getZ(), 80, BURST_RADIUS / 2, 0.6, BURST_RADIUS / 2);
     }
 
     public static boolean has(LivingEntity e) {
@@ -146,7 +146,7 @@ public final class ShellBehavior implements ToggleBehavior {
             } else if (holder.level().getGameTime() >= e.getValue().until()) {
                 take(holder);
             } else if (holder.tickCount % 4 == 0) {
-                holder.level().sendParticles(ParticleTypes.ELECTRIC_SPARK, holder.getX(), holder.getY() + 1, holder.getZ(), 1, 0.35, 0.6, 0.35, 0.05);
+                Fx.ARC.play(holder.level(), holder.getX(), holder.getY() + 1, holder.getZ(), 1, 0.35, 0.6, 0.35);
             }
         }
     }

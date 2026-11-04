@@ -10,6 +10,7 @@ import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.core.TalentRules;
 import com.orbisarcana.spell.Frost;
 import com.orbisarcana.spell.Shields;
+import com.orbisarcana.spell.Fx;
 import net.minecraft.world.effect.MobEffects;
 
 import net.minecraft.resources.Identifier;
@@ -23,7 +24,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingFallEvent;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -199,7 +199,7 @@ public final class TalentEffects {
                     e -> e.isAlive() && e != p && e != victim && !(e instanceof Player))) {
                 e.hurtServer(level, com.orbisarcana.registry.ModDamageTypes.source(e, Schools.ICE, null, p), ICE_ROSE_DAMAGE);
             }
-            level.sendParticles(Frost.ICE, victim.getX(), victim.getY() + victim.getBbHeight() / 2, victim.getZ(), 50, 0.8, 0.5, 0.8, 0.25);
+            Fx.FROST.play(level, victim.getX(), victim.getY() + victim.getBbHeight() / 2, victim.getZ(), 50, 0.8, 0.5, 0.8);
         }
         if (!(victim instanceof ServerPlayer p)) return;
         if (source.getDirectEntity() instanceof LivingEntity attacker && source.getEntity() == attacker && attacker != p
@@ -212,7 +212,7 @@ public final class TalentEffects {
             if (now < WHITE_WALL_READY.getOrDefault(p.getUUID(), 0L)) return;
             WHITE_WALL_READY.put(p.getUUID(), now + WHITE_WALL_COOLDOWN);
             Shields.grant(p, WHITE_WALL_SHIELD, WHITE_WALL_TICKS, null);
-            p.level().sendParticles(Frost.ICE, p.getX(), p.getY() + 1, p.getZ(), 40, 0.5, 0.8, 0.5, 0.1);
+            Fx.FROST.play(p.level(), p.getX(), p.getY() + 1, p.getZ(), 40, 0.5, 0.8, 0.5);
         }
     }
 
@@ -242,7 +242,7 @@ public final class TalentEffects {
         if (event.getEntity() instanceof ServerPlayer p && event.getSource().getDirectEntity() instanceof Projectile
                 && AttunementService.hasTalent(p, Schools.AIR, TalentRules.B2) && p.getRandom().nextDouble() < EVASIVE_CHANCE) {
             event.setCanceled(true);
-            p.level().sendParticles(ParticleTypes.CLOUD, p.getX(), p.getY() + 1, p.getZ(), 10, 0.3, 0.5, 0.3, 0.05);
+            Fx.CLOUD.play(p.level(), p.getX(), p.getY() + 1, p.getZ(), 10, 0.3, 0.5, 0.3);
         }
     }
 

@@ -9,8 +9,8 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -136,7 +136,7 @@ public final class JudgmentBehavior {
         if (now % 10 == 0) {
             for (int i = 0; i < 8; i++) {
                 double a = Math.PI * 2 * i / 8 + now * 0.05;
-                c.level.sendParticles(ParticleTypes.END_ROD, c.pos.x + Math.cos(a) * c.radius, c.pos.y + 0.1, c.pos.z + Math.sin(a) * c.radius, 1, 0, 0.02, 0, 0);
+                Fx.MOTE.play(c.level, c.pos.x + Math.cos(a) * c.radius, c.pos.y + 0.1, c.pos.z + Math.sin(a) * c.radius, 1, 0, 0.02, 0);
             }
         }
         if ((now - c.strikeAt) % 20 != 0 || now == c.strikeAt) return;
@@ -162,9 +162,9 @@ public final class JudgmentBehavior {
         double spread = c.radius * 0.3;
         for (int i = 0; i < count; i++) {
             double y = c.level.getRandom().nextDouble() * COLUMN_HEIGHT;
-            c.level.sendParticles(ParticleTypes.END_ROD, c.pos.x, c.pos.y + y, c.pos.z, 1, spread, 0.2, spread, 0.01);
+            Fx.MOTE.play(c.level, c.pos.x, c.pos.y + y, c.pos.z, 1, spread, 0.2, spread);
         }
-        if (count >= 20) c.level.sendParticles(ParticleTypes.GLOW, c.pos.x, c.pos.y + 0.3, c.pos.z, 30, c.radius * 0.5, 0.1, c.radius * 0.5, 0.05);
+        if (count >= 20) Fx.TWINKLE.play(c.level, c.pos.x, c.pos.y + 0.3, c.pos.z, 30, c.radius * 0.5, 0.1, c.radius * 0.5);
     }
 
     /** For tests. */

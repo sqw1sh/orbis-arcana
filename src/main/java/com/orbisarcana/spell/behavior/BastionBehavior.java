@@ -11,9 +11,9 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModBlocks;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.spell.Frost;
+import com.orbisarcana.spell.Fx;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -77,7 +77,7 @@ final class BastionBehavior {
                 placed.add(pos);
             }
         }
-        level.sendParticles(Frost.ICE, point.x, point.y + 1, point.z, 50, half / 2 + 0.5, 0.8, half / 2 + 0.5, 0.1);
+        Fx.FROST.play(level, point.x, point.y + 1, point.z, 50, half / 2 + 0.5, 0.8, half / 2 + 0.5);
         WALLS.add(new Wall(level, caster.getUUID(), ctx.spellId(), ctx.spell().school(), ctx.castId(), placed, point,
                 ctx.param("attacker_slow") > 0, (float) ctx.scaled("shatter_damage"), level.getGameTime() + duration));
     }
@@ -124,8 +124,8 @@ final class BastionBehavior {
             e.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, SLOW_TICKS, 1), caster);
             if (caster != null && e.getHealth() < before) MasteryService.onHit(caster, w.spell(), w.castId(), e, !e.isAlive());
         }
-        w.level().sendParticles(Frost.ICE, c.x, c.y + 1.2, c.z, 120, 2, 1, 2, 0.4);
-        w.level().sendParticles(ParticleTypes.SNOWFLAKE, c.x, c.y + 1.2, c.z, 60, 2.5, 1, 2.5, 0.1);
+        Fx.FROST.play(w.level(), c.x, c.y + 1.2, c.z, 120, 2, 1, 2);
+        Fx.FROST.play(w.level(), c.x, c.y + 1.2, c.z, 60, 2.5, 1, 2.5);
     }
 
     @SubscribeEvent

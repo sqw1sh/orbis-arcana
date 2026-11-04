@@ -11,9 +11,11 @@ import net.minecraft.resources.Identifier;
 /**
  * Server → client: play a VFX effect (roadmap V4) at a point, oriented by {@code dir} (emitter forward, may be zero),
  * tinted ({@code tint} 0xRRGGBB, 0 = the effect's own colours), scaled, and attached to an entity while it lives
- * ({@code attach} -1 = none).
+ * ({@code attach} -1 = none). {@code sx, sy, sz} stretch the emitter shape along each axis without scaling the particles,
+ * {@code density} multiplies how many it emits (the drop-in for a vanilla particle burst's spread and count).
  */
-public record VfxPlay(Identifier effect, double x, double y, double z, float dx, float dy, float dz, int tint, float scale, int attach)
+public record VfxPlay(Identifier effect, double x, double y, double z, float dx, float dy, float dz, int tint, float scale, int attach,
+                      float sx, float sy, float sz, float density)
         implements CustomPacketPayload {
     public static final Type<VfxPlay> TYPE = new Type<>(OrbisArcana.id("vfx_play"));
     public static final StreamCodec<ByteBuf, VfxPlay> CODEC = new StreamCodec<>() {
@@ -21,7 +23,7 @@ public record VfxPlay(Identifier effect, double x, double y, double z, float dx,
         public VfxPlay decode(ByteBuf buf) {
             return new VfxPlay(Identifier.STREAM_CODEC.decode(buf), buf.readDouble(), buf.readDouble(), buf.readDouble(),
                     buf.readFloat(), buf.readFloat(), buf.readFloat(), ByteBufCodecs.VAR_INT.decode(buf), buf.readFloat(),
-                    ByteBufCodecs.VAR_INT.decode(buf));
+                    ByteBufCodecs.VAR_INT.decode(buf), buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat());
         }
 
         @Override
@@ -36,6 +38,10 @@ public record VfxPlay(Identifier effect, double x, double y, double z, float dx,
             ByteBufCodecs.VAR_INT.encode(buf, v.tint());
             buf.writeFloat(v.scale());
             ByteBufCodecs.VAR_INT.encode(buf, v.attach());
+            buf.writeFloat(v.sx());
+            buf.writeFloat(v.sy());
+            buf.writeFloat(v.sz());
+            buf.writeFloat(v.density());
         }
     };
 

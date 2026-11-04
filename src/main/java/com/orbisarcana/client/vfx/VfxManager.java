@@ -63,14 +63,19 @@ public final class VfxManager {
         final Vector3f ax = new Vector3f(1, 0, 0), ay = new Vector3f(0, 1, 0), az = new Vector3f(0, 0, 1);
         final float tr, tg, tb;
         final float scale;
+        /** Stretch of the emitter shape per axis, and the multiplier of particle counts. */
+        final Vector3f spread;
+        final float density;
         final int attach;
         float age, spawnDebt, activeTime, sleepTime;
         boolean instantDone;
         final List<Particle> particles = new ArrayList<>();
         final Molang.Scope scope = new Molang.Scope();
 
-        Emitter(VfxEffect fx, Vec3 pos, Vec3 forward, int tint, float scale, int attach) {
+        Emitter(VfxEffect fx, Vec3 pos, Vec3 forward, int tint, float scale, int attach, Vector3f spread, float density) {
             this.fx = fx;
+            this.spread = spread;
+            this.density = density;
             x = pos.x;
             y = pos.y;
             z = pos.z;
@@ -104,11 +109,16 @@ public final class VfxManager {
 
     /** Starts {@code effect} at {@code pos}; {@code forward} orients the emitter (zero: world axes); {@code tint} 0 = none. */
     public static void spawn(Identifier effect, Vec3 pos, Vec3 forward, int tint, float scale, int attachEntity) {
+        spawn(effect, pos, forward, tint, scale, attachEntity, new Vector3f(1, 1, 1), 1);
+    }
+
+    /** As above, the emitter shape stretched by {@code spread} per axis and {@code density} times the particles. */
+    public static void spawn(Identifier effect, Vec3 pos, Vec3 forward, int tint, float scale, int attachEntity, Vector3f spread, float density) {
         VfxEffect fx = VfxLoader.get(effect);
         Minecraft mc = Minecraft.getInstance();
         if (fx == null || mc.level == null) return;
         if (mc.gameRenderer.mainCamera().position().distanceToSqr(pos) > MAX_DISTANCE * MAX_DISTANCE) return;
-        EMITTERS.add(new Emitter(fx, pos, forward, tint, scale <= 0 ? 1 : scale, attachEntity));
+        EMITTERS.add(new Emitter(fx, pos, forward, tint, scale <= 0 ? 1 : scale, attachEntity, spread, density <= 0 ? 1 : density));
     }
 
     /** Stops the looping emitters attached to an entity (their particles live out their lives). */
@@ -162,13 +172,13 @@ public final class VfxManager {
         boolean active = !e.stopped && (fx.looping ? local < e.activeTime : e.age <= e.activeTime);
         if (active && room > 0) {
             if (fx.instantCount != null && !e.instantDone) {
-                int n = (int) Math.round(fx.instantCount.eval(e.scope) * spawnScale);
+                int n = (int) Math.round(fx.instantCount.eval(e.scope) * spawnScale * e.density);
                 for (int i = 0; i < Math.min(n, room); i++) spawnParticle(e);
                 e.instantDone = !fx.looping;
             }
             if (fx.steadyRate != null) {
-                e.spawnDebt += (float) (fx.steadyRate.eval(e.scope) * spawnScale * DT);
-                int max = (int) Math.max(1, fx.steadyMax.eval(e.scope) * spawnScale);
+                e.spawnDebt += (float) (fx.steadyRate.eval(e.scope) * spawnScale * e.density * DT);
+                int max = (int) Math.max(1, fx.steadyMax.eval(e.scope) * spawnScale * e.density);
                 while (e.spawnDebt >= 1 && e.particles.size() < max && room-- > 0) {
                     spawnParticle(e);
                     e.spawnDebt -= 1;
@@ -255,7 +265,7 @@ public final class VfxManager {
         }
         if (dir.lengthSquared() > 1.0E-6f) dir.normalize();
         Vector3f wp = new Vector3f(), wd = new Vector3f();
-        toWorld(e, lx + ox, ly + oy, lz + oz, wp);
+        toWorld(e, (lx + ox) * e.spread.x, (ly + oy) * e.spread.y, (lz + oz) * e.spread.z, wp);
         toWorld(e, dir.x, dir.y, dir.z, wd);
         p.x = p.px = e.x + wp.x * e.scale;
         p.y = p.py = e.y + wp.y * e.scale;

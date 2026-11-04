@@ -12,16 +12,14 @@ import com.orbisarcana.core.Targeting;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -43,7 +41,6 @@ final class WaveBehavior {
     private static final double SEEK_TURN = 0.25;
     private static final int STUN_TICKS = 20;
     private static final double LAUNCH = 0.6;
-    private static final BlockParticleOption STONE = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.STONE.defaultBlockState());
     private static final List<Wave> WAVES = new ArrayList<>();
 
     private static final class Wave {
@@ -124,8 +121,8 @@ final class WaveBehavior {
         }
         w.pos = w.pos.add(w.dir.scale(SPEED));
         w.travelled += SPEED;
-        w.level.sendParticles(STONE, w.pos.x, w.pos.y + 0.3, w.pos.z, 12, w.width * 0.3, 0.3, w.width * 0.3, 0.1);
-        w.level.sendParticles(ParticleTypes.CRIT, w.pos.x, w.pos.y + 0.6, w.pos.z, 2, 0.1, 0.3, 0.1, 0.05);
+        Fx.DEBRIS.play(w.level, w.pos.x, w.pos.y + 0.3, w.pos.z, 12, w.width * 0.3, 0.3, w.width * 0.3);
+        Fx.SPARK.play(w.level, w.pos.x, w.pos.y + 0.6, w.pos.z, 2, 0.1, 0.3, 0.1);
         for (LivingEntity e : w.level.getEntitiesOfClass(LivingEntity.class, new AABB(w.pos, w.pos).inflate(w.width, 1.5, w.width),
                 e -> e.isAlive() && e != caster && !w.hit.contains(e.getUUID()))) {
             w.hit.add(e.getUUID());
@@ -144,7 +141,7 @@ final class WaveBehavior {
             e.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, ticks, 9, false, true), caster);
             if (caster != null) MasteryService.onControl(caster, w.spell, w.castId, e);
         }
-        w.level.sendParticles(STONE, w.pos.x, w.pos.y + 0.8, w.pos.z, 50, radius * 0.5, 0.8, radius * 0.5, 0.15);
+        Fx.DEBRIS.play(w.level, w.pos.x, w.pos.y + 0.8, w.pos.z, 50, radius * 0.5, 0.8, radius * 0.5);
     }
 
     private static void hurt(Wave w, ServerPlayer caster, LivingEntity e, float damage) {

@@ -64,6 +64,25 @@ public final class DevShot {
                 vfxAt("arcane_sparkle", 1.6, 0, 0x7A8CFF);
                 vfxAt("arcane_sparkle", 3.0, 0, 0x6BD66B);
             }),
+            new Scene("stock", () -> {
+                // the stock effects of spell/Fx in two rows, each with the stock tint (dark stage: gallery_setup)
+                Minecraft mc = Minecraft.getInstance();
+                mc.gui.setScreen(null);
+                mc.player.setYRot(0);
+                mc.player.setXRot(10);
+            }, () -> {
+                String[] names = {"mote", "twinkle", "spark", "arc", "smoke", "flame", "frost", "splash", "leaf", "debris", "shadow", "shockwave", "slash", "rune"};
+                int[] tints = {0xFFF2C8, 0xFFFFFF, 0xA8D8FF, 0x9FD8FF, 0x9A9A9A, 0xFFFFFF, 0xBFEFFF, 0x6AB0FF, 0x7CD65A, 0x8A8076, 0x3A1E58, 0xFFFFFF, 0xE8F4FF, 0xC890FF};
+                for (int i = 0; i < names.length; i++) {
+                    Minecraft mc = Minecraft.getInstance();
+                    var look = mc.player.getLookAngle();
+                    var flat = new net.minecraft.world.phys.Vec3(look.x, 0, look.z).normalize();
+                    var right = new net.minecraft.world.phys.Vec3(-flat.z, 0, flat.x);
+                    var at = mc.player.getEyePosition().add(flat.scale(6)).add(right.scale((i % 7 - 3) * 1.4)).add(0, i < 7 ? 0.9 : -1.1, 0);
+                    com.orbisarcana.client.vfx.VfxManager.spawn(OrbisArcana.id(names[i]), at, net.minecraft.world.phys.Vec3.ZERO, tints[i], 1f, -1,
+                            new org.joml.Vector3f(0.35f, 0.35f, 0.35f), 2f);
+                }
+            }),
             new Scene("cast_anim", () -> fakeCast(true)),
             new Scene("cast_anim_fp", () -> fakeCast(false)),
             new Scene("vfx_cleanup", () -> {

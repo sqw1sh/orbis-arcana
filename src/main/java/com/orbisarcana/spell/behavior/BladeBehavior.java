@@ -12,8 +12,8 @@ import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.Schools;
 import com.orbisarcana.school.TalentEffects;
+import com.orbisarcana.spell.Fx;
 
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -146,13 +146,13 @@ public final class BladeBehavior {
         }
 
         private void particles() {
-            level.sendParticles(ParticleTypes.SWEEP_ATTACK, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
+            Fx.SLASH.play(level, pos.x, pos.y, pos.z, 1, 0, 0, 0);
             Vec3 side = dir.cross(new Vec3(0, 1, 0));
             if (side.lengthSqr() < 1.0E-4) side = new Vec3(1, 0, 0);
             side = side.normalize();
             for (double s = -width; s <= width; s += width / 2) {
                 Vec3 p = pos.add(side.scale(s)).subtract(dir.scale(Math.abs(s) * 0.4));
-                level.sendParticles(ParticleTypes.CLOUD, p.x, p.y, p.z, 1, 0, 0, 0, 0);
+                Fx.CLOUD.play(level, p.x, p.y, p.z, 1, 0, 0, 0);
             }
         }
     }
@@ -194,7 +194,7 @@ public final class BladeBehavior {
             double a = now * 0.6;
             for (double h = 0; h < 2.5; h += 0.4) {
                 double r = 0.3 + h * 0.3;
-                level.sendParticles(ParticleTypes.CLOUD, center.x + Math.cos(a + h * 2) * r, center.y + h, center.z + Math.sin(a + h * 2) * r, 1, 0, 0, 0, 0);
+                Fx.CLOUD.play(level, center.x + Math.cos(a + h * 2) * r, center.y + h, center.z + Math.sin(a + h * 2) * r, 1, 0, 0, 0);
             }
             return true;
         }
@@ -214,7 +214,7 @@ public final class BladeBehavior {
             if (now % 3 == 0) {
                 double t = level.getRandom().nextDouble();
                 Vec3 p = from.lerp(to, t);
-                level.sendParticles(ParticleTypes.SWEEP_ATTACK, p.x, p.y + 0.4, p.z, 1, 0.2, 0.1, 0.2, 0);
+                Fx.SLASH.play(level, p.x, p.y + 0.4, p.z, 1, 0.2, 0.1, 0.2);
             }
             return true;
         }
