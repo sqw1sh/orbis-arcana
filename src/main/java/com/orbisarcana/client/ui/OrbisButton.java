@@ -34,6 +34,11 @@ public class OrbisButton extends AbstractButton {
     }
 
     @Override
+    public void playDownSound(net.minecraft.client.sounds.SoundManager manager) {
+        com.orbisarcana.client.sound.CastSounds.ui(com.orbisarcana.registry.ModSounds.UI_CLICK.get(), 1f);
+    }
+
+    @Override
     protected void updateWidgetNarration(NarrationElementOutput output) {
         defaultButtonNarrationText(output);
     }

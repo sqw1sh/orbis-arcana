@@ -1,0 +1,31 @@
+{
+  "length": 2.25,
+  "loudness": -20,
+  "loop": true,
+  "layers": [
+    {
+      "type": "noise",
+      "lowpass": 220,
+      "gain": 0.8,
+      "tremolo": [
+        2,
+        0.4
+      ]
+    },
+    {
+      "type": "sine",
+      "freq": 48,
+      "gain": 0.35
+    },
+    {
+      "type": "crackle",
+      "density": 25,
+      "lowpass": 1200,
+      "gain": 0.4
+    }
+  ],
+  "reverb": {
+    "size": 0.5,
+    "mix": 0.25
+  }
+}

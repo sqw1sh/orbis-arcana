@@ -1,0 +1,25 @@
+{
+  "length": 0.5,
+  "loudness": -21,
+  "layers": [
+    {
+      "type": "sine",
+      "freq": 880,
+      "length": 0.2,
+      "decay": 0.07,
+      "gain": 0.4
+    },
+    {
+      "type": "sine",
+      "freq": 1320,
+      "start": 0.07,
+      "length": 0.3,
+      "decay": 0.1,
+      "gain": 0.35
+    }
+  ],
+  "reverb": {
+    "size": 0.4,
+    "mix": 0.25
+  }
+}

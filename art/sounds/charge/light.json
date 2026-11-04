@@ -1,0 +1,47 @@
+{
+  "length": 2.25,
+  "loudness": -20,
+  "loop": true,
+  "layers": [
+    {
+      "type": "sine",
+      "freq": 523,
+      "gain": 0.18,
+      "vibrato": [
+        5,
+        6
+      ]
+    },
+    {
+      "type": "sine",
+      "freq": 659,
+      "gain": 0.14,
+      "vibrato": [
+        5.5,
+        6
+      ]
+    },
+    {
+      "type": "sine",
+      "freq": 784,
+      "gain": 0.12,
+      "vibrato": [
+        6,
+        6
+      ]
+    },
+    {
+      "type": "noise",
+      "highpass": 6000,
+      "gain": 0.08,
+      "tremolo": [
+        3,
+        0.5
+      ]
+    }
+  ],
+  "reverb": {
+    "size": 0.5,
+    "mix": 0.25
+  }
+}

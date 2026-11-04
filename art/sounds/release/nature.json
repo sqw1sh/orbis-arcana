@@ -1,0 +1,43 @@
+{
+  "length": 0.9,
+  "loudness": -15,
+  "layers": [
+    {
+      "type": "triangle",
+      "freq": [
+        320,
+        290
+      ],
+      "decay": 0.18,
+      "gain": 0.5
+    },
+    {
+      "type": "sine",
+      "freq": [
+        640,
+        600
+      ],
+      "decay": 0.12,
+      "gain": 0.25
+    },
+    {
+      "type": "noise",
+      "highpass": 3500,
+      "attack": 0.01,
+      "decay": 0.15,
+      "gain": 0.35
+    },
+    {
+      "type": "crackle",
+      "density": 60,
+      "highpass": 3000,
+      "decay": 0.2,
+      "gain": 0.3
+    }
+  ],
+  "variants": 3,
+  "reverb": {
+    "size": 0.45,
+    "mix": 0.25
+  }
+}

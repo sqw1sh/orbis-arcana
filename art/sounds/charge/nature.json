@@ -1,0 +1,43 @@
+{
+  "length": 2.25,
+  "loudness": -20,
+  "loop": true,
+  "layers": [
+    {
+      "type": "noise",
+      "highpass": 3000,
+      "lowpass": 9000,
+      "gain": 0.25,
+      "tremolo": [
+        5,
+        0.7
+      ]
+    },
+    {
+      "type": "triangle",
+      "freq": 330,
+      "gain": 0.12,
+      "vibrato": [
+        4,
+        10
+      ],
+      "tremolo": [
+        2,
+        0.5
+      ]
+    },
+    {
+      "type": "sine",
+      "freq": 660,
+      "gain": 0.08,
+      "tremolo": [
+        3,
+        0.6
+      ]
+    }
+  ],
+  "reverb": {
+    "size": 0.5,
+    "mix": 0.25
+  }
+}

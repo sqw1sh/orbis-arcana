@@ -279,6 +279,7 @@ class SpellsTab extends GrimoireTab {
         for (int i = 0; i < rows() && i + scroll < spells.size(); i++) {
             if (inside(mx, my, x, listTop() + i * ROW_H, LIST_W, ROW_H - 1)) {
                 GrimoireScreen.selectedSpell = spells.get(i + scroll);
+                com.orbisarcana.client.sound.CastSounds.ui(com.orbisarcana.registry.ModSounds.UI_CLICK.get(), 1.2f);
                 return true;
             }
         }
@@ -312,6 +313,7 @@ class SpellsTab extends GrimoireTab {
                 Optional<Identifier> in = loadout.get(assignPage, s);
                 boolean same = in.isPresent() && in.get().equals(id);
                 ClientCastState.assign(player(), assignPage, s, same ? Optional.empty() : Optional.of(id));
+                com.orbisarcana.client.sound.CastSounds.ui(com.orbisarcana.registry.ModSounds.UI_ASSIGN.get(), same ? 0.8f : 1f);
                 return true;
             }
         }

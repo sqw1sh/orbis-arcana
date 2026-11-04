@@ -121,6 +121,7 @@ public final class AttunementService {
         if (denial.isEmpty()) {
             p.talents().add(node);
             player.syncData(ModAttachments.ATTUNEMENT);
+            player.level().playSound(null, player.blockPosition(), com.orbisarcana.registry.ModSounds.TALENT_LEARN.get(), net.minecraft.sounds.SoundSource.PLAYERS, 0.8f, 1f);
         }
         return denial;
     }

@@ -1,0 +1,23 @@
+{
+  "length": 0.35,
+  "loudness": -17,
+  "layers": [
+    {
+      "type": "triangle",
+      "freq": 220,
+      "length": 0.12,
+      "attack": 0.003,
+      "decay": 0.05,
+      "gain": 0.5
+    },
+    {
+      "type": "triangle",
+      "freq": 165,
+      "start": 0.1,
+      "length": 0.18,
+      "attack": 0.003,
+      "decay": 0.07,
+      "gain": 0.5
+    }
+  ]
+}

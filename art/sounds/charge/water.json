@@ -1,0 +1,44 @@
+{
+  "length": 2.25,
+  "loudness": -20,
+  "loop": true,
+  "layers": [
+    {
+      "type": "noise",
+      "bandpass": [
+        300,
+        900
+      ],
+      "q": 1.5,
+      "gain": 0.6,
+      "tremolo": [
+        0.8,
+        0.5
+      ]
+    },
+    {
+      "type": "sine",
+      "freq": [
+        500,
+        900
+      ],
+      "gain": 0.12,
+      "repeat": {
+        "count": 9,
+        "every": 0.22,
+        "jitter": 0.08,
+        "freq": [
+          500,
+          1100
+        ]
+      },
+      "length": 0.06,
+      "attack": 0.005,
+      "release": 0.05
+    }
+  ],
+  "reverb": {
+    "size": 0.5,
+    "mix": 0.25
+  }
+}

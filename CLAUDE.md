@@ -27,7 +27,7 @@
 - `node tools/lang-check.cjs` — аудит локализации RU/EN (запускать после добавления текстов).
 - `node tools/textures.cjs` — пересобрать PNG-текстуры предметов и блоков.
 - `node tools/art.cjs [--check]` — Blockbench → ресурсы: текстуры и item-JSON из `art/models/*.bbmodel`, проверка, что экспорт GeckoLib не устарел (конвейер — `docs/ART.md`).
-- `node tools/sfx.cjs [имя]` — синтез звуков по рецептам `art/sounds/*.json` → WAV → OGG (нужен ffmpeg в PATH или env `FFMPEG`).
+- `node tools/sfx.cjs [группа|группа/имя]` — синтез звуков по рецептам `art/sounds/<группа>/*.json` → WAV → OGG (ffmpeg из PATH, env `FFMPEG` или winget-ссылки). Группы: charge, release, impact (по школам), cast, toggle, ui, mastery; новые события — в `sounds.json` и `ModSounds`.
 - `./gradlew :runClientShot -Pshots=geckolib,pose` — проверка GeckoLib-модели в руке и позы PAL.
 - `node tools/gui.cjs` — пересобрать спрайты UI-кита (`textures/gui/sprites/ui`, стиль подсказок `arcane`).
 - `node tools/circles.cjs` — пересобрать атлас магических кругов (`textures/effect/circle_atlas.png`, ~25 с); раскладка — `client/circle/CircleAtlas`.

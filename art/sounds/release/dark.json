@@ -1,0 +1,44 @@
+{
+  "length": 1.1,
+  "loudness": -15,
+  "layers": [
+    {
+      "type": "sine",
+      "freq": [
+        140,
+        50
+      ],
+      "attack": 0.04,
+      "decay": 0.3,
+      "gain": 0.7
+    },
+    {
+      "type": "saw",
+      "freq": [
+        110,
+        55
+      ],
+      "lowpass": 600,
+      "attack": 0.03,
+      "decay": 0.25,
+      "gain": 0.35,
+      "detune": 20
+    },
+    {
+      "type": "noise",
+      "bandpass": [
+        800,
+        250
+      ],
+      "q": 2,
+      "attack": 0.05,
+      "decay": 0.3,
+      "gain": 0.4
+    }
+  ],
+  "variants": 3,
+  "reverb": {
+    "size": 0.45,
+    "mix": 0.25
+  }
+}

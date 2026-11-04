@@ -194,7 +194,7 @@ public final class CastService {
         if (core.mode == CastMode.INSTANT) {
             finish(player, cast, Outcome.RELEASED);
         } else {
-            playAt(player, ModSounds.CAST_CHARGE.get());
+            // the charge hum loops on the clients (client/sound/CastSounds)
             if (!TalentEffects.coldBlood(player, spell.school())) applySlow(player);
         }
     }

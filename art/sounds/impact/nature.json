@@ -1,0 +1,35 @@
+{
+  "length": 1,
+  "loudness": -14,
+  "layers": [
+    {
+      "type": "noise",
+      "bandpass": 1800,
+      "q": 1,
+      "attack": 0.002,
+      "decay": 0.08,
+      "gain": 0.7
+    },
+    {
+      "type": "triangle",
+      "freq": [
+        220,
+        180
+      ],
+      "decay": 0.2,
+      "gain": 0.5
+    },
+    {
+      "type": "crackle",
+      "density": 100,
+      "highpass": 2500,
+      "decay": 0.25,
+      "gain": 0.5
+    }
+  ],
+  "variants": 3,
+  "reverb": {
+    "size": 0.6,
+    "mix": 0.3
+  }
+}

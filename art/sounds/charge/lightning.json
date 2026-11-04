@@ -1,0 +1,33 @@
+{
+  "length": 2.25,
+  "loudness": -20,
+  "loop": true,
+  "layers": [
+    {
+      "type": "square",
+      "freq": 120,
+      "lowpass": 900,
+      "gain": 0.25,
+      "tremolo": [
+        30,
+        0.6
+      ]
+    },
+    {
+      "type": "saw",
+      "freq": 60,
+      "lowpass": 400,
+      "gain": 0.25
+    },
+    {
+      "type": "crackle",
+      "density": 70,
+      "highpass": 2500,
+      "gain": 0.45
+    }
+  ],
+  "reverb": {
+    "size": 0.5,
+    "mix": 0.25
+  }
+}

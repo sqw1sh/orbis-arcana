@@ -1,0 +1,49 @@
+{
+  "length": 1,
+  "loudness": -15,
+  "layers": [
+    {
+      "type": "fm",
+      "freq": [
+        1400,
+        1200
+      ],
+      "ratio": 3.5,
+      "index": [
+        3,
+        0.2
+      ],
+      "decay": 0.35,
+      "gain": 0.45
+    },
+    {
+      "type": "noise",
+      "highpass": 4000,
+      "attack": 0.005,
+      "decay": 0.15,
+      "gain": 0.4
+    },
+    {
+      "type": "sine",
+      "freq": 2400,
+      "length": 0.12,
+      "attack": 0.002,
+      "decay": 0.05,
+      "gain": 0.25,
+      "repeat": {
+        "count": 5,
+        "every": 0.06,
+        "jitter": 0.02,
+        "freq": [
+          1800,
+          4200
+        ]
+      }
+    }
+  ],
+  "variants": 3,
+  "reverb": {
+    "size": 0.45,
+    "mix": 0.25
+  }
+}

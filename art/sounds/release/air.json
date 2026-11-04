@@ -1,0 +1,33 @@
+{
+  "length": 0.8,
+  "loudness": -15,
+  "layers": [
+    {
+      "type": "noise",
+      "bandpass": [
+        2500,
+        600
+      ],
+      "q": 0.9,
+      "attack": 0.03,
+      "decay": 0.2,
+      "gain": 0.8,
+      "vibrato": [
+        8,
+        30
+      ]
+    },
+    {
+      "type": "noise",
+      "highpass": 5000,
+      "attack": 0.01,
+      "decay": 0.1,
+      "gain": 0.25
+    }
+  ],
+  "variants": 3,
+  "reverb": {
+    "size": 0.45,
+    "mix": 0.25
+  }
+}

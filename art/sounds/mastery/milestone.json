@@ -1,0 +1,64 @@
+{
+  "length": 2.4,
+  "loudness": -17,
+  "layers": [
+    {
+      "type": "sine",
+      "freq": 392,
+      "length": 1.6,
+      "attack": 0.02,
+      "decay": 0.7,
+      "gain": 0.3
+    },
+    {
+      "type": "sine",
+      "freq": 523,
+      "start": 0.05,
+      "length": 1.6,
+      "attack": 0.02,
+      "decay": 0.7,
+      "gain": 0.28
+    },
+    {
+      "type": "sine",
+      "freq": 659,
+      "start": 0.1,
+      "length": 1.6,
+      "attack": 0.02,
+      "decay": 0.7,
+      "gain": 0.26
+    },
+    {
+      "type": "sine",
+      "freq": 784,
+      "start": 0.3,
+      "length": 1.8,
+      "attack": 0.02,
+      "decay": 0.8,
+      "gain": 0.26
+    },
+    {
+      "type": "fm",
+      "freq": 1568,
+      "ratio": 3,
+      "index": [
+        2,
+        0
+      ],
+      "start": 0.3,
+      "decay": 0.6,
+      "gain": 0.15
+    },
+    {
+      "type": "noise",
+      "highpass": 6000,
+      "start": 0.3,
+      "decay": 0.6,
+      "gain": 0.12
+    }
+  ],
+  "reverb": {
+    "size": 0.8,
+    "mix": 0.4
+  }
+}

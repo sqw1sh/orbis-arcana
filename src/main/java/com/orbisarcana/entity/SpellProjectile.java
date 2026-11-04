@@ -122,13 +122,15 @@ public class SpellProjectile extends ThrowableProjectile {
         }
     }
 
-    /** Burst of flames, sparks flying off and a puff of smoke (the mod's VFX, roadmap V4). */
+    /** Burst of flames, sparks flying off, a puff of smoke (VFX, roadmap V4) and the school's impact sound (V6). */
     private void impact(ServerLevel server, float scale) {
         Vec3 at = position();
         Vec3 back = getDeltaMovement().lengthSqr() > 1.0E-6 ? getDeltaMovement().normalize().scale(-1) : Vec3.ZERO;
         Vfx.play(server, BURST, at, back, tint(), scale);
         Vfx.play(server, SPARKS, at, back, tint(), scale);
         Vfx.play(server, SMOKE, at, Vec3.ZERO, 0, scale);
+        server.playSound(null, at.x, at.y, at.z, com.orbisarcana.registry.ModSounds.impact(school), net.minecraft.sounds.SoundSource.PLAYERS,
+                0.8f + 0.2f * scale, 0.95f + random.nextFloat() * 0.1f);
     }
 
     /** Fire keeps the effects' own colours; other schools tint them. */

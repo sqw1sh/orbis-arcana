@@ -1,0 +1,23 @@
+{
+  "length": 0.08,
+  "loudness": -21,
+  "layers": [
+    {
+      "type": "sine",
+      "freq": [
+        2200,
+        1600
+      ],
+      "attack": 0.001,
+      "decay": 0.012,
+      "gain": 0.6
+    },
+    {
+      "type": "noise",
+      "highpass": 4000,
+      "attack": 0.001,
+      "decay": 0.006,
+      "gain": 0.3
+    }
+  ]
+}

@@ -65,6 +65,7 @@ public class GrimoireScreen extends Screen {
 
     /** Switches tab (and remembers it). */
     void open(Tab next) {
+        if (next != lastTab) com.orbisarcana.client.sound.CastSounds.ui(com.orbisarcana.registry.ModSounds.UI_TAB.get(), 1f);
         lastTab = next;
         tab = next.factory.apply(this);
         rebuildWidgets();

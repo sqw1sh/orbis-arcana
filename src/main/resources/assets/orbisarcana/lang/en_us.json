@@ -607,5 +607,9 @@
   "orbisarcana.configuration.vfxQuality": "Effects quality",
   "orbisarcana.configuration.vfxQuality.tooltip": "How many particles spell effects spawn and how many may live at once",
   "orbisarcana.configuration.firstPersonAnimations": "First-person cast animations",
-  "orbisarcana.configuration.firstPersonAnimations.tooltip": "Show the animated arms of the caster poses in first person"
+  "orbisarcana.configuration.firstPersonAnimations.tooltip": "Show the animated arms of the caster poses in first person",
+  "subtitles.orbisarcana.cast.impact": "Spell hits",
+  "subtitles.orbisarcana.talent.learn": "Talent learned",
+  "subtitles.orbisarcana.mastery.up": "Mastery grows",
+  "subtitles.orbisarcana.mastery.milestone": "Mastery milestone"
 }

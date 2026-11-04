@@ -1,11 +1,368 @@
 {
+  "cast.charge.fire": {
+    "sounds": [
+      {
+        "name": "orbisarcana:charge/fire"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.charge"
+  },
+  "cast.release.fire": {
+    "sounds": [
+      {
+        "name": "orbisarcana:release/fire_1"
+      },
+      {
+        "name": "orbisarcana:release/fire_2"
+      },
+      {
+        "name": "orbisarcana:release/fire_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.impact.fire": {
+    "sounds": [
+      {
+        "name": "orbisarcana:impact/fire_1"
+      },
+      {
+        "name": "orbisarcana:impact/fire_2"
+      },
+      {
+        "name": "orbisarcana:impact/fire_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.impact"
+  },
+  "cast.charge.earth": {
+    "sounds": [
+      {
+        "name": "orbisarcana:charge/earth"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.charge"
+  },
+  "cast.release.earth": {
+    "sounds": [
+      {
+        "name": "orbisarcana:release/earth_1"
+      },
+      {
+        "name": "orbisarcana:release/earth_2"
+      },
+      {
+        "name": "orbisarcana:release/earth_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.impact.earth": {
+    "sounds": [
+      {
+        "name": "orbisarcana:impact/earth_1"
+      },
+      {
+        "name": "orbisarcana:impact/earth_2"
+      },
+      {
+        "name": "orbisarcana:impact/earth_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.impact"
+  },
+  "cast.charge.water": {
+    "sounds": [
+      {
+        "name": "orbisarcana:charge/water"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.charge"
+  },
+  "cast.release.water": {
+    "sounds": [
+      {
+        "name": "orbisarcana:release/water_1"
+      },
+      {
+        "name": "orbisarcana:release/water_2"
+      },
+      {
+        "name": "orbisarcana:release/water_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.impact.water": {
+    "sounds": [
+      {
+        "name": "orbisarcana:impact/water_1"
+      },
+      {
+        "name": "orbisarcana:impact/water_2"
+      },
+      {
+        "name": "orbisarcana:impact/water_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.impact"
+  },
+  "cast.charge.air": {
+    "sounds": [
+      {
+        "name": "orbisarcana:charge/air"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.charge"
+  },
+  "cast.release.air": {
+    "sounds": [
+      {
+        "name": "orbisarcana:release/air_1"
+      },
+      {
+        "name": "orbisarcana:release/air_2"
+      },
+      {
+        "name": "orbisarcana:release/air_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.impact.air": {
+    "sounds": [
+      {
+        "name": "orbisarcana:impact/air_1"
+      },
+      {
+        "name": "orbisarcana:impact/air_2"
+      },
+      {
+        "name": "orbisarcana:impact/air_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.impact"
+  },
+  "cast.charge.ice": {
+    "sounds": [
+      {
+        "name": "orbisarcana:charge/ice"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.charge"
+  },
+  "cast.release.ice": {
+    "sounds": [
+      {
+        "name": "orbisarcana:release/ice_1"
+      },
+      {
+        "name": "orbisarcana:release/ice_2"
+      },
+      {
+        "name": "orbisarcana:release/ice_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.impact.ice": {
+    "sounds": [
+      {
+        "name": "orbisarcana:impact/ice_1"
+      },
+      {
+        "name": "orbisarcana:impact/ice_2"
+      },
+      {
+        "name": "orbisarcana:impact/ice_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.impact"
+  },
+  "cast.charge.lightning": {
+    "sounds": [
+      {
+        "name": "orbisarcana:charge/lightning"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.charge"
+  },
+  "cast.release.lightning": {
+    "sounds": [
+      {
+        "name": "orbisarcana:release/lightning_1"
+      },
+      {
+        "name": "orbisarcana:release/lightning_2"
+      },
+      {
+        "name": "orbisarcana:release/lightning_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.impact.lightning": {
+    "sounds": [
+      {
+        "name": "orbisarcana:impact/lightning_1"
+      },
+      {
+        "name": "orbisarcana:impact/lightning_2"
+      },
+      {
+        "name": "orbisarcana:impact/lightning_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.impact"
+  },
+  "cast.charge.nature": {
+    "sounds": [
+      {
+        "name": "orbisarcana:charge/nature"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.charge"
+  },
+  "cast.release.nature": {
+    "sounds": [
+      {
+        "name": "orbisarcana:release/nature_1"
+      },
+      {
+        "name": "orbisarcana:release/nature_2"
+      },
+      {
+        "name": "orbisarcana:release/nature_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.impact.nature": {
+    "sounds": [
+      {
+        "name": "orbisarcana:impact/nature_1"
+      },
+      {
+        "name": "orbisarcana:impact/nature_2"
+      },
+      {
+        "name": "orbisarcana:impact/nature_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.impact"
+  },
+  "cast.charge.light": {
+    "sounds": [
+      {
+        "name": "orbisarcana:charge/light"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.charge"
+  },
+  "cast.release.light": {
+    "sounds": [
+      {
+        "name": "orbisarcana:release/light_1"
+      },
+      {
+        "name": "orbisarcana:release/light_2"
+      },
+      {
+        "name": "orbisarcana:release/light_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.impact.light": {
+    "sounds": [
+      {
+        "name": "orbisarcana:impact/light_1"
+      },
+      {
+        "name": "orbisarcana:impact/light_2"
+      },
+      {
+        "name": "orbisarcana:impact/light_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.impact"
+  },
+  "cast.charge.dark": {
+    "sounds": [
+      {
+        "name": "orbisarcana:charge/dark"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.charge"
+  },
+  "cast.release.dark": {
+    "sounds": [
+      {
+        "name": "orbisarcana:release/dark_1"
+      },
+      {
+        "name": "orbisarcana:release/dark_2"
+      },
+      {
+        "name": "orbisarcana:release/dark_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.impact.dark": {
+    "sounds": [
+      {
+        "name": "orbisarcana:impact/dark_1"
+      },
+      {
+        "name": "orbisarcana:impact/dark_2"
+      },
+      {
+        "name": "orbisarcana:impact/dark_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.impact"
+  },
+  "cast.charge.astral": {
+    "sounds": [
+      {
+        "name": "orbisarcana:charge/astral"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.charge"
+  },
+  "cast.release.astral": {
+    "sounds": [
+      {
+        "name": "orbisarcana:release/astral_1"
+      },
+      {
+        "name": "orbisarcana:release/astral_2"
+      },
+      {
+        "name": "orbisarcana:release/astral_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.release"
+  },
+  "cast.impact.astral": {
+    "sounds": [
+      {
+        "name": "orbisarcana:impact/astral_1"
+      },
+      {
+        "name": "orbisarcana:impact/astral_2"
+      },
+      {
+        "name": "orbisarcana:impact/astral_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.impact"
+  },
   "cast.charge": {
     "sounds": [
       {
-        "name": "minecraft:block.amethyst_block.resonate",
-        "type": "event",
-        "volume": 0.6,
-        "pitch": 1.2
+        "name": "orbisarcana:charge/astral"
       }
     ],
     "subtitle": "subtitles.orbisarcana.cast.charge"
@@ -13,21 +370,38 @@
   "cast.release": {
     "sounds": [
       {
-        "name": "minecraft:block.amethyst_block.chime",
-        "type": "event",
-        "volume": 1,
-        "pitch": 1
+        "name": "orbisarcana:release/astral_1"
+      },
+      {
+        "name": "orbisarcana:release/astral_2"
+      },
+      {
+        "name": "orbisarcana:release/astral_3"
       }
     ],
     "subtitle": "subtitles.orbisarcana.cast.release"
   },
+  "cast.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:impact/astral_1"
+      },
+      {
+        "name": "orbisarcana:impact/astral_2"
+      },
+      {
+        "name": "orbisarcana:impact/astral_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.impact"
+  },
   "cast.interrupt": {
     "sounds": [
       {
-        "name": "minecraft:block.fire.extinguish",
-        "type": "event",
-        "volume": 0.5,
-        "pitch": 1.4
+        "name": "orbisarcana:cast/interrupt_1"
+      },
+      {
+        "name": "orbisarcana:cast/interrupt_2"
       }
     ],
     "subtitle": "subtitles.orbisarcana.cast.interrupt"
@@ -35,10 +409,7 @@
   "cast.fail": {
     "sounds": [
       {
-        "name": "minecraft:block.dispenser.fail",
-        "type": "event",
-        "volume": 0.5,
-        "pitch": 1.6
+        "name": "orbisarcana:cast/fail"
       }
     ],
     "subtitle": "subtitles.orbisarcana.cast.fail"
@@ -46,10 +417,7 @@
   "toggle.on": {
     "sounds": [
       {
-        "name": "minecraft:block.beacon.power_select",
-        "type": "event",
-        "volume": 0.5,
-        "pitch": 1.5
+        "name": "orbisarcana:toggle/on"
       }
     ],
     "subtitle": "subtitles.orbisarcana.toggle.on"
@@ -57,122 +425,54 @@
   "toggle.off": {
     "sounds": [
       {
-        "name": "minecraft:block.beacon.deactivate",
-        "type": "event",
-        "volume": 0.5,
-        "pitch": 1.5
+        "name": "orbisarcana:toggle/off"
       }
     ],
     "subtitle": "subtitles.orbisarcana.toggle.off"
   },
-  "cast.release.fire": {
+  "ui.click": {
     "sounds": [
       {
-        "name": "minecraft:item.firecharge.use",
-        "type": "event",
-        "volume": 0.6,
-        "pitch": 1.1
+        "name": "orbisarcana:ui/click"
       }
-    ],
-    "subtitle": "subtitles.orbisarcana.cast.release"
+    ]
   },
-  "cast.release.earth": {
+  "ui.tab": {
     "sounds": [
       {
-        "name": "minecraft:block.stone.break",
-        "type": "event",
-        "volume": 0.9,
-        "pitch": 0.7
+        "name": "orbisarcana:ui/tab"
       }
-    ],
-    "subtitle": "subtitles.orbisarcana.cast.release"
+    ]
   },
-  "cast.release.water": {
+  "ui.assign": {
     "sounds": [
       {
-        "name": "minecraft:entity.generic.splash",
-        "type": "event",
-        "volume": 0.5,
-        "pitch": 1.2
+        "name": "orbisarcana:ui/assign"
       }
-    ],
-    "subtitle": "subtitles.orbisarcana.cast.release"
+    ]
   },
-  "cast.release.air": {
+  "talent.learn": {
     "sounds": [
       {
-        "name": "minecraft:entity.breeze.wind_burst",
-        "type": "event",
-        "volume": 0.5,
-        "pitch": 1.2
+        "name": "orbisarcana:ui/learn"
       }
     ],
-    "subtitle": "subtitles.orbisarcana.cast.release"
+    "subtitle": "subtitles.orbisarcana.talent.learn"
   },
-  "cast.release.ice": {
+  "mastery.up": {
     "sounds": [
       {
-        "name": "minecraft:block.glass.break",
-        "type": "event",
-        "volume": 0.5,
-        "pitch": 1.5
+        "name": "orbisarcana:mastery/up"
       }
     ],
-    "subtitle": "subtitles.orbisarcana.cast.release"
+    "subtitle": "subtitles.orbisarcana.mastery.up"
   },
-  "cast.release.lightning": {
+  "mastery.milestone": {
     "sounds": [
       {
-        "name": "minecraft:entity.lightning_bolt.impact",
-        "type": "event",
-        "volume": 0.35,
-        "pitch": 1.6
+        "name": "orbisarcana:mastery/milestone"
       }
     ],
-    "subtitle": "subtitles.orbisarcana.cast.release"
-  },
-  "cast.release.nature": {
-    "sounds": [
-      {
-        "name": "minecraft:block.azalea.place",
-        "type": "event",
-        "volume": 1,
-        "pitch": 0.8
-      }
-    ],
-    "subtitle": "subtitles.orbisarcana.cast.release"
-  },
-  "cast.release.light": {
-    "sounds": [
-      {
-        "name": "minecraft:block.beacon.activate",
-        "type": "event",
-        "volume": 0.5,
-        "pitch": 1.8
-      }
-    ],
-    "subtitle": "subtitles.orbisarcana.cast.release"
-  },
-  "cast.release.dark": {
-    "sounds": [
-      {
-        "name": "minecraft:particle.soul_escape",
-        "type": "event",
-        "volume": 1,
-        "pitch": 0.6
-      }
-    ],
-    "subtitle": "subtitles.orbisarcana.cast.release"
-  },
-  "cast.release.astral": {
-    "sounds": [
-      {
-        "name": "minecraft:block.end_portal_frame.fill",
-        "type": "event",
-        "volume": 0.7,
-        "pitch": 1.3
-      }
-    ],
-    "subtitle": "subtitles.orbisarcana.cast.release"
+    "subtitle": "subtitles.orbisarcana.mastery.milestone"
   }
 }

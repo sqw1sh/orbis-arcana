@@ -1,0 +1,39 @@
+{
+  "length": 2.25,
+  "loudness": -20,
+  "loop": true,
+  "layers": [
+    {
+      "type": "saw",
+      "freq": 55,
+      "lowpass": 300,
+      "gain": 0.35,
+      "detune": -12
+    },
+    {
+      "type": "saw",
+      "freq": 55,
+      "lowpass": 300,
+      "gain": 0.35,
+      "detune": 14,
+      "tremolo": [
+        0.5,
+        0.4
+      ]
+    },
+    {
+      "type": "noise",
+      "bandpass": 500,
+      "q": 3,
+      "gain": 0.25,
+      "tremolo": [
+        0.9,
+        0.7
+      ]
+    }
+  ],
+  "reverb": {
+    "size": 0.5,
+    "mix": 0.25
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "length": 0.9,
+  "loudness": -14,
+  "layers": [
+    {
+      "type": "noise",
+      "bandpass": [
+        1800,
+        400
+      ],
+      "q": 0.7,
+      "attack": 0.005,
+      "decay": 0.2,
+      "gain": 0.9
+    },
+    {
+      "type": "sine",
+      "freq": [
+        120,
+        60
+      ],
+      "decay": 0.12,
+      "gain": 0.4
+    }
+  ],
+  "variants": 3,
+  "reverb": {
+    "size": 0.6,
+    "mix": 0.3
+  }
+}

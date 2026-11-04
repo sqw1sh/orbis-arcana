@@ -1,0 +1,39 @@
+{
+  "length": 1,
+  "loudness": -14,
+  "layers": [
+    {
+      "type": "noise",
+      "lowpass": [
+        3000,
+        500
+      ],
+      "attack": 0.003,
+      "decay": 0.2,
+      "gain": 0.8
+    },
+    {
+      "type": "sine",
+      "freq": 500,
+      "length": 0.08,
+      "attack": 0.003,
+      "release": 0.06,
+      "start": 0.05,
+      "gain": 0.3,
+      "repeat": {
+        "count": 10,
+        "every": 0.05,
+        "jitter": 0.02,
+        "freq": [
+          300,
+          1000
+        ]
+      }
+    }
+  ],
+  "variants": 3,
+  "reverb": {
+    "size": 0.6,
+    "mix": 0.3
+  }
+}

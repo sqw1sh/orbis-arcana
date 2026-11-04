@@ -1,0 +1,25 @@
+{
+  "length": 0.25,
+  "loudness": -21,
+  "layers": [
+    {
+      "type": "noise",
+      "bandpass": [
+        1500,
+        4000
+      ],
+      "q": 1.2,
+      "attack": 0.02,
+      "decay": 0.06,
+      "gain": 0.6
+    },
+    {
+      "type": "sine",
+      "freq": 1320,
+      "start": 0.04,
+      "length": 0.15,
+      "decay": 0.04,
+      "gain": 0.25
+    }
+  ]
+}

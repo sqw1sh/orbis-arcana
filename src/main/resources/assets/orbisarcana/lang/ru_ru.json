@@ -607,5 +607,9 @@
   "orbisarcana.configuration.vfxQuality": "Качество эффектов",
   "orbisarcana.configuration.vfxQuality.tooltip": "Сколько частиц создают эффекты заклинаний и сколько может жить одновременно",
   "orbisarcana.configuration.firstPersonAnimations": "Анимации каста от первого лица",
-  "orbisarcana.configuration.firstPersonAnimations.tooltip": "Показывать анимированные руки мага при касте от первого лица"
+  "orbisarcana.configuration.firstPersonAnimations.tooltip": "Показывать анимированные руки мага при касте от первого лица",
+  "subtitles.orbisarcana.cast.impact": "Удар заклинания",
+  "subtitles.orbisarcana.talent.learn": "Изучен талант",
+  "subtitles.orbisarcana.mastery.up": "Мастерство растёт",
+  "subtitles.orbisarcana.mastery.milestone": "Веха мастерства"
 }

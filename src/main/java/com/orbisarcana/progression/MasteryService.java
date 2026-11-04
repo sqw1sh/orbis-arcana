@@ -24,7 +24,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.LivingEntity;
@@ -154,10 +153,10 @@ public final class MasteryService {
             player.sendSystemMessage(Component.translatable("message.orbisarcana.milestone", name, level,
                     Component.translatable("screen.orbisarcana.grimoire.milestone." + level),
                     Component.translatable("spell." + spellId.getNamespace() + "." + spellId.getPath() + ".m" + level)).withStyle(ChatFormatting.GOLD));
-            player.level().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundSource.PLAYERS, 0.8f, 1f);
+            player.level().playSound(null, player.blockPosition(), com.orbisarcana.registry.ModSounds.MASTERY_MILESTONE.get(), SoundSource.PLAYERS, 0.9f, 1f);
         } else {
             player.sendOverlayMessage(Component.translatable("message.orbisarcana.level_up", name, level).withStyle(ChatFormatting.AQUA));
-            player.level().playSound(null, player.blockPosition(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.5f, 1.4f);
+            player.level().playSound(null, player.blockPosition(), com.orbisarcana.registry.ModSounds.MASTERY_UP.get(), SoundSource.PLAYERS, 0.7f, 1f);
         }
     }
 

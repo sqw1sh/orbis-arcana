@@ -89,6 +89,7 @@ public class RadialMenuScreen extends Screen {
     private void confirm() {
         if (minecraft.player != null && hovered >= 0 && ClientCastState.loadout(minecraft.player).get(page, hovered).isPresent()) {
             ClientCastState.select(minecraft.player, page, hovered);
+            com.orbisarcana.client.sound.CastSounds.ui(com.orbisarcana.registry.ModSounds.UI_ASSIGN.get(), 1.15f);
         }
         onClose();
     }
