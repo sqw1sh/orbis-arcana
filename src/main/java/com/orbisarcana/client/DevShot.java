@@ -214,6 +214,39 @@ public final class DevShot {
                     com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("dash_flames"), o.add(1.5, 0.6, 4.5), zero, 0, 1f);
                 });
             }),
+            new Scene("signatures5", () -> {
+                // V8 batch B: Heaven's Judgment column with its rune (left), Water Prison bubble and Gust Dome wind (middle),
+                // Granite Oath plates and a Guardian Orbit star (right), Life Bloom petals and the aura ring (front)
+                Minecraft mc = Minecraft.getInstance();
+                mc.gui.setScreen(null);
+                mc.player.setYRot(0);
+                mc.player.setXRot(12);
+            }, () -> {
+                Minecraft mc = Minecraft.getInstance();
+                var server = mc.getSingleplayerServer();
+                if (server != null) server.execute(() -> {
+                    ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+                    if (sp == null) return;
+                    var level = sp.level();
+                    var o = sp.position();
+                    var zero = net.minecraft.world.phys.Vec3.ZERO;
+                    java.util.function.BiConsumer<String, net.minecraft.world.phys.Vec3> at = (fx, p) -> com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id(fx), p, zero, 0, 1f);
+                    var judge = o.add(4, 0, 9);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("judgment_rune"), judge.add(0, 0.06, 0), zero, 0, 1.5f);
+                    var top = judge.add(0, 14, 0); var down = judge.subtract(top);
+                    for (String fx : new String[] {"ray_core", "ray_glow"})
+                        com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id(fx), top.add(down.scale(0.5)), down, 0, (float) down.length());
+                    at.accept("dawn_burst", judge.add(0, 0.5, 0));
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("bubble"), o.add(0.5, 1.2, 8), zero, 0, 1.3f);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("dome_wind"), o.add(0.5, 0.2, 8), zero, 0, 1f, 2.5f, 2.5f, 2.5f, 1.4f);
+                    var oath = o.add(-3.5, 0.6, 8);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("stone_guard"), oath, zero, 0, 1f, 1.1f, 1, 1.1f, 1);
+                    at.accept("orbit_star", oath.add(0, 1.8, 0));
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("petals"), o.add(1.8, 0.2, 5), zero, 0, 1f, 1.5f, 1, 1.5f, 2);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("aura_ring"), o.add(-1.5, 0.06, 5), zero, 0, 1.5f);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("curse_rune"), o.add(-1.5, 2, 6), zero, 0, 1f);
+                });
+            }),
             new Scene("cast_anim", () -> fakeCast(true)),
             new Scene("cast_anim_fp", () -> fakeCast(false)),
             new Scene("vfx_cleanup", () -> {

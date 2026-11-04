@@ -12,6 +12,7 @@ import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.Shields;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -20,6 +21,7 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -34,6 +36,8 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class AuraBehavior implements ToggleBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): the golden ring on the ground around the caster. */
+    private static final Identifier RING = Vfx.id("aura_ring");
     public static final AuraBehavior INSTANCE = new AuraBehavior();
     private static final long WARD_COOLDOWN = 10 * 20;
     private static final int WARD_TICKS = 6 * 20;
@@ -57,6 +61,7 @@ public final class AuraBehavior implements ToggleBehavior {
         ServerPlayer p = ctx.caster();
         ServerLevel level = p.level();
         double r = ctx.param("radius");
+        if (ticks % 10 == 0) Vfx.play(level, RING, p.position().add(0, 0.06, 0), Vec3.ZERO, 0, (float) Math.max(0.5, r));
         if (ticks % 5 == 0) {
             for (int i = 0; i < 3; i++) {
                 double a = p.getRandom().nextDouble() * Math.PI * 2;

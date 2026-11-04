@@ -24,6 +24,7 @@ import net.minecraft.world.entity.PathfinderMob;
 import com.orbisarcana.entity.ShadowDecoy;
 import com.orbisarcana.registry.ModEntities;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -40,6 +41,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class StepBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): shadows rushing in where the caster leaves, a dark ring where they land. */
+    private static final Identifier IMPLODE = Vfx.id("dusk_implode"), RING = Vfx.id("dusk_ring");
     private static final String DECOY_TAG = "orbisarcana_decoy";
     private static final double DECOY_LURE_RADIUS = 16;
     private static final double FLEE_DISTANCE = 8;
@@ -76,6 +79,7 @@ public final class StepBehavior {
                 mob.setTarget(null);
             }
             Fx.SHADOW.play(ctx.level(), dest.x, dest.y + 0.5, dest.z, 30, ctx.param("fear_radius") / 2, 0.3, ctx.param("fear_radius") / 2);
+            Vfx.play(ctx.level(), RING, dest.add(0, 0.5, 0), Vec3.ZERO, 0, (float) Math.max(1, ctx.param("fear_radius") / 2));
         }
     }
 
@@ -96,9 +100,11 @@ public final class StepBehavior {
     private static void jump(ServerPlayer p, Vec3 to) {
         ServerLevel level = p.level();
         Fx.SHADOW.play(level, p.getX(), p.getY() + 1, p.getZ(), 25, 0.3, 0.6, 0.3);
+        Vfx.play(level, IMPLODE, p.position().add(0, 1, 0), Vec3.ZERO, 0, 1f);
         p.teleportTo(to.x, to.y, to.z);
         p.resetFallDistance();
         Fx.SHADOW.play(level, to.x, to.y + 1, to.z, 25, 0.3, 0.6, 0.3);
+        Vfx.play(level, RING, to.add(0, 1, 0), Vec3.ZERO, 0, 1.2f);
         level.playSound(null, to.x, to.y, to.z, com.orbisarcana.registry.ModSounds.release(com.orbisarcana.school.Schools.DARK), SoundSource.PLAYERS, 1.2f, 0.85f);
         TalentEffects.blindSpot(p);
     }

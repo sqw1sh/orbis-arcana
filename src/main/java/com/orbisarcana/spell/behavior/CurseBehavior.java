@@ -12,12 +12,14 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -33,6 +35,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class CurseBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): shadows closing on the cursed one, a violet rune over its head. */
+    private static final Identifier IMPLODE = Vfx.id("dusk_implode"), RUNE = Vfx.id("curse_rune");
     private record Curse(ServerLevel level, UUID caster, Identifier spell, Identifier school, int castId, long until,
             float dps, double weaken, double spread, double healCut, double deathMana, float deathHeal) {}
 
@@ -52,6 +56,7 @@ public final class CurseBehavior {
         MasteryService.onControl(caster, curse.spell(), curse.castId(), target);
         EchoService.markDusk(caster, target);
         Fx.SHADOW.play(curse.level(), target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 15, 0.3, 0.4, 0.3);
+        Vfx.play(curse.level(), IMPLODE, target.position().add(0, target.getBbHeight() * 0.6, 0), Vec3.ZERO, 0, 1f);
     }
 
     public static boolean isCursed(LivingEntity e) {
@@ -82,6 +87,7 @@ public final class CurseBehavior {
                 }
             }
             if (now % 8 == 0) Fx.SHADOW.play(level, t.getX(), t.getY() + t.getBbHeight() * 0.8, t.getZ(), 2, 0.2, 0.2, 0.2);
+            if (now % 16 == 0) Vfx.play(level, RUNE, t.position().add(0, t.getBbHeight() + 0.5, 0), Vec3.ZERO, 0, 1f);
         }
     }
 

@@ -8,6 +8,7 @@ import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -32,6 +33,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class DomeBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): wind streaming over the dome, the ring of its burst. */
+    private static final Identifier WIND = Vfx.id("dome_wind"), RING = Vfx.id("shock_ring"), WISPS = Vfx.id("wind_wisps");
     private static final double SHELL = 0.75;
     private static final double EDGE_PUSH = 0.45;
     private static final double BURST_PUSH = 1.2;
@@ -120,13 +123,8 @@ final class DomeBehavior {
             }
         }
         if (now % 4 == 0) {
-            var rnd = d.level.getRandom();
-            for (int i = 0; i < 14; i++) {
-                double yaw = rnd.nextDouble() * Math.PI * 2;
-                double pitch = rnd.nextDouble() * Math.PI / 2;
-                double r = d.radius;
-                Fx.CLOUD.play(d.level, d.center.x + Math.cos(yaw) * Math.cos(pitch) * r, d.center.y + Math.sin(pitch) * r, d.center.z + Math.sin(yaw) * Math.cos(pitch) * r, 1, 0, 0, 0);
-            }
+            float r = (float) d.radius;
+            Vfx.play(d.level, WIND, d.center, Vec3.ZERO, 0, 1f, r, r, r, 1.4f);
         }
     }
 
@@ -140,7 +138,10 @@ final class DomeBehavior {
             if (caster != null && e.getHealth() < before) MasteryService.onHit(caster, d.spell, d.castId, e, !e.isAlive());
         }
         Fx.SHOCKWAVE.play(d.level, d.center.x, d.center.y + 1, d.center.z, 3, d.radius * 0.4, 0.5, d.radius * 0.4);
-        Fx.CLOUD.play(d.level, d.center.x, d.center.y + 1, d.center.z, 80, d.radius * 0.5, 0.8, d.radius * 0.5);
+        Fx.CLOUD.play(d.level, d.center.x, d.center.y + 1, d.center.z, 40, d.radius * 0.5, 0.8, d.radius * 0.5);
+        Vfx.play(d.level, RING, d.center.add(0, 1, 0), Vec3.ZERO, 0, (float) Math.max(1, d.radius / 2));
+        Vfx.play(d.level, WISPS, d.center.add(0, 1, 0), Vec3.ZERO, 0, 1f, (float) d.radius, 1, (float) d.radius, 3);
+        com.orbisarcana.spell.Sfx.impact(d.level, d.center, com.orbisarcana.school.Schools.AIR, 1.2f);
     }
 
     private static List<LivingEntity> enemies(Dome d, ServerPlayer caster, double radius) {

@@ -7,14 +7,19 @@ import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.Shields;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 
 /** {@code heal}: heals the resolved target (or the caster when the spell allows self-cast). */
 final class HealBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): dew falling onto the target, a soft green glow. */
+    private static final Identifier DROPS = Vfx.id("heal_drops"), GLOW = Vfx.id("heal_glow");
     /** Absorption cap for overheal shields (§10.5 uses 4 HP for similar shields). */
     private static final float MAX_SHIELD = 4.0f;
     private static final int OVERHEAL_SHIELD_TICKS = 10 * 20;
@@ -56,6 +61,9 @@ final class HealBehavior {
             target.addEffect(new MobEffectInstance(MobEffects.REGENERATION, (int) (hot * 50), 0), ctx.caster());
         }
         Fx.MOTE.play(ctx.level(), target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 10, 0.4, 0.4, 0.4, 0x9CFF8A);
+        Vec3 body = target.position().add(0, target.getBbHeight() * 0.6, 0);
+        Vfx.play(ctx.level(), DROPS, target.position().add(0, target.getBbHeight() + 0.8, 0), Vec3.ZERO, 0, 1f, 0.5f, 1, 0.5f, 1);
+        Vfx.play(ctx.level(), GLOW, body, Vec3.ZERO, 0, 1f);
     }
 
     private HealBehavior() {}

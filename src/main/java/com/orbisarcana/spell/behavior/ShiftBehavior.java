@@ -10,6 +10,7 @@ import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.spell.Stars;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -31,6 +32,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class ShiftBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): the burst of stars when the field turns. */
+    private static final Identifier BURST = Vfx.id("star_burst");
     private static final double SECOND_OFFSET = 6;
     private static final double SECOND_RADIUS_MULT = 0.5;
     private static final double LAUNCH = 0.9;
@@ -130,7 +133,9 @@ public final class ShiftBehavior {
             hurt(z, caster, e, z.collapse);
             e.push(0, LAUNCH, 0);
         }
-        Fx.TWINKLE.play(z.level, z.centre.x, z.centre.y + 0.5, z.centre.z, 60, z.radius / 2, 0.5, z.radius / 2);
+        Fx.TWINKLE.play(z.level, z.centre.x, z.centre.y + 0.5, z.centre.z, 40, z.radius / 2, 0.5, z.radius / 2);
+        Vfx.play(z.level, BURST, z.centre.add(0, 0.5, 0), Vec3.ZERO, 0, 1f, (float) z.radius / 2, 0.5f, (float) z.radius / 2, 3);
+        com.orbisarcana.spell.Sfx.impact(z.level, z.centre, com.orbisarcana.school.Schools.ASTRAL, 1.2f);
     }
 
     private static void hurt(Zone z, ServerPlayer caster, LivingEntity e, float damage) {

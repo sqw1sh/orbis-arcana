@@ -12,6 +12,7 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -33,6 +34,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class RootsBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): thorny roots spearing up around the bound one. */
+    private static final Identifier THORNS = Vfx.id("thorn_spikes"), DUST = Vfx.id("earth_dust");
     private static final List<Hold> HOLDS = new ArrayList<>();
 
     private record Hold(ServerLevel level, LivingEntity target, @Nullable UUID caster, Vec3 anchor, long endTick,
@@ -69,7 +72,10 @@ public final class RootsBehavior {
         HOLDS.removeIf(h -> h.target() == target);
         HOLDS.add(new Hold(level, target, caster == null ? null : caster.getUUID(), target.position(), level.getGameTime() + ticks,
                 dps, afterSlow, spell, school, castId));
-        Fx.DEBRIS.play(level, target.getX(), target.getY() + 0.2, target.getZ(), 25, target.getBbWidth() / 2, 0.2, target.getBbWidth() / 2, 0x6A4A2A);
+        Fx.DEBRIS.play(level, target.getX(), target.getY() + 0.2, target.getZ(), 15, target.getBbWidth() / 2, 0.2, target.getBbWidth() / 2, 0x6A4A2A);
+        float w = (float) Math.max(0.6, target.getBbWidth());
+        Vfx.play(level, THORNS, target.position().add(0, 0.5, 0), Vec3.ZERO, 0, 1f, w, 1, w, 1.4f);
+        Vfx.play(level, DUST, target.position().add(0, 0.2, 0), Vec3.ZERO, 0, 1f, w, 1, w, 1);
     }
 
     public static boolean isHeld(LivingEntity e) {

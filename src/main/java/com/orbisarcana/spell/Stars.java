@@ -14,6 +14,7 @@ import com.orbisarcana.school.AttunementService;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.Schools;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -33,6 +34,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class Stars {
+    /** Signature effects (tools/vfx-effects.cjs): beams of starlight joining the stars of a figure. */
+    private static final Identifier CORE = Vfx.id("star_core"), GLOW = Vfx.id("star_glow");
     /** {@code arc}: damage per second of arcs to the neighbouring stars (Star Spike milestone 10). */
     public record Star(UUID caster, ServerLevel level, Vec3 pos, long until, float arc) {}
 
@@ -95,18 +98,17 @@ public final class Stars {
             caster.setDeltaMovement(to.normalize().scale(Math.min(2.0, to.length() * 0.3)).add(0, 0.4, 0));
             caster.syncVelocity = true;
         }
-        for (Star s : figure) line(level, s.pos(), centre, Fx.TWINKLE, 0xB08CFF);
+        for (Star s : figure) beam(level, s.pos(), centre);
         Fx.TWINKLE.play(level, centre.x, centre.y + 0.5, centre.z, 80, radius / 2, 0.5, radius / 2, 0xB08CFF);
         Fx.TWINKLE.play(level, centre.x, centre.y + 0.5, centre.z, 30, 0.3, 0.3, 0.3);
     }
 
-    private static void line(ServerLevel level, Vec3 a, Vec3 b, Fx type, int tint) {
+    /** A beam of starlight from {@code a} to {@code b}. */
+    private static void beam(ServerLevel level, Vec3 a, Vec3 b) {
         Vec3 d = b.subtract(a);
-        int n = (int) Math.ceil(d.length() / 0.4);
-        for (int i = 0; i <= n; i++) {
-            Vec3 p = a.add(d.scale((double) i / Math.max(1, n)));
-            type.play(level, p.x, p.y, p.z, 1, 0, 0, 0, tint);
-        }
+        if (d.length() < 0.3) return;
+        Vfx.play(level, CORE, a.add(d.scale(0.5)), d, 0, (float) d.length());
+        Vfx.play(level, GLOW, a.add(d.scale(0.5)), d, 0, (float) d.length());
     }
 
     private static void send(ServerPlayer caster) {
@@ -145,7 +147,7 @@ public final class Stars {
                         e -> e.isAlive() && !(e instanceof Player) && e.getBoundingBox().inflate(0.3).clip(a.pos(), b.pos()).isPresent())) {
                     e.hurtServer(level, ModDamageTypes.source(e, Schools.ASTRAL, null, caster), dmg);
                 }
-                line(level, a.pos(), b.pos(), Fx.ARC, 0x9FD8FF);
+                Arcs.draw(level, a.pos(), b.pos());
             }
         }
     }

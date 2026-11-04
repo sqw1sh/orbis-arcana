@@ -17,6 +17,7 @@
 			},
 			"minecraft:emitter_shape_sphere": {
 				"radius": 0.4,
+				"surface_only": false,
 				"direction": [
 					"math.random(-0.6, 0.6)",
 					"1",

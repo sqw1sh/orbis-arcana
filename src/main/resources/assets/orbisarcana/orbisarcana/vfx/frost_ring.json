@@ -17,6 +17,7 @@
 			},
 			"minecraft:emitter_shape_sphere": {
 				"radius": 0,
+				"surface_only": false,
 				"direction": "outwards"
 			},
 			"minecraft:particle_lifetime_expression": {

@@ -10,6 +10,7 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -34,6 +35,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class OrbitBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): the orbiting stars, their beams of starlight, the burst of a catch. */
+    private static final Identifier STAR = Vfx.id("orbit_star"), CORE = Vfx.id("star_core"), GLOW = Vfx.id("star_glow"), BURST = Vfx.id("star_burst");
     private static final double CATCH_RADIUS = 1.0;
     private static final double SPIN = 0.15;
     private static final double LAUNCH_RANGE = 24;
@@ -88,9 +91,9 @@ public final class OrbitBehavior {
         for (int i = 0; i < o.stars; i++) {
             Vec3 from = starPos(p, o, i, p.level().getGameTime());
             Vec3 d = at.subtract(from);
-            for (double t = 0; t < d.length(); t += 0.5) {
-                Vec3 q = from.add(d.normalize().scale(t));
-                Fx.TWINKLE.play(p.level(), q.x, q.y, q.z, 1, 0, 0, 0);
+            if (d.length() > 0.3) {
+                Vfx.play(p.level(), CORE, from.add(d.scale(0.5)), d, 0, (float) d.length());
+                Vfx.play(p.level(), GLOW, from.add(d.scale(0.5)), d, 0, (float) d.length());
             }
             if (target != null) {
                 float before = target.getHealth();
@@ -124,7 +127,7 @@ public final class OrbitBehavior {
             }
             for (int i = 0; i < o.stars; i++) {
                 Vec3 s = starPos(p, o, i, now);
-                Fx.TWINKLE.play(level, s.x, s.y, s.z, 1, 0, 0, 0);
+                Vfx.play(level, STAR, s, Vec3.ZERO, 0, 1f);
             }
             catchProjectiles(p, o, level, now);
         }
@@ -139,7 +142,8 @@ public final class OrbitBehavior {
             if (!caught) continue;
             o.stars--;
             MasteryService.award(p, o.spell, 1);
-            Fx.TWINKLE.play(level, at.x, at.y, at.z, 15, 0.1, 0.1, 0.1);
+            Fx.TWINKLE.play(level, at.x, at.y, at.z, 6, 0.1, 0.1, 0.1);
+            Vfx.play(level, BURST, at, Vec3.ZERO, 0, 1f);
             if (o.reflect) {
                 proj.setDeltaMovement(proj.getDeltaMovement().scale(-1));
                 proj.setOwner(p);

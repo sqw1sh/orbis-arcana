@@ -8,6 +8,7 @@ import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -28,6 +29,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class PrisonBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): the shimmering bubble, the burst of water when it pops. */
+    private static final Identifier BUBBLE = Vfx.id("bubble"), WAVE = Vfx.id("water_wave");
     private static final double POP_RADIUS = 3.0;
     private static final double POP_PUSH = 1.0;
     private static final float POP_DAMAGE = 2.0f;
@@ -79,8 +82,10 @@ final class PrisonBehavior {
         }
         if (now % 3 == 0) {
             double h = t.getBbHeight() / 2;
-            Fx.SPLASH.play(p.level(), t.getX(), t.getY() + h, t.getZ(), 8, t.getBbWidth() * 0.6, h, t.getBbWidth() * 0.6);
+            Fx.SPLASH.play(p.level(), t.getX(), t.getY() + h, t.getZ(), 3, t.getBbWidth() * 0.6, h, t.getBbWidth() * 0.6);
         }
+        // the bubble, as big as the one inside it
+        if (now % 6 == 0) Vfx.play(p.level(), BUBBLE, t.position().add(0, t.getBbHeight() / 2, 0), Vec3.ZERO, 0, (float) Math.max(0.6, t.getBbHeight() * 0.65));
     }
 
     private static void pop(Prison p, ServerPlayer caster) {
@@ -92,7 +97,9 @@ final class PrisonBehavior {
             e.push(dir.x * POP_PUSH, 0.35, dir.z * POP_PUSH);
             e.hurtServer(p.level(), ModDamageTypes.source(e, p.school(), null, caster), POP_DAMAGE);
         }
-        Fx.SPLASH.play(p.level(), c.x, c.y + 1, c.z, 60, 1.2, 0.6, 1.2);
+        Fx.SPLASH.play(p.level(), c.x, c.y + 1, c.z, 30, 1.2, 0.6, 1.2);
+        Vfx.play(p.level(), WAVE, c.add(0, 0.6, 0), Vec3.ZERO, 0, 1f, 0.8f, 1, 0.8f, 1.5f);
+        com.orbisarcana.spell.Sfx.impact(p.level(), c, p.school(), 1f);
     }
 
     @SubscribeEvent

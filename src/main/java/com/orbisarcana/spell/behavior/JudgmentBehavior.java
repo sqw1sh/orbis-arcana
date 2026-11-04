@@ -10,6 +10,7 @@ import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -33,6 +34,9 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class JudgmentBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): the golden rune marking the ground, the column of light from the sky. */
+    private static final Identifier RUNE = Vfx.id("judgment_rune"), CORE = Vfx.id("ray_core"), GLOW = Vfx.id("ray_glow"),
+            BURST = Vfx.id("dawn_burst"), RING = Vfx.id("dawn_ring");
     private static final int MARK_TICKS = 100;
     private static final double LINGER_DAMAGE_MULT = 0.25;
     private static final int LINGER_PULSE = 10;
@@ -132,8 +136,9 @@ public final class JudgmentBehavior {
 
     private static void hallow(Column c, ServerPlayer caster, long now) {
         if (now % 10 == 0) {
-            for (int i = 0; i < 8; i++) {
-                double a = Math.PI * 2 * i / 8 + now * 0.05;
+            Vfx.play(c.level, RUNE, c.pos.add(0, 0.06, 0), Vec3.ZERO, 0, (float) Math.max(1, c.radius / 1.6));
+            for (int i = 0; i < 4; i++) {
+                double a = Math.PI * 2 * i / 4 + now * 0.05;
                 Fx.MOTE.play(c.level, c.pos.x + Math.cos(a) * c.radius, c.pos.y + 0.1, c.pos.z + Math.sin(a) * c.radius, 1, 0, 0.02, 0);
             }
         }
@@ -157,6 +162,15 @@ public final class JudgmentBehavior {
     }
 
     private static void beam(Column c, int count) {
+        // the column of light falling from the sky, and on the strike a flash and a ring
+        Vec3 top = c.pos.add(0, COLUMN_HEIGHT + 12, 0), down = c.pos.subtract(top);
+        float len = (float) down.length();
+        Vfx.play(c.level, CORE, top.add(down.scale(0.5)), down, 0, len);
+        Vfx.play(c.level, GLOW, top.add(down.scale(0.5)), down, 0, len);
+        if (count >= 20) {
+            Vfx.play(c.level, BURST, c.pos.add(0, 0.5, 0), Vec3.ZERO, 0, (float) Math.max(1, c.radius / 2));
+            Vfx.play(c.level, RING, c.pos.add(0, 0.2, 0), Vec3.ZERO, 0, (float) Math.max(1, c.radius / 3));
+        }
         double spread = c.radius * 0.3;
         for (int i = 0; i < count; i++) {
             double y = c.level.getRandom().nextDouble() * COLUMN_HEIGHT;

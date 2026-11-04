@@ -31,7 +31,7 @@ function effect(id, o) {
     c["minecraft:emitter_lifetime_once"] = { active_time: 0.05 };
   }
   if (o.local) c["minecraft:emitter_local_space"] = { position: true, rotation: false };
-  if (o.sphere !== undefined) c["minecraft:emitter_shape_sphere"] = { radius: o.sphere, direction: o.dir ?? "outwards" };
+  if (o.sphere !== undefined) c["minecraft:emitter_shape_sphere"] = { radius: o.sphere, surface_only: !!o.surface, direction: o.dir ?? "outwards" };
   else if (o.disc) c["minecraft:emitter_shape_disc"] = { radius: 1, plane_normal: [0, 1, 0], surface_only: !!o.ringOnly, direction: o.dir ?? "outwards" };
   else c["minecraft:emitter_shape_box"] = { half_dimensions: [1, 1, 1], direction: o.dir ?? "outwards" };
   c["minecraft:particle_lifetime_expression"] = { max_lifetime: rnd(...o.life) };
@@ -265,6 +265,42 @@ Object.assign(EFFECTS, {
   // Storm Anchor: a rune glowing flat on the ground while it waits (re-sent every few ticks)
   anchor_rune: { cell: [6, 3], count: 1, sphere: 0, life: [0.45, 0.5], speed: [0, 0], facing: "emitter_transform_xz", spin: 0,
     size: [`0.9 + 0.1 * math.sin(${LIFE} * 180)`, `0.9 + 0.1 * math.sin(${LIFE} * 180)`], color: [[0, 0.5, 0.75, 1, 0], [0.3, 0.6, 0.85, 1, 0.8], [1, 0.4, 0.65, 1, 0]] },
+});
+
+const GOLDEN = [[0, 1, 0.9, 0.55, 0], [0.25, 1, 0.85, 0.45, 0.9], [1, 1, 0.7, 0.3, 0]];
+const HEAL = [[0, 0.6, 1, 0.6, 0], [0.2, 0.55, 1, 0.65, 0.85], [1, 0.4, 0.9, 0.6, 0]];
+const PETALS = [[0, 1, 0.75, 0.88, 1], [0.8, 0.95, 0.65, 0.85, 1], [1, 0.9, 0.6, 0.8, 0]];
+Object.assign(EFFECTS, {
+  // Granite Oath: stone plates rising around the caster (upright spikes on a ring), dust
+  stone_guard: { cell: [0, 5], blend: true, count: 7, disc: true, ringOnly: true, life: [0.7, 0.9], speed: [0, 0], facing: "lookat_y",
+    size: [`0.6 * math.min(1, ${LIFE} * 5) * (1 - math.max(0, ${LIFE} - 0.75) * 4)`, `1.2 * math.min(1, ${LIFE} * 5) * (1 - math.max(0, ${LIFE} - 0.75) * 4)`], color: STONE },
+  // Healing Dew: drops falling onto the target, a soft green glow, motes rising
+  heal_drops: { cell: [5, 3], count: 10, disc: true, dir: [0, -1, 0], life: [0.5, 0.7], speed: [1, 2], accel: [0, -6, 0],
+    size: [overLife(0.14, 0.1, 0.4), overLife(0.18, 0.12, 0.4)], color: [[0, 0.6, 1, 0.85, 0], [0.2, 0.55, 1, 0.8, 0.9], [1, 0.4, 0.9, 0.8, 0]] },
+  heal_glow: { cell: [1, 0], count: 1, sphere: 0, life: [0.45, 0.5], speed: [0, 0], size: [overLife(0.6, 1.8), overLife(0.6, 1.8)], color: HEAL },
+  // Water Prison: a shimmering bubble around the target (re-sent while it holds)
+  bubble: { cell: [4, 0], count: 2, sphere: 0, life: [0.35, 0.45], speed: [0, 0], spin: 30,
+    size: [`1.9 + 0.15 * math.sin(${LIFE} * 360)`, `1.9 + 0.15 * math.sin(${LIFE} * 360)`], color: [[0, 0.5, 0.8, 1, 0], [0.3, 0.55, 0.85, 1, 0.55], [1, 0.45, 0.75, 1, 0]] },
+  // Gust Dome: wind streaming over the dome's skin; its burst throws a ring
+  dome_wind: { cell: [2, 0], count: 10, sphere: 1, surface: true, dir: [0, 1, 0], life: [0.25, 0.4], speed: [2, 4], drag: 2, facing: "lookat_direction",
+    size: [overLife(0.05, 0.02), overLife(0.8, 0.25, 0.4)], color: [[0, 0.9, 1, 0.95, 0.55], [1, 0.8, 1, 0.9, 0]] },
+  // Life Bloom: petals drifting up from the meadow
+  petals: { cell: [4, 3], blend: true, count: 6, disc: true, dir: [0, 1, 0], life: [1.2, 2], speed: [0.3, 0.8], accel: [0, -0.2, 0], drag: 1.5, spin: 200,
+    size: [overLife(0.16, 0.12, 0.5), overLife(0.16, 0.12, 0.5)], color: PETALS },
+  // Heaven's Judgment: a golden rune marking the ground where the column falls
+  judgment_rune: { cell: [6, 3], count: 1, sphere: 0, life: [0.5, 0.55], speed: [0, 0], facing: "emitter_transform_xz",
+    size: [`1.6 + 0.1 * math.sin(${LIFE} * 180)`, `1.6 + 0.1 * math.sin(${LIFE} * 180)`], color: GOLDEN },
+  // Purifying Aura: a golden ring on the ground around the caster (re-sent while it is on), scaled to its radius
+  aura_ring: { cell: [4, 0], count: 1, sphere: 0, life: [0.5, 0.55], speed: [0, 0], facing: "emitter_transform_xz",
+    size: ["2", "2"], color: [[0, 1, 0.9, 0.55, 0], [0.3, 1, 0.88, 0.5, 0.55], [1, 1, 0.8, 0.4, 0]] },
+  // Withering Curse: a violet rune turning over the cursed one's head
+  curse_rune: { cell: [6, 3], count: 1, sphere: 0, life: [0.8, 0.85], speed: [0, 0], spin: 0,
+    size: ["0.7", "0.7"], color: [[0, 0.7, 0.35, 1, 0], [0.25, 0.65, 0.3, 0.95, 0.85], [1, 0.5, 0.2, 0.8, 0]] },
+  // Guardian Orbit: a star of the orbit (re-sent every tick at its place), and the burst when it catches something
+  orbit_star: { cell: [3, 0], count: 1, sphere: 0, life: [0.1, 0.12], speed: [0, 0], spin: 0,
+    size: ["0.5", "0.5"], color: [[0, 1, 0.97, 1, 1], [1, 0.75, 0.7, 1, 0.6]] },
+  star_burst: { cell: [3, 0], count: 12, sphere: 0.1, life: [0.35, 0.6], speed: [2, 5], drag: 4, spin: 180,
+    size: [overLife(0.35, 0.05), overLife(0.35, 0.05)], color: [[0, 1, 0.97, 1, 1], [0.6, 0.75, 0.65, 1, 0.8], [1, 0.5, 0.4, 1, 0]] },
 });
 
 for (const [id, o] of Object.entries(EFFECTS)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify(effect(id, o), null, "\t") + "\n");
