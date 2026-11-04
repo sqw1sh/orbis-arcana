@@ -1,5 +1,12 @@
 package com.orbisarcana.entity;
 
+import com.geckolib.animatable.GeoEntity;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.util.GeckoLibUtil;
+import com.orbisarcana.item.ModelItem;
+
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -13,9 +20,10 @@ import net.minecraft.world.level.Level;
 /**
  * Shadow Step decoy (§14.9, milestone 5): a shadow of the caster that mobs keep hunting. Blows pass through it, yet it
  * is not invulnerable, because mobs drop targets they cannot hurt. Stands still, fades after {@link #life} ticks,
- * never saved.
+ * never saved. Drawn by GeckoLib: a hooded shadow that floats in place.
  */
-public class ShadowDecoy extends PathfinderMob {
+public class ShadowDecoy extends PathfinderMob implements GeoEntity {
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private int life = 100;
 
     public ShadowDecoy(EntityType<? extends ShadowDecoy> type, Level level) {
@@ -24,6 +32,16 @@ public class ShadowDecoy extends PathfinderMob {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 20).add(Attributes.MOVEMENT_SPEED, 0);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>("idle", test -> test.setAndContinue(ModelItem.IDLE)));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 
     public void setLife(int ticks) {

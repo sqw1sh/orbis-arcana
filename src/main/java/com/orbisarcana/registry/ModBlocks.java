@@ -19,7 +19,11 @@ import net.neoforged.neoforge.registries.DeferredItem;
 public final class ModBlocks {
     public static final DeferredBlock<ResonanceAltarBlock> RESONANCE_ALTAR = ModRegistries.BLOCKS.registerBlock(
             "resonance_altar", ResonanceAltarBlock::new,
-            p -> p.mapColor(MapColor.COLOR_PURPLE).strength(3.5f, 1200f).requiresCorrectToolForDrops().sound(SoundType.LODESTONE).lightLevel(s -> 7));
+            p -> p.mapColor(MapColor.COLOR_PURPLE).strength(3.5f, 1200f).requiresCorrectToolForDrops().sound(SoundType.LODESTONE).lightLevel(s -> 7).noOcclusion());
+    /** Draws the altar's GeckoLib model (roadmap V7). */
+    public static final java.util.function.Supplier<net.minecraft.world.level.block.entity.BlockEntityType<com.orbisarcana.block.ResonanceAltarBlockEntity>> RESONANCE_ALTAR_ENTITY =
+            ModRegistries.BLOCK_ENTITY_TYPES.register("resonance_altar", () -> new net.minecraft.world.level.block.entity.BlockEntityType<>(
+                    com.orbisarcana.block.ResonanceAltarBlockEntity::new, RESONANCE_ALTAR.get()));
 
     /** Temporary Ice Bastion wall: no item, no drops. */
     public static final DeferredBlock<FrostWallBlock> FROST_WALL = ModRegistries.BLOCKS.registerBlock(
@@ -31,7 +35,8 @@ public final class ModBlocks {
             "thorn_hedge", ThornHedgeBlock::new,
             p -> p.mapColor(MapColor.PLANT).strength(0.6f, 1f).sound(SoundType.SWEET_BERRY_BUSH).noOcclusion().noLootTable().pushReaction(PushReaction.IMMOVEABLE));
 
-    public static final DeferredItem<BlockItem> RESONANCE_ALTAR_ITEM = ModRegistries.ITEMS.registerSimpleBlockItem("resonance_altar", RESONANCE_ALTAR);
+    public static final DeferredItem<com.orbisarcana.item.ModelBlockItem> RESONANCE_ALTAR_ITEM = ModRegistries.ITEMS.registerItem("resonance_altar",
+            p -> new com.orbisarcana.item.ModelBlockItem(RESONANCE_ALTAR.get(), p), p -> p.useBlockDescriptionPrefix());
 
     /** Ruined Observatory puzzle (§12): turnable glyph rings and the seals they break. Both unbreakable. */
     public static final DeferredBlock<GlyphRingBlock> GLYPH_RING = ModRegistries.BLOCKS.registerBlock(

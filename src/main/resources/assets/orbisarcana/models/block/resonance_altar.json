@@ -1,8 +1,5 @@
 {
-  "parent": "minecraft:block/cube_bottom_top",
   "textures": {
-    "top": "orbisarcana:block/resonance_altar_top",
-    "side": "orbisarcana:block/resonance_altar_side",
-    "bottom": "orbisarcana:block/resonance_altar_bottom"
+    "particle": "orbisarcana:block/resonance_altar"
   }
 }

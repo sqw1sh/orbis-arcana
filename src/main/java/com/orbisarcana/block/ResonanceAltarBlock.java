@@ -13,19 +13,33 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
 /**
  * Resonance Altar (§11.3): bind to a school, unbind, switch with a ritual. Right-click opens the altar
  * screen on the client, right-click with a scroll takes a duplicate apart into ink; every action is validated by the server ({@code school.AltarService}).
+ * Drawn by its block entity (GeckoLib model).
  */
-public class ResonanceAltarBlock extends Block {
+public class ResonanceAltarBlock extends Block implements EntityBlock {
     /** Set by the client entrypoint; the common block must not reference client classes. */
     public static Consumer<BlockPos> clientScreenOpener = pos -> {};
 
     public ResonanceAltarBlock(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new ResonanceAltarBlockEntity(pos, state);
+    }
+
+    @Override
+    protected RenderShape getRenderShape(BlockState state) {
+        return RenderShape.INVISIBLE;
     }
 
     /** A scroll in hand: take a duplicate apart into Aether Ink (§6.3). Sneaking keeps the scroll's own use (dissolving). */

@@ -34,7 +34,7 @@
 - `./gradlew :runClientShot -Pshots=gallery_setup,gallery` — галерея кругов всех редкостей (ночь, тёмная площадка).
 - `node tools/vfx.cjs` — пересобрать лист спрайтов эффектов (`textures/vfx/sheet.png`).
 - `./gradlew :runClientShot -Pshots=gallery_setup,vfx` — эффекты (VFX) на тёмной площадке.
-- 3D-модели: спецификации `art/specs/<id>.json` (генераторы `node tools/specs/<foci|accessories|misc>.cjs`, общие помощники — `tools/specs/lib.cjs`) → в Blockbench (MCP `risky_eval`) `eval(require('fs').readFileSync('<repo>/tools/blockbench/build-model.js','utf8'))('<repo>','<id>')` → `.bbmodel` + GeckoLib-экспорт → `node tools/art.cjs`. Положения 3D-предметов в руке/GUI — `node tools/foci-display.cjs`.
+- 3D-модели: спецификации `art/specs/<id>.json` (генераторы `node tools/specs/<foci|accessories|misc|world>.cjs`, общие помощники — `tools/specs/lib.cjs`) → в Blockbench (MCP `risky_eval`) `eval(require('fs').readFileSync('<repo>/tools/blockbench/build-model.js','utf8'))('<repo>','<id>')` → `.bbmodel` + GeckoLib-экспорт → `node tools/art.cjs`. Положения 3D-предметов в руке/GUI — `node tools/foci-display.cjs`.
 - `node tools/structures.cjs` — пересобрать NBT-шаблоны структур (обсерватория, скрипторий).
 - `./gradlew :runGameTestServer` — GameTest-ы мода; без `:` запускаются и тесты `example-addon` (мод + аддон, 92).
 - `./gradlew runGameTestServer` — все GameTest-ы (`gametest/OrbisGameTests`), код выхода ≠ 0 при падении. Итог в логе: `All N required tests passed`.
@@ -75,6 +75,7 @@
 - Свой мировой пайплайн с текстурой: `RenderPipeline.builder(GLOBALS_SNIPPET)` + `BindGroupLayouts.PROJECTION/DYNAMIC_TRANSFORMS/SAMPLER0`, шейдер `core/position_tex_color`, формат `POSITION_TEX_COLOR`; текстура — `RenderSetup.builder(p).withTexture("Sampler0", id)`. Под Iris: формат BLOCK + программа TEXTURED теряет цвет вершин, BEACON_BEAM — сильный блум. 3D-сцена в GUI — свой `PictureInPictureRenderer` + `RegisterPictureInPictureRenderersEvent`, `g.submitPictureInPictureRenderState`.
 - VFX (`client/vfx`): свой движок частиц, эффекты — Snowstorm JSON из Blockbench в `assets/<ns>/orbisarcana/vfx/`; сервер запускает их через `spell/Vfx.play/attach` (пакет `VfxPlay`). Камера в `SubmitCustomGeometryEvent`: `event.getLevelRenderState().cameraRenderState` (`pos`, `orientation`). Молanг-цвет 8 знаков в Bedrock — AARRGGBB.
 - Иконки предметов 26.3 рисуются в текстуру 16×16 и обрезаются: 3D-модель в GUI должна помещаться (длинные — по диагонали, голова в угол). PAL THIRD_PERSON_MODEL от первого лица рисует предмет с transforms третьего лица — для длинных (посох) лучше FirstPersonMode.VANILLA. В Blockbench JS: `Animator.buildFile(false, Animation.all.map(a => a.name))`, геометрия — `Codecs.bedrock.compile()`.
+- GeckoLib-блок: `BlockEntity implements GeoBlockEntity`, рендер `new GeoBlockRenderer<>(ctx, type)` в `EntityRenderersEvent.RegisterRenderers#registerBlockEntityRenderer`, блок `RenderShape.INVISIBLE` + `noOcclusion()`, block-модель только с `particle`; предмет блока — `ModelBlockItem` (`DefaultedBlockGeoModel`), `useBlockDescriptionPrefix()`. Существа: `GeoEntity` + `new GeoEntityRenderer<>(ctx, type)`, перед моделью — -Z.
 - `new ClipContext(..., CollisionContext.empty())`, если сущности может не быть (ClipContext с null-entity падает).
 
 ## Архитектура (§15)

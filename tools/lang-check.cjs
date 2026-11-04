@@ -52,7 +52,8 @@ for (const s of schools) {
 // registered items, blocks and entities
 const reg = fs.readFileSync("src/main/java/com/orbisarcana/registry/ModItems.java", "utf8")
   + fs.readFileSync("src/main/java/com/orbisarcana/registry/ModBlocks.java", "utf8");
-for (const m of reg.matchAll(/register(?:Simple)?Item\("([a-z0-9_]+)"/g)) need(`item.orbisarcana.${m[1]}`);
+// block items named with useBlockDescriptionPrefix() show the block's name
+for (const m of reg.matchAll(/register(?:Simple)?Item\("([a-z0-9_]+)"[^;]*;/g)) if (!m[0].includes("useBlockDescriptionPrefix")) need(`item.orbisarcana.${m[1]}`);
 for (const m of reg.matchAll(/(?:accessory|focus)\("([a-z0-9_]+)"/g)) need(`item.orbisarcana.${m[1]}`);
 for (const m of reg.matchAll(/seal\("([a-z0-9_]+)"\)/g)) need(`item.orbisarcana.seal_${m[1]}`);
 for (const m of reg.matchAll(/register(?:Simple)?Block\(\s*"([a-z0-9_]+)"/g)) need(`block.orbisarcana.${m[1]}`);

@@ -411,12 +411,20 @@ public final class DevShot {
             for (var pos : net.minecraft.core.BlockPos.betweenClosed(stage.offset(-6, -1, -2), stage.offset(6, -1, 10))) {
                 sp.level().setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.MOSS_BLOCK.defaultBlockState());
             }
+            // the blocks scene builds on the same stage: clear it, put the altar between the creatures, empty the hand
+            for (var pos : net.minecraft.core.BlockPos.betweenClosed(stage.offset(-6, 0, -2), stage.offset(6, 4, 10))) {
+                sp.level().setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+            }
+            sp.level().setBlockAndUpdate(stage.offset(0, 0, 3), com.orbisarcana.registry.ModBlocks.RESONANCE_ALTAR.get().defaultBlockState());
+            sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.ItemStack.EMPTY);
             sp.teleportTo(stage.getX() + 0.5, stage.getY(), stage.getZ() + 0.5);
             var treant = com.orbisarcana.registry.ModEntities.GUARDIAN_TREANT.get().create(sp.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
             var decoy = com.orbisarcana.registry.ModEntities.SHADOW_DECOY.get().create(sp.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
             if (treant == null || decoy == null) return;
             treant.snapTo(stage.getX() - 1.5, stage.getY(), stage.getZ() + 6, 180, 0);
             treant.setNoAi(true);
+            treant.setYHeadRot(180);
+            treant.setYBodyRot(180);
             decoy.snapTo(stage.getX() + 2, stage.getY(), stage.getZ() + 4, 180, 0);
             decoy.setYHeadRot(180);
             decoy.setYBodyRot(180);

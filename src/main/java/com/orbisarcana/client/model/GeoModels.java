@@ -2,6 +2,7 @@ package com.orbisarcana.client.model;
 
 import com.geckolib.animatable.GeoAnimatable;
 import com.geckolib.animatable.client.GeoRenderProvider;
+import com.geckolib.model.DefaultedBlockGeoModel;
 import com.geckolib.model.DefaultedItemGeoModel;
 import com.geckolib.renderer.GeoItemRenderer;
 
@@ -21,6 +22,19 @@ public final class GeoModels {
             @Override
             public GeoItemRenderer<T> getGeoItemRenderer() {
                 if (renderer == null) renderer = new GeoItemRenderer<>(new DefaultedItemGeoModel<>(BuiltInRegistries.ITEM.getKey(item)));
+                return renderer;
+            }
+        };
+    }
+
+    /** The item of a GeckoLib block: the block's model, animations and texture ({@code geckolib/models/block/<id>}). */
+    public static <T extends Item & GeoAnimatable> GeoRenderProvider blockItem(T item) {
+        return new GeoRenderProvider() {
+            private GeoItemRenderer<T> renderer;
+
+            @Override
+            public GeoItemRenderer<T> getGeoItemRenderer() {
+                if (renderer == null) renderer = new GeoItemRenderer<>(new DefaultedBlockGeoModel<>(BuiltInRegistries.ITEM.getKey(item)));
                 return renderer;
             }
         };

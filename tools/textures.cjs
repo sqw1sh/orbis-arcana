@@ -1,6 +1,6 @@
 // Generates the 16x16 textures of Orbis Arcana. Run from the project root: node tools/textures.cjs
-// Blocks are procedural stone with overlays, entities are painted over vanilla UV layouts; item textures come from the
-// 3D models. Output: src/main/resources/assets/orbisarcana/textures/{block,entity}/*.png
+// Blocks are procedural stone with overlays; the altar, items and creatures take their textures from the 3D models.
+// Output: src/main/resources/assets/orbisarcana/textures/block/*.png
 const fs = require("fs");
 
 const OUT = "src/main/resources/assets/orbisarcana/textures/";
@@ -61,74 +61,8 @@ function blocks() {
   for (let k = 3; k <= 12; k++) { seal.set(k, k, "#d29bff"); seal.set(15 - k, k, "#d29bff"); }
   for (const [x, y] of [[7, 2], [8, 2], [2, 7], [2, 8], [13, 7], [13, 8], [7, 13], [8, 13]]) seal.set(x, y, "#f0d8ff");
   seal.save("block/arcane_seal");
-  // resonance altar
-  const top = noise(DEEPSLATE, 30);
-  for (let a = 0; a < 64; a++) { const t = a / 64 * Math.PI * 2; top.set(Math.round(7.5 + Math.cos(t) * 5.5), Math.round(7.5 + Math.sin(t) * 5.5), "#b26ae6"); }
-  for (const [x, y] of [[7, 4], [8, 4], [4, 7], [4, 8], [11, 7], [11, 8], [7, 11], [8, 11], [7, 7], [8, 8], [7, 8], [8, 7]]) top.set(x, y, "#f0d9ff");
-  top.save("block/resonance_altar_top");
-  const side = noise(DEEPSLATE, 31);
-  for (let x = 0; x < 16; x++) { side.set(x, 0, "#26262c"); side.set(x, 4, "#6a3896"); side.set(x, 5, x % 3 === 1 ? "#f0d9ff" : "#b26ae6"); side.set(x, 6, "#6a3896"); }
-  side.save("block/resonance_altar_side");
-  noise(["#26262c", "#2e2e35", "#33333a"], 32).save("block/resonance_altar_bottom");
 }
 
-// ---- entities: painted over the UV layout of vanilla models (box faces), no vanilla pixels ----
-/** Paints a model box at texture offset (u, v) of size w x h x d; paint(face, x, y, fw, fh) gives each pixel's colour. */
-function box(img, u, v, w, h, d, paint) {
-  const faces = { top: [u + d, v, w, d], bottom: [u + d + w, v, w, d], right: [u, v + d, d, h], front: [u + d, v + d, w, h],
-    left: [u + d + w, v + d, d, h], back: [u + 2 * d + w, v + d, w, h] };
-  for (const [face, [fx, fy, fw, fh]] of Object.entries(faces)) {
-    for (let y = 0; y < fh; y++) for (let x = 0; x < fw; x++) img.set(fx + x, fy + y, paint(face, x, y, fw, fh));
-  }
-}
-const BARK = ["#4a3220", "#5a3d26", "#664630", "#3e2a1b", "#71503a"];
-const LEAVES = ["#2f6b28", "#3c8a30", "#4fa33c", "#27581f"];
-function treant() {
-  const img = new Img(128, 128);
-  let salt = 0;
-  const bark = (face, x, y) => {
-    if (face === "top" && salt < 3) return pick(LEAVES, hash(x, y, 90 + salt));
-    const grain = (hash(x, 0, 70 + salt) + hash(x, Math.floor(y / 4), 71 + salt)) / 2;
-    if (hash(x, y, 72 + salt) < 0.08) return pick(LEAVES, hash(y, x, 73));
-    return pick(BARK, grain);
-  };
-  salt = 0;
-  box(img, 0, 0, 8, 10, 8, (face, x, y, w, h) => {
-    if (face === "front") {
-      if (y === 4 && (x === 1 || x === 2 || x === 5 || x === 6)) return "#b6ff7a";
-      if (y === 3 && (x === 1 || x === 2 || x === 5 || x === 6)) return "#2a1a10";
-      if (y === 7 && x >= 2 && x <= 5) return "#1e140c";
-    }
-    if (face !== "bottom" && y < 2) return pick(LEAVES, hash(x, y, 91));
-    return bark(face, x, y);
-  });
-  box(img, 24, 0, 2, 4, 2, (f, x, y) => pick(BARK, hash(x, y, 74)));
-  salt = 1; box(img, 0, 40, 18, 12, 11, bark);
-  salt = 4; box(img, 0, 70, 9, 5, 6, bark);
-  salt = 5; box(img, 60, 21, 4, 30, 6, (face, x, y) => y > 25 && face !== "top" ? pick(["#2e1f14", "#3a281a"], hash(x, y, 75)) : bark(face, x, y));
-  salt = 6; box(img, 60, 58, 4, 30, 6, (face, x, y) => y > 25 && face !== "top" ? pick(["#2e1f14", "#3a281a"], hash(x, y, 76)) : bark(face, x, y));
-  salt = 7; box(img, 37, 0, 6, 16, 5, bark);
-  salt = 8; box(img, 60, 0, 6, 16, 5, bark);
-  img.save("entity/guardian_treant");
-}
-function decoy() {
-  const img = new Img(64, 64);
-  const shadow = (face, x, y, w, h) => {
-    const edge = x === 0 || y === 0 || x === w - 1 || y === h - 1;
-    const r = hash(x, y, 80 + w * 7 + h);
-    const [cr, cg, cb] = hex(pick(["#1a0f26", "#21132f", "#281838", "#160c20"], r));
-    return [cr, cg, cb, edge ? 120 : 190];
-  };
-  box(img, 0, 0, 8, 8, 8, (face, x, y, w, h) => face === "front" && y === 4 && (x === 1 || x === 2 || x === 5 || x === 6) ? "#d29bff" : shadow(face, x, y, w, h));
-  box(img, 16, 16, 8, 12, 4, shadow);
-  for (const [u, v] of [[40, 16], [0, 16], [32, 48], [16, 48]]) box(img, u, v, 4, 12, 4, shadow);
-  img.save("entity/shadow_decoy");
-}
-
-fs.mkdirSync(OUT + "entity", { recursive: true });
-treant();
-decoy();
-fs.mkdirSync(OUT + "item", { recursive: true });
 fs.mkdirSync(OUT + "block", { recursive: true });
 blocks();
 console.log("textures written");
