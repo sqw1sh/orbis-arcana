@@ -1,6 +1,9 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "orbisarcana:item/flow_amulet"
+    "type": "minecraft:special",
+    "base": "orbisarcana:item/flow_amulet",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
   }
 }

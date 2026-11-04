@@ -1,6 +1,9 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "orbisarcana:item/mana_amulet"
+    "type": "minecraft:special",
+    "base": "orbisarcana:item/mana_amulet",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
   }
 }

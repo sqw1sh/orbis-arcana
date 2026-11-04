@@ -1,6 +1,9 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "orbisarcana:item/ring_of_frost"
+    "type": "minecraft:special",
+    "base": "orbisarcana:item/ring_of_frost",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
   }
 }

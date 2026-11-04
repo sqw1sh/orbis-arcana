@@ -167,45 +167,6 @@ const BOOK = [
   "...PPPPPPPPPPp..",
   "....pppppppppp..",
 ];
-const RING = [
-  "................",
-  "................",
-  "......gGd.......",
-  ".....GGGGd......",
-  ".....dGGdd......",
-  "....YYddYY......",
-  "...Yy....YY.....",
-  "..Yy......YY....",
-  "..Y........Y....",
-  "..Y........O....",
-  "..Yy......OO....",
-  "...YY....OO.....",
-  "....YYOOOO......",
-  "......OO........",
-];
-const AMULET = [
-  "....s......s....",
-  "....s......s....",
-  ".....s....s.....",
-  ".....s....s.....",
-  "......s..s......",
-  "......YYYY......",
-  ".....YyGGYY.....",
-  "....YyGgGGdY....",
-  "....YGGGGGdY....",
-  "....YGGGGddY....",
-  ".....YGddOY.....",
-  "......YOOY......",
-  ".......OO.......",
-];
-const GEMS = {
-  fire: ["#ff7a2e", "#ffd2a6", "#b23a10"], earth: ["#9a7a4a", "#e0c79a", "#5a4424"], water: ["#3a8fe8", "#c6e4ff", "#1c4f94"],
-  air: ["#cfe8e6", "#ffffff", "#7fa8a5"], ice: ["#8fe3ff", "#ffffff", "#3f9bc0"], lightning: ["#ffe44a", "#fffbd0", "#b89a10"],
-  nature: ["#58c24a", "#d4ffc8", "#2a7a22"], echo: ["#1fa3a0", "#a8fff8", "#0a4f5a"], scribe: ["#d9d9d9", "#ffffff", "#7a7a7a"],
-  mana: ["#3c64ff", "#c8d4ff", "#1a2e9a"], flow: ["#4ad6ff", "#e0f8ff", "#1a7aa8"], focus: ["#b45cff", "#f0d8ff", "#5e2a9a"],
-};
-const GOLD = { Y: "#e8c047", y: "#fff1a8", O: "#a87d1a", s: "#8a7a6a" };
-
 function items() {
   // foci are 3D GeckoLib models now (art/specs, tools/blockbench/build-model.js); their textures come from the .bbmodel
   sprite(SCROLL, { R: "#c9a46a", r: "#a07d45", P: "#f4e9cc", p: "#d8c7a0", l: "#9a8a6a", B: "#8a2be2", b: "#c08aff" }).save("item/spell_scroll");
@@ -216,10 +177,7 @@ function items() {
     astral: ["#2a3f8f", "#5a7ae0", "#141f4f", "#bfe0ff"] };
   for (const [s, [W, w, d, S]] of Object.entries(seals)) sprite(SEAL, { W: d, w: W, d, S }).save(`item/seal_${s}`);
   sprite(BOOK, { B: "#5a2a2a", b: "#7a3a3a", P: "#f0e6cc", p: "#c8b994", G: "#e8c047" }).save("item/first_seals");
-  const rings = { fire: "ring_of_flame", earth: "ring_of_stone", water: "ring_of_tide", air: "ring_of_wind", ice: "ring_of_frost",
-    lightning: "ring_of_storm", nature: "ring_of_leaf", echo: "ring_of_echo", scribe: "scribe_ring" };
-  for (const [g, id] of Object.entries(rings)) { const [G, gl, d] = GEMS[g]; sprite(RING, Object.assign({}, GOLD, { G, g: gl, d })).save(`item/${id}`); }
-  for (const g of ["mana", "flow", "focus"]) { const [G, gl, d] = GEMS[g]; sprite(AMULET, Object.assign({}, GOLD, { G, g: gl, d })).save(`item/${g}_amulet`); }
+  // rings and amulets are 3D too (tools/specs/accessories.cjs)
 }
 
 // ---- blocks ----

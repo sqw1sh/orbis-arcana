@@ -1,4 +1,5 @@
-// Display transforms of the 3D foci (roadmap V7): models/item/<tier>_<type>.json for every tier, one set per type.
+// Display transforms of the 3D foci and accessories (roadmap V7): models/item/<tier>_<type>.json for every tier, one
+// set per type; models/item/<id>.json for every ring and amulet.
 // The GeckoLib model stands on the item origin, which every context puts at the display pivot (hand, slot centre).
 // Found in game: in the third-person hand the model's +Y points forward and +Z up, so rotation X 90 stands an item
 // upright and [0, -90, z] lays it forward like a sword, its flat side out (z < 0 lifts the tip). Icons are drawn into a 16x16 texture and clipped: a long focus lies on
@@ -32,4 +33,15 @@ for (const tier of ["apprentice", "amethyst", "netherite"]) for (const [type, di
   fs.writeFileSync(`src/main/resources/assets/orbisarcana/models/item/${id}.json`,
     JSON.stringify({ textures: { particle: `orbisarcana:item/${id}` }, display }, null, 2) + "\n");
 }
-console.log("foci display models written");
+// rings and amulets are centred on the origin: a small trinket in the fist, a turned 3D view in the slot
+const trinket = (gui) => set(both([90, 0, 0], [0, 1, -0.5], 0.45), both([0, -20, 0], [1, 3, 0], 0.55),
+  { rotation: [15, -25, 0], translation: [0, 0, 0], scale: [gui, gui, gui] },
+  { rotation: [0, 0, 0], translation: [0, 2, 0], scale: [0.45, 0.45, 0.45] },
+  { rotation: [0, 0, 0], translation: [0, 0, 0], scale: [gui, gui, gui] });
+const ACCESSORIES = { ring: ["ring_of_flame", "ring_of_stone", "ring_of_tide", "ring_of_wind", "ring_of_frost", "ring_of_storm",
+  "ring_of_leaf", "ring_of_echo", "scribe_ring"], amulet: ["mana_amulet", "flow_amulet", "focus_amulet"] };
+for (const [kind, ids] of Object.entries(ACCESSORIES)) for (const id of ids) {
+  fs.writeFileSync(`src/main/resources/assets/orbisarcana/models/item/${id}.json`,
+    JSON.stringify({ textures: { particle: `orbisarcana:item/${id}` }, display: trinket(kind === "ring" ? 1.5 : 1.4) }, null, 2) + "\n");
+}
+console.log("foci and accessory display models written");

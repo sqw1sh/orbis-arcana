@@ -1,6 +1,9 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "orbisarcana:item/ring_of_flame"
+    "type": "minecraft:special",
+    "base": "orbisarcana:item/ring_of_flame",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
   }
 }
