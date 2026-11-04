@@ -72,6 +72,8 @@ public final class DevShot {
                 com.orbisarcana.client.vfx.VfxManager.spawn(OrbisArcana.id("fire_trail"), mc.player.getEyePosition().add(mc.player.getLookAngle().scale(3)),
                         net.minecraft.world.phys.Vec3.ZERO, 0, 1f, 987654);
             }, () -> OrbisArcana.LOGGER.info("[devshot] vfx particles alive: {}", com.orbisarcana.client.vfx.VfxManager.particleCount())),
+            new Scene("stands_front", () -> holdStands(false)),
+            new Scene("stands_side", () -> holdStands(true)),
             new Scene("radial", () -> {
                 learnTestSpells();
                 Minecraft.getInstance().gui.setScreen(new RadialMenuScreen(true));
@@ -178,7 +180,24 @@ public final class DevShot {
                 continue;
             }
             for (String pose : System.getProperty("orbisarcana.devshot.pose", "cast_test").split(",")) {
-                out.add(new Scene("pose_" + pose.replace(":", "_"), s.setup(), () -> showPose(pose)));
+                // items go into the hand at the start of the scene, so holding poses have time to play before the shot
+                out.add(pose.startsWith("hold")
+                        ? new Scene("pose_" + pose.replace(":", "_"), () -> { s.setup().run(); showPose(pose); }, () -> {
+                            Minecraft mc = Minecraft.getInstance();
+                            mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
+                            // hold_side: the body turned away from the camera (as far as the head allows), a near side view of the arms
+                            if (pose.startsWith("hold_side:")) {
+                                mc.player.setYBodyRot(mc.player.getYRot() - 70);
+                                mc.player.yBodyRotO = mc.player.getYRot() - 70;
+                            }
+                            for (var id : java.util.List.of(com.orbisarcana.client.anim.CasterAnimations.LAYER, com.orbisarcana.client.anim.CasterAnimations.HOLD_LAYER)) {
+                                if (com.zigythebird.playeranim.api.PlayerAnimationAccess.getPlayerAnimationLayer(mc.player, id) instanceof com.zigythebird.playeranim.animation.PlayerAnimationController c) {
+                                    OrbisArcana.LOGGER.info("[devshot] layer {}: active={} state={} anim={} triggered={} hand={}", id, c.isActive(), c.getAnimationState(),
+                                            c.getCurrentRawAnimation(), c.isPlayingTriggeredAnimation(), mc.player.getMainHandItem());
+                                }
+                            }
+                        })
+                        : new Scene("pose_" + pose, s.setup(), () -> showPose(pose)));
             }
         }
         return out;
@@ -241,15 +260,57 @@ public final class DevShot {
     }
 
     /** Player Animation Library: the test pose from player_animations/caster.json, third person from the front. */
+    /**
+     * Three armor stands with arms holding the amethyst wand, staff and tome, seen from the front or from their right side:
+     * stands use the same third-person hand transforms as players, and can be looked at from any side.
+     */
+    private static void holdStands(boolean side) {
+        Minecraft mc = Minecraft.getInstance();
+        mc.gui.setScreen(null);
+        mc.player.setYRot(0);
+        mc.player.setYHeadRot(0);
+        mc.player.setXRot(12);
+        var server = mc.getSingleplayerServer();
+        if (server == null) return;
+        server.execute(() -> {
+            ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+            if (sp == null) return;
+            var level = sp.level();
+            server.getCommands().performPrefixedCommand(sp.createCommandSourceStack().withSuppressedOutput(), "time set noon");
+            // empty hand: a first-person staff would cover the stands; a tome in the main hand shows the holding pose
+            sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(
+                    net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(OrbisArcana.id("amethyst_tome"))));
+            var box = sp.getBoundingBox().inflate(12);
+            for (var old : level.getEntitiesOfClass(net.minecraft.world.entity.decoration.ArmorStand.class, box)) old.discard();
+            String[] items = {"amethyst_wand", "amethyst_staff", "amethyst_tome"};
+            for (int i = 0; i < items.length; i++) {
+                var stand = new net.minecraft.world.entity.decoration.ArmorStand(level, sp.getX() + (i - 1) * 1.6, sp.getY(), sp.getZ() + 3.2);
+                stand.setShowArms(true);
+                stand.setNoBasePlate(true);
+                stand.setNoGravity(true);
+                // arms like an idle player: the item arm raised 18 degrees forward (vanilla ArmPose.ITEM), the other down
+                stand.setRightArmPose(new net.minecraft.core.Rotations(-18, 0, 0));
+                stand.setLeftArmPose(new net.minecraft.core.Rotations(0, 0, 0));
+                // front: facing the camera; side: facing west, so the right hand is towards the camera
+                stand.setYRot(side ? 90 : 180);
+                stand.setYBodyRot(side ? 90 : 180);
+                stand.setYHeadRot(side ? 90 : 180);
+                stand.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND,
+                        new net.minecraft.world.item.ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(OrbisArcana.id(items[i]))));
+                level.addFreshEntity(stand);
+            }
+        });
+    }
+
     /** The caster animation {@code name}, third person from the front. */
     private static void showPose(String name) {
         Minecraft mc = Minecraft.getInstance();
         mc.player.setXRot(0);
         mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
-        if (name.startsWith("hold:")) {
+        if (name.startsWith("hold")) {
             // "hold:<item>": that mod item in the main hand, no caster animation (display transforms check)
             var server = mc.getSingleplayerServer();
-            var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(OrbisArcana.id(name.substring(5)));
+            var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(OrbisArcana.id(name.substring(name.indexOf(':') + 1)));
             if (server != null) server.execute(() -> {
                 ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
                 if (sp != null) sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(item));
@@ -330,6 +391,7 @@ public final class DevShot {
             for (var pos : net.minecraft.core.BlockPos.betweenClosed(stage.offset(-10, 0, -4), stage.offset(10, 4, 18))) {
                 sp.level().setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
             }
+            for (var old : sp.level().getEntitiesOfClass(net.minecraft.world.entity.decoration.ArmorStand.class, sp.getBoundingBox().inflate(24))) old.discard();
             sp.teleportTo(stage.getX() + 0.5, stage.getY() + 3, stage.getZ() + 0.5);
             sp.getAbilities().flying = true;
             sp.onUpdateAbilities();

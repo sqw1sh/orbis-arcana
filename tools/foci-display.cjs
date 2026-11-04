@@ -12,12 +12,12 @@ const set = (tp, fp, gui, ground, fixed) => ({
 });
 const D = {
   // grip ~2.5 units above the origin: resting in the palm, tilted forward
-  wand: set(both([55, 0, 0], [0, 0.5, -1.5], 0.9), both([-10, -10, 8], [0.5, -3.5, -1], 0.75),
+  wand: set(both([35, 0, 0], [0, 0.5, -1.5], 0.9), both([-10, -10, 8], [0.5, -3.5, -1], 0.75),
     { rotation: [0, 0, -45], translation: [-5.3, -5.3, 0], scale: [1, 1, 1] },
     { rotation: [0, 0, 0], translation: [0, 2, 0], scale: [0.5, 0.5, 0.5] },
     { rotation: [0, 0, -45], translation: [-5.3, -5.3, 0], scale: [1, 1, 1] }),
   // upright like a walking staff, the fist around the grip ~13.5 units up
-  staff: set(both([90, 0, 0], [0, 0, -12.5], 1), both([-12, -15, 6], [2, -5, -2], 0.48),
+  staff: set(both([72, 0, 0], [0, 0, -12.5], 1), both([-12, -15, 6], [2, -5, -2], 0.48),
     { rotation: [0, 0, -45], translation: [-4.9, -4.9, 0], scale: [0.62, 0.62, 0.62] },
     { rotation: [0, 0, 0], translation: [0, 0, 0], scale: [0.35, 0.35, 0.35] },
     { rotation: [0, 0, -45], translation: [-4.9, -4.9, 0], scale: [0.62, 0.62, 0.62] }),
