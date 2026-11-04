@@ -180,7 +180,7 @@ public final class DevShot {
                 continue;
             }
             for (String pose : System.getProperty("orbisarcana.devshot.pose", "cast_test").split(",")) {
-                // items go into the hand at the start of the scene, so holding poses have time to play before the shot
+                // items go into the hand at the start of the scene, so they are in the hand by the shot
                 out.add(pose.startsWith("hold")
                         ? new Scene("pose_" + pose.replace(":", "_"), () -> { s.setup().run(); showPose(pose); }, () -> {
                             Minecraft mc = Minecraft.getInstance();
@@ -189,12 +189,6 @@ public final class DevShot {
                             if (pose.startsWith("hold_side:")) {
                                 mc.player.setYBodyRot(mc.player.getYRot() - 70);
                                 mc.player.yBodyRotO = mc.player.getYRot() - 70;
-                            }
-                            for (var id : java.util.List.of(com.orbisarcana.client.anim.CasterAnimations.LAYER, com.orbisarcana.client.anim.CasterAnimations.HOLD_LAYER)) {
-                                if (com.zigythebird.playeranim.api.PlayerAnimationAccess.getPlayerAnimationLayer(mc.player, id) instanceof com.zigythebird.playeranim.animation.PlayerAnimationController c) {
-                                    OrbisArcana.LOGGER.info("[devshot] layer {}: active={} state={} anim={} triggered={} hand={}", id, c.isActive(), c.getAnimationState(),
-                                            c.getCurrentRawAnimation(), c.isPlayingTriggeredAnimation(), mc.player.getMainHandItem());
-                                }
                             }
                         })
                         : new Scene("pose_" + pose, s.setup(), () -> showPose(pose)));
@@ -261,7 +255,7 @@ public final class DevShot {
 
     /** Player Animation Library: the test pose from player_animations/caster.json, third person from the front. */
     /**
-     * Three armor stands with arms holding the amethyst wand, staff and tome, seen from the front or from their right side:
+     * Four armor stands with arms holding an iron sword (the reference grip), the amethyst wand, staff and tome, seen from the front or from their right side:
      * stands use the same third-person hand transforms as players, and can be looked at from any side.
      */
     private static void holdStands(boolean side) {
@@ -277,14 +271,15 @@ public final class DevShot {
             if (sp == null) return;
             var level = sp.level();
             server.getCommands().performPrefixedCommand(sp.createCommandSourceStack().withSuppressedOutput(), "time set noon");
-            // empty hand: a first-person staff would cover the stands; a tome in the main hand shows the holding pose
+            // a tome in the main hand: a first-person staff would cover the stands
             sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(
                     net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(OrbisArcana.id("amethyst_tome"))));
             var box = sp.getBoundingBox().inflate(12);
             for (var old : level.getEntitiesOfClass(net.minecraft.world.entity.decoration.ArmorStand.class, box)) old.discard();
-            String[] items = {"amethyst_wand", "amethyst_staff", "amethyst_tome"};
+            // a sword first: the foci are held the way it is
+            String[] items = {"minecraft:iron_sword", "orbisarcana:amethyst_wand", "orbisarcana:amethyst_staff", "orbisarcana:amethyst_tome"};
             for (int i = 0; i < items.length; i++) {
-                var stand = new net.minecraft.world.entity.decoration.ArmorStand(level, sp.getX() + (i - 1) * 1.6, sp.getY(), sp.getZ() + 3.2);
+                var stand = new net.minecraft.world.entity.decoration.ArmorStand(level, sp.getX() + (i - 1.5) * 1.3, sp.getY(), sp.getZ() + 4.2);
                 stand.setShowArms(true);
                 stand.setNoBasePlate(true);
                 stand.setNoGravity(true);
@@ -296,7 +291,7 @@ public final class DevShot {
                 stand.setYBodyRot(side ? 90 : 180);
                 stand.setYHeadRot(side ? 90 : 180);
                 stand.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND,
-                        new net.minecraft.world.item.ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(OrbisArcana.id(items[i]))));
+                        new net.minecraft.world.item.ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(net.minecraft.resources.Identifier.parse(items[i]))));
                 level.addFreshEntity(stand);
             }
         });

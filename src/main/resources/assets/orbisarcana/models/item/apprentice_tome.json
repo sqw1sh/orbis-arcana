@@ -6,7 +6,7 @@
     "thirdperson_righthand": {
       "rotation": [
         90,
-        0,
+        90,
         0
       ],
       "translation": [
@@ -23,7 +23,7 @@
     "thirdperson_lefthand": {
       "rotation": [
         90,
-        0,
+        -90,
         0
       ],
       "translation": [

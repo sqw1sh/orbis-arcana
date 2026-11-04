@@ -46,40 +46,8 @@ public final class CasterAnimations {
 
     private static final Map<Integer, Running> RUNNING = new HashMap<>();
 
-    /** Lower-priority layer for poses of holding a focus (the tome in front of the chest); cast poses play over it. */
-    public static final Identifier HOLD_LAYER = OrbisArcana.id("hold");
-    public static final Identifier HOLD_TOME = anim("hold_tome");
-    private static final java.util.Set<Integer> HOLDING_TOME = new java.util.HashSet<>();
-
     public static void init() {
         PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(LAYER, 1000, CasterController::new);
-        PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(HOLD_LAYER, 500, CasterController::new);
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.client.event.ClientTickEvent.Post e) -> tickHoldPoses());
-    }
-
-    /** Players in view holding a tome hold it in front of them; the pose fades out when they put it away. */
-    private static void tickHoldPoses() {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null) {
-            HOLDING_TOME.clear();
-            return;
-        }
-        java.util.Set<Integer> seen = new java.util.HashSet<>();
-        for (var player : mc.level.players()) {
-            boolean tome = isTome(player.getMainHandItem()) || isTome(player.getOffhandItem());
-            if (!(PlayerAnimationAccess.getPlayerAnimationLayer(player, HOLD_LAYER) instanceof PlayerAnimationController controller)) continue;
-            seen.add(player.getId());
-            if (tome && HOLDING_TOME.add(player.getId())) {
-                controller.triggerAnimation(HOLD_TOME);
-            } else if (!tome && HOLDING_TOME.remove(player.getId())) {
-                controller.stop();
-            }
-        }
-        HOLDING_TOME.retainAll(seen);
-    }
-
-    private static boolean isTome(net.minecraft.world.item.ItemStack stack) {
-        return stack.getItem() instanceof com.orbisarcana.item.FocusItem focus && focus.type() == com.orbisarcana.core.FocusRules.Type.TOME;
     }
 
     /** The caster layer controller: never chooses an animation itself, shows the animated arms in first person. */
