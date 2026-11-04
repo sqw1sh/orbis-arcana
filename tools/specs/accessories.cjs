@@ -38,7 +38,8 @@ function ring(id, materials, extra = {}) {
   const bezel = [
     { from: [-1.5, top, -1.0], to: [1.5, top + 0.7, 1.0], mat: "band" },
     { from: [-1.1, top + 0.6, -0.75], to: [1.1, top + 1.0, 0.75], mat: "band" },
-    ...[-1, 1].flatMap(sx => [-1, 1].map(sz => ({ from: [sx * 1.15 - 0.2, top + 0.6, sz * 0.8 - 0.2], to: [sx * 1.15 + 0.2, top + 1.9, sz * 0.8 + 0.2], mat: "band" }))),
+    // prongs stop short of the plate's side faces; a signet has none
+    ...(extra.prongs === false ? [] : [-1, 1].flatMap(sx => [-1, 1].map(sz => ({ from: [sx * 1.15 - 0.2, top + 0.65, sz * 0.75 - 0.2], to: [sx * 1.15 + 0.2, top + 1.9, sz * 0.75 + 0.2], mat: "band" })))),
   ];
   // shoulders: accents on the band either side of the bezel
   const shoulders = [-1, 1].map(s => {
@@ -49,7 +50,7 @@ function ring(id, materials, extra = {}) {
   put(id, {
     id, type: "Item", density: 4, materials,
     bones: [{ name: "ring", pivot: [0, 0, 0], cubes: [...band, ...bezel, ...shoulders, ...(extra.cubes || [])] },
-      { name: "gem", parent: "ring", pivot: [0, top + 2.1, 0], cubes: gemCubes }, ...(extra.bones || [])],
+      { name: "gem", parent: "ring", pivot: extra.gemPivot || [0, top + 2.1, 0], cubes: gemCubes }, ...(extra.bones || [])],
     animations: { idle: { length: 2.4, loop: true, bones: { ...pulse("gem"), ...(extra.anim || {}) } } },
   });
 }
@@ -65,9 +66,9 @@ const SCHOOLS = {
 };
 for (const [name, m] of Object.entries(SCHOOLS)) ring(`ring_of_${name}`, m);
 
-// echo: dark silver, twin gems, a small shard circling the bezel
+// echo: dark silver, twin gems apart (clear of each other and the prongs while pulsing), a small shard circling the bezel
 ring("ring_of_echo", { band: metal("#5a5868", "#9a98b0", "#26242e"), gem: gem("#b07af0", "#f0dcff", "#4c2290"), core: glow("#e2c4ff", "#ffffff", "#b07ae8"), accent: gem("#8a5ad0", "#d8c0ff", "#3a1a70") }, {
-  gem: [...crystal(-0.7, RY + R + 2.0, 0, 0.5, 0.45), ...crystal(0.7, RY + R + 2.0, 0, 0.5, 0.45)],
+  gem: [...crystal(-0.75, RY + R + 2.0, 0, 0.42, 0.45), ...crystal(0.75, RY + R + 2.0, 0, 0.42, 0.45)],
   bones: [{ name: "echo", parent: "ring", pivot: [0, RY + R + 2.0, 0], cubes: crystal(2.4, RY + R + 2.0, 0, 0.3, 0.3) }],
   anim: { echo: { rotation: [[0, [0, 0, 0]], [1.2, [0, 180, 0]], [2.4, [0, 360, 0]]] } },
 });
@@ -75,11 +76,14 @@ ring("ring_of_echo", { band: metal("#5a5868", "#9a98b0", "#26242e"), gem: gem("#
 // scribe: a flat signet with an ink seal and a small quill laid across it
 ring("scribe_ring", { band: GOLD, gem: glow("#2a3a8a", "#6a7ad8", "#141c48"), core: glow("#4a5ac8", "#a8b4ff", "#2a3a8a"), accent: metal("#2a2a3a", "#4a4a60", "#141420"),
   quill: { pattern: "paper", base: "#eee8dc", light: "#ffffff", dark: "#b8b0a0" } }, {
-  gem: [{ from: [-1.2, RY + R + 1.0, -0.95], to: [1.2, RY + R + 1.35, 0.95], mat: "gem" }, { from: [-0.6, RY + R + 1.3, -0.5], to: [0.6, RY + R + 1.5, 0.5], mat: "core" }],
+  // the signet plate belongs to the ring (only the ink seal pulses); the quill's parts overlap instead of sharing faces
+  prongs: false, gemPivot: [0, RY + R + 1.35, 0],
+  gem: [{ from: [-0.55, RY + R + 1.25, -0.45], to: [0.55, RY + R + 1.45, 0.45], mat: "core" }],
   cubes: [
-    { from: [-2.6, RY + R + 1.6, -0.25], to: [1.8, RY + R + 2.0, 0.25], origin: [0, RY + R + 1.8, 0], rotation: [0, 0, -18], mat: "quill" },
-    { from: [-2.4, RY + R + 2.0, -0.15], to: [0.8, RY + R + 2.7, 0.15], origin: [0, RY + R + 1.8, 0], rotation: [0, 0, -18], mat: "quill" },
-    { from: [1.8, RY + R + 1.65, -0.15], to: [2.6, RY + R + 1.95, 0.15], origin: [0, RY + R + 1.8, 0], rotation: [0, 0, -18], mat: "accent" },
+    { from: [-1.2, RY + R + 0.95, -0.95], to: [1.2, RY + R + 1.3, 0.95], mat: "gem" },
+    { from: [-2.6, RY + R + 1.75, -0.25], to: [1.9, RY + R + 2.1, 0.25], origin: [0, RY + R + 1.9, 0], rotation: [0, 0, -18], mat: "quill" },
+    { from: [-2.4, RY + R + 1.95, -0.12], to: [0.8, RY + R + 2.65, 0.12], origin: [0, RY + R + 1.9, 0], rotation: [0, 0, -18], mat: "quill" },
+    { from: [1.7, RY + R + 1.8, -0.15], to: [2.6, RY + R + 2.05, 0.15], origin: [0, RY + R + 1.9, 0], rotation: [0, 0, -18], mat: "accent" },
   ],
 });
 
@@ -88,11 +92,11 @@ const PY = -2.2; // pendant centre
 function amulet(id, materials, extra = {}) {
   const chain = [];
   for (const s of [-1, 1]) for (let k = 0; k < 6; k++) {
-    const t = k / 5, x = s * (0.6 + 2.6 * t), y = PY + 3.6 + 4.2 * t;
+    const t = k / 5, x = s * (0.95 + 2.4 * t), y = PY + 3.6 + 4.2 * t;
     chain.push({ from: [x - 0.3, y - 0.45, -0.3 + (k % 2) * 0.05], to: [x + 0.3, y + 0.45, 0.3 - (k % 2) * 0.05], origin: [x, y, 0], rotation: [0, 0, s * -30], mat: "chain" });
   }
   const frame = [...ringXY(0, PY, 2.5, 14, 0.7, 1.0, "frame"),
-    { from: [-0.5, PY + 2.7, -0.4], to: [0.5, PY + 3.7, 0.4], mat: "frame" }, ...(extra.frame || [])];
+    { from: [-0.35, PY + 2.7, -0.35], to: [0.35, PY + 3.6, 0.35], mat: "frame" }, ...(extra.frame || [])];
   put(id, {
     id, type: "Item", density: 4, materials,
     bones: [{ name: "amulet", pivot: [0, 0, 0], cubes: chain },
@@ -108,12 +112,12 @@ amulet("mana_amulet", { chain, frame: SILVER, gem: gem("#3a8cff", "#d0ecff", "#0
     return { from: [x - 0.45, y - 0.45, -0.7], to: [x + 0.45, y + 0.45, 0.7], origin: [x, y, 0], rotation: [0, 0, 45], mat: "core" }; }),
 });
 amulet("flow_amulet", { chain, frame: GOLD, gem: gem("#2ad0c0", "#d0fff8", "#0a6a60"), core: glow("#8af0e0", "#ffffff", "#30c0b0") }, {
-  bones: [{ name: "flow", parent: "pendant", pivot: [0, PY, 0], cubes: ringXY(0, PY, 3.4, 16, 0.35, 0.4, "core").filter((c, i) => i % 4 !== 3) }],
+  bones: [{ name: "flow", parent: "pendant", pivot: [0, PY, 0], cubes: ringXY(0, PY, 3.2, 16, 0.35, 0.4, "core", 1.05).filter((c, i) => i % 4 !== 3) }],
   anim: { flow: { rotation: [[0, [0, 0, 0]], [1.5, [0, 0, -180]], [3, [0, 0, -360]]] } },
 });
 amulet("focus_amulet", { chain, frame: GOLD, gem: gem("#a868f0", "#f2dcff", "#4c2290"), core: glow("#e2c4ff", "#ffffff", "#b07ae8") }, {
-  frame: [45, 135, 225, 315].map(d => { const a = d * Math.PI / 180, x = 2.0 * Math.cos(a), y = PY + 2.0 * Math.sin(a);
-    return { from: [x - 0.25, y - 0.8, -0.3], to: [x + 0.25, y + 0.8, 0.3], origin: [x, y, 0], rotation: [0, 0, d + 90], mat: "frame" }; })
+  frame: [45, 135, 225, 315].map(d => { const a = d * Math.PI / 180, x = 2.15 * Math.cos(a), y = PY + 2.15 * Math.sin(a);
+    return { from: [x - 0.25, y - 0.55, -0.3], to: [x + 0.25, y + 0.55, 0.3], origin: [x, y, 0], rotation: [0, 0, d + 90], mat: "frame" }; })
     .concat([{ from: [-0.35, PY - 4.0, -0.35], to: [0.35, PY - 2.8, 0.35], origin: [0, PY - 2.8, 0], rotation: [0, 45, 0], mat: "frame" }]),
 });
 console.log("accessory specs written");

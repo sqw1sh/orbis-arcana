@@ -22,8 +22,8 @@ const D = {
     { rotation: [0, 0, -45], translation: [-4.9, -4.9, 0], scale: [0.62, 0.62, 0.62] },
     { rotation: [0, 0, 0], translation: [0, 0, 0], scale: [0.35, 0.35, 0.35] },
     { rotation: [0, 0, -45], translation: [-4.9, -4.9, 0], scale: [0.62, 0.62, 0.62] }),
-  // in one hand, upright, the fist around the middle of the spine (model -X), the front cover facing out
-  tome: set(both([90, 90, 0], [0, 3.4, -3.8], 0.7), both([0, -70, 10], [1, -1, 0], 0.6),
+  // in one hand as in first person: the fist on the clasp (model +X) up, the spine down, the front cover facing out
+  tome: set(both([180, 90, 0], [0, 3.9, -3.2], 0.7), both([0, -70, 10], [1, -1, 0], 0.6),
     { rotation: [15, -25, 0], translation: [0, -5.6, 0], scale: [1, 1, 1] },
     { rotation: [0, 0, 0], translation: [0, 2, 0], scale: [0.5, 0.5, 0.5] },
     { rotation: [0, 0, 0], translation: [0, -5.5, 0], scale: [1, 1, 1] }),
