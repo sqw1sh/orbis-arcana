@@ -1,0 +1,78 @@
+{
+  "school": "orbisarcana:lightning",
+  "rarity": "orbisarcana:divine",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 70,
+    "min_ticks": 42
+  },
+  "cost": 80,
+  "cooldown_ticks": 2700,
+  "primary_stat": "damage",
+  "params": {
+    "range": 20,
+    "radius": 8,
+    "duration_ticks": 200,
+    "pulse_ticks": 10,
+    "damage": 1.3,
+    "blind_ticks": 40,
+    "slow_ticks": 60,
+    "slow_level": 2
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 9
+      }
+    },
+    "10": {
+      "params": {
+        "blind_ticks": 60
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 11,
+        "damage": 1.6
+      }
+    }
+  },
+  "circle": "orbisarcana:heavens_wrath",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "zone",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "blind"
+      },
+      {
+        "type": "slow"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:volt_hand"
+      ],
+      "travel": [
+        "orbisarcana:strike_rain",
+        "orbisarcana:strike_column",
+        "orbisarcana:storm_ring"
+      ],
+      "impact": [
+        "orbisarcana:thunder_flash",
+        "orbisarcana:shock_dome"
+      ],
+      "apogee_travel": [
+        "orbisarcana:volt_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.heavens_wrath.release",
+      "impact_sound": "orbisarcana:spell.heavens_wrath.impact"
+    }
+  }
+}

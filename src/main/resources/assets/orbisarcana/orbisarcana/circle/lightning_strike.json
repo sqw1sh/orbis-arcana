@@ -1,0 +1,77 @@
+{
+  "layers": [
+    {
+      "type": "ring",
+      "radius": 0.9,
+      "width": 0.025
+    },
+    {
+      "type": "polygon",
+      "sides": 4,
+      "radius": 0.85,
+      "width": 0.02,
+      "rotate_speed": 0,
+      "count": 2
+    },
+    {
+      "type": "glyph_ring",
+      "radius": 0.68,
+      "count": 12,
+      "size": 0.05,
+      "rotate_speed": 40,
+      "progress": true
+    },
+    {
+      "type": "satellite",
+      "count": 1,
+      "radius": 0,
+      "size": 0.14,
+      "rotate_speed": 0,
+      "color": "#F4FBFF"
+    },
+    {
+      "type": "polygon",
+      "sides": 3,
+      "radius": 0.35,
+      "width": 0.03,
+      "rotate_speed": 120,
+      "count": 2
+    }
+  ],
+  "milestone_layers": {
+    "5": [
+      {
+        "type": "ring",
+        "radius": 1.05,
+        "width": 0.015
+      }
+    ],
+    "10": [
+      {
+        "type": "satellite",
+        "count": 4,
+        "radius": 1.05,
+        "size": 0.06,
+        "rotate_speed": 0,
+        "color": "#F4FBFF"
+      }
+    ],
+    "15": [
+      {
+        "type": "ring",
+        "radius": 1.25,
+        "width": 0.025,
+        "color": "#FFE95A"
+      },
+      {
+        "type": "polygon",
+        "sides": 4,
+        "radius": 1.22,
+        "width": 0.015,
+        "rotate_speed": 0,
+        "count": 2,
+        "color": "#FFE95A"
+      }
+    ]
+  }
+}

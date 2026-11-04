@@ -1,0 +1,76 @@
+{
+  "length": 1.8,
+  "loudness": -11,
+  "variants": 2,
+  "layers": [
+    {
+      "type": "saw",
+      "freq": 70,
+      "bandpass": [
+        800,
+        2400
+      ],
+      "q": 1,
+      "start": 0,
+      "length": 0.6,
+      "attack": 0.02,
+      "release": 0.1,
+      "gain": 0.4,
+      "tremolo": [
+        30,
+        0.6
+      ],
+      "drive": 2
+    },
+    {
+      "type": "noise",
+      "highpass": 2000,
+      "start": 0.55,
+      "length": 0.04,
+      "attack": 0.0005,
+      "decay": 0.008,
+      "gain": 1
+    },
+    {
+      "type": "square",
+      "freq": [
+        5000,
+        400
+      ],
+      "lowpass": 6000,
+      "start": 0.55,
+      "length": 0.4,
+      "attack": 0.001,
+      "decay": 0.12,
+      "gain": 0.6,
+      "drive": 2
+    },
+    {
+      "type": "noise",
+      "lowpass": [
+        3600,
+        400
+      ],
+      "start": 0.6,
+      "length": 1.1,
+      "attack": 0.01,
+      "decay": 0.44000000000000006,
+      "gain": 0.8,
+      "drive": 3,
+      "tremolo": [
+        6,
+        0.4
+      ]
+    }
+  ],
+  "reverb": {
+    "size": 0.6,
+    "mix": 0.25
+  },
+  "compress": {
+    "threshold": -14,
+    "ratio": 3,
+    "attack": 0.002,
+    "release": 0.1
+  }
+}

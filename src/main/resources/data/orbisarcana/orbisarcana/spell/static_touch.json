@@ -1,0 +1,66 @@
+{
+  "school": "orbisarcana:lightning",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:composite",
+  "targeting": "target",
+  "cast": {
+    "mode": "charged",
+    "ticks": 10,
+    "min_ticks": 6
+  },
+  "cost": 10,
+  "cooldown_ticks": 40,
+  "primary_stat": "damage",
+  "params": {
+    "damage": 6,
+    "slow_ticks": 60,
+    "slow_level": 2
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "slow_ticks": 90
+      }
+    },
+    "10": {
+      "params": {
+        "damage": 7
+      }
+    },
+    "15": {
+      "params": {
+        "slow_level": 3,
+        "damage": 8
+      }
+    }
+  },
+  "circle": "orbisarcana:static_touch",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "target",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "slow"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:volt_hand"
+      ],
+      "impact": [
+        "orbisarcana:discharge_hit",
+        "orbisarcana:static_crackle",
+        "orbisarcana:discharge_sparks"
+      ],
+      "apogee_impact": [
+        "orbisarcana:volt_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.static_touch.release",
+      "impact_sound": "orbisarcana:spell.static_touch.impact"
+    }
+  }
+}

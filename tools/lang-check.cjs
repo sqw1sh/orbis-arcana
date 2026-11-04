@@ -44,7 +44,7 @@ for (const f of fs.readdirSync("src/main/resources/data/orbisarcana/orbisarcana/
   need(`stat.orbisarcana.${def.primary_stat || "damage"}`);
 }
 // schools and their talent trees; DEEP — the schools whose pack added the third nodes
-const DEEP = { fire: ["a3", "b3"], ice: ["a3", "b3"] };
+const DEEP = { fire: ["a3", "b3"], ice: ["a3", "b3"], lightning: ["a3", "b3"] };
 const schools = ["fire", "earth", "water", "air", "ice", "lightning", "nature", "light", "dark", "astral"];
 for (const s of schools) {
   need(`school.orbisarcana.${s}`);

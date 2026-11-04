@@ -63,9 +63,26 @@
 | dawn_ray | light | rare | channel | 3 | 8 | 18 | 18 | 23.9 | роль: cast,dmg |
 | heavens_judgment | light | mythic | charged | 3 | 45 | 48 | 16 | 42.6 |  |
 | purifying_aura | light | epic | toggle | 0 | 10 | 3 | — | — | роль: cast,mana |
+| arc_beam | lightning | rare | channel | 3 | 9 | 20 | 9.6 | 12.8 |  |
+| arc_lash | lightning | common | instant | 0 | 2 | 10 | 6 | 8 |  |
+| ball_lightning | lightning | uncommon | charged | 0.8 | 6 | 15 | 7 | 18.6 |  |
+| chain_lightning | lightning | uncommon | charged | 0.8 | 6 | 15 | 6 | 8 |  |
 | current_shell | lightning | epic | toggle | 0 | 5 | 3 | — | — | роль: cast,mana,cd |
 | discharge | lightning | common | instant | 0 | 1.8 | 9 | 5 | 6.7 |  |
+| heavens_wrath | lightning | divine | charged | 3.5 | 135 | 80 | 26 | 42.6 |  |
+| lightning_strike | lightning | rare | charged | 0.9 | 9 | 20 | 8 | 13.3 |  |
+| primordial_thunder | lightning | ancient | charged | 3 | 90 | 62 | 18 | 23.9 |  |
+| spark | lightning | common | instant | 0 | 2 | 10 | 6 | 9.3 |  |
+| static_field | lightning | uncommon | charged | 0.8 | 6 | 15 | 8 | 10.6 |  |
+| static_touch | lightning | common | charged | 0.5 | 2 | 10 | 6 | 10.6 |  |
 | storm_anchor | lightning | rare | instant | 0 | 6 | 16 | 8 | 10.6 | роль: cast |
+| storm_barrier | lightning | rare | charged | 0.9 | 9 | 20 | 9.6 | 19.2 |  |
+| surge | lightning | uncommon | instant | 0 | 6 | 15 | — | — | роль: cast |
+| tempest | lightning | mythic | charged | 2.5 | 45 | 47 | 17.6 | 23.4 |  |
+| thunder_spear | lightning | legendary | charged | 1.6 | 30 | 37 | 14 | 21.3 |  |
+| thunderclap | lightning | common | instant | 0 | 2 | 10 | 5 | 6.7 |  |
+| thunderstorm | lightning | epic | charged | 1.3 | 15 | 30 | 12 | 16 |  |
+| voltaic_aura | lightning | epic | instant | 0 | 15 | 30 | 12.8 | 17 | роль: cast |
 | life_bloom | nature | rare | charged | 1 | 10 | 20 | — | — |  |
 | root_shackles | nature | common | charged | 0.7 | 6 | 10 | — | 4 | роль: cd |
 | thorn_seed | nature | epic | charged | 1.2 | 14 | 26 | 13.2 | 17.6 |  |
@@ -78,9 +95,9 @@
 | Школа | DPS | % от меча | Касты |
 |---|---:|---:|---|
 | ice | 7.7 | 81% | winter_embrace×1, frost_bolt×2, ice_shard×19, frost_breath×1, glacial_rampart×1 |
+| lightning | 3.8 | 39% | voltaic_aura×1, storm_anchor×1, spark×1, arc_lash×1, discharge×16, thunderclap×1, ball_lightning×1, storm_barrier×1 |
 | fire | 8.0 | 83% | immolation×1, searing_bolt×15, ember_spray×2, flame_lash×2, kindle×1, heat_wave×1, fire_wall×1 |
 | astral | 3.0 | 31% | constellation_shift×2, star_spike×8 |
-| lightning | 3.6 | 38% | storm_anchor×4, discharge×22 |
 | light | 4.4 | 46% | heavens_judgment×2, dawn_ray×6 |
 | earth | 7.1 | 74% | stone_spear×17, fault_line×3 |
 | air | 6.9 | 72% | wind_blade×27 |

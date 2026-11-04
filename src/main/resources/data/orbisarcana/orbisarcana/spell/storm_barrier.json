@@ -1,0 +1,71 @@
+{
+  "school": "orbisarcana:lightning",
+  "rarity": "orbisarcana:rare",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 18,
+    "min_ticks": 11
+  },
+  "cost": 20,
+  "cooldown_ticks": 180,
+  "primary_stat": "damage",
+  "params": {
+    "range": 20,
+    "length": 7,
+    "width": 1.5,
+    "height": 3,
+    "duration_ticks": 120,
+    "pulse_ticks": 10,
+    "damage": 0.8,
+    "knockback": 1
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "length": 10
+      }
+    },
+    "10": {
+      "params": {
+        "knockback": 1.5
+      }
+    },
+    "15": {
+      "params": {
+        "duration_ticks": 180
+      }
+    }
+  },
+  "circle": "orbisarcana:storm_barrier",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "wall",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "knockback"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:volt_hand"
+      ],
+      "travel": [
+        "orbisarcana:barrier_column",
+        "orbisarcana:static_crackle"
+      ],
+      "impact": [
+        "orbisarcana:discharge_sparks"
+      ],
+      "apogee_travel": [
+        "orbisarcana:strike_rain"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.storm_barrier.release"
+    }
+  }
+}

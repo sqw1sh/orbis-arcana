@@ -32,7 +32,7 @@ const CORRIDOR = {
 // whole hold, so a per-cast number does not compare; a toggle's cooldown only starts when it is switched off.
 const EXEMPT = {
   root_shackles: "cd", water_prison: "dmg", ice_shard: "dmg",
-  tidal_stream: "cast,dmg", dawn_ray: "cast,dmg", current_shell: "cast,mana,cd", flame_dash: "cast", wind_step: "cast", granite_oath: "cast", ember_ward: "cast", immolation: "cast", ice_armor: "cast", winter_embrace: "cast",
+  tidal_stream: "cast,dmg", dawn_ray: "cast,dmg", current_shell: "cast,mana,cd", flame_dash: "cast", wind_step: "cast", granite_oath: "cast", ember_ward: "cast", immolation: "cast", ice_armor: "cast", winter_embrace: "cast", surge: "cast", voltaic_aura: "cast",
   shadow_step: "cast", shadow_dart: "cast", storm_anchor: "cast", guardian_orbit: "cast", purifying_aura: "cast,mana",
 };
 

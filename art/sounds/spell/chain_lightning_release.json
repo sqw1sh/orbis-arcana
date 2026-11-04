@@ -1,0 +1,82 @@
+{
+  "length": 1.1,
+  "loudness": -11,
+  "variants": 2,
+  "layers": [
+    {
+      "type": "noise",
+      "highpass": 2000,
+      "start": 0,
+      "length": 0.04,
+      "attack": 0.0005,
+      "decay": 0.008,
+      "gain": 1
+    },
+    {
+      "type": "square",
+      "freq": [
+        3500,
+        800
+      ],
+      "lowpass": 6000,
+      "start": 0,
+      "length": 0.2,
+      "attack": 0.001,
+      "decay": 0.06,
+      "gain": 0.6,
+      "drive": 2
+    },
+    {
+      "type": "noise",
+      "highpass": 2000,
+      "start": 0.12,
+      "length": 0.04,
+      "attack": 0.0005,
+      "decay": 0.008,
+      "gain": 0.8
+    },
+    {
+      "type": "square",
+      "freq": [
+        3000,
+        700
+      ],
+      "lowpass": 6000,
+      "start": 0.12,
+      "length": 0.2,
+      "attack": 0.001,
+      "decay": 0.06,
+      "gain": 0.6,
+      "drive": 2
+    },
+    {
+      "type": "noise",
+      "highpass": 2000,
+      "start": 0.24,
+      "length": 0.04,
+      "attack": 0.0005,
+      "decay": 0.008,
+      "gain": 0.7
+    },
+    {
+      "type": "crackle",
+      "density": 300,
+      "highpass": 1500,
+      "start": 0.05,
+      "length": 0.9,
+      "attack": 0.005,
+      "decay": 0.36000000000000004,
+      "gain": 0.4
+    }
+  ],
+  "reverb": {
+    "size": 0.4,
+    "mix": 0.2
+  },
+  "compress": {
+    "threshold": -14,
+    "ratio": 3,
+    "attack": 0.002,
+    "release": 0.1
+  }
+}

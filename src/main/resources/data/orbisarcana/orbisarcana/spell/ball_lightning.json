@@ -1,0 +1,81 @@
+{
+  "school": "orbisarcana:lightning",
+  "rarity": "orbisarcana:uncommon",
+  "behavior": "orbisarcana:composite",
+  "targeting": "directional",
+  "cast": {
+    "mode": "charged",
+    "ticks": 15,
+    "min_ticks": 9
+  },
+  "cost": 15,
+  "cooldown_ticks": 120,
+  "primary_stat": "damage",
+  "params": {
+    "speed": 0.6,
+    "range": 28,
+    "count": 1,
+    "spread_deg": 0,
+    "pierce": 0,
+    "chain": 0,
+    "chain_range": 5,
+    "explode_radius": 2.5,
+    "damage": 7,
+    "slow_ticks": 60,
+    "slow_level": 2
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "explode_radius": 3.5
+      }
+    },
+    "10": {
+      "params": {
+        "slow_ticks": 90
+      }
+    },
+    "15": {
+      "params": {
+        "count": 2,
+        "spread_deg": 15
+      }
+    }
+  },
+  "circle": "orbisarcana:ball_lightning",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "bolt",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "slow"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:volt_hand"
+      ],
+      "travel": [
+        "orbisarcana:volt_orb",
+        "orbisarcana:static_crackle"
+      ],
+      "impact": [
+        "orbisarcana:shock_dome",
+        "orbisarcana:thunder_flash",
+        "orbisarcana:discharge_sparks"
+      ],
+      "apogee_travel": [
+        "orbisarcana:spark_trail"
+      ],
+      "apogee_impact": [
+        "orbisarcana:thunder_ring"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.ball_lightning.release",
+      "impact_sound": "orbisarcana:spell.ball_lightning.impact"
+    }
+  }
+}

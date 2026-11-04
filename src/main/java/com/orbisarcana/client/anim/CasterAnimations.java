@@ -57,7 +57,12 @@ public final class CasterAnimations {
             Map.entry("ice_comet", "release_judgment"), Map.entry("absolute_zero", "release_dome"), Map.entry("frost_nova", "release_dome"),
             Map.entry("winter_embrace", "release_dome"), Map.entry("ice_lance", "release_thrust"), Map.entry("chill_touch", "release_thrust"),
             Map.entry("ice_armor", "release_guard"), Map.entry("glacial_rampart", "release_guard"),
-            Map.entry("primordial_flame", "release_judgment"), Map.entry("eternal_glacier", "release_judgment"));
+            Map.entry("primordial_flame", "release_judgment"), Map.entry("eternal_glacier", "release_judgment"),
+            // V12 lightning pack
+            Map.entry("lightning_strike", "release_judgment"), Map.entry("thunderstorm", "release_judgment"), Map.entry("tempest", "release_judgment"),
+            Map.entry("heavens_wrath", "release_judgment"), Map.entry("primordial_thunder", "release_dome"), Map.entry("thunderclap", "release_dome"),
+            Map.entry("voltaic_aura", "release_dome"), Map.entry("arc_lash", "release_thrust"), Map.entry("thunder_spear", "release_thrust"),
+            Map.entry("static_touch", "release_thrust"), Map.entry("surge", "release_dash"), Map.entry("storm_barrier", "release_guard"));
     public static final Identifier TOGGLE_ON = anim("toggle_on");
 
     private static final Map<Integer, Running> RUNNING = new HashMap<>();

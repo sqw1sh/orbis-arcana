@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Lightning school pack
+- 17 new Lightning spells (20 in all) across all eight rarities: Spark, Static Shock, Arc Lash, Thunderclap, Chain Lightning, Ball Lightning, Static Field, Surge, Lightning Strike, Arc Beam, Storm Barrier, Thunderstorm, Voltaic Aura, Thunderer's Spear, Tempest, Primordial Thunder, Heaven's Wrath. Each has its own circle, sounds, effects, apogee look and three milestones.
+- Lightning talent tree: third nodes Superconductor (one more jump, 1.5x jump range) and Static Shield (every 4th hit you take is absorbed). Splitting now works on composite chains too.
+
 ### All eight rarities
 - Legendary, ancient and divine spells: Meteor and Ice Comet are legendary, Inferno Pillar and Glacial Rampart mythic, Fallen Sun and Absolute Zero divine. New ancient spells: Primordial Flame and Eternal Glacier.
 - Sources: legendary scrolls in the observatory vault, scriptorium, Nether and higher-school loot; ancient ones in vaults and from the Warden and Elder Guardian; divine ones from the Wither; End cities hold all three.

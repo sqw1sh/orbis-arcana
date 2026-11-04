@@ -32,7 +32,7 @@ function effect(id, o) {
   }
   if (o.local) c["minecraft:emitter_local_space"] = { position: true, rotation: false };
   if (o.sphere !== undefined) c["minecraft:emitter_shape_sphere"] = { radius: o.sphere, surface_only: !!o.surface, direction: o.dir ?? "outwards" };
-  else if (o.disc) c["minecraft:emitter_shape_disc"] = { radius: 1, plane_normal: [0, 1, 0], surface_only: !!o.ringOnly, direction: o.dir ?? "outwards" };
+  else if (o.disc) c["minecraft:emitter_shape_disc"] = { radius: o.discRadius ?? 1, plane_normal: [0, 1, 0], surface_only: !!o.ringOnly, direction: o.dir ?? "outwards" };
   else c["minecraft:emitter_shape_box"] = { half_dimensions: [1, 1, 1], direction: o.dir ?? "outwards" };
   c["minecraft:particle_lifetime_expression"] = { max_lifetime: rnd(...o.life) };
   c["minecraft:particle_initial_speed"] = typeof o.speed === "string" ? o.speed : rnd(...o.speed);
@@ -552,6 +552,45 @@ Object.assign(MESHES, {
     color: hold([1, 0.6, 0.25, 0.85], 0.2, 0.75) },
   ancient_runes_ice: { shape: "ring", texture: E("runes"), life: 0.55, segments: 48, radius: 2.1, thickness: 0.7, uv: [8, 1], spin: -12,
     color: hold([0.75, 0.92, 1, 0.85], 0.2, 0.75) },
+});
+
+// ---- V12 lightning pack: signature effects of the 17 new Lightning spells (own colours, played untinted) ----
+const VOLT = [[0, 1, 1, 1, 1], [0.3, 0.75, 0.88, 1, 0.9], [0.6, 1, 1, 1, 0.8], [1, 0.4, 0.55, 1, 0]];
+Object.assign(EFFECTS, {
+  volt_hand: { cell: [2, 0], count: 10, sphere: 0.1, dir: [0, 0, 1], life: [0.1, 0.22], speed: [3, 7], drag: 6, facing: "lookat_direction",
+    size: [overLife(0.04, 0.02), overLife(0.4, 0.1)], color: VOLT },
+  spark_trail: { cell: [2, 0], count: 3, sphere: 0.08, dir: [0, 0, -1], life: [0.08, 0.16], speed: [1, 3], drag: 4, facing: "lookat_direction",
+    size: [overLife(0.04, 0.02), overLife(0.5, 0.2)], color: VOLT },
+  static_crackle: { flipbook: [0, 4, 4], wide: 2, count: 6, disc: true, discRadius: 1.4, life: [0.1, 0.22], speed: [0, 0.3], spin: 0,
+    size: [overLife(0.7, 0.4, 0.6), overLife(0.35, 0.2, 0.6)], color: VOLT },
+  strike_rain: { cell: [2, 0], count: 5, disc: true, discRadius: 2.5, dir: [0, 1, 0], life: [0.14, 0.22], speed: [0.01, 0.01], facing: "lookat_direction",
+    size: ["0.18", "4"], color: [[0, 1, 1, 1, 1], [0.3, 0.8, 0.9, 1, 0.6], [0.5, 1, 1, 1, 1], [1, 0.5, 0.65, 1, 0]] },
+  thunder_flash: { cell: [1, 0], count: 2, sphere: 0, life: [0.12, 0.16], speed: [0, 0],
+    size: [overLife(1.5, 5), overLife(1.5, 5)], color: [[0, 1, 1, 1, 1], [1, 0.5, 0.65, 1, 0]] },
+});
+Object.assign(MESHES, {
+  arc_ray: { shape: "cylinder", texture: E("electric"), life: 0.22, axis: "forward", stretch: true, segments: 10, rings: 3, radius: [[0, 0.08], [0.3, 0.18], [1, 0.04]],
+    height: 1, uv: [1, 8], scroll: [3, -10], spin: 400, fresnel: -0.6, color: burst([0.9, 0.97, 1, 1], [0.45, 0.6, 1, 0]) },
+  arc_whip: { shape: "cylinder", texture: E("electric"), life: 0.2, axis: "forward", stretch: true, segments: 12, rings: 3, radius: [[0, 0.3], [0.3, 0.22], [1, 0.02]],
+    height: 1, uv: [1, 5], scroll: [4, -12], spin: 600, fresnel: -0.3, color: burst([0.8, 0.92, 1, 1], [0.4, 0.55, 1, 0]) },
+  spark_orb: { shape: "sphere", texture: E("electric"), life: 0.1, segments: 12, rings: 6, radius: 0.16, uv: [2, 1], scroll: [3, 2], spin: 600, fresnel: -0.8,
+    color: [[0, [0.9, 0.97, 1, 1]]] },
+  volt_orb: { shape: "sphere", texture: E("electric"), life: 0.1, segments: 20, rings: 10, radius: 0.55, uv: [2, 1], scroll: [3, 2], spin: 400, fresnel: 0.6,
+    color: [[0, [0.7, 0.88, 1, 1]]] },
+  strike_column: { shape: "cylinder", texture: E("electric"), life: 0.3, segments: 10, rings: 8, radius: [[0, 0.5], [0.2, 0.3], [1, 0.05]], height: 16,
+    uv: [1, 10], scroll: [2, 12], spin: 300, fresnel: -0.7, color: burst([1, 1, 1, 1], [0.5, 0.65, 1, 0]), shake: { strength: 1.4, radius: 18, time: 0.3 } },
+  barrier_column: { shape: "cylinder", texture: E("electric"), life: 0.55, segments: 10, rings: 4, radius: 0.45, height: 3, uv: [1, 3], scroll: [2, 6], spin: 200,
+    fresnel: 1, color: hold([0.7, 0.88, 1, 0.75], 0.1, 0.75) },
+  volt_mantle: { shape: "cylinder", texture: E("electric"), life: 0.55, segments: 24, rings: 6, radius: [[0, 0.9], [1, 1.05]], height: 2.3, uv: [3, 1.5],
+    scroll: [3, 1], spin: 220, fresnel: 1.5, color: hold([0.7, 0.88, 1, 0.65], 0.2, 0.75) },
+  shock_dome: { shape: "sphere", texture: E("electric"), life: 0.5, segments: 28, rings: 14, radius: [[0, 0.3], [0.4, 2.2], [1, 2.5]], uv: [3, 1.5], scroll: [3, 2],
+    spin: 120, fresnel: 1.4, color: burst([0.85, 0.95, 1, 1], [0.4, 0.55, 1, 0]), shake: { strength: 1.2, radius: 14, time: 0.3 } },
+  thunder_ring: { shape: "ring", texture: E("electric"), life: 0.4, segments: 40, radius: [[0, 0.4], [1, 4.5]], thickness: [[0, 1.2], [1, 0.3]], uv: [8, 1],
+    scroll: [3, 0], color: burst([0.9, 0.97, 1, 1], [0.4, 0.55, 1, 0]), shake: { strength: 1.8, radius: 16, time: 0.3 } },
+  volt_crown: { shape: "cylinder", texture: E("electric"), life: 0.6, segments: 24, rings: 3, radius: [[0, 0.6], [1, 2.6]], height: [[0, 0.2], [0.3, 1.3], [1, 0.3]],
+    uv: [6, 1], scroll: [3, -2], spin: 160, fresnel: 1.2, color: burst([1, 0.97, 0.8, 1], [0.5, 0.6, 1, 0]) },
+  ancient_runes_volt: { shape: "ring", texture: E("runes"), life: 0.55, segments: 48, radius: 2.1, thickness: 0.7, uv: [8, 1], spin: 25,
+    color: hold([0.75, 0.88, 1, 0.85], 0.15, 0.75) },
 });
 
 for (const [id, m] of Object.entries(MESHES)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify({ "orbisarcana:mesh": m }, null, "\t") + "\n");

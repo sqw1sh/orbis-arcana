@@ -1,0 +1,71 @@
+{
+  "school": "orbisarcana:lightning",
+  "rarity": "orbisarcana:legendary",
+  "behavior": "orbisarcana:composite",
+  "targeting": "directional",
+  "cast": {
+    "mode": "charged",
+    "ticks": 32,
+    "min_ticks": 19
+  },
+  "cost": 37,
+  "cooldown_ticks": 600,
+  "primary_stat": "damage",
+  "params": {
+    "range": 30,
+    "pierce": 2,
+    "damage": 14,
+    "knockback": 1
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "pierce": 4
+      }
+    },
+    "10": {
+      "params": {
+        "knockback": 1.8
+      }
+    },
+    "15": {
+      "params": {
+        "pierce": 8,
+        "damage": 16
+      }
+    }
+  },
+  "circle": "orbisarcana:thunder_spear",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "beam",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "knockback"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:volt_hand"
+      ],
+      "travel": [
+        "orbisarcana:arc_ray",
+        "orbisarcana:arc_whip"
+      ],
+      "impact": [
+        "orbisarcana:thunder_flash",
+        "orbisarcana:discharge_sparks",
+        "orbisarcana:thunder_ring"
+      ],
+      "apogee_impact": [
+        "orbisarcana:volt_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.thunder_spear.release",
+      "impact_sound": "orbisarcana:spell.thunder_spear.impact"
+    }
+  }
+}

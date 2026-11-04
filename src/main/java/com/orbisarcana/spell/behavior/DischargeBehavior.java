@@ -5,12 +5,9 @@ import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
-import com.orbisarcana.core.TalentRules;
 import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
-import com.orbisarcana.school.AttunementService;
 import com.orbisarcana.school.EchoService;
-import com.orbisarcana.school.Schools;
 import com.orbisarcana.spell.Arcs;
 
 import net.minecraft.server.level.ServerLevel;
@@ -52,12 +49,12 @@ final class DischargeBehavior {
         float damage = (float) ctx.scaled("damage");
         strike(ctx, caster, first, damage, false);
 
-        int jumps = ctx.ticks("jumps") + (AttunementService.hasTalent(caster, Schools.LIGHTNING, TalentRules.A1) ? 1 : 0);
+        int jumps = ctx.ticks("jumps") + com.orbisarcana.school.TalentEffects.extraJumps(caster);
         Set<LivingEntity> hitSet = new HashSet<>();
         hitSet.add(first);
         LivingEntity from = first;
         for (int i = 0; i < jumps; i++) {
-            LivingEntity next = nearest(level, caster, from, ctx.param("jump_range"), hitSet);
+            LivingEntity next = nearest(level, caster, from, ctx.param("jump_range") * com.orbisarcana.school.TalentEffects.jumpRangeMult(caster), hitSet);
             if (next == null) break;
             Arcs.draw(level, Arcs.body(from), Arcs.body(next));
             damage *= (float) JUMP_SHARE;

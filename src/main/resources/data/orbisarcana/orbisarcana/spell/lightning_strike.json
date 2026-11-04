@@ -1,0 +1,69 @@
+{
+  "school": "orbisarcana:lightning",
+  "rarity": "orbisarcana:rare",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 18,
+    "min_ticks": 11
+  },
+  "cost": 20,
+  "cooldown_ticks": 180,
+  "primary_stat": "damage",
+  "params": {
+    "range": 30,
+    "explode_radius": 3,
+    "damage": 8,
+    "blind_ticks": 40,
+    "speed": 5
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "explode_radius": 4
+      }
+    },
+    "10": {
+      "params": {
+        "blind_ticks": 60
+      }
+    },
+    "15": {
+      "params": {
+        "explode_radius": 5,
+        "damage": 10
+      }
+    }
+  },
+  "circle": "orbisarcana:lightning_strike",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "meteor",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "blind"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:volt_hand"
+      ],
+      "impact": [
+        "orbisarcana:strike_column",
+        "orbisarcana:thunder_flash",
+        "orbisarcana:thunder_ring",
+        "orbisarcana:discharge_sparks"
+      ],
+      "apogee_impact": [
+        "orbisarcana:shock_dome"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.lightning_strike.release",
+      "impact_sound": "orbisarcana:spell.lightning_strike.impact"
+    }
+  }
+}

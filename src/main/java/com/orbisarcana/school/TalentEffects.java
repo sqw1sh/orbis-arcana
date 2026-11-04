@@ -43,7 +43,7 @@ public final class TalentEffects {
             "earth/echo", "earth/root", "earth/a1", "earth/a2", "earth/b1", "earth/b2",
             "air/echo", "air/root", "air/a1", "air/a2", "air/b1", "air/b2",
             "ice/echo", "ice/root", "ice/a1", "ice/a2", "ice/a3", "ice/b1", "ice/b2", "ice/b3",
-            "lightning/echo", "lightning/root", "lightning/a1", "lightning/a2", "lightning/b1", "lightning/b2",
+            "lightning/echo", "lightning/root", "lightning/a1", "lightning/a2", "lightning/a3", "lightning/b1", "lightning/b2", "lightning/b3",
             "nature/echo", "nature/root", "nature/a1", "nature/a2", "nature/b1", "nature/b2",
             "light/echo", "light/root", "light/a1", "light/a2", "light/b1", "light/b2",
             "dark/echo", "dark/root", "dark/a1", "dark/a2", "dark/b1", "dark/b2",
@@ -142,6 +142,11 @@ public final class TalentEffects {
     /** B1 "Fortress": -10% damage taken while Bulwark is at 50% or more. */
     @SubscribeEvent
     static void onIncomingDamage(LivingIncomingDamageEvent event) {
+        if (event.getEntity() instanceof ServerPlayer sp && event.getAmount() > 0 && staticShield(sp)) {
+            event.setCanceled(true);
+            Fx.ARC.play(sp.level(), sp.getX(), sp.getY() + 1, sp.getZ(), 30, 0.5, 0.8, 0.5);
+            return;
+        }
         if (event.getEntity() instanceof ServerPlayer p && AttunementService.hasTalent(p, Schools.EARTH, TalentRules.B1)
                 && EchoService.bulwark(p) >= com.orbisarcana.core.EchoRules.BULWARK_MAX / 2) {
             event.setAmount((float) (event.getAmount() * com.orbisarcana.core.EchoRules.FORTRESS_MULT));
@@ -162,6 +167,9 @@ public final class TalentEffects {
     // ---- Lightning ----
 
     public static final float REVERSE_CURRENT_DAMAGE = 3f;
+    public static final double SUPERCONDUCTOR_RANGE = 1.5;
+    public static final int STATIC_SHIELD_EVERY = 4;
+    private static final Map<UUID, Integer> STATIC_HITS = new HashMap<>();
     public static final long REVERSE_CURRENT_COOLDOWN = 4 * 20;
     private static final Map<UUID, Long> REVERSE_READY = new HashMap<>();
 
@@ -225,6 +233,25 @@ public final class TalentEffects {
                 e -> e != p && e.isAlive() && !(e instanceof Player) && e.distanceTo(p) <= FROZEN_HEART_RADIUS);
         for (LivingEntity e : near) e.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, FROZEN_HEART_SLOW_TICKS, 1), p);
         if (!near.isEmpty()) Fx.FROST.play(p.level(), p.getX(), p.getY() + 1, p.getZ(), 30, 1.5, 0.4, 1.5);
+    }
+
+    /** Extra jumps of a lightning chain: A1 "Splitting" +1, A3 "Superconductor" +1. */
+    public static int extraJumps(ServerPlayer caster) {
+        return (AttunementService.hasTalent(caster, Schools.LIGHTNING, TalentRules.A1) ? 1 : 0) + (AttunementService.hasTalent(caster, Schools.LIGHTNING, TalentRules.A3) ? 1 : 0);
+    }
+
+    /** A3 "Superconductor": lightning chains jump 50% farther. */
+    public static double jumpRangeMult(ServerPlayer caster) {
+        return AttunementService.hasTalent(caster, Schools.LIGHTNING, TalentRules.A3) ? SUPERCONDUCTOR_RANGE : 1.0;
+    }
+
+    /** B3 "Static Shield": every 4th hit taken is absorbed by a discharge; true when this hit is the one. */
+    public static boolean staticShield(ServerPlayer p) {
+        if (!AttunementService.hasTalent(p, Schools.LIGHTNING, TalentRules.B3)) return false;
+        int n = STATIC_HITS.merge(p.getUUID(), 1, Integer::sum);
+        if (n < STATIC_SHIELD_EVERY) return false;
+        STATIC_HITS.put(p.getUUID(), 0);
+        return true;
     }
 
     /** A1 "Crystallization": +25% damage to frozen targets. */
@@ -462,6 +489,7 @@ public final class TalentEffects {
         UNBREAKABLE_READY.clear();
         WHITE_WALL_READY.clear();
         REVERSE_READY.clear();
+        STATIC_HITS.clear();
         VEIL_READY.clear();
     }
 

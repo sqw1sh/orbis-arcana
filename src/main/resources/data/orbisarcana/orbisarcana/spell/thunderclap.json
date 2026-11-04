@@ -1,0 +1,63 @@
+{
+  "school": "orbisarcana:lightning",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:composite",
+  "targeting": "self",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 10,
+  "cooldown_ticks": 40,
+  "primary_stat": "damage",
+  "params": {
+    "radius": 4,
+    "damage": 5,
+    "knockback": 1
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 5
+      }
+    },
+    "10": {
+      "params": {
+        "knockback": 1.5
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 6
+      }
+    }
+  },
+  "circle": "orbisarcana:thunderclap",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "nova",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "knockback"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:volt_hand"
+      ],
+      "impact": [
+        "orbisarcana:thunder_ring",
+        "orbisarcana:thunder_flash",
+        "orbisarcana:static_crackle"
+      ],
+      "apogee_impact": [
+        "orbisarcana:storm_ring",
+        "orbisarcana:volt_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.thunderclap.release"
+    }
+  }
+}

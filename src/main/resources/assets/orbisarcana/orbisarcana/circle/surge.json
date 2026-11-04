@@ -1,0 +1,73 @@
+{
+  "layers": [
+    {
+      "type": "ring",
+      "radius": 0.85,
+      "width": 0.03
+    },
+    {
+      "type": "polygon",
+      "sides": 4,
+      "radius": 0.8,
+      "width": 0.03,
+      "rotate_speed": 200
+    },
+    {
+      "type": "polygon",
+      "sides": 4,
+      "radius": 0.8,
+      "width": 0.03,
+      "rotate_speed": -200
+    },
+    {
+      "type": "satellite",
+      "count": 6,
+      "radius": 0.55,
+      "size": 0.05,
+      "rotate_speed": 260,
+      "color": "#F4FBFF"
+    },
+    {
+      "type": "ring",
+      "radius": 0.25,
+      "width": 0.04,
+      "progress": true
+    }
+  ],
+  "milestone_layers": {
+    "5": [
+      {
+        "type": "polygon",
+        "sides": 8,
+        "radius": 0.98,
+        "width": 0.012,
+        "rotate_speed": 100
+      }
+    ],
+    "10": [
+      {
+        "type": "ring",
+        "radius": 1.02,
+        "width": 0.02,
+        "color": "#6FA8FF"
+      }
+    ],
+    "15": [
+      {
+        "type": "ring",
+        "radius": 1.18,
+        "width": 0.025,
+        "color": "#FFE95A"
+      },
+      {
+        "type": "polygon",
+        "sides": 4,
+        "radius": 1.15,
+        "width": 0.02,
+        "rotate_speed": 160,
+        "count": 2,
+        "color": "#FFE95A"
+      }
+    ]
+  }
+}

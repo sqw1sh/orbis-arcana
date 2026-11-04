@@ -326,6 +326,11 @@ final class CompositeBehavior {
     private static void chain(Cast c, ServerPlayer caster, LivingEntity from, Set<UUID> hit) {
         int jumps = (int) Math.round(c.p("chain"));
         double range = c.p("chain_range") > 0 ? c.p("chain_range") : DEFAULT_CHAIN_RANGE;
+        if (jumps > 0 && c.school().equals(com.orbisarcana.school.Schools.LIGHTNING)) {
+            // the Lightning chain talents (Splitting, Superconductor) work on composite chains as on Discharge
+            jumps += com.orbisarcana.school.TalentEffects.extraJumps(caster);
+            range *= com.orbisarcana.school.TalentEffects.jumpRangeMult(caster);
+        }
         LivingEntity at = from;
         for (int i = 0; i < jumps; i++) {
             LivingEntity last = at;
@@ -334,7 +339,9 @@ final class CompositeBehavior {
                     .stream().min(Comparator.comparingDouble(e -> e.distanceToSqr(last))).orElse(null);
             if (next == null) return;
             Vec3 a = at.getBoundingBox().getCenter(), d = next.getBoundingBox().getCenter().subtract(a);
-            travel(c).forEach(id -> Vfx.play(c.level(), id, a.add(d.scale(0.5)), d, c.compose().visuals().tint(), 1f));
+            var vis = c.compose().visuals();
+            if (vis.chain().isEmpty()) travel(c).forEach(id -> Vfx.play(c.level(), id, a.add(d.scale(0.5)), d, vis.tint(), 1f));
+            else vis.chain().forEach(id -> Vfx.play(c.level(), id, a.add(d.scale(0.5)), d, vis.tint(), (float) d.length()));
             hit.add(next.getUUID());
             hitWithBolt(c, caster, next);
             at = next;

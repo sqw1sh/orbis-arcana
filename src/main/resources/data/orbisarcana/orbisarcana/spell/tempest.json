@@ -1,0 +1,76 @@
+{
+  "school": "orbisarcana:lightning",
+  "rarity": "orbisarcana:mythic",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 50,
+    "min_ticks": 30
+  },
+  "cost": 47,
+  "cooldown_ticks": 900,
+  "primary_stat": "damage",
+  "params": {
+    "range": 20,
+    "radius": 6,
+    "duration_ticks": 160,
+    "pulse_ticks": 10,
+    "damage": 1.1,
+    "knockback": 1,
+    "slow_ticks": 60,
+    "slow_level": 2
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 7
+      }
+    },
+    "10": {
+      "params": {
+        "knockback": 1.5
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 9
+      }
+    }
+  },
+  "circle": "orbisarcana:tempest",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "zone",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "knockback"
+      },
+      {
+        "type": "slow"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:volt_hand"
+      ],
+      "travel": [
+        "orbisarcana:strike_rain",
+        "orbisarcana:storm_ring",
+        "orbisarcana:static_crackle"
+      ],
+      "impact": [
+        "orbisarcana:thunder_ring",
+        "orbisarcana:thunder_flash"
+      ],
+      "apogee_travel": [
+        "orbisarcana:strike_column"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.tempest.release"
+    }
+  }
+}

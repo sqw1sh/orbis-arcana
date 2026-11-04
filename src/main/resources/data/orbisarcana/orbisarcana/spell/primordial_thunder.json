@@ -1,0 +1,72 @@
+{
+  "school": "orbisarcana:lightning",
+  "rarity": "orbisarcana:ancient",
+  "behavior": "orbisarcana:composite",
+  "targeting": "self",
+  "cast": {
+    "mode": "charged",
+    "ticks": 60,
+    "min_ticks": 36
+  },
+  "cost": 62,
+  "cooldown_ticks": 1800,
+  "primary_stat": "damage",
+  "params": {
+    "radius": 6,
+    "damage": 18,
+    "lift": 0.6,
+    "blind_ticks": 40
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 7
+      }
+    },
+    "10": {
+      "params": {
+        "lift": 0.9
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 9
+      }
+    }
+  },
+  "circle": "orbisarcana:primordial_thunder",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "nova",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "lift"
+      },
+      {
+        "type": "blind"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:volt_hand"
+      ],
+      "impact": [
+        "orbisarcana:shock_dome",
+        "orbisarcana:strike_column",
+        "orbisarcana:thunder_ring",
+        "orbisarcana:thunder_flash",
+        "orbisarcana:discharge_sparks",
+        "orbisarcana:ancient_runes_volt"
+      ],
+      "apogee_impact": [
+        "orbisarcana:volt_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.primordial_thunder.release",
+      "impact_sound": "orbisarcana:spell.primordial_thunder.impact"
+    }
+  }
+}

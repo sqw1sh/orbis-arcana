@@ -1,0 +1,74 @@
+{
+  "school": "orbisarcana:lightning",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:composite",
+  "targeting": "directional",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 10,
+  "cooldown_ticks": 40,
+  "primary_stat": "damage",
+  "params": {
+    "speed": 2.4,
+    "range": 28,
+    "count": 1,
+    "spread_deg": 0,
+    "pierce": 0,
+    "chain": 1,
+    "chain_range": 5,
+    "explode_radius": 0,
+    "damage": 6
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "chain": 2
+      }
+    },
+    "10": {
+      "params": {
+        "damage": 7
+      }
+    },
+    "15": {
+      "params": {
+        "chain": 3,
+        "chain_range": 7
+      }
+    }
+  },
+  "circle": "orbisarcana:spark",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "bolt",
+    "effects": [
+      {
+        "type": "damage"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:volt_hand"
+      ],
+      "travel": [
+        "orbisarcana:spark_orb",
+        "orbisarcana:spark_trail"
+      ],
+      "impact": [
+        "orbisarcana:discharge_hit",
+        "orbisarcana:discharge_sparks"
+      ],
+      "chain": [
+        "orbisarcana:bolt",
+        "orbisarcana:bolt_glow"
+      ],
+      "apogee_impact": [
+        "orbisarcana:thunder_ring"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.spark.release",
+      "impact_sound": "orbisarcana:spell.spark.impact"
+    }
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "school": "orbisarcana:lightning",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 25,
+    "min_ticks": 15
+  },
+  "cost": 30,
+  "cooldown_ticks": 300,
+  "primary_stat": "damage",
+  "params": {
+    "range": 20,
+    "radius": 4,
+    "duration_ticks": 120,
+    "pulse_ticks": 10,
+    "damage": 1,
+    "blind_ticks": 40
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 5
+      }
+    },
+    "10": {
+      "params": {
+        "blind_ticks": 60
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 6
+      }
+    }
+  },
+  "circle": "orbisarcana:thunderstorm",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "zone",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "blind"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:volt_hand"
+      ],
+      "travel": [
+        "orbisarcana:strike_rain",
+        "orbisarcana:static_crackle"
+      ],
+      "impact": [
+        "orbisarcana:thunder_ring"
+      ],
+      "apogee_travel": [
+        "orbisarcana:storm_ring"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.thunderstorm.release"
+    }
+  }
+}

@@ -171,6 +171,7 @@ public final class OrbisGameTests {
         test("composite_lasting_and_channel", 100, OrbisGameTests::compositeLastingAndChannel);
         test("fire_deep_talents", 40, OrbisGameTests::fireDeepTalents);
         test("ice_deep_talents", 60, OrbisGameTests::iceDeepTalents);
+        test("lightning_deep_talents", 40, OrbisGameTests::lightningDeepTalents);
         test("catalogue_uses_every_rarity", 20, OrbisGameTests::catalogueUsesEveryRarity);
     }
 
@@ -1712,6 +1713,21 @@ public final class OrbisGameTests {
         java.util.Set<com.orbisarcana.core.Rarity> used = java.util.EnumSet.noneOf(com.orbisarcana.core.Rarity.class);
         for (Identifier id : SpellRegistry.ids(registries)) SpellRegistry.get(registries, id).ifPresent(d -> used.add(d.rarity()));
         for (var r : com.orbisarcana.core.Rarity.values()) h.assertTrue(used.contains(r), "no spell of rarity " + r.id);
+        h.succeed();
+    }
+
+    /** Roadmap V12: Superconductor adds a jump and range; Static Shield cancels every 4th hit. */
+    private static void lightningDeepTalents(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.LIGHTNING, DISCHARGE, 9);
+        h.assertTrue(TalentEffects.extraJumps(p) == 0 && TalentEffects.jumpRangeMult(p) == 1.0, "no talents, no bonus");
+        for (String n : new String[] {"a1", "a2", "a3"}) h.assertTrue(AttunementService.pickTalent(p, Schools.LIGHTNING, n).isEmpty(), "picks " + n);
+        h.assertTrue(TalentEffects.extraJumps(p) == 2 && TalentEffects.jumpRangeMult(p) == 1.5, "Splitting + Superconductor: two more jumps, 1.5x range");
+        AttunementService.resetTalents(p, Schools.LIGHTNING);
+        for (String n : new String[] {"b1", "b2", "b3"}) h.assertTrue(AttunementService.pickTalent(p, Schools.LIGHTNING, n).isEmpty(), "picks " + n);
+        boolean[] hits = new boolean[8];
+        for (int i = 0; i < 8; i++) hits[i] = TalentEffects.staticShield(p);
+        h.assertTrue(!hits[0] && !hits[1] && !hits[2] && hits[3] && !hits[4] && hits[7], "every 4th hit is absorbed");
+        cleanup(h, p);
         h.succeed();
     }
 

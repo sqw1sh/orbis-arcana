@@ -1,0 +1,109 @@
+{
+  "layers": [
+    {
+      "type": "ring",
+      "radius": 0.99,
+      "width": 0.035,
+      "color": "#FFE95A"
+    },
+    {
+      "type": "polygon",
+      "sides": 12,
+      "radius": 0.95,
+      "width": 0.015,
+      "rotate_speed": 15
+    },
+    {
+      "type": "polygon",
+      "sides": 4,
+      "radius": 0.9,
+      "width": 0.012,
+      "rotate_speed": 60,
+      "count": 6
+    },
+    {
+      "type": "glyph_ring",
+      "radius": 0.75,
+      "count": 24,
+      "size": 0.045,
+      "rotate_speed": -20,
+      "progress": true
+    },
+    {
+      "type": "ring",
+      "radius": 0.5,
+      "width": 0.025,
+      "color": "#FFE95A"
+    },
+    {
+      "type": "satellite",
+      "count": 12,
+      "radius": 0.5,
+      "size": 0.035,
+      "rotate_speed": 200,
+      "color": "#F4FBFF"
+    },
+    {
+      "type": "polygon",
+      "sides": 4,
+      "radius": 0.3,
+      "width": 0.03,
+      "rotate_speed": -300,
+      "count": 2,
+      "color": "#F4FBFF"
+    },
+    {
+      "type": "ring",
+      "radius": 0.15,
+      "width": 0.08,
+      "color": "#F4FBFF"
+    }
+  ],
+  "milestone_layers": {
+    "5": [
+      {
+        "type": "polygon",
+        "sides": 12,
+        "radius": 1.12,
+        "width": 0.012,
+        "rotate_speed": -10,
+        "color": "#FFE95A"
+      }
+    ],
+    "10": [
+      {
+        "type": "satellite",
+        "count": 24,
+        "radius": 1.2,
+        "size": 0.03,
+        "rotate_speed": 120,
+        "color": "#F4FBFF"
+      }
+    ],
+    "15": [
+      {
+        "type": "ring",
+        "radius": 1.42,
+        "width": 0.04,
+        "color": "#F4FBFF"
+      },
+      {
+        "type": "glyph_ring",
+        "radius": 1.42,
+        "count": 32,
+        "size": 0.04,
+        "rotate_speed": 10,
+        "color": "#FFE95A"
+      },
+      {
+        "type": "polygon",
+        "sides": 4,
+        "radius": 1.4,
+        "width": 0.012,
+        "rotate_speed": -40,
+        "count": 6,
+        "color": "#FFE95A"
+      }
+    ]
+  }
+}
