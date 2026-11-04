@@ -1,36 +1,38 @@
 {
   "school": "orbisarcana:fire",
-  "rarity": "orbisarcana:epic",
+  "rarity": "orbisarcana:mythic",
   "behavior": "orbisarcana:composite",
   "targeting": "ground",
   "cast": {
     "mode": "charged",
-    "ticks": 25,
-    "min_ticks": 15
+    "ticks": 50,
+    "min_ticks": 30
   },
-  "cost": 30,
-  "cooldown_ticks": 300,
+  "cost": 48,
+  "cooldown_ticks": 900,
   "primary_stat": "damage",
   "params": {
-    "radius": 3,
-    "damage": 10,
+    "radius": 4,
+    "damage": 15,
     "ignite_ticks": 60,
-    "lift": 0.6
+    "lift": 0.6,
+    "ground_fire_ticks": 0
   },
   "milestones": {
     "5": {
       "params": {
-        "radius": 4
+        "radius": 5
       }
     },
     "10": {
       "params": {
-        "ignite_ticks": 90
+        "ground_fire_ticks": 100
       }
     },
     "15": {
       "params": {
-        "radius": 5
+        "radius": 6,
+        "damage": 18
       }
     }
   },

@@ -171,6 +171,7 @@ public final class OrbisGameTests {
         test("composite_lasting_and_channel", 100, OrbisGameTests::compositeLastingAndChannel);
         test("fire_deep_talents", 40, OrbisGameTests::fireDeepTalents);
         test("ice_deep_talents", 60, OrbisGameTests::iceDeepTalents);
+        test("catalogue_uses_every_rarity", 20, OrbisGameTests::catalogueUsesEveryRarity);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1702,6 +1703,15 @@ public final class OrbisGameTests {
         h.assertTrue(pig.hasEffect(MobEffects.SLOWNESS), "Frozen Heart slows the pig next to a wounded mage");
         pig.discard();
         cleanup(h, p);
+        h.succeed();
+    }
+
+    /** D51: the catalogue has spells of all 8 rarities (loot pools filtered by rarity are never empty). */
+    private static void catalogueUsesEveryRarity(GameTestHelper h) {
+        var registries = h.getLevel().registryAccess();
+        java.util.Set<com.orbisarcana.core.Rarity> used = java.util.EnumSet.noneOf(com.orbisarcana.core.Rarity.class);
+        for (Identifier id : SpellRegistry.ids(registries)) SpellRegistry.get(registries, id).ifPresent(d -> used.add(d.rarity()));
+        for (var r : com.orbisarcana.core.Rarity.values()) h.assertTrue(used.contains(r), "no spell of rarity " + r.id);
         h.succeed();
     }
 

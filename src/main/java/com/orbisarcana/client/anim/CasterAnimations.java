@@ -56,7 +56,8 @@ public final class CasterAnimations {
             // V11 ice pack
             Map.entry("ice_comet", "release_judgment"), Map.entry("absolute_zero", "release_dome"), Map.entry("frost_nova", "release_dome"),
             Map.entry("winter_embrace", "release_dome"), Map.entry("ice_lance", "release_thrust"), Map.entry("chill_touch", "release_thrust"),
-            Map.entry("ice_armor", "release_guard"), Map.entry("glacial_rampart", "release_guard"));
+            Map.entry("ice_armor", "release_guard"), Map.entry("glacial_rampart", "release_guard"),
+            Map.entry("primordial_flame", "release_judgment"), Map.entry("eternal_glacier", "release_judgment"));
     public static final Identifier TOGGLE_ON = anim("toggle_on");
 
     private static final Map<Integer, Running> RUNNING = new HashMap<>();

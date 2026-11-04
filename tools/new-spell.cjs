@@ -20,9 +20,10 @@ const SCHOOLS = { fire: 0xFF6A2A, earth: 0xC09050, water: 0x3FA9F5, air: 0xC8F5E
 const CIRCLE_OF = { fire: "fireball", earth: "stone_spear", water: "tidal_stream", air: "wind_blade", ice: "ice_shard", lightning: "discharge",
   nature: "thorn_seed", light: "dawn_ray", dark: "shadow_dart", astral: "star_spike" };
 // middle of each rarity's corridor (§14.11): mana, cast seconds, cooldown seconds, single-target damage
-const CORRIDOR = { common: [10, 0.5, 2, 6], uncommon: [15, 0.75, 6, 7.5], rare: [20, 0.9, 9, 9.5], epic: [30, 1.25, 15, 12], mythic: [47, 2.5, 45, 17] };
+const CORRIDOR = { common: [10, 0.5, 2, 6], uncommon: [15, 0.75, 6, 7.5], rare: [20, 0.9, 9, 9.5], epic: [30, 1.25, 15, 12], legendary: [37, 1.6, 30, 14],
+  mythic: [47, 2.5, 45, 17], ancient: [62, 3, 90, 21], divine: [80, 3.5, 135, 26] };
 // area shapes hit many, so they deal the low end of the damage corridor
-const AREA_DMG = { common: 5, uncommon: 6, rare: 8, epic: 10, mythic: 14 };
+const AREA_DMG = { common: 5, uncommon: 6, rare: 8, epic: 10, legendary: 12, mythic: 14, ancient: 18, divine: 22 };
 const SHAPE = {
   bolt: { targeting: "directional", params: { speed: 1.6, range: 28, count: 1, spread_deg: 0, pierce: 0, chain: 0, chain_range: 5, explode_radius: 0 } },
   beam: { targeting: "directional", params: { range: 20, pierce: 0 } },

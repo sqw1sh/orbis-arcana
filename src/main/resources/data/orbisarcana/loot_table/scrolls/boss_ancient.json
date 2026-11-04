@@ -1,0 +1,26 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.5
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:spell_scroll",
+          "modifier": [
+            {
+              "type": "orbisarcana:random_spell",
+              "rarities": [
+                "ancient"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "orbisarcana:scrolls/boss_ancient"
+}

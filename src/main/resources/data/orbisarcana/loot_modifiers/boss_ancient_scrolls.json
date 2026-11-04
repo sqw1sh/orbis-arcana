@@ -1,0 +1,25 @@
+{
+  "type": "neoforge:add_table",
+  "table": "orbisarcana:scrolls/boss_ancient",
+  "condition": {
+    "type": "minecraft:all_of",
+    "terms": [
+      {
+        "type": "minecraft:any_of",
+        "terms": [
+          {
+            "type": "neoforge:loot_table_id",
+            "loot_table_id": "minecraft:entities/warden"
+          },
+          {
+            "type": "neoforge:loot_table_id",
+            "loot_table_id": "minecraft:entities/elder_guardian"
+          }
+        ]
+      },
+      {
+        "type": "minecraft:killed_by_player"
+      }
+    ]
+  }
+}

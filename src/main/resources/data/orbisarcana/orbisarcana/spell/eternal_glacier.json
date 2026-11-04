@@ -1,0 +1,82 @@
+{
+  "school": "orbisarcana:ice",
+  "rarity": "orbisarcana:ancient",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 60,
+    "min_ticks": 36
+  },
+  "cost": 62,
+  "cooldown_ticks": 1800,
+  "primary_stat": "damage",
+  "params": {
+    "range": 20,
+    "radius": 5,
+    "duration_ticks": 160,
+    "pulse_ticks": 10,
+    "damage": 1.2,
+    "freeze_ticks": 20,
+    "slow_ticks": 60,
+    "slow_level": 2
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 6
+      }
+    },
+    "10": {
+      "params": {
+        "freeze_ticks": 30
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 7,
+        "damage": 1.5
+      }
+    }
+  },
+  "circle": "orbisarcana:eternal_glacier",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "zone",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "freeze"
+      },
+      {
+        "type": "slow"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:frost_hand"
+      ],
+      "travel": [
+        "orbisarcana:ancient_runes_ice",
+        "orbisarcana:frost_field",
+        "orbisarcana:frost_mist"
+      ],
+      "impact": [
+        "orbisarcana:zero_dome",
+        "orbisarcana:frost_wave",
+        "orbisarcana:rime_burst"
+      ],
+      "apogee_travel": [
+        "orbisarcana:frost_crown"
+      ],
+      "apogee_impact": [
+        "orbisarcana:frost_star"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.eternal_glacier.release",
+      "impact_sound": "orbisarcana:spell.eternal_glacier.impact"
+    }
+  }
+}

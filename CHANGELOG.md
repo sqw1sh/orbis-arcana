@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### All eight rarities
+- Legendary, ancient and divine spells: Meteor and Ice Comet are legendary, Inferno Pillar and Glacial Rampart mythic, Fallen Sun and Absolute Zero divine. New ancient spells: Primordial Flame and Eternal Glacier.
+- Sources: legendary scrolls in the observatory vault, scriptorium, Nether and higher-school loot; ancient ones in vaults and from the Warden and Elder Guardian; divine ones from the Wither; End cities hold all three.
+
 ### Ice school pack
 - 17 new Ice spells (20 in all): Frost Bolt, Chill Touch, Frost Breath, Ice Lance, Hailstorm, Frost Nova, Glacial Spikes, Ice Armor, Frostbite, Cold Ray, Blizzard, Deep Freeze, Frost Vortex, Ice Comet, Winter's Embrace, Glacial Rampart, Absolute Zero. Each has its own circle, sounds, effects, apogee look and three milestones.
 - Ice talent tree: third nodes Permafrost (your freezes last 50% longer) and Frozen Heart (below half health, enemies near you are slowed).

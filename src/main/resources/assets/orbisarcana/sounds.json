@@ -1175,5 +1175,49 @@
       }
     ],
     "subtitle": "subtitles.orbisarcana.spell.absolute_zero.impact"
+  },
+  "spell.primordial_flame.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/primordial_flame_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/primordial_flame_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.primordial_flame.release"
+  },
+  "spell.primordial_flame.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/primordial_flame_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/primordial_flame_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.primordial_flame.impact"
+  },
+  "spell.eternal_glacier.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/eternal_glacier_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/eternal_glacier_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.eternal_glacier.release"
+  },
+  "spell.eternal_glacier.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/eternal_glacier_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/eternal_glacier_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.eternal_glacier.impact"
   }
 }

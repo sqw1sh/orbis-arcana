@@ -16,7 +16,8 @@
               "rarities": [
                 "uncommon",
                 "rare",
-                "epic"
+                "epic",
+                "legendary"
               ],
               "schools": [
                 "orbisarcana:fire",

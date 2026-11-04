@@ -1,36 +1,36 @@
 {
   "school": "orbisarcana:ice",
-  "rarity": "orbisarcana:mythic",
+  "rarity": "orbisarcana:divine",
   "behavior": "orbisarcana:composite",
   "targeting": "self",
   "cast": {
     "mode": "charged",
-    "ticks": 50,
-    "min_ticks": 30
+    "ticks": 70,
+    "min_ticks": 42
   },
-  "cost": 47,
-  "cooldown_ticks": 900,
+  "cost": 80,
+  "cooldown_ticks": 2700,
   "primary_stat": "damage",
   "params": {
-    "radius": 6,
-    "damage": 14,
-    "freeze_ticks": 40
+    "radius": 7,
+    "damage": 24,
+    "freeze_ticks": 60
   },
   "milestones": {
     "5": {
       "params": {
-        "radius": 7
+        "radius": 8
       }
     },
     "10": {
       "params": {
-        "freeze_ticks": 70
+        "freeze_ticks": 90
       }
     },
     "15": {
       "params": {
-        "radius": 9,
-        "freeze_ticks": 90
+        "radius": 10,
+        "freeze_ticks": 120
       }
     }
   },

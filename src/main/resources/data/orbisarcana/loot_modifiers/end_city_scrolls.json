@@ -1,0 +1,18 @@
+{
+  "type": "neoforge:add_table",
+  "table": "orbisarcana:scrolls/end_city",
+  "condition": {
+    "type": "minecraft:all_of",
+    "terms": [
+      {
+        "type": "minecraft:any_of",
+        "terms": [
+          {
+            "type": "neoforge:loot_table_id",
+            "loot_table_id": "minecraft:chests/end_city_treasure"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -23,7 +23,7 @@
 - `./gradlew runClientShot` — визуальная проверка: грузит `run/saves/devtest`, ставит стенд кругов, делает скриншоты `run/screenshots/devshot_<mode>.png` и выходит (`client/DevShot`). Iris/Sodium/шейдерпак лежат в `run/mods`, `run/shaderpacks` (локально). Скриншоты смотреть через Read.
 - `./gradlew :runClientShot -PwithCompat -Pshots=jei,jade` — клиент с JEI, Jade и Curios (`-PwithCompat`).
 - `./gradlew runClient -PwithCurios` — dev-запуск с Curios (по умолчанию без него: Curios ломает мок-игроков GameTest).
-- `node tools/new-spell.cjs <id> --school fire --shape bolt|beam|cone|burst|nova|target|self|zone|aura|wall|meteor --effects damage,ignite [--rarity common] [--mode charged|instant|channel] --ru ... --en ... --ru-desc ... --en-desc ...` — заготовка составного заклинания (JSON, круг, lang); формат `compose` — `spell/SpellCompose`.
+- `node tools/new-spell.cjs <id> --school fire --shape bolt|beam|cone|burst|nova|target|self|zone|aura|wall|meteor --effects damage,ignite [--rarity common|uncommon|rare|epic|legendary|mythic|ancient|divine] [--mode charged|instant|channel] --ru ... --en ... --ru-desc ... --en-desc ...` — заготовка составного заклинания (JSON, круг, lang); формат `compose` — `spell/SpellCompose`.
 - `node tools/balance.cjs` — баланс-таблица `docs/BALANCE.md` (коридоры §14.11, DPS школ против меча); запускать после правки чисел заклинаний.
 - `node tools/lang-check.cjs` — аудит локализации RU/EN (запускать после добавления текстов).
 - `node tools/textures.cjs` — пересобрать PNG-текстуры предметов и блоков.
@@ -40,7 +40,7 @@
 - `node tools/vfx-effects.cjs` — объёмные эффекты (раздел MESHES: sphere/cylinder/cone/ring/spiral/trail, `client/vfx/VfxMesh`) и стоковые эффекты (`art/vfx/particles`, затем `node tools/art.cjs`); на сервере — `Fx.<ВИД>.play(level, x, y, z, count, dx, dy, dz[, tint])` вместо `sendParticles`. Проверка: `-Pshots=gallery_setup,stock`.
 - 3D-модели: спецификации `art/specs/<id>.json` (генераторы `node tools/specs/<foci|accessories|misc|world>.cjs`, общие помощники — `tools/specs/lib.cjs`) → в Blockbench (MCP `risky_eval`) `eval(require('fs').readFileSync('<repo>/tools/blockbench/build-model.js','utf8'))('<repo>','<id>')` → `.bbmodel` + GeckoLib-экспорт → `node tools/art.cjs`. Положения 3D-предметов в руке/GUI — `node tools/foci-display.cjs`.
 - `node tools/structures.cjs` — пересобрать NBT-шаблоны структур (обсерватория, скрипторий).
-- `./gradlew :runGameTestServer` — GameTest-ы мода; без `:` запускаются и тесты `example-addon` (мод + аддон, 97).
+- `./gradlew :runGameTestServer` — GameTest-ы мода; без `:` запускаются и тесты `example-addon` (мод + аддон, 98).
 - `./gradlew runGameTestServer` — все GameTest-ы (`gametest/OrbisGameTests`), код выхода ≠ 0 при падении. Итог в логе: `All N required tests passed`.
 
 ## Особенности API 26.3 (найдено на практике)

@@ -18,7 +18,39 @@
               "rarities": [
                 "uncommon",
                 "rare",
-                "epic"
+                "epic",
+                "legendary",
+                "mythic"
+              ],
+              "schools": [
+                "orbisarcana:fire",
+                "orbisarcana:earth",
+                "orbisarcana:water",
+                "orbisarcana:air",
+                "orbisarcana:ice",
+                "orbisarcana:lightning",
+                "orbisarcana:nature"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.08
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:spell_scroll",
+          "modifier": [
+            {
+              "type": "orbisarcana:random_spell",
+              "rarities": [
+                "ancient"
               ],
               "schools": [
                 "orbisarcana:fire",

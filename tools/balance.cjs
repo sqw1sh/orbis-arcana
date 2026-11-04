@@ -22,7 +22,11 @@ const CORRIDOR = {
   uncommon: { mana: [12, 18], cast: [0.5, 1], cd: [4, 8], dmg: [6, 9] },
   rare: { mana: [15, 25], cast: [0.6, 1.2], cd: [6, 12], dmg: [8, 11] },
   epic: { mana: [25, 35], cast: [1, 1.5], cd: [10, 20], dmg: [10, 14] },
+  // §14.11 gives legendary no damage and stops at mythic: the gaps follow the power budget of §5.4 (D51)
+  legendary: { mana: [30, 45], cast: [1.2, 2], cd: [20, 40], dmg: [12, 16] },
   mythic: { mana: [40, 55], cast: [2, 3], cd: [30, 60], dmg: [14, 20] },
+  ancient: { mana: [55, 70], cast: [2.5, 3.5], cd: [60, 120], dmg: [18, 24] },
+  divine: { mana: [70, 90], cast: [3, 4], cd: [90, 180], dmg: [22, 30] },
 };
 // Spells whose role puts them outside a corridor on purpose (§14 table): not flagged. Channels deal their damage over the
 // whole hold, so a per-cast number does not compare; a toggle's cooldown only starts when it is switched off.

@@ -1,0 +1,85 @@
+{
+  "length": 3.2,
+  "loudness": -11,
+  "variants": 2,
+  "layers": [
+    {
+      "type": "saw",
+      "freq": 55,
+      "lowpass": 700,
+      "start": 0,
+      "length": 3,
+      "attack": 1.2000000000000002,
+      "release": 0.8999999999999999,
+      "gain": 0.3,
+      "vibrato": [
+        4,
+        15
+      ],
+      "drive": 1.4
+    },
+    {
+      "type": "saw",
+      "freq": 82.5,
+      "lowpass": 700,
+      "start": 0.1,
+      "length": 2.8,
+      "attack": 1.1199999999999999,
+      "release": 0.84,
+      "gain": 0.25,
+      "vibrato": [
+        4,
+        15
+      ],
+      "drive": 1.4
+    },
+    {
+      "type": "saw",
+      "freq": 110,
+      "lowpass": 700,
+      "start": 0.2,
+      "length": 2.6,
+      "attack": 1.04,
+      "release": 0.78,
+      "gain": 0.2,
+      "vibrato": [
+        4,
+        15
+      ],
+      "drive": 1.4
+    },
+    {
+      "type": "noise",
+      "lowpass": [
+        400,
+        2000
+      ],
+      "start": 1.2,
+      "length": 1.8,
+      "attack": 0.8,
+      "decay": 0.6,
+      "gain": 0.7,
+      "drive": 2.5
+    },
+    {
+      "type": "crackle",
+      "density": 150,
+      "lowpass": 3500,
+      "start": 1.4,
+      "length": 1.7,
+      "attack": 0.3,
+      "decay": 0.6,
+      "gain": 0.5
+    }
+  ],
+  "reverb": {
+    "size": 0.8,
+    "mix": 0.35
+  },
+  "compress": {
+    "threshold": -14,
+    "ratio": 3,
+    "attack": 0.003,
+    "release": 0.12
+  }
+}

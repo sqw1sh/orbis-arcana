@@ -1,0 +1,81 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:ancient",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 60,
+    "min_ticks": 36
+  },
+  "cost": 62,
+  "cooldown_ticks": 1800,
+  "primary_stat": "damage",
+  "params": {
+    "range": 20,
+    "radius": 5,
+    "duration_ticks": 160,
+    "pulse_ticks": 10,
+    "damage": 1.3,
+    "ignite_ticks": 80,
+    "weaken_ticks": 100
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 6
+      }
+    },
+    "10": {
+      "params": {
+        "weaken_ticks": 160
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 7,
+        "damage": 1.6
+      }
+    }
+  },
+  "circle": "orbisarcana:primordial_flame",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "zone",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "ignite"
+      },
+      {
+        "type": "weaken"
+      }
+    ],
+    "visuals": {
+      "cast": [
+        "orbisarcana:hand_flare"
+      ],
+      "travel": [
+        "orbisarcana:ancient_runes_fire",
+        "orbisarcana:scorch_floor",
+        "orbisarcana:ash_ring"
+      ],
+      "impact": [
+        "orbisarcana:fire_column",
+        "orbisarcana:fireball_wave",
+        "orbisarcana:fireball_cinders"
+      ],
+      "apogee_travel": [
+        "orbisarcana:apogee_crown"
+      ],
+      "apogee_impact": [
+        "orbisarcana:apogee_flare"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.primordial_flame.release",
+      "impact_sound": "orbisarcana:spell.primordial_flame.impact"
+    }
+  }
+}

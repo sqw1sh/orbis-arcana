@@ -546,6 +546,14 @@ Object.assign(MESHES, {
     uv: [3, 1], scroll: [0, -1], spin: 40, fresnel: 1.2, color: burst([0.9, 1, 1, 1], [0.4, 0.75, 1, 0]) },
 });
 
+// ancient spells (all 8 rarities, D51): a slow ring of age-old runes on the ground, every pulse of the zone
+Object.assign(MESHES, {
+  ancient_runes_fire: { shape: "ring", texture: E("runes"), life: 0.55, segments: 48, radius: 2.1, thickness: 0.7, uv: [8, 1], spin: 12,
+    color: hold([1, 0.6, 0.25, 0.85], 0.2, 0.75) },
+  ancient_runes_ice: { shape: "ring", texture: E("runes"), life: 0.55, segments: 48, radius: 2.1, thickness: 0.7, uv: [8, 1], spin: -12,
+    color: hold([0.75, 0.92, 1, 0.85], 0.2, 0.75) },
+});
+
 for (const [id, m] of Object.entries(MESHES)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify({ "orbisarcana:mesh": m }, null, "\t") + "\n");
 
 for (const [id, o] of Object.entries(EFFECTS)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify(effect(id, o), null, "\t") + "\n");

@@ -1,0 +1,28 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "condition": {
+        "type": "minecraft:random_chance",
+        "chance": 0.12
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "orbisarcana:spell_scroll",
+          "modifier": [
+            {
+              "type": "orbisarcana:random_spell",
+              "rarities": [
+                "legendary",
+                "ancient",
+                "divine"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "random_sequence": "orbisarcana:scrolls/end_city"
+}

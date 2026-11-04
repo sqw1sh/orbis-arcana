@@ -1,24 +1,24 @@
 {
   "school": "orbisarcana:ice",
-  "rarity": "orbisarcana:epic",
+  "rarity": "orbisarcana:mythic",
   "behavior": "orbisarcana:composite",
   "targeting": "ground",
   "cast": {
     "mode": "charged",
-    "ticks": 25,
-    "min_ticks": 15
+    "ticks": 50,
+    "min_ticks": 30
   },
-  "cost": 30,
-  "cooldown_ticks": 300,
+  "cost": 48,
+  "cooldown_ticks": 900,
   "primary_stat": "damage",
   "params": {
     "range": 20,
-    "length": 7,
+    "length": 9,
     "width": 1.5,
     "height": 3,
-    "duration_ticks": 120,
+    "duration_ticks": 160,
     "pulse_ticks": 10,
-    "damage": 1,
+    "damage": 1.2,
     "slow_ticks": 60,
     "slow_level": 2,
     "knockback": 1
@@ -26,17 +26,18 @@
   "milestones": {
     "5": {
       "params": {
-        "length": 10
+        "length": 12
       }
     },
     "10": {
       "params": {
-        "slow_ticks": 90
+        "slow_ticks": 100
       }
     },
     "15": {
       "params": {
-        "duration_ticks": 180
+        "duration_ticks": 240,
+        "damage": 1.4
       }
     }
   },

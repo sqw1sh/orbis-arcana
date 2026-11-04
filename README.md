@@ -6,7 +6,7 @@ Magic mod for **Minecraft Java 26.3 (NeoForge 26.3.0.100+)**. Spells are found a
 
 ## Features
 
-- **65 spells in 10 schools** — Fire, Earth, Water, Air, Ice, Lightning, Nature and the higher schools Light, Dark, Astral. Instant, charged, channelled and toggled casts; projectiles, beams, cones, waves, zones, walls, traps, dashes, teleports, auras, curses, summons.
+- **67 spells in 10 schools and 8 rarities** — Fire, Earth, Water, Air, Ice, Lightning, Nature and the higher schools Light, Dark, Astral. Instant, charged, channelled and toggled casts; projectiles, beams, cones, waves, zones, walls, traps, dashes, teleports, auras, curses, summons.
 - **Mastery** — useful casts (damage, healing, control) level a spell from 1 to 15; milestones at 5/10/15 add new effects.
 - **Schools and resonance** — bind to a school at the Resonance Altar; resonance unlocks talents and the school's **Echo**, a passive power of its own (Heat, Flow, Bulwark, Impulse, Frost, Conductivity, Sprouting, Radiance, Dusk, Constellation).
 - **Spell visuals** — a particle and volumetric effects engine: textured spheres, beams, cones, shockwave rings, spirals and ribbon trails with scrolling energy, plus camera shake on heavy hits. Each spell has its own effects, a release sound, an impact sound per school, and a casting pose seen in first and third person.
