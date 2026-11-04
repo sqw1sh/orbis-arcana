@@ -1,0 +1,54 @@
+{
+	"orbisarcana:mesh": {
+		"shape": "cylinder",
+		"texture": "textures/vfx/energy/runes",
+		"life": 0.55,
+		"segments": 32,
+		"rings": 2,
+		"radius": 1,
+		"height": 0.6,
+		"uv": [
+			4,
+			1
+		],
+		"spin": 40,
+		"color": [
+			[
+				0,
+				[
+					1,
+					0.88,
+					0.5,
+					0
+				]
+			],
+			[
+				0.2,
+				[
+					1,
+					0.88,
+					0.5,
+					0.8
+				]
+			],
+			[
+				0.75,
+				[
+					1,
+					0.88,
+					0.5,
+					0.8
+				]
+			],
+			[
+				1,
+				[
+					1,
+					0.88,
+					0.5,
+					0
+				]
+			]
+		]
+	}
+}

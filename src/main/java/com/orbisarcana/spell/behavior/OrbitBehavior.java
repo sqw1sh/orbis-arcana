@@ -35,6 +35,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class OrbitBehavior {
+    /** Volumetric effects: a small sphere of stars when a star catches something. */
+    private static final Identifier NOVA = Vfx.id("star_nova");
     /** Signature effects (tools/vfx-effects.cjs): the orbiting stars, their beams of starlight, the burst of a catch. */
     private static final Identifier STAR = Vfx.id("orbit_star"), CORE = Vfx.id("star_core"), GLOW = Vfx.id("star_glow"), BURST = Vfx.id("star_burst");
     private static final double CATCH_RADIUS = 1.0;
@@ -144,6 +146,7 @@ public final class OrbitBehavior {
             MasteryService.award(p, o.spell, 1);
             Fx.TWINKLE.play(level, at.x, at.y, at.z, 6, 0.1, 0.1, 0.1);
             Vfx.play(level, BURST, at, Vec3.ZERO, 0, 1f);
+            Vfx.play(level, NOVA, at, Vec3.ZERO, 0, 0.4f);
             if (o.reflect) {
                 proj.setDeltaMovement(proj.getDeltaMovement().scale(-1));
                 proj.setOwner(p);

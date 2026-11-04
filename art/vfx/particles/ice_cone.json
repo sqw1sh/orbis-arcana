@@ -1,0 +1,28 @@
+{
+	"orbisarcana:mesh": {
+		"shape": "cone",
+		"texture": "textures/vfx/energy/ice",
+		"life": 0.1,
+		"axis": "forward",
+		"segments": 6,
+		"rings": 1,
+		"radius": 0.2,
+		"radius_top": 0.01,
+		"height": 1.3,
+		"uv": [
+			1,
+			1
+		],
+		"color": [
+			[
+				0,
+				[
+					0.75,
+					0.95,
+					1,
+					0.95
+				]
+			]
+		]
+	}
+}

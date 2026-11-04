@@ -29,6 +29,8 @@ import net.minecraft.world.phys.Vec3;
  * ally_heal (10: heals allies the beam crosses), finale (15: undead are blinded, the end of the channel flashes).
  */
 final class RayBehavior implements ChannelBehavior {
+    /** Volumetric effects: the cylinder of light along the beam. */
+    private static final Identifier BEAM = Vfx.id("light_beam");
     /** Signature effects (tools/vfx-effects.cjs): the beam's core and glow, its flare, the finale's burst and ring. */
     private static final Identifier CORE = Vfx.id("ray_core"), GLOW = Vfx.id("ray_glow"), HIT = Vfx.id("ray_hit"),
             BURST = Vfx.id("dawn_burst"), RING = Vfx.id("dawn_ring");
@@ -130,6 +132,7 @@ final class RayBehavior implements ChannelBehavior {
         if (len < 0.3) return;
         // one beam from the hand to where it stops (scaled to its length), a flare there, a few motes along it
         Vec3 mid = start.add(d.scale(0.5));
+        Vfx.play(ctx.level(), BEAM, start, d, 0, (float) len);
         Vfx.play(ctx.level(), CORE, mid, d, 0, (float) len);
         Vfx.play(ctx.level(), GLOW, mid, d, 0, (float) len);
         Vfx.play(ctx.level(), HIT, to, Vec3.ZERO, 0, 1f);

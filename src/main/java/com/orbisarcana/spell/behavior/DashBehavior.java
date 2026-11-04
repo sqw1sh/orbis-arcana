@@ -22,6 +22,8 @@ import net.minecraft.world.phys.Vec3;
  * Velocity is tuned so the travelled distance roughly matches {@code distance} on flat ground.
  */
 final class DashBehavior {
+    /** Volumetric effects: the ribbon left behind the caster. */
+    private static final Identifier TRAIL = Vfx.id("dash_trail");
     /** Signature effects (tools/vfx-effects.cjs): a stream of flame or wind that follows the caster for a moment. */
     private static final Identifier FLAMES = Vfx.id("dash_flames"), WIND = Vfx.id("dash_wind");
     /** Horizontal speed per block of distance, compensating ground friction. */
@@ -45,6 +47,7 @@ final class DashBehavior {
         player.syncVelocity = true;
         boolean fire = ctx.spell().school().equals(Schools.FIRE);
         Vfx.attach(player, fire ? FLAMES : WIND, 0, 1f);
+        Vfx.attach(player, TRAIL, fire ? 0xFF8A3C : 0, 1f);
         (fire ? Fx.FLAME : Fx.CLOUD).play(ctx.level(), player.getX(), player.getY() + 0.5, player.getZ(), 15, 0.3, 0.3, 0.3);
 
         MasteryService.onMove(player, ctx.spellId(), distance);

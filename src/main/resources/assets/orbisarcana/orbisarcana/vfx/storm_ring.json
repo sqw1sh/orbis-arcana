@@ -1,0 +1,70 @@
+{
+	"orbisarcana:mesh": {
+		"shape": "ring",
+		"texture": "textures/vfx/energy/electric",
+		"life": 0.45,
+		"segments": 40,
+		"radius": [
+			[
+				0,
+				0.4
+			],
+			[
+				1,
+				4
+			]
+		],
+		"thickness": [
+			[
+				0,
+				1
+			],
+			[
+				1,
+				0.3
+			]
+		],
+		"uv": [
+			8,
+			1
+		],
+		"scroll": [
+			2,
+			0
+		],
+		"color": [
+			[
+				0,
+				[
+					0.85,
+					0.95,
+					1,
+					1
+				]
+			],
+			[
+				0.5,
+				[
+					0.4,
+					0.6,
+					1,
+					0.6
+				]
+			],
+			[
+				1,
+				[
+					0.4,
+					0.6,
+					1,
+					0
+				]
+			]
+		],
+		"shake": {
+			"strength": 1.6,
+			"radius": 16,
+			"time": 0.35
+		}
+	}
+}

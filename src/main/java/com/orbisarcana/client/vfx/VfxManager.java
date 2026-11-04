@@ -121,7 +121,7 @@ public final class VfxManager {
         if (mc.level == null || mc.gameRenderer.mainCamera().position().distanceToSqr(pos) > MAX_DISTANCE * MAX_DISTANCE) return;
         VfxMesh mesh = VfxLoader.mesh(effect);
         if (mesh != null) {
-            VfxMeshes.spawn(mesh, pos, forward, tint, scale, attachEntity);
+            VfxMeshes.spawn(mesh, pos, forward, tint, scale, attachEntity, density); // for meshes, density stretches the life
             return;
         }
         VfxEffect fx = VfxLoader.get(effect);

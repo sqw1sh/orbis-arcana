@@ -44,13 +44,16 @@ public final class VfxMeshes {
         double x, y, z, px, py, pz;
         final Vector3f ax = new Vector3f(1, 0, 0), ay = new Vector3f(0, 1, 0), az = new Vector3f(0, 0, 1);
         final float tr, tg, tb, scale;
+        /** The effect's life in seconds: its own, times the server's density (zones last as long as the spell). */
+        final float life;
         final int attach;
         float age;
         boolean stopped;
         final Deque<Vec3> trail = new ArrayDeque<>();
 
-        Instance(VfxMesh m, Vec3 pos, Vec3 forward, int tint, float scale, int attach) {
+        Instance(VfxMesh m, Vec3 pos, Vec3 forward, int tint, float scale, int attach, float lifeScale) {
             this.m = m;
+            this.life = m.life * lifeScale;
             x = px = pos.x;
             y = py = pos.y;
             z = pz = pos.z;
@@ -70,13 +73,13 @@ public final class VfxMeshes {
 
         boolean done() {
             if (m.loop) return stopped && trail.isEmpty();
-            return age >= m.life && (m.shape != VfxMesh.Shape.TRAIL || trail.isEmpty());
+            return age >= life && (m.shape != VfxMesh.Shape.TRAIL || trail.isEmpty());
         }
     }
 
     /** Starts {@code mesh} (the server's VfxPlay lands here for mesh effects). */
-    static void spawn(VfxMesh mesh, Vec3 pos, Vec3 forward, int tint, float scale, int attach) {
-        INSTANCES.add(new Instance(mesh, pos, forward, tint, scale <= 0 ? 1 : scale, attach));
+    static void spawn(VfxMesh mesh, Vec3 pos, Vec3 forward, int tint, float scale, int attach, float lifeScale) {
+        INSTANCES.add(new Instance(mesh, pos, forward, tint, scale <= 0 ? 1 : scale, attach, lifeScale <= 0 ? 1 : lifeScale));
         if (mesh.shakeStrength > 0) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null) return;
@@ -113,7 +116,7 @@ public final class VfxMeshes {
             }
             if (i.m.loop && i.attach < 0 && i.age > LOOSE_LOOP_SECONDS) i.stopped = true;
             if (i.m.shape == VfxMesh.Shape.TRAIL) {
-                if (!i.stopped && (i.m.loop || i.age < i.m.life)) i.trail.addFirst(new Vec3(i.px, i.py, i.pz));
+                if (!i.stopped && (i.m.loop || i.age < i.life)) i.trail.addFirst(new Vec3(i.px, i.py, i.pz));
                 else if (!i.trail.isEmpty()) i.trail.removeLast(); // the tail catches up once the head is gone
                 while (i.trail.size() > i.m.samples) i.trail.removeLast();
             }
@@ -167,7 +170,7 @@ public final class VfxMeshes {
     private static void draw(Instance i, Vec3 cam, float partial, float brightness, PoseStack.Pose pose, VertexConsumer buf) {
         VfxMesh m = i.m;
         float time = i.age + partial * DT;
-        float t = m.loop ? (m.life > 0 ? (time % m.life) / m.life : 0) : Math.min(1, time / m.life);
+        float t = m.loop ? (i.life > 0 ? (time % i.life) / i.life : 0) : Math.min(1, time / i.life);
         float[] c = new float[4];
         m.color(t, c);
         Draw d = new Draw(i, buf, pose, cam, partial, brightness, c, time, t);
@@ -175,7 +178,7 @@ public final class VfxMeshes {
             d.trail();
             return;
         }
-        if (!m.loop && time > m.life) return;
+        if (!m.loop && time > i.life) return;
         switch (m.shape) {
             case SPHERE -> d.sphere();
             case CYLINDER, CONE -> d.tube();
@@ -224,8 +227,8 @@ public final class VfxMeshes {
         }
 
         void vertex(float lx, float ly, float lz, float nx, float ny, float nz, float u, float v, float fade) {
-            float s = i.scale;
-            place(lx * s, ly * s, lz * s, p);
+            float s = i.scale, across = m.stretch ? 1 : s;
+            place(lx * across, ly * s, lz * across, p);
             place(nx, ny, nz, n);
             float alpha = a * fade;
             if (m.fresnel != 0) {

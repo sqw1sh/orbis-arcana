@@ -38,6 +38,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class DartBehavior {
+    /** Volumetric effects: the shard of shadow in flight, the shadows collapsing on a hit. */
+    private static final Identifier SHARD = Vfx.id("dart_cone"), COLLAPSE = Vfx.id("dusk_sphere");
     /** Signature effects (tools/vfx-effects.cjs): the violet streak and its smoke, the shadows rushing in on a hit. */
     private static final Identifier CORE = Vfx.id("dart_core"), SHADE = Vfx.id("dart_shade"), IMPLODE = Vfx.id("dusk_implode"),
             RING = Vfx.id("dusk_ring");
@@ -134,7 +136,10 @@ final class DartBehavior {
         d.pos = target != null ? from.add(next.subtract(from).normalize().scale(Math.sqrt(best))) : next;
         d.travelled += c.speed();
         Vec3 trail = d.pos.subtract(from);
-        if (trail.lengthSqr() > 1.0E-6) Vfx.play(c.level(), CORE, from.add(trail.scale(0.5)), trail, 0, 1f);
+        if (trail.lengthSqr() > 1.0E-6) {
+            Vfx.play(c.level(), CORE, from.add(trail.scale(0.5)), trail, 0, 1f);
+            Vfx.play(c.level(), SHARD, d.pos.subtract(trail.normalize().scale(1.4)), trail, 0, 1f);
+        }
         Vfx.play(c.level(), SHADE, d.pos, Vec3.ZERO, 0, 1f);
         if (target != null) {
             hit(d, owner, target);
@@ -160,6 +165,7 @@ final class DartBehavior {
         Vec3 p = target.getBoundingBox().getCenter();
         Fx.SHADOW.play(c.level(), p.x, p.y, p.z, 10, 0.2, 0.3, 0.2);
         Vfx.play(c.level(), IMPLODE, p, Vec3.ZERO, 0, 1f);
+        Vfx.play(c.level(), COLLAPSE, p, Vec3.ZERO, 0, 1f);
         com.orbisarcana.spell.Sfx.impact(c.level(), p, com.orbisarcana.school.Schools.DARK, 0.7f);
         Vfx.play(c.level(), RING, p, Vec3.ZERO, 0, 1f);
     }

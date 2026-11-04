@@ -35,6 +35,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class CurseBehavior {
+    /** Volumetric effects: shadows closing on the cursed one, a ring of runes over its head. */
+    private static final Identifier COLLAPSE = Vfx.id("dusk_sphere"), HALO = Vfx.id("curse_halo");
     /** Signature effects (tools/vfx-effects.cjs): shadows closing on the cursed one, a violet rune over its head. */
     private static final Identifier IMPLODE = Vfx.id("dusk_implode"), RUNE = Vfx.id("curse_rune");
     private record Curse(ServerLevel level, UUID caster, Identifier spell, Identifier school, int castId, long until,
@@ -57,6 +59,7 @@ public final class CurseBehavior {
         EchoService.markDusk(caster, target);
         Fx.SHADOW.play(curse.level(), target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 15, 0.3, 0.4, 0.3);
         Vfx.play(curse.level(), IMPLODE, target.position().add(0, target.getBbHeight() * 0.6, 0), Vec3.ZERO, 0, 1f);
+        Vfx.play(curse.level(), COLLAPSE, target.position().add(0, target.getBbHeight() * 0.6, 0), Vec3.ZERO, 0, 1f);
     }
 
     public static boolean isCursed(LivingEntity e) {
@@ -87,7 +90,7 @@ public final class CurseBehavior {
                 }
             }
             if (now % 8 == 0) Fx.SHADOW.play(level, t.getX(), t.getY() + t.getBbHeight() * 0.8, t.getZ(), 2, 0.2, 0.2, 0.2);
-            if (now % 16 == 0) Vfx.play(level, RUNE, t.position().add(0, t.getBbHeight() + 0.5, 0), Vec3.ZERO, 0, 1f);
+            if (now % 16 == 0) Vfx.play(level, HALO, t.position().add(0, t.getBbHeight() + 0.4, 0), Vec3.ZERO, 0, 1f);
         }
     }
 

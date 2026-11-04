@@ -247,6 +247,37 @@ public final class DevShot {
                     com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("curse_rune"), o.add(-1.5, 2, 6), zero, 0, 1f);
                 });
             }),
+            new Scene("volumes", () -> {
+                // volumetric effects of the schools, side by side: vortex, water sphere, wind dome, column of light,
+                // sphere of stars, electric cage, frost wave, water cone, beam of light
+                Minecraft mc = Minecraft.getInstance();
+                mc.gui.setScreen(null);
+                mc.player.setYRot(0);
+                mc.player.setXRot(14);
+            }, () -> {
+                Minecraft mc = Minecraft.getInstance();
+                var server = mc.getSingleplayerServer();
+                if (server != null) server.execute(() -> {
+                    ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+                    if (sp == null) return;
+                    var level = sp.level();
+                    var o = sp.position();
+                    var zero = net.minecraft.world.phys.Vec3.ZERO;
+                    java.util.function.BiConsumer<String, Object[]> fx = (id, a) -> com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id(id),
+                            (net.minecraft.world.phys.Vec3) a[0], a.length > 2 ? (net.minecraft.world.phys.Vec3) a[2] : zero, 0, (Float) a[1]);
+                    fx.accept("ash_vortex", new Object[] {o.add(6, 0, 11), 2.5f});
+                    fx.accept("ash_floor", new Object[] {o.add(6, 0.05, 11), 2.5f});
+                    fx.accept("water_sphere", new Object[] {o.add(2.5, 1.2, 9), 1.3f});
+                    fx.accept("wind_dome", new Object[] {o.add(-1, 0, 11), 2.5f});
+                    fx.accept("judgment_column", new Object[] {o.add(-5.5, 0, 12), 1f});
+                    fx.accept("star_nova", new Object[] {o.add(-3, 1.5, 7), 0.8f});
+                    fx.accept("shell_cage", new Object[] {o.add(0.5, 1, 6), 1f});
+                    fx.accept("frost_wave", new Object[] {o.add(0, 0.1, 8), 1f});
+                    var dir = new net.minecraft.world.phys.Vec3(-1, 0.05, 0.25).normalize();
+                    fx.accept("water_cone", new Object[] {o.add(4, 1.4, 5), 1f, dir});
+                    fx.accept("light_beam", new Object[] {o.add(-6, 2.5, 6), 8f, new net.minecraft.world.phys.Vec3(1, -0.05, 0.4).normalize()});
+                });
+            }),
             new Scene("cast_anim", () -> fakeCast(true)),
             new Scene("cast_anim_fp", () -> fakeCast(false)),
             new Scene("vfx_cleanup", () -> {

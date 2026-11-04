@@ -37,6 +37,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class WaveBehavior {
+    /** Volumetric effects: the wave of dust from the eruption. */
+    private static final Identifier QUAKE = Vfx.id("earth_wave");
     private static final double SPEED = 1.0;
     /** Signature effects (tools/vfx-effects.cjs): stone spikes thrusting up, dust thrown along the ground. */
     private static final Identifier SPIKES = Vfx.id("stone_spikes"), DUST = Vfx.id("earth_dust");
@@ -149,6 +151,7 @@ final class WaveBehavior {
         Fx.DEBRIS.play(w.level, w.pos.x, w.pos.y + 0.8, w.pos.z, 50, radius * 0.5, 0.8, radius * 0.5);
         // the eruption at the end of the line: a ring of bigger spikes, a wave of dust, the earth's impact
         com.orbisarcana.spell.Sfx.impact(w.level, w.pos, com.orbisarcana.school.Schools.EARTH, 1.2f);
+        Vfx.play(w.level, QUAKE, w.pos.add(0, 0.1, 0), Vec3.ZERO, 0, (float) Math.max(1, radius / 2.5));
         Vfx.play(w.level, SPIKES, w.pos.add(0, 0.9, 0), Vec3.ZERO, 0, 1.3f, (float) radius * 0.6f, 1, (float) radius * 0.6f, 3);
         Vfx.play(w.level, DUST, w.pos.add(0, 0.2, 0), Vec3.ZERO, 0, 1.2f, (float) radius * 0.5f, 1, (float) radius * 0.5f, 2.5f);
     }

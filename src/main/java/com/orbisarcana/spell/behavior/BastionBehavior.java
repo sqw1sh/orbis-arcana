@@ -37,6 +37,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class BastionBehavior {
+    /** Volumetric effects: the wall shattering in a sphere and a wave of frost. */
+    private static final Identifier NOVA = Vfx.id("ice_nova"), WAVE = Vfx.id("frost_wave");
     /** Signature effects (tools/vfx-effects.cjs): frost bursting where the wall rises and when it shatters. */
     private static final Identifier FLASH = Vfx.id("ice_flash"), SHATTER = Vfx.id("ice_shatter"), PUFF = Vfx.id("ice_puff");
     private static final double SLOW_REACH = 1.5;
@@ -130,6 +132,8 @@ final class BastionBehavior {
         }
         Fx.FROST.play(w.level(), c.x, c.y + 1.2, c.z, 60, 2, 1, 2);
         Vfx.play(w.level(), FLASH, c.add(0, 1.2, 0), Vec3.ZERO, 0, 2f);
+        Vfx.play(w.level(), NOVA, c.add(0, 1.2, 0), Vec3.ZERO, 0, 2f);
+        Vfx.play(w.level(), WAVE, c.add(0, 0.1, 0), Vec3.ZERO, 0, 0.8f);
         Vfx.play(w.level(), SHATTER, c.add(0, 1.2, 0), Vec3.ZERO, 0, 1.6f, 1.5f, 1, 1.5f, 3);
         Vfx.play(w.level(), PUFF, c.add(0, 1, 0), Vec3.ZERO, 0, 2f);
         com.orbisarcana.spell.Sfx.impact(w.level(), c, com.orbisarcana.school.Schools.ICE, 1.3f);

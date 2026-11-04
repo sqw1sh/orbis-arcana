@@ -320,6 +320,97 @@ const MESHES = {
     thickness: [[0, 1.2], [1, 0.3]], uv: [6, 1], scroll: [0.8, 0], color: [[0, [1, 0.8, 0.4, 1]], [0.5, [1, 0.45, 0.1, 0.7]], [1, [0.6, 0.15, 0.03, 0]]],
     shake: { strength: 1.4, radius: 14, time: 0.35 } },
 };
+const E = n => "textures/vfx/energy/" + n;
+/** Colour keys that fade in at the start and out at the end of a life, holding rgba between. */
+const hold = (rgba, inT = 0.1, outT = 0.8) => [[0, [...rgba.slice(0, 3), 0]], [inT, rgba], [outT, rgba], [1, [...rgba.slice(0, 3), 0]]];
+/** Colour keys that start at rgba and fade out (bursts). */
+const burst = (rgba, end) => [[0, rgba], [0.5, [...end.slice(0, 3), rgba[3] * 0.6]], [1, [...end.slice(0, 3), 0]]];
+Object.assign(MESHES, {
+  // ---- fire ----
+  // Ash Spiral (once, life = the vortex): three arms of flame winding up, a ring of fire on the ground
+  ash_vortex: { shape: "spiral", texture: E("flame"), life: 1, segments: 40, arms: 3, turns: 1.4, radius: 1, radius_top: 0.25, height: 2.6,
+    thickness: 0.7, uv: [3, 1], scroll: [-1.5, 0], spin: 220, color: hold([1, 0.6, 0.18, 0.85]) },
+  ash_floor: { shape: "ring", texture: E("flame"), life: 1, segments: 40, radius: 0.55, thickness: 1.1, uv: [6, 1], scroll: [0.6, -1], spin: 90,
+    color: hold([1, 0.45, 0.1, 0.7]) },
+  fire_column: { shape: "cylinder", texture: E("flame"), life: 0.7, segments: 24, rings: 6, radius: [[0, 0.3], [0.2, 1.1], [1, 1.4]], height: [[0, 1], [0.2, 7], [1, 8]],
+    uv: [3, 2], scroll: [0, -3], spin: 120, fresnel: -0.6, color: burst([1, 0.85, 0.45, 1], [0.7, 0.2, 0.05, 0]), shake: { strength: 1.2, radius: 14, time: 0.4 } },
+  // ---- ice ----
+  // Ice Shard (every tick, pointing along its flight): a crystal cone; when it breaks, a sphere of frost bursting
+  ice_cone: { shape: "cone", texture: E("ice"), life: 0.1, axis: "forward", segments: 6, rings: 1, radius: 0.2, radius_top: 0.01, height: 1.3,
+    uv: [1, 1], color: [[0, [0.75, 0.95, 1, 0.95]]] },
+  ice_nova: { shape: "sphere", texture: E("ice"), life: 0.35, segments: 24, rings: 12, radius: [[0, 0.2], [1, 1.4]], uv: [2, 1], spin: 90, fresnel: 1.2,
+    color: burst([0.85, 0.97, 1, 1], [0.5, 0.8, 1, 0]) },
+  frost_wave: { shape: "ring", texture: E("ice"), life: 0.55, segments: 40, radius: [[0, 0.5], [1, 6]], thickness: [[0, 1.5], [1, 0.4]], uv: [8, 1],
+    color: burst([0.85, 0.97, 1, 1], [0.5, 0.8, 1, 0]), shake: { strength: 0.8, radius: 12, time: 0.3 } },
+  // Frost Pattern (once, life = the pattern): frozen ground glowing with cracks
+  frost_floor: { shape: "ring", texture: E("ice"), life: 1, segments: 40, radius: 0.5, thickness: 1, uv: [4, 1], spin: 6, color: hold([0.7, 0.92, 1, 0.55]) },
+  // ---- lightning ----
+  lightning_nova: { shape: "sphere", texture: E("electric"), life: 0.25, segments: 20, rings: 10, radius: [[0, 0.2], [1, 1.5]], uv: [2, 1], scroll: [3, 2],
+    fresnel: 0.8, color: burst([0.85, 0.95, 1, 1], [0.4, 0.6, 1, 0]) },
+  // Current Shell (re-sent while on): a cage of electricity around the body
+  shell_cage: { shape: "sphere", texture: E("electric"), life: 0.55, segments: 20, rings: 10, radius: 1.05, uv: [2, 1], scroll: [2.5, 1.5], spin: 150, fresnel: 1.2,
+    color: hold([0.65, 0.85, 1, 0.9], 0.2, 0.75) },
+  storm_ring: { shape: "ring", texture: E("electric"), life: 0.45, segments: 40, radius: [[0, 0.4], [1, 4]], thickness: [[0, 1], [1, 0.3]], uv: [8, 1], scroll: [2, 0],
+    color: burst([0.85, 0.95, 1, 1], [0.4, 0.6, 1, 0]), shake: { strength: 1.6, radius: 16, time: 0.35 } },
+  // ---- earth ----
+  earth_wave: { shape: "ring", texture: E("smoke"), life: 0.6, segments: 40, radius: [[0, 0.5], [1, 5]], thickness: [[0, 1.6], [1, 0.5]], uv: [8, 1],
+    additive: false, color: burst([0.55, 0.47, 0.38, 0.9], [0.45, 0.4, 0.34, 0]), shake: { strength: 1.5, radius: 14, time: 0.4 } },
+  // ---- water ----
+  // Tidal Stream (every other tick, along the look): a cone of rushing water from the hand
+  water_cone: { shape: "cone", texture: E("water"), life: 0.12, axis: "forward", segments: 20, rings: 4, radius: 0.15, radius_top: 1.6, height: 6,
+    uv: [2, 2], scroll: [0, -6], spin: 120, fresnel: 0.6, color: [[0, [0.45, 0.75, 1, 0.75]]] },
+  // Water Prison (re-sent while it holds): a sphere of water around the prisoner
+  water_sphere: { shape: "sphere", texture: E("water"), life: 0.6, segments: 24, rings: 12, radius: 1, uv: [2, 1], scroll: [0.3, -0.6], spin: 40, fresnel: 1.3,
+    color: hold([0.4, 0.72, 1, 0.85], 0.2, 0.75) },
+  water_burst: { shape: "sphere", texture: E("water"), life: 0.4, segments: 24, rings: 12, radius: [[0, 0.8], [1, 2.6]], uv: [2, 1], scroll: [0, -2], fresnel: 0.8,
+    color: burst([0.55, 0.85, 1, 0.9], [0.3, 0.6, 1, 0]) },
+  // ---- air ----
+  // Gust Dome (re-sent while it stands): the dome of wind, streaming round
+  wind_dome: { shape: "sphere", texture: E("wind"), life: 0.5, segments: 32, rings: 16, radius: 1, uv: [3, 2], scroll: [-1.2, 0], spin: 60, fresnel: 1.5,
+    color: hold([0.85, 1, 0.95, 0.55], 0.2, 0.75) },
+  wind_wave: { shape: "ring", texture: E("wind"), life: 0.45, segments: 40, radius: [[0, 0.5], [1, 5.5]], thickness: [[0, 1.4], [1, 0.4]], uv: [8, 1], scroll: [2, 0],
+    color: burst([0.92, 1, 0.97, 0.9], [0.8, 1, 0.9, 0]), shake: { strength: 1, radius: 12, time: 0.3 } },
+  // Flame Dash and Wind Step: a ribbon left behind the caster
+  dash_trail: { shape: "trail", texture: E("wind"), life: 0.45, samples: 8, width: [[0, 1.6], [1, 0.2]], uv: [1, 1], scroll: [-2, 0], color: [[0, [0.9, 1, 0.95, 0.75]]] },
+  // ---- nature ----
+  // Life Bloom (once, life = the zone): a living meadow glowing on the ground
+  meadow_floor: { shape: "ring", texture: E("energy"), life: 1, segments: 40, radius: 0.5, thickness: 1, uv: [4, 1], scroll: [0.15, -0.3], spin: 8,
+    color: hold([0.5, 1, 0.45, 0.45]) },
+  bloom_wave: { shape: "ring", texture: E("energy"), life: 0.6, segments: 40, radius: [[0, 0.4], [1, 4.5]], thickness: [[0, 1.2], [1, 0.3]], uv: [6, 1],
+    color: burst([0.6, 1, 0.5, 0.9], [0.3, 0.8, 0.3, 0]) },
+  // Root Shackles: roots winding up around the bound one
+  root_coil: { shape: "spiral", texture: E("smoke"), life: 1.2, additive: false, segments: 30, arms: 3, turns: 1.2, radius: 0.55, radius_top: 0.35,
+    height: [[0, 0.1], [0.2, 1.6], [1, 1.6]], thickness: 0.25, uv: [2, 1], color: hold([0.36, 0.26, 0.15, 1], 0.05, 0.8) },
+  // ---- light ----
+  // Dawn Ray (every other tick, from the hand along the beam): a cylinder of light with rays running along it
+  light_beam: { shape: "cylinder", texture: E("light"), life: 0.12, axis: "forward", stretch: true, segments: 16, rings: 3, radius: 0.32, height: 1,
+    uv: [2, 4], scroll: [0, -8], spin: 200, fresnel: -0.7, color: [[0, [1, 0.88, 0.5, 0.8]]] },
+  // Heaven's Judgment: a column of light from the sky
+  judgment_column: { shape: "cylinder", texture: E("light"), life: 0.8, segments: 28, rings: 6, radius: [[0, 0.2], [0.15, 1.6], [1, 2]], height: 16,
+    uv: [3, 3], scroll: [0, 6], spin: 60, fresnel: -0.5, color: burst([1, 0.95, 0.7, 1], [1, 0.75, 0.3, 0]), shake: { strength: 1.8, radius: 18, time: 0.45 } },
+  // Purifying Aura (re-sent while on): a band of runes turning around the caster
+  aura_band: { shape: "cylinder", texture: E("runes"), life: 0.55, segments: 32, rings: 2, radius: 1, height: 0.6, uv: [4, 1], spin: 40,
+    color: hold([1, 0.88, 0.5, 0.8], 0.2, 0.75) },
+  // ---- dark ----
+  // Shadow Dart (every tick, along its flight): a shard of shadow
+  dart_cone: { shape: "cone", texture: E("smoke"), life: 0.1, axis: "forward", segments: 8, rings: 1, radius: 0.16, radius_top: 0.01, height: 1.4,
+    uv: [1, 1], scroll: [0, -4], color: [[0, [0.65, 0.35, 1, 0.9]]] },
+  // shadows collapsing into a point (dart hits, Shadow Step, curses)
+  dusk_sphere: { shape: "sphere", texture: E("smoke"), life: 0.4, additive: false, segments: 20, rings: 10, radius: [[0, 1.5], [1, 0.05]], uv: [2, 1], scroll: [0, 2],
+    spin: -200, fresnel: 1, color: [[0, [0.18, 0.06, 0.28, 0]], [0.3, [0.16, 0.05, 0.25, 0.85]], [1, [0.1, 0.02, 0.15, 0.9]]] },
+  // Withering Curse (re-sent while it lasts): a turning ring of runes over the head
+  curse_halo: { shape: "ring", texture: E("runes"), life: 0.85, segments: 32, radius: 0.45, thickness: 0.3, uv: [3, 1], spin: 90, color: hold([0.7, 0.35, 1, 0.9]) },
+  // ---- astral ----
+  // Star Spike: a beam of starlight along the line
+  star_beam: { shape: "cylinder", texture: E("stars"), life: 0.45, axis: "forward", stretch: true, segments: 16, rings: 3, radius: [[0, 0.1], [0.15, 0.35], [1, 0.05]], height: 1,
+    uv: [2, 6], scroll: [0, -4], spin: 90, fresnel: -0.5, color: burst([0.85, 0.8, 1, 1], [0.5, 0.35, 1, 0]) },
+  // Constellation Shift and Guardian Orbit: a sphere of stars swelling, a ring of runes
+  star_nova: { shape: "sphere", texture: E("stars"), life: 0.5, segments: 24, rings: 12, radius: [[0, 0.3], [1, 2.4]], uv: [2, 1], spin: 60, fresnel: 1,
+    color: burst([0.8, 0.75, 1, 1], [0.45, 0.3, 1, 0]) },
+  astral_ring: { shape: "ring", texture: E("runes"), life: 0.7, segments: 40, radius: [[0, 0.5], [1, 3.5]], thickness: [[0, 0.6], [1, 0.3]], uv: [6, 1], spin: 60,
+    color: burst([0.8, 0.7, 1, 1], [0.5, 0.35, 1, 0]), shake: { strength: 0.8, radius: 12, time: 0.3 } },
+});
+
 for (const [id, m] of Object.entries(MESHES)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify({ "orbisarcana:mesh": m }, null, "\t") + "\n");
 
 for (const [id, o] of Object.entries(EFFECTS)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify(effect(id, o), null, "\t") + "\n");

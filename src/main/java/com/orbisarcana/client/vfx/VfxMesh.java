@@ -16,7 +16,7 @@ import net.minecraft.resources.Identifier;
  * as the particle effects, by the key {@code "orbisarcana:mesh"}; the server plays it like any effect.
  *
  * <pre>{ "orbisarcana:mesh": { "shape": "sphere|cylinder|cone|ring|spiral|trail", "texture": "textures/vfx/energy/flame",
- *   "additive": true, "life": s, "loop": false, "axis": "up|forward", "segments": n, "rings": n,
+ *   "additive": true, "life": s, "loop": false, "axis": "up|forward", "stretch": false, "segments": n, "rings": n,
  *   "radius": curve, "radius_top": curve, "height": curve, "thickness": curve, "turns": n, "arms": n, "samples": n,
  *   "uv": [u, v], "scroll": [u/s, v/s], "spin": deg/s, "fresnel": f (&gt; 0 rim, &lt; 0 core), "color": [[t, [r, g, b, a]], ...],
  *   "shake": { "strength": deg, "radius": blocks, "time": s } } }</pre>
@@ -51,7 +51,8 @@ final class VfxMesh {
     final Identifier id;
     final Shape shape;
     final Identifier texture;
-    final boolean additive, loop, alongForward;
+    /** stretch: the scale lengthens the shape along its axis only (beams scaled to their length keep their girth). */
+    final boolean additive, loop, alongForward, stretch;
     final float life, spin, fresnel, uScale, vScale, uScroll, vScroll, turns;
     final int segments, rings, arms, samples;
     final Curve radius, radiusTop, height, thickness, width;
@@ -68,6 +69,7 @@ final class VfxMesh {
         additive = !m.has("additive") || m.get("additive").getAsBoolean();
         loop = m.has("loop") && m.get("loop").getAsBoolean();
         alongForward = m.has("axis") && m.get("axis").getAsString().equals("forward");
+        stretch = m.has("stretch") && m.get("stretch").getAsBoolean();
         life = num(m, "life", 1);
         spin = num(m, "spin", 0);
         fresnel = num(m, "fresnel", 0);

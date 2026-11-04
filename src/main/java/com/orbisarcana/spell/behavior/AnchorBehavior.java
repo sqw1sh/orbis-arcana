@@ -33,6 +33,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class AnchorBehavior {
+    /** Volumetric effects: the storm ring where the lightning strikes. */
+    private static final Identifier STORM = Vfx.id("storm_ring");
     /** Signature effects (tools/vfx-effects.cjs): the rune on the ground while the anchor waits. */
     private static final Identifier RUNE = Vfx.id("anchor_rune");
     private static final int ARM_TICKS = 10;
@@ -118,6 +120,7 @@ final class AnchorBehavior {
             Arcs.draw(a.level(), sky, a.pos().add(0, 0.1, 0));
         }
         Arcs.strike(a.level(), a.pos().add(0, 0.5, 0));
+        Vfx.play(a.level(), STORM, a.pos().add(0, 0.1, 0), Vec3.ZERO, 0, (float) Math.max(1, a.radius() / 3));
         com.orbisarcana.spell.Sfx.impact(a.level(), a.pos(), a.school(), 1.5f);
         for (LivingEntity e : enemies(a, caster, a.radius())) hurt(a, caster, e, a.damage());
         if (a.stormTicks() > 0) STORMS.add(new Storm(a, a.level().getGameTime() + a.stormTicks()));

@@ -33,6 +33,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class DomeBehavior {
+    /** Volumetric effects: the dome of wind, the wave of its burst. */
+    private static final Identifier DOME = Vfx.id("wind_dome"), WAVE = Vfx.id("wind_wave");
     /** Signature effects (tools/vfx-effects.cjs): wind streaming over the dome, the ring of its burst. */
     private static final Identifier WIND = Vfx.id("dome_wind"), RING = Vfx.id("shock_ring"), WISPS = Vfx.id("wind_wisps");
     private static final double SHELL = 0.75;
@@ -122,6 +124,7 @@ final class DomeBehavior {
                 ally.addEffect(new MobEffectInstance(MobEffects.SPEED, ALLY_SPEED_TICKS, 0), caster);
             }
         }
+        if (now % 8 == 0) Vfx.play(d.level, DOME, d.center, Vec3.ZERO, 0, (float) d.radius);
         if (now % 4 == 0) {
             float r = (float) d.radius;
             Vfx.play(d.level, WIND, d.center, Vec3.ZERO, 0, 1f, r, r, r, 1.4f);
@@ -140,6 +143,7 @@ final class DomeBehavior {
         Fx.SHOCKWAVE.play(d.level, d.center.x, d.center.y + 1, d.center.z, 3, d.radius * 0.4, 0.5, d.radius * 0.4);
         Fx.CLOUD.play(d.level, d.center.x, d.center.y + 1, d.center.z, 40, d.radius * 0.5, 0.8, d.radius * 0.5);
         Vfx.play(d.level, RING, d.center.add(0, 1, 0), Vec3.ZERO, 0, (float) Math.max(1, d.radius / 2));
+        Vfx.play(d.level, WAVE, d.center.add(0, 0.1, 0), Vec3.ZERO, 0, (float) Math.max(1, d.radius / 3));
         Vfx.play(d.level, WISPS, d.center.add(0, 1, 0), Vec3.ZERO, 0, 1f, (float) d.radius, 1, (float) d.radius, 3);
         com.orbisarcana.spell.Sfx.impact(d.level, d.center, com.orbisarcana.school.Schools.AIR, 1.2f);
     }

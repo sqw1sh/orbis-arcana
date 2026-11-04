@@ -31,6 +31,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class ZoneBehavior {
+    /** Volumetric effects: the living meadow on the ground, the wave of its bloom. */
+    private static final Identifier MEADOW = Vfx.id("meadow_floor"), WAVE = Vfx.id("bloom_wave");
     /** Signature effects (tools/vfx-effects.cjs): petals drifting up from the meadow, its bloom. */
     private static final Identifier PETALS = Vfx.id("petals"), FLASH = Vfx.id("bloom_flash"), BURST = Vfx.id("bloom_burst");
     private static final int PULSE_TICKS = 20;
@@ -87,6 +89,7 @@ final class ZoneBehavior {
                 if (zone.finalBurst > 0) zone.alliesInside().forEach(p -> heal(zone, p, zone.finalBurst));
                 Fx.LEAF.play(level, zone.center.x, zone.center.y + 0.5, zone.center.z, 15, zone.radius / 2, 0.3, zone.radius / 2);
                 Vfx.play(level, FLASH, zone.center.add(0, 0.5, 0), Vec3.ZERO, 0, 1f);
+                Vfx.play(level, WAVE, zone.center.add(0, 0.1, 0), Vec3.ZERO, 0, (float) Math.max(1, zone.radius / 2.5));
                 Vfx.play(level, BURST, zone.center.add(0, 0.4, 0), Vec3.ZERO, 0, 1f, (float) zone.radius / 2, 1, (float) zone.radius / 2, 1);
                 return true;
             }
@@ -114,6 +117,7 @@ final class ZoneBehavior {
             for (int i = 0; i < points; i++) {
                 double a = Math.PI * 2 * i / points;
                 Fx.LEAF.play(zone.level, zone.center.x + Math.cos(a) * zone.radius, zone.center.y + 0.1, zone.center.z + Math.sin(a) * zone.radius, 1, 0, 0, 0);
+                if (zone.level.getGameTime() % 20 == 0) Vfx.mesh(zone.level, MEADOW, zone.center.add(0, 0.05, 0), Vec3.ZERO, 0, (float) zone.radius, 1.25f);
                 if (zone.level.getGameTime() % 8 == 0) Vfx.play(zone.level, PETALS, zone.center.add(0, 0.2, 0), Vec3.ZERO, 0, 1f, (float) zone.radius, 1, (float) zone.radius, 1);
             }
         }

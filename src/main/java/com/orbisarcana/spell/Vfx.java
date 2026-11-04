@@ -37,6 +37,11 @@ public final class Vfx {
         play(level, effect, pos, Vec3.ZERO, tint, 1f);
     }
 
+    /** A volumetric effect whose life is stretched {@code lifeScale} times (zones and channels last as long as the spell). */
+    public static void mesh(ServerLevel level, Identifier effect, Vec3 pos, Vec3 dir, int tint, float scale, float lifeScale) {
+        play(level, effect, pos, dir, tint, scale, 1, 1, 1, lifeScale);
+    }
+
     /** Plays {@code effect} following {@code entity} while it lives (trails, auras). */
     public static void attach(Entity entity, Identifier effect, int tint, float scale) {
         if (!(entity.level() instanceof ServerLevel level)) return;

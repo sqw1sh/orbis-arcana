@@ -38,6 +38,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class ShardBehavior {
+    /** Volumetric effects: the crystal of a shard in flight, the sphere of frost when it breaks. */
+    private static final Identifier CONE = Vfx.id("ice_cone"), NOVA = Vfx.id("ice_nova");
     /** Signature effects (tools/vfx-effects.cjs): the streak and mist of a shard in flight, the shatter on impact. */
     private static final Identifier STREAK = Vfx.id("ice_streak"), MIST = Vfx.id("ice_mist"), FLASH = Vfx.id("ice_flash"),
             SHATTER = Vfx.id("ice_shatter"), PUFF = Vfx.id("ice_puff");
@@ -133,7 +135,10 @@ final class ShardBehavior {
         s.pos = target != null ? from.add(next.subtract(from).normalize().scale(Math.sqrt(best))) : next;
         s.travelled += c.speed();
         Vec3 trail = s.pos.subtract(from);
-        if (trail.lengthSqr() > 1.0E-6) Vfx.play(c.level(), STREAK, from.add(trail.scale(0.5)), trail, 0, 1f);
+        if (trail.lengthSqr() > 1.0E-6) {
+            Vfx.play(c.level(), STREAK, from.add(trail.scale(0.5)), trail, 0, 1f);
+            Vfx.play(c.level(), CONE, s.pos.subtract(trail.normalize().scale(1.3)), trail, 0, 1f);
+        }
         Vfx.play(c.level(), MIST, s.pos, Vec3.ZERO, 0, 1f);
         if (target != null) {
             hit(s, owner, target);
@@ -149,6 +154,7 @@ final class ShardBehavior {
     /** A shard breaking: cold flash, ice splinters, a puff of frost. */
     private static void shatter(ServerLevel level, Vec3 at, float scale) {
         Vfx.play(level, FLASH, at, Vec3.ZERO, 0, scale);
+        Vfx.play(level, NOVA, at, Vec3.ZERO, 0, scale);
         Vfx.play(level, SHATTER, at, Vec3.ZERO, 0, scale);
         Vfx.play(level, PUFF, at, Vec3.ZERO, 0, scale);
         com.orbisarcana.spell.Sfx.impact(level, at, com.orbisarcana.school.Schools.ICE, 0.6f * scale);

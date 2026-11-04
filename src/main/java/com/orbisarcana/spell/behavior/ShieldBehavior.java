@@ -26,6 +26,8 @@ import net.minecraft.world.phys.Vec3;
  * Absorbed damage counts as Shield mastery XP (§7.2).
  */
 final class ShieldBehavior {
+    /** Volumetric effects: the wave of dust when the oath breaks. */
+    private static final Identifier QUAKE = Vfx.id("earth_wave");
     /** Signature effects (tools/vfx-effects.cjs): stone plates rising around the caster, dust, the burst. */
     private static final Identifier GUARD = Vfx.id("stone_guard"), DUST = Vfx.id("earth_dust"), SPIKES = Vfx.id("stone_spikes");
     private static final double ALLY_RANGE = 16.0;
@@ -74,6 +76,7 @@ final class ShieldBehavior {
         Vec3 p = holder.position();
         Fx.DEBRIS.play(ctx.level(), p.x, p.y + 0.5, p.z, 40, 1.5, 0.4, 1.5);
         Vfx.play(ctx.level(), SPIKES, p.add(0, 0.8, 0), Vec3.ZERO, 0, 1.2f, 1.6f, 1, 1.6f, 3);
+        Vfx.play(ctx.level(), QUAKE, p.add(0, 0.1, 0), Vec3.ZERO, 0, 0.8f);
         Vfx.play(ctx.level(), DUST, p.add(0, 0.2, 0), Vec3.ZERO, 0, 1.2f, 1.2f, 1, 1.2f, 2.5f);
         com.orbisarcana.spell.Sfx.impact(ctx.level(), p, com.orbisarcana.school.Schools.EARTH, 1.2f);
     }

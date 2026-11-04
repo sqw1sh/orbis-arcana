@@ -10,7 +10,7 @@ public final class Arcs {
     private static final double STEP = 0.6;
     private static final double JITTER = 0.32;
     private static final Identifier BOLT = Vfx.id("bolt"), GLOW = Vfx.id("bolt_glow"), HIT = Vfx.id("discharge_hit"),
-            SPARKS = Vfx.id("discharge_sparks");
+            SPARKS = Vfx.id("discharge_sparks"), NOVA = Vfx.id("lightning_nova");
 
     /** A jagged bolt from {@code a} to {@code b}: each segment is drawn along itself, scaled to its length. */
     public static void draw(ServerLevel level, Vec3 a, Vec3 b) {
@@ -37,6 +37,7 @@ public final class Arcs {
     public static void strike(ServerLevel level, Vec3 at) {
         Vfx.play(level, HIT, at, Vec3.ZERO, 0, 1f);
         Vfx.play(level, SPARKS, at, Vec3.ZERO, 0, 1f);
+        Vfx.play(level, NOVA, at, Vec3.ZERO, 0, 1f);
     }
 
     /** Middle of an entity's body. */

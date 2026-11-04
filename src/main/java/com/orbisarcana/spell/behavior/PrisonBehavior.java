@@ -29,8 +29,10 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class PrisonBehavior {
-    /** Signature effects (tools/vfx-effects.cjs): the shimmering bubble, the burst of water when it pops. */
-    private static final Identifier BUBBLE = Vfx.id("bubble"), WAVE = Vfx.id("water_wave");
+    /** Volumetric effects: the sphere of water, its burst. */
+    private static final Identifier SPHERE = Vfx.id("water_sphere"), BURST = Vfx.id("water_burst");
+    /** Signature effects (tools/vfx-effects.cjs): the burst of water when the bubble pops. */
+    private static final Identifier WAVE = Vfx.id("water_wave");
     private static final double POP_RADIUS = 3.0;
     private static final double POP_PUSH = 1.0;
     private static final float POP_DAMAGE = 2.0f;
@@ -85,7 +87,7 @@ final class PrisonBehavior {
             Fx.SPLASH.play(p.level(), t.getX(), t.getY() + h, t.getZ(), 3, t.getBbWidth() * 0.6, h, t.getBbWidth() * 0.6);
         }
         // the bubble, as big as the one inside it
-        if (now % 6 == 0) Vfx.play(p.level(), BUBBLE, t.position().add(0, t.getBbHeight() / 2, 0), Vec3.ZERO, 0, (float) Math.max(0.6, t.getBbHeight() * 0.65));
+        if (now % 10 == 0) Vfx.attach(t, SPHERE, 0, (float) Math.max(0.6, t.getBbHeight() * 0.7));
     }
 
     private static void pop(Prison p, ServerPlayer caster) {
@@ -99,6 +101,7 @@ final class PrisonBehavior {
         }
         Fx.SPLASH.play(p.level(), c.x, c.y + 1, c.z, 30, 1.2, 0.6, 1.2);
         Vfx.play(p.level(), WAVE, c.add(0, 0.6, 0), Vec3.ZERO, 0, 1f, 0.8f, 1, 0.8f, 1.5f);
+        Vfx.play(p.level(), BURST, c.add(0, 1, 0), Vec3.ZERO, 0, 1f);
         com.orbisarcana.spell.Sfx.impact(p.level(), c, p.school(), 1f);
     }
 

@@ -30,6 +30,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class VortexBehavior {
+    /** Volumetric effects: spiral arms of flame, a ring of fire on the ground, the column of fire. */
+    private static final Identifier VORTEX = Vfx.id("ash_vortex"), FLOOR = Vfx.id("ash_floor"), COLUMN = Vfx.id("fire_column");
     /** Signature effects (tools/vfx-effects.cjs): the ring of flame, the whirling ash, the pillar of fire. */
     private static final Identifier RING = Vfx.id("ash_ring"), ASH = Vfx.id("ash_flakes"), PILLAR = Vfx.id("fire_pillar");
     private static final int PULSE_TICKS = 10;
@@ -109,6 +111,11 @@ final class VortexBehavior {
         if (now % PULSE_TICKS == 0) {
             for (LivingEntity e : inside) hurt(v, caster, e, v.damage);
         }
+        // the spiral and the fire on the ground, renewed every second (they follow the vortex when it moves)
+        if (now % 20 == 0) {
+            Vfx.mesh(v.level, VORTEX, v.center, Vec3.ZERO, 0, (float) v.radius, 1.25f);
+            Vfx.mesh(v.level, FLOOR, v.center.add(0, 0.05, 0), Vec3.ZERO, 0, (float) v.radius, 1.25f);
+        }
         if (now % 2 == 0) {
             float r = (float) v.radius;
             Vfx.play(v.level, RING, v.center.add(0, 0.1, 0), Vec3.ZERO, 0, 1f, r, 1, r, 1);
@@ -124,6 +131,7 @@ final class VortexBehavior {
     private static void pillar(Vortex v, ServerPlayer caster) {
         for (LivingEntity e : targets(v, caster, PILLAR_RADIUS)) hurt(v, caster, e, (float) (v.damage * PILLAR_MULT));
         Vfx.play(v.level, PILLAR, v.center.add(0, 0.3, 0), Vec3.ZERO, 0, 1f);
+        Vfx.play(v.level, COLUMN, v.center, Vec3.ZERO, 0, 1f);
         Fx.FLAME.play(v.level, v.center.x, v.center.y + 0.5, v.center.z, 25, 0.4, 1.2, 0.4);
         com.orbisarcana.spell.Sfx.impact(v.level, v.center, com.orbisarcana.school.Schools.FIRE, 1f);
     }

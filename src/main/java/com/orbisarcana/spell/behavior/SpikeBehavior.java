@@ -26,6 +26,8 @@ import net.minecraft.world.phys.Vec3;
  * arc to each other), collapse_damage (15: a full set of stars collapses).
  */
 final class SpikeBehavior {
+    /** Volumetric effects: the beam of starlight along the line. */
+    private static final Identifier BEAM = Vfx.id("star_beam");
     /** Signature effects (tools/vfx-effects.cjs): the beam of starlight along the line. */
     private static final Identifier CORE = Vfx.id("star_core"), GLOW = Vfx.id("star_glow");
     private static final double HIT_WIDTH = 0.35;
@@ -54,6 +56,7 @@ final class SpikeBehavior {
         Vec3 beam = end.add(0, -0.2, 0).subtract(start);
         com.orbisarcana.spell.Sfx.impact(ctx.level(), end, ctx.spell().school(), 1f);
         if (beam.length() > 0.3) {
+            Vfx.play(ctx.level(), BEAM, start, beam, 0, (float) beam.length());
             Vfx.play(ctx.level(), CORE, start.add(beam.scale(0.5)), beam, 0, (float) beam.length());
             Vfx.play(ctx.level(), GLOW, start.add(beam.scale(0.5)), beam, 0, (float) beam.length());
         }

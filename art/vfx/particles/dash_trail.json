@@ -1,0 +1,37 @@
+{
+	"orbisarcana:mesh": {
+		"shape": "trail",
+		"texture": "textures/vfx/energy/wind",
+		"life": 0.45,
+		"samples": 8,
+		"width": [
+			[
+				0,
+				1.6
+			],
+			[
+				1,
+				0.2
+			]
+		],
+		"uv": [
+			1,
+			1
+		],
+		"scroll": [
+			-2,
+			0
+		],
+		"color": [
+			[
+				0,
+				[
+					0.9,
+					1,
+					0.95,
+					0.75
+				]
+			]
+		]
+	}
+}

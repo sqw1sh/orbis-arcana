@@ -25,6 +25,8 @@ import net.minecraft.world.phys.Vec3;
  * final_wave (15, on release). Water talents: Surf (+50% push), Undertow (pushed enemies are slowed).
  */
 final class ConeBehavior implements ChannelBehavior {
+    /** Volumetric effects: the cone of rushing water, its last burst. */
+    private static final Identifier CONE = Vfx.id("water_cone"), BURST = Vfx.id("water_burst");
     static final ConeBehavior INSTANCE = new ConeBehavior();
 
     private static final int PULSE_TICKS = 5;
@@ -51,6 +53,7 @@ final class ConeBehavior implements ChannelBehavior {
         pulse(ctx, dir, (float) (ctx.scaled("damage_per_pulse") * WAVE_DAMAGE_MULT), WAVE_PUSH, 0);
         Vec3 eye = ctx.caster().getEyePosition();
         com.orbisarcana.spell.Sfx.impact(ctx.level(), eye.add(dir.scale(3)), ctx.spell().school(), 1.2f);
+        Vfx.play(ctx.level(), BURST, eye.add(dir.scale(3)), Vec3.ZERO, 0, 1.5f);
         for (int i = 1; i <= 6; i++) {
             Vec3 p = eye.add(dir.scale(i));
             Vfx.play(ctx.level(), WAVE, p.add(0, -0.6, 0), Vec3.ZERO, 0, 1f, 0.6f, 1, 0.6f, 1);
@@ -101,6 +104,7 @@ final class ConeBehavior implements ChannelBehavior {
         // the jet leaves the hand; its speed carries it about as far as the cone reaches
         Vec3 hand = ctx.caster().getEyePosition().add(0, -0.25, 0).add(dir.scale(0.6));
         float reach = (float) Math.max(0.5, ctx.param("range") / 6);
+        Vfx.play(ctx.level(), CONE, hand, dir, 0, reach);
         Vfx.play(ctx.level(), JET, hand, dir, 0, reach);
         Vfx.play(ctx.level(), SPRAY, hand, dir, 0, reach);
     }

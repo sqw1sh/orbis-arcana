@@ -36,6 +36,8 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class ShellBehavior implements ToggleBehavior {
+    /** Volumetric effects: the cage of electricity around the body, the storm ring of the burst. */
+    private static final Identifier CAGE = Vfx.id("shell_cage"), STORM = Vfx.id("storm_ring");
     /** Signature effects (tools/vfx-effects.cjs): arcs crackling over the body, the burst's flash and ring. */
     private static final Identifier ARCS = Vfx.id("shell_arcs"), RING = Vfx.id("shock_ring"), HIT = Vfx.id("discharge_hit");
     public static final ShellBehavior INSTANCE = new ShellBehavior();
@@ -64,6 +66,7 @@ public final class ShellBehavior implements ToggleBehavior {
     @Override
     public void tick(CastContext ctx, int ticks) {
         ServerPlayer p = ctx.caster();
+        if (ticks % 10 == 0) Vfx.attach(p, CAGE, 0, 1f);
         if (ticks % 2 == 0) Vfx.play(p.level(), ARCS, p.position().add(0, 1, 0), Vec3.ZERO, 0, 1f, 0.7f, 1.4f, 0.7f, 1);
     }
 
@@ -83,6 +86,7 @@ public final class ShellBehavior implements ToggleBehavior {
         Fx.ARC.play(level, p.getX(), p.getY() + 1, p.getZ(), 30, BURST_RADIUS / 2, 0.6, BURST_RADIUS / 2);
         Vfx.play(level, HIT, p.position().add(0, 1, 0), Vec3.ZERO, 0, 2f);
         Vfx.play(level, RING, p.position().add(0, 1, 0), Vec3.ZERO, 0, (float) BURST_RADIUS / 2);
+        Vfx.play(level, STORM, p.position().add(0, 0.1, 0), Vec3.ZERO, 0, (float) BURST_RADIUS / 4);
         com.orbisarcana.spell.Sfx.impact(level, p.position(), ctx.spell().school(), 1.2f);
     }
 

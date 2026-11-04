@@ -1,0 +1,68 @@
+{
+	"orbisarcana:mesh": {
+		"shape": "cylinder",
+		"texture": "textures/vfx/energy/light",
+		"life": 0.8,
+		"segments": 28,
+		"rings": 6,
+		"radius": [
+			[
+				0,
+				0.2
+			],
+			[
+				0.15,
+				1.6
+			],
+			[
+				1,
+				2
+			]
+		],
+		"height": 16,
+		"uv": [
+			3,
+			3
+		],
+		"scroll": [
+			0,
+			6
+		],
+		"spin": 60,
+		"fresnel": -0.5,
+		"color": [
+			[
+				0,
+				[
+					1,
+					0.95,
+					0.7,
+					1
+				]
+			],
+			[
+				0.5,
+				[
+					1,
+					0.75,
+					0.3,
+					0.6
+				]
+			],
+			[
+				1,
+				[
+					1,
+					0.75,
+					0.3,
+					0
+				]
+			]
+		],
+		"shake": {
+			"strength": 1.8,
+			"radius": 18,
+			"time": 0.45
+		}
+	}
+}

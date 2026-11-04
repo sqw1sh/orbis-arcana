@@ -41,6 +41,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class StepBehavior {
+    /** Volumetric effects: the shadows collapsing where the caster leaves. */
+    private static final Identifier COLLAPSE = Vfx.id("dusk_sphere");
     /** Signature effects (tools/vfx-effects.cjs): shadows rushing in where the caster leaves, a dark ring where they land. */
     private static final Identifier IMPLODE = Vfx.id("dusk_implode"), RING = Vfx.id("dusk_ring");
     private static final String DECOY_TAG = "orbisarcana_decoy";
@@ -101,6 +103,7 @@ public final class StepBehavior {
         ServerLevel level = p.level();
         Fx.SHADOW.play(level, p.getX(), p.getY() + 1, p.getZ(), 25, 0.3, 0.6, 0.3);
         Vfx.play(level, IMPLODE, p.position().add(0, 1, 0), Vec3.ZERO, 0, 1f);
+        Vfx.play(level, COLLAPSE, p.position().add(0, 1, 0), Vec3.ZERO, 0, 1f);
         p.teleportTo(to.x, to.y, to.z);
         p.resetFallDistance();
         Fx.SHADOW.play(level, to.x, to.y + 1, to.z, 25, 0.3, 0.6, 0.3);

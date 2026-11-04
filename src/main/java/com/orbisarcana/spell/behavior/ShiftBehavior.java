@@ -32,6 +32,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class ShiftBehavior {
+    /** Volumetric effects: a sphere of stars swelling, a ring of runes. */
+    private static final Identifier NOVA = Vfx.id("star_nova"), RUNES = Vfx.id("astral_ring");
     /** Signature effects (tools/vfx-effects.cjs): the burst of stars when the field turns. */
     private static final Identifier BURST = Vfx.id("star_burst");
     private static final double SECOND_OFFSET = 6;
@@ -135,6 +137,8 @@ public final class ShiftBehavior {
         }
         Fx.TWINKLE.play(z.level, z.centre.x, z.centre.y + 0.5, z.centre.z, 40, z.radius / 2, 0.5, z.radius / 2);
         Vfx.play(z.level, BURST, z.centre.add(0, 0.5, 0), Vec3.ZERO, 0, 1f, (float) z.radius / 2, 0.5f, (float) z.radius / 2, 3);
+        Vfx.play(z.level, NOVA, z.centre.add(0, 0.5, 0), Vec3.ZERO, 0, (float) Math.max(1, z.radius / 2.4));
+        Vfx.play(z.level, RUNES, z.centre.add(0, 0.1, 0), Vec3.ZERO, 0, (float) Math.max(1, z.radius / 3));
         com.orbisarcana.spell.Sfx.impact(z.level, z.centre, com.orbisarcana.school.Schools.ASTRAL, 1.2f);
     }
 

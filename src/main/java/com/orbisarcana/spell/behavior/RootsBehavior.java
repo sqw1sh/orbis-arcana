@@ -34,6 +34,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class RootsBehavior {
+    /** Volumetric effects: roots winding up around the bound one. */
+    private static final Identifier COIL = Vfx.id("root_coil");
     /** Signature effects (tools/vfx-effects.cjs): thorny roots spearing up around the bound one. */
     private static final Identifier THORNS = Vfx.id("thorn_spikes"), DUST = Vfx.id("earth_dust");
     private static final List<Hold> HOLDS = new ArrayList<>();
@@ -75,6 +77,7 @@ public final class RootsBehavior {
         Fx.DEBRIS.play(level, target.getX(), target.getY() + 0.2, target.getZ(), 15, target.getBbWidth() / 2, 0.2, target.getBbWidth() / 2, 0x6A4A2A);
         float w = (float) Math.max(0.6, target.getBbWidth());
         Vfx.play(level, THORNS, target.position().add(0, 0.5, 0), Vec3.ZERO, 0, 1f, w, 1, w, 1.4f);
+        Vfx.play(level, COIL, target.position(), Vec3.ZERO, 0, w * 1.4f);
         Vfx.play(level, DUST, target.position().add(0, 0.2, 0), Vec3.ZERO, 0, 1f, w, 1, w, 1);
     }
 

@@ -1,0 +1,32 @@
+{
+	"orbisarcana:mesh": {
+		"shape": "cone",
+		"texture": "textures/vfx/energy/smoke",
+		"life": 0.1,
+		"axis": "forward",
+		"segments": 8,
+		"rings": 1,
+		"radius": 0.16,
+		"radius_top": 0.01,
+		"height": 1.4,
+		"uv": [
+			1,
+			1
+		],
+		"scroll": [
+			0,
+			-4
+		],
+		"color": [
+			[
+				0,
+				[
+					0.65,
+					0.35,
+					1,
+					0.9
+				]
+			]
+		]
+	}
+}

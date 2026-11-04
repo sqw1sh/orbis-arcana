@@ -35,6 +35,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class PatternBehavior {
+    /** Volumetric effects: the frozen ground, the wave of frost when it freezes. */
+    private static final Identifier FLOOR = Vfx.id("frost_floor"), WAVE = Vfx.id("frost_wave");
     /** Signature effects (tools/vfx-effects.cjs): frost glinting on the ground, a cold mist, the freezing ring. */
     private static final Identifier FIELD = Vfx.id("frost_field"), MIST = Vfx.id("frost_mist"), RING = Vfx.id("frost_ring"),
             SHATTER = Vfx.id("ice_shatter");
@@ -92,6 +94,7 @@ final class PatternBehavior {
                     for (LivingEntity e : p.inside(caster)) Frost.freeze(e, p.freezeTicks, caster);
                     Fx.FROST.play(level, p.center.x, p.center.y + 0.3, p.center.z, 40, p.radius / 2, 0.3, p.radius / 2);
                     Vfx.play(level, RING, p.center.add(0, 0.1, 0), Vec3.ZERO, 0, (float) Math.max(1, p.radius / 3));
+                    Vfx.play(level, WAVE, p.center.add(0, 0.1, 0), Vec3.ZERO, 0, (float) Math.max(1, p.radius / 3));
                     Vfx.play(level, SHATTER, p.center.add(0, 0.5, 0), Vec3.ZERO, 0, 1f, (float) p.radius / 2, 0.3f, (float) p.radius / 2, 2.5f);
                     com.orbisarcana.spell.Sfx.impact(level, p.center, com.orbisarcana.school.Schools.ICE, 1f);
                 }
@@ -110,6 +113,7 @@ final class PatternBehavior {
 
     private static void particles(Pattern p, long now) {
         float r = (float) p.radius;
+        if (now % 20 == 0) Vfx.mesh(p.level, FLOOR, p.center.add(0, 0.05, 0), Vec3.ZERO, 0, r, 1.25f);
         if (now % 6 == 0) Vfx.play(p.level, FIELD, p.center.add(0, 0.08, 0), Vec3.ZERO, 0, 1f, r, 1, r, 1);
         if (now % 9 == 0) Vfx.play(p.level, MIST, p.center.add(0, 0.3, 0), Vec3.ZERO, 0, 1f, r, 1, r, 1);
         // a glint running round the edge

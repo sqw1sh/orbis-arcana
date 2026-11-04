@@ -36,6 +36,8 @@ import net.neoforged.neoforge.event.server.ServerStoppingEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class AuraBehavior implements ToggleBehavior {
+    /** Volumetric effects: the band of runes turning around the caster. */
+    private static final Identifier BAND = Vfx.id("aura_band");
     /** Signature effects (tools/vfx-effects.cjs): the golden ring on the ground around the caster. */
     private static final Identifier RING = Vfx.id("aura_ring");
     public static final AuraBehavior INSTANCE = new AuraBehavior();
@@ -61,6 +63,7 @@ public final class AuraBehavior implements ToggleBehavior {
         ServerPlayer p = ctx.caster();
         ServerLevel level = p.level();
         double r = ctx.param("radius");
+        if (ticks % 10 == 0) Vfx.attach(p, BAND, 0, (float) Math.max(0.8, r * 0.8));
         if (ticks % 10 == 0) Vfx.play(level, RING, p.position().add(0, 0.06, 0), Vec3.ZERO, 0, (float) Math.max(0.5, r));
         if (ticks % 5 == 0) {
             for (int i = 0; i < 3; i++) {

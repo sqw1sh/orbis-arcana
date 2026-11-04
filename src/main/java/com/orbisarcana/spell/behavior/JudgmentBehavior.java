@@ -34,6 +34,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class JudgmentBehavior {
+    /** Volumetric effects: the column of light from the sky. */
+    private static final Identifier COLUMN = Vfx.id("judgment_column");
     /** Signature effects (tools/vfx-effects.cjs): the golden rune marking the ground, the column of light from the sky. */
     private static final Identifier RUNE = Vfx.id("judgment_rune"), CORE = Vfx.id("ray_core"), GLOW = Vfx.id("ray_glow"),
             BURST = Vfx.id("dawn_burst"), RING = Vfx.id("dawn_ring");
@@ -168,6 +170,7 @@ public final class JudgmentBehavior {
         Vfx.play(c.level, CORE, top.add(down.scale(0.5)), down, 0, len);
         Vfx.play(c.level, GLOW, top.add(down.scale(0.5)), down, 0, len);
         if (count >= 20) {
+            Vfx.play(c.level, COLUMN, c.pos, Vec3.ZERO, 0, (float) Math.max(1, c.radius / 2.5));
             Vfx.play(c.level, BURST, c.pos.add(0, 0.5, 0), Vec3.ZERO, 0, (float) Math.max(1, c.radius / 2));
             Vfx.play(c.level, RING, c.pos.add(0, 0.2, 0), Vec3.ZERO, 0, (float) Math.max(1, c.radius / 3));
         }
