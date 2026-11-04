@@ -14,8 +14,6 @@ import com.orbisarcana.spell.Fx;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -109,7 +107,7 @@ public final class JudgmentBehavior {
                 c.struck = true;
                 strike(c, caster, c.damage, true);
                 beam(c, 40);
-                level.playSound(null, c.pos.x, c.pos.y, c.pos.z, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 1.5f, 1.6f);
+                com.orbisarcana.spell.Sfx.impact(level, c.pos, com.orbisarcana.school.Schools.LIGHT, 1.3f);
             } else if (now > c.strikeAt && now < c.lingerUntil && (now - c.strikeAt) % LINGER_PULSE == 0) {
                 strike(c, caster, (float) (c.damage * LINGER_DAMAGE_MULT), false);
             }

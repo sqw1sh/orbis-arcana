@@ -474,5 +474,145 @@
       }
     ],
     "subtitle": "subtitles.orbisarcana.mastery.milestone"
+  },
+  "cast.hit.fire": {
+    "sounds": [
+      {
+        "name": "orbisarcana:hit/fire_1"
+      },
+      {
+        "name": "orbisarcana:hit/fire_2"
+      },
+      {
+        "name": "orbisarcana:hit/fire_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.hit"
+  },
+  "cast.hit.ice": {
+    "sounds": [
+      {
+        "name": "orbisarcana:hit/ice_1"
+      },
+      {
+        "name": "orbisarcana:hit/ice_2"
+      },
+      {
+        "name": "orbisarcana:hit/ice_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.hit"
+  },
+  "cast.hit.lightning": {
+    "sounds": [
+      {
+        "name": "orbisarcana:hit/lightning_1"
+      },
+      {
+        "name": "orbisarcana:hit/lightning_2"
+      },
+      {
+        "name": "orbisarcana:hit/lightning_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.hit"
+  },
+  "cast.hit.earth": {
+    "sounds": [
+      {
+        "name": "orbisarcana:hit/earth_1"
+      },
+      {
+        "name": "orbisarcana:hit/earth_2"
+      },
+      {
+        "name": "orbisarcana:hit/earth_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.hit"
+  },
+  "cast.hit.water": {
+    "sounds": [
+      {
+        "name": "orbisarcana:hit/water_1"
+      },
+      {
+        "name": "orbisarcana:hit/water_2"
+      },
+      {
+        "name": "orbisarcana:hit/water_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.hit"
+  },
+  "cast.hit.air": {
+    "sounds": [
+      {
+        "name": "orbisarcana:hit/air_1"
+      },
+      {
+        "name": "orbisarcana:hit/air_2"
+      },
+      {
+        "name": "orbisarcana:hit/air_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.hit"
+  },
+  "cast.hit.nature": {
+    "sounds": [
+      {
+        "name": "orbisarcana:hit/nature_1"
+      },
+      {
+        "name": "orbisarcana:hit/nature_2"
+      },
+      {
+        "name": "orbisarcana:hit/nature_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.hit"
+  },
+  "cast.hit.light": {
+    "sounds": [
+      {
+        "name": "orbisarcana:hit/light_1"
+      },
+      {
+        "name": "orbisarcana:hit/light_2"
+      },
+      {
+        "name": "orbisarcana:hit/light_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.hit"
+  },
+  "cast.hit.dark": {
+    "sounds": [
+      {
+        "name": "orbisarcana:hit/dark_1"
+      },
+      {
+        "name": "orbisarcana:hit/dark_2"
+      },
+      {
+        "name": "orbisarcana:hit/dark_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.hit"
+  },
+  "cast.hit.astral": {
+    "sounds": [
+      {
+        "name": "orbisarcana:hit/astral_1"
+      },
+      {
+        "name": "orbisarcana:hit/astral_2"
+      },
+      {
+        "name": "orbisarcana:hit/astral_3"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.cast.hit"
   }
 }

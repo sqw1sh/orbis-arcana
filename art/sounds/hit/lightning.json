@@ -1,0 +1,52 @@
+{
+  "length": 0.6,
+  "loudness": -14,
+  "variants": 3,
+  "compress": {
+    "threshold": -14,
+    "ratio": 4,
+    "attack": 0.002,
+    "release": 0.08
+  },
+  "reverb": {
+    "size": 0.25,
+    "mix": 0.15
+  },
+  "layers": [
+    {
+      "start": 0,
+      "attack": 0.001,
+      "gain": 0.55,
+      "type": "saw",
+      "freq": [
+        1600,
+        300
+      ],
+      "length": 0.18,
+      "decay": 0.07,
+      "drive": 3,
+      "tremolo": [
+        70,
+        0.7
+      ]
+    },
+    {
+      "start": 0,
+      "attack": 0.001,
+      "gain": 0.8,
+      "type": "noise",
+      "highpass": 2500,
+      "length": 0.12,
+      "decay": 0.04
+    },
+    {
+      "start": 0,
+      "attack": 0.001,
+      "gain": 0.5,
+      "type": "crackle",
+      "density": 120,
+      "length": 0.25,
+      "decay": 0.08
+    }
+  ]
+}

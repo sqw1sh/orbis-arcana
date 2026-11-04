@@ -138,6 +138,7 @@ final class SeedBehavior {
         // the seed bursts: a green flash, leaves thrown up, thorns spearing out of the ground over the thicket
         float reach = (float) Math.max(1, c.radius());
         Vfx.play(c.level(), FLASH, center.add(0, 0.5, 0), Vec3.ZERO, 0, 1f);
+        com.orbisarcana.spell.Sfx.impact(c.level(), center, com.orbisarcana.school.Schools.NATURE, 1f);
         Vfx.play(c.level(), BURST, center.add(0, 0.4, 0), Vec3.ZERO, 0, 1f, reach * 0.5f, 1, reach * 0.5f, 1.5f);
         Vfx.play(c.level(), THORNS, center.add(0, 0.55, 0), Vec3.ZERO, 0, 1f, reach * 0.7f, 1, reach * 0.7f, 2.5f);
         if (owner != null) EchoService.onEffectiveCast(owner, c.school(), center, c.castId());

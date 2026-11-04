@@ -50,6 +50,7 @@ final class ConeBehavior implements ChannelBehavior {
         Vec3 dir = ctx.caster().getLookAngle();
         pulse(ctx, dir, (float) (ctx.scaled("damage_per_pulse") * WAVE_DAMAGE_MULT), WAVE_PUSH, 0);
         Vec3 eye = ctx.caster().getEyePosition();
+        com.orbisarcana.spell.Sfx.impact(ctx.level(), eye.add(dir.scale(3)), ctx.spell().school(), 1.2f);
         for (int i = 1; i <= 6; i++) {
             Vec3 p = eye.add(dir.scale(i));
             Vfx.play(ctx.level(), WAVE, p.add(0, -0.6, 0), Vec3.ZERO, 0, 1f, 0.6f, 1, 0.6f, 1);

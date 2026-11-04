@@ -37,7 +37,8 @@ public final class ModSounds {
     public static final Supplier<SoundEvent> MASTERY_UP = sound("mastery.up");
     public static final Supplier<SoundEvent> MASTERY_MILESTONE = sound("mastery.milestone");
 
-    private static final Map<Identifier, Supplier<SoundEvent>> CHARGE = new HashMap<>(), RELEASE = new HashMap<>(), IMPACT = new HashMap<>();
+    private static final Map<Identifier, Supplier<SoundEvent>> CHARGE = new HashMap<>(), RELEASE = new HashMap<>(), IMPACT = new HashMap<>(),
+            HIT = new HashMap<>();
 
     static {
         for (Identifier school : Schools.BUILT_IN) {
@@ -45,6 +46,7 @@ public final class ModSounds {
             CHARGE.put(school, sound("cast.charge." + s));
             RELEASE.put(school, sound("cast.release." + s));
             IMPACT.put(school, sound("cast.impact." + s));
+            HIT.put(school, sound("cast.hit." + s));
         }
     }
 
@@ -63,6 +65,11 @@ public final class ModSounds {
 
     public static SoundEvent impact(Identifier school) {
         return IMPACT.getOrDefault(school, CAST_IMPACT).get();
+    }
+
+    /** Short sound of the school's magic striking a creature. */
+    public static SoundEvent hit(Identifier school) {
+        return HIT.getOrDefault(school, CAST_IMPACT).get();
     }
 
     public static void register(IEventBus modBus) {

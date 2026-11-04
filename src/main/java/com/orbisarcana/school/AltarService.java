@@ -24,7 +24,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Prediction;
 import net.minecraft.world.item.ItemStack;
@@ -106,7 +105,7 @@ public final class AltarService {
         Net.toPlayerAndNearby(player, new RitualCircle(ritual.circleId(), player.getId(), altar, school, ritual.startTick(), SchoolRules.RITUAL_TICKS));
         player.sendSystemMessage(Component.translatable("message.orbisarcana.altar.ritual_start", AttunementService.schoolName(school),
                 SchoolRules.RITUAL_TICKS / 20).withStyle(ChatFormatting.LIGHT_PURPLE));
-        player.level().playSound(null, altar, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1f, 0.8f);
+        player.level().playSound(null, altar, com.orbisarcana.registry.ModSounds.charge(school), SoundSource.BLOCKS, 1.2f, 0.8f);
     }
 
     private static void resetTalents(ServerPlayer player, BlockPos altar, Identifier school) {
@@ -222,7 +221,8 @@ public final class AltarService {
     private static void effects(ServerPlayer player, BlockPos altar, boolean success) {
         Vec3 c = Vec3.atCenterOf(altar);
         (success ? Fx.MOTE : Fx.SMOKE).play(player.level(), c.x, c.y + 0.8, c.z, 30, 0.6, 0.6, 0.6);
-        player.level().playSound(null, altar, success ? SoundEvents.BEACON_POWER_SELECT : SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 1f, 1f);
+        player.level().playSound(null, altar, (success ? com.orbisarcana.registry.ModSounds.MASTERY_MILESTONE : com.orbisarcana.registry.ModSounds.CAST_FAIL).get(),
+                SoundSource.BLOCKS, 1f, 1f);
     }
 
     @SubscribeEvent

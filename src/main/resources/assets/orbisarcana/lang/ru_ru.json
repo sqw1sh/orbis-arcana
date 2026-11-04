@@ -610,6 +610,7 @@
   "orbisarcana.configuration.firstPersonAnimations": "Анимации каста от первого лица",
   "orbisarcana.configuration.firstPersonAnimations.tooltip": "Показывать анимированные руки мага при касте от первого лица",
   "subtitles.orbisarcana.cast.impact": "Удар заклинания",
+  "subtitles.orbisarcana.cast.hit": "Попадание заклинания",
   "subtitles.orbisarcana.talent.learn": "Изучен талант",
   "subtitles.orbisarcana.mastery.up": "Мастерство растёт",
   "subtitles.orbisarcana.mastery.milestone": "Веха мастерства"

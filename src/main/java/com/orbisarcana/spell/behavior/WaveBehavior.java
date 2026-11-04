@@ -147,7 +147,8 @@ final class WaveBehavior {
             if (caster != null) MasteryService.onControl(caster, w.spell, w.castId, e);
         }
         Fx.DEBRIS.play(w.level, w.pos.x, w.pos.y + 0.8, w.pos.z, 50, radius * 0.5, 0.8, radius * 0.5);
-        // the eruption at the end of the line: a ring of bigger spikes and a wave of dust
+        // the eruption at the end of the line: a ring of bigger spikes, a wave of dust, the earth's impact
+        com.orbisarcana.spell.Sfx.impact(w.level, w.pos, com.orbisarcana.school.Schools.EARTH, 1.2f);
         Vfx.play(w.level, SPIKES, w.pos.add(0, 0.9, 0), Vec3.ZERO, 0, 1.3f, (float) radius * 0.6f, 1, (float) radius * 0.6f, 3);
         Vfx.play(w.level, DUST, w.pos.add(0, 0.2, 0), Vec3.ZERO, 0, 1.2f, (float) radius * 0.5f, 1, (float) radius * 0.5f, 2.5f);
     }

@@ -151,6 +151,7 @@ final class ShardBehavior {
         Vfx.play(level, FLASH, at, Vec3.ZERO, 0, scale);
         Vfx.play(level, SHATTER, at, Vec3.ZERO, 0, scale);
         Vfx.play(level, PUFF, at, Vec3.ZERO, 0, scale);
+        com.orbisarcana.spell.Sfx.impact(level, at, com.orbisarcana.school.Schools.ICE, 0.6f * scale);
     }
 
     private static void hit(Shard s, @Nullable ServerPlayer owner, LivingEntity target) {

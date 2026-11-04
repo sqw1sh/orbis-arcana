@@ -10,7 +10,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 
 /**
@@ -163,7 +162,7 @@ public final class AttunementService {
         };
         player.sendSystemMessage(Component.translatable("message.orbisarcana.resonance", schoolName(school), level,
                 Component.translatable("message.orbisarcana.resonance.reward." + reward)).withStyle(ChatFormatting.LIGHT_PURPLE));
-        player.level().playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 0.7f, 1.3f);
+        player.level().playSound(null, player.blockPosition(), com.orbisarcana.registry.ModSounds.MASTERY_UP.get(), SoundSource.PLAYERS, 0.9f, 1f);
     }
 
     public static Component schoolName(Identifier school) {

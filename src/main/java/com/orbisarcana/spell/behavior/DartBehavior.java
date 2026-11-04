@@ -160,6 +160,7 @@ final class DartBehavior {
         Vec3 p = target.getBoundingBox().getCenter();
         Fx.SHADOW.play(c.level(), p.x, p.y, p.z, 10, 0.2, 0.3, 0.2);
         Vfx.play(c.level(), IMPLODE, p, Vec3.ZERO, 0, 1f);
+        com.orbisarcana.spell.Sfx.impact(c.level(), p, com.orbisarcana.school.Schools.DARK, 0.7f);
         Vfx.play(c.level(), RING, p, Vec3.ZERO, 0, 1f);
     }
 

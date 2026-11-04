@@ -17,7 +17,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -43,7 +42,7 @@ public final class ScrollService {
         scroll.consume(1, player);
         player.sendSystemMessage(Component.translatable("message.orbisarcana.learned", SpellScrollItem.spellName(spellId).copy()
                 .withColor(spell.get().rarity().color)).withStyle(ChatFormatting.LIGHT_PURPLE));
-        player.level().playSound(null, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1f, 1.2f);
+        player.level().playSound(null, player.blockPosition(), com.orbisarcana.registry.ModSounds.TALENT_LEARN.get(), SoundSource.PLAYERS, 1f, 1f);
     }
 
     /** Shift + right-click on a known spell's scroll: +15% of the next level, never above level 9 (§6.3). */
@@ -68,7 +67,7 @@ public final class ScrollService {
         scroll.consume(1, player);
         player.sendOverlayMessage(Component.translatable("message.orbisarcana.dissolved",
                 String.format("%.1f", xp), SpellScrollItem.spellName(spellId), result.level()).withStyle(ChatFormatting.AQUA));
-        player.level().playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1f, 1f);
+        player.level().playSound(null, player.blockPosition(), com.orbisarcana.registry.ModSounds.UI_ASSIGN.get(), SoundSource.PLAYERS, 1f, 0.8f);
     }
 
     /**
@@ -89,7 +88,7 @@ public final class ScrollService {
         player.getInventory().placeItemBackInInventory(new ItemStack(ModItems.AETHER_INK.get(), ink), net.minecraft.util.Prediction.SERVER_ONLY);
         player.sendOverlayMessage(Component.translatable("message.orbisarcana.dismantled", SpellScrollItem.spellName(spellId.get()), ink)
                 .withStyle(ChatFormatting.LIGHT_PURPLE));
-        player.level().playSound(null, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 1f, 1.2f);
+        player.level().playSound(null, player.blockPosition(), com.orbisarcana.registry.ModSounds.UI_ASSIGN.get(), SoundSource.PLAYERS, 1f, 1.1f);
         return true;
     }
 

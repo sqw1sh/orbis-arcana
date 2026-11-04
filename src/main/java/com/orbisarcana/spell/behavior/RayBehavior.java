@@ -73,6 +73,7 @@ final class RayBehavior implements ChannelBehavior {
         }
         Fx.MOTE.play(ctx.level(), at.x, at.y, at.z, 60, 1, 1, 1);
         Vfx.play(ctx.level(), BURST, at, Vec3.ZERO, 0, 1f);
+        com.orbisarcana.spell.Sfx.impact(ctx.level(), at, ctx.spell().school(), 1.2f);
         Vfx.play(ctx.level(), RING, at, Vec3.ZERO, 0, 1f);
     }
 

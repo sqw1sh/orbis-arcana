@@ -70,6 +70,7 @@ final class DischargeBehavior {
     private static void strike(CastContext ctx, ServerPlayer caster, LivingEntity e, float damage, boolean jump) {
         float before = e.getHealth();
         Arcs.strike(ctx.level(), Arcs.body(e));
+        if (!jump) com.orbisarcana.spell.Sfx.impact(ctx.level(), Arcs.body(e), ctx.spell().school(), 1f);
         e.hurtServer(ctx.level(), ModDamageTypes.source(e, ctx.spell().school(), null, caster), damage);
         if (jump && ctx.ticks("shock_ticks") > 0) e.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, ctx.ticks("shock_ticks"), 5), caster);
         if (e.getHealth() < before) {

@@ -16,7 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityTypes;
@@ -100,7 +99,7 @@ public final class StepBehavior {
         p.teleportTo(to.x, to.y, to.z);
         p.resetFallDistance();
         Fx.SHADOW.play(level, to.x, to.y + 1, to.z, 25, 0.3, 0.6, 0.3);
-        level.playSound(null, to.x, to.y, to.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.8f, 0.6f);
+        level.playSound(null, to.x, to.y, to.z, com.orbisarcana.registry.ModSounds.release(com.orbisarcana.school.Schools.DARK), SoundSource.PLAYERS, 1.2f, 0.85f);
         TalentEffects.blindSpot(p);
     }
 

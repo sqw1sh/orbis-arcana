@@ -52,6 +52,7 @@ final class SpikeBehavior {
         Vec3 d = end.subtract(from);
         Vec3 start = from.add(0, -0.2, 0);
         Vec3 beam = end.add(0, -0.2, 0).subtract(start);
+        com.orbisarcana.spell.Sfx.impact(ctx.level(), end, ctx.spell().school(), 1f);
         if (beam.length() > 0.3) {
             Vfx.play(ctx.level(), CORE, start.add(beam.scale(0.5)), beam, 0, (float) beam.length());
             Vfx.play(ctx.level(), GLOW, start.add(beam.scale(0.5)), beam, 0, (float) beam.length());
