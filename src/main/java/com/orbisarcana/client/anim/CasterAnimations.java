@@ -41,8 +41,15 @@ public final class CasterAnimations {
 
     private static final int FADE_IN = 4, FADE_TO_RELEASE = 2;
 
-    /** Cast id -> (caster entity id, placement), so the end of a cast knows which release to play. */
-    private record Running(int casterId, Targeting targeting, boolean channel) {}
+    /** Cast id -> (caster entity id, spell, placement), so the end of a cast knows which release to play. */
+    private record Running(int casterId, Identifier spell, Targeting targeting, boolean channel) {}
+
+    /** Spells with a release pose of their own (tools/caster-poses.cjs); the others use their placement's release. */
+    private static final Map<String, String> POSES = Map.of(
+            "flame_dash", "release_dash", "wind_step", "release_dash", "shadow_step", "release_step",
+            "healing_dew", "release_heal", "heavens_judgment", "release_judgment", "granite_oath", "release_guard",
+            "gust_dome", "release_dome", "discharge", "release_thrust");
+    public static final Identifier TOGGLE_ON = anim("toggle_on");
 
     private static final Map<Integer, Running> RUNNING = new HashMap<>();
 
@@ -82,10 +89,10 @@ public final class CasterAnimations {
         Targeting targeting = def.get().targeting();
         boolean channel = def.get().cast().mode() == CastMode.CHANNEL;
         if (msg.durationTicks() <= 0 && !channel) {
-            play(avatar, release(targeting), FADE_TO_RELEASE);
+            playRelease(avatar, msg.spell(), targeting);
             return;
         }
-        RUNNING.put(msg.castId(), new Running(msg.casterId(), targeting, channel));
+        RUNNING.put(msg.castId(), new Running(msg.casterId(), msg.spell(), targeting, channel));
         play(avatar, channel ? CHANNEL : anim("charge_" + targeting.id()), FADE_IN);
     }
 
@@ -96,8 +103,23 @@ public final class CasterAnimations {
         if (run == null || mc.level == null) return;
         Entity entity = mc.level.getEntity(run.casterId());
         if (!(entity instanceof Avatar avatar)) return;
-        if (outcome == Outcome.RELEASED) play(avatar, run.channel() ? release(Targeting.DIRECTIONAL) : release(run.targeting()), FADE_TO_RELEASE);
+        if (outcome == Outcome.RELEASED) {
+            if (run.channel()) play(avatar, release(Targeting.DIRECTIONAL), FADE_TO_RELEASE);
+            else playRelease(avatar, run.spell(), run.targeting());
+        }
         else play(avatar, INTERRUPT, FADE_TO_RELEASE);
+    }
+
+    /** The spell's own release pose if it has one, else its placement's. */
+    private static void playRelease(Avatar avatar, Identifier spell, Targeting targeting) {
+        String pose = POSES.get(spell.getPath());
+        if (pose == null || !play(avatar, anim(pose), FADE_TO_RELEASE)) play(avatar, release(targeting), FADE_TO_RELEASE);
+    }
+
+    /** A toggle switched on by a player in range: a short gesture of raising the arms. */
+    public static void toggled(int playerId, boolean on) {
+        Minecraft mc = Minecraft.getInstance();
+        if (on && mc.level != null && mc.level.getEntity(playerId) instanceof Avatar avatar) play(avatar, TOGGLE_ON, FADE_TO_RELEASE);
     }
 
     private static Identifier release(Targeting targeting) {

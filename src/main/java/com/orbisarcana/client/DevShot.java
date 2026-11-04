@@ -374,6 +374,9 @@ public final class DevShot {
                                 mc.player.yBodyRotO = mc.player.getYRot() - 70;
                             }
                         })
+                        // one-shot poses (release_*, toggle_*) start just before the shot, so it catches them in motion
+                        : pose.startsWith("release_") || pose.startsWith("toggle_")
+                        ? new Scene("pose_" + pose, () -> { s.setup().run(); showPose("cast_test"); }, () -> showPose(pose))
                         : new Scene("pose_" + pose, s.setup(), () -> showPose(pose)));
             }
         }

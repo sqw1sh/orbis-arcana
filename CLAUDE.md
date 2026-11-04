@@ -29,6 +29,7 @@
 - `node tools/art.cjs [--check]` — Blockbench → ресурсы: текстуры и item-JSON из `art/models/*.bbmodel`, проверка, что экспорт GeckoLib не устарел (конвейер — `docs/ART.md`).
 - `node tools/sfx.cjs [группа|группа/имя]` — синтез звуков по рецептам `art/sounds/<группа>/*.json` → WAV → OGG (ffmpeg из PATH, env `FFMPEG` или winget-ссылки). Группы: charge, release, impact, hit (по школам), cast, toggle, ui, mastery; звук попадания играет сам хук урона `spell/Sfx`, тяжёлый удар — `Sfx.impact(level, pos, school, scale)`; новые события — в `sounds.json` и `ModSounds`.
 - `./gradlew :runClientShot -Pshots=geckolib,pose` — проверка GeckoLib-модели в руке и позы PAL.
+- `node tools/caster-poses.cjs` — позы выпуска отдельных заклинаний и тогглов (в `caster.json` и риг `caster.bbmodel`); какому заклинанию какая — `CasterAnimations.POSES`.
 - `node tools/gui.cjs` — пересобрать спрайты UI-кита (`textures/gui/sprites/ui`, стиль подсказок `arcane`).
 - `node tools/circles.cjs` — пересобрать атлас магических кругов (`textures/effect/circle_atlas.png`, ~25 с); раскладка — `client/circle/CircleAtlas`.
 - `./gradlew :runClientShot -Pshots=gallery_setup,gallery` — галерея кругов всех редкостей (ночь, тёмная площадка).

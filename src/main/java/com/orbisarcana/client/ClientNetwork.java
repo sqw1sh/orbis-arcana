@@ -56,6 +56,7 @@ public final class ClientNetwork {
         event.register(ToggleState.TYPE, (msg, ctx) -> {
             ClientCircles.toggle(msg.playerId(), msg.spell(), msg.on(), msg.mastery());
             ClientCastState.setToggle(msg.playerId(), msg.spell(), msg.on());
+            com.orbisarcana.client.anim.CasterAnimations.toggled(msg.playerId(), msg.on());
         });
         event.register(HeatMark.TYPE, (msg, ctx) -> ClientCircles.heatMark(msg.entityId(), msg.stacks(), msg.school()));
         event.register(EchoState.TYPE, (msg, ctx) -> ClientCastState.setEcho(msg.school(), msg.stacks(), msg.max()));
