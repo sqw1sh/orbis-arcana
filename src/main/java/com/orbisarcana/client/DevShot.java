@@ -178,7 +178,7 @@ public final class DevShot {
                 continue;
             }
             for (String pose : System.getProperty("orbisarcana.devshot.pose", "cast_test").split(",")) {
-                out.add(new Scene("pose_" + pose, s.setup(), () -> showPose(pose)));
+                out.add(new Scene("pose_" + pose.replace(":", "_"), s.setup(), () -> showPose(pose)));
             }
         }
         return out;
@@ -246,7 +246,16 @@ public final class DevShot {
         Minecraft mc = Minecraft.getInstance();
         mc.player.setXRot(0);
         mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
-        OrbisArcana.LOGGER.info("[devshot] player animations: {}", com.zigythebird.playeranim.animation.PlayerAnimResources.getModAnimations(OrbisArcana.MODID).keySet());
+        if (name.startsWith("hold:")) {
+            // "hold:<item>": that mod item in the main hand, no caster animation (display transforms check)
+            var server = mc.getSingleplayerServer();
+            var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(OrbisArcana.id(name.substring(5)));
+            if (server != null) server.execute(() -> {
+                ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp != null) sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(item));
+            });
+            return;
+        }
         OrbisArcana.LOGGER.info("[devshot] pose {} started: {}", name, com.orbisarcana.client.anim.CasterAnimations.play(mc.player, OrbisArcana.id("animation." + name)));
     }
 
