@@ -1,0 +1,54 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:composite",
+  "targeting": "self",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 10,
+  "cooldown_ticks": 40,
+  "primary_stat": "damage",
+  "params": {
+    "radius": 4,
+    "damage": 5,
+    "knockback": 1
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 5
+      }
+    },
+    "10": {
+      "params": {
+        "knockback": 1.5
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 6
+      }
+    }
+  },
+  "circle": "orbisarcana:heat_wave",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "nova",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "knockback"
+      }
+    ],
+    "visuals": {
+      "impact": [
+        "orbisarcana:fireball_wave",
+        "orbisarcana:fireball_tongues"
+      ],
+      "tint": 0
+    }
+  }
+}

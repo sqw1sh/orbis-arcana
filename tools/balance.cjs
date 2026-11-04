@@ -28,7 +28,7 @@ const CORRIDOR = {
 // whole hold, so a per-cast number does not compare; a toggle's cooldown only starts when it is switched off.
 const EXEMPT = {
   root_shackles: "cd", water_prison: "dmg", ice_shard: "dmg",
-  tidal_stream: "cast,dmg", dawn_ray: "cast,dmg", current_shell: "cast,mana,cd", flame_dash: "cast", wind_step: "cast", granite_oath: "cast",
+  tidal_stream: "cast,dmg", dawn_ray: "cast,dmg", current_shell: "cast,mana,cd", flame_dash: "cast", wind_step: "cast", granite_oath: "cast", ember_ward: "cast", immolation: "cast",
   shadow_step: "cast", shadow_dart: "cast", storm_anchor: "cast", guardian_orbit: "cast", purifying_aura: "cast,mana",
 };
 
@@ -58,8 +58,12 @@ function damage(def, p, castTicks, direct = false) {
     // composite (V9): one target takes the damage once per bolt of a volley (pierce and chains hit others), burning after
     case "composite": {
       if (!(p.damage > 0)) return null;
-      const bolts = def.compose && def.compose.shape === "bolt" ? (p.count || 1) : 1;
-      return p.damage * bolts + (direct ? 0 : (p.ignite_ticks || 0) / 20 * BURN_DPS);
+      const shape = def.compose ? def.compose.shape : "";
+      const bolts = shape === "bolt" ? (p.count || 1) : 1;
+      // lasting shapes and channels hit once per pulse
+      const pulses = ["zone", "aura", "wall"].includes(shape) ? Math.floor(p.duration_ticks / (p.pulse_ticks || 10))
+        : def.cast.mode === "channel" ? Math.floor(castTicks / (p.pulse_ticks || 5)) : 1;
+      return p.damage * bolts * pulses + (direct ? 0 : (p.ignite_ticks || 0) / 20 * BURN_DPS);
     }
     default: return null;
   }
@@ -75,6 +79,8 @@ for (const { id, def } of spells) {
   const d1 = damage(def, params(def, 1), def.cast.ticks || 0);
   const d15 = damage(def, params(def, 15), def.cast.ticks || 0);
   const exempt = (EXEMPT[id] || "").split(",");
+  // a channel deals its damage over the whole hold, so the per-cast number does not compare
+  if (def.cast.mode === "channel") exempt.push("dmg");
   const out = [];
   const check = (key, v, [lo, hi]) => { if (!exempt.includes(key) && (v < lo - 1e-9 || v > hi + 1e-9)) out.push(`${key} ${+v.toFixed(2)} ∉ [${lo}; ${hi}]`); };
   if (def.cast.mode !== "toggle") check("mana", def.cost, c.mana);

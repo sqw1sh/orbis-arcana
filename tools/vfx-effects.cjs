@@ -425,6 +425,67 @@ Object.assign(MESHES, {
     scroll: [1, 0], color: burst([1, 1, 1, 1], [1, 1, 1, 0]) },
 });
 
+// ---- V10 fire pack: signature effects of the 17 new Fire spells (own colours, played untinted) ----
+const MAGMA = [[0, 1, 0.8, 0.35, 1], [0.3, 1, 0.42, 0.06, 0.95], [0.7, 0.7, 0.12, 0.03, 0.8], [1, 0.25, 0.05, 0.02, 0]];
+Object.assign(EFFECTS, {
+  // Cinder Volley (every tick, behind each cinder) and its pop on hit
+  cinder_trail: { cell: [2, 0], count: 3, sphere: 0.05, dir: [0, 0, -1], life: [0.2, 0.35], speed: [0.5, 1.5], drag: 3, facing: "lookat_direction",
+    size: [overLife(0.1, 0.03), overLife(0.7, 0.2)], color: [[0, 1, 0.9, 0.5, 1], [0.6, 1, 0.45, 0.08, 0.8], [1, 0.5, 0.1, 0.02, 0]] },
+  cinder_pop: { cell: [7, 0], count: 14, sphere: 0.2, life: [0.4, 0.8], speed: [2, 5], accel: [0, -6, 0], drag: 2,
+    size: [overLife(0.12, 0.04, 0.5), overLife(0.12, 0.04, 0.5)], color: MAGMA },
+  // Flare: a blinding white star bursting before the face
+  flare_flash: { cell: [3, 0], count: 2, sphere: 0, life: [0.25, 0.3], speed: [0, 0], spin: 120,
+    size: [overLife(0.5, 3.6), overLife(0.5, 3.6)], color: [[0, 1, 1, 0.95, 1], [0.4, 1, 0.9, 0.6, 0.8], [1, 1, 0.6, 0.2, 0]] },
+  // Magma Burst: a spout of molten rock and globs raining back down
+  magma_spout: { flipbook: [0, 1, 8], count: 22, disc: true, dir: [0, 1, 0], life: [0.5, 0.9], speed: [4, 8], accel: [0, -4, 0], drag: 1.5, spin: 90,
+    size: [overLife(0.7, 0.25, 0.4), overLife(0.8, 0.3, 0.4)], color: MAGMA },
+  magma_globs: { cell: [7, 0], count: 26, disc: true, dir: [0, 1, 0], life: [0.8, 1.3], speed: [4, 9], accel: [0, -14, 0], drag: 0.5,
+    size: [overLife(0.2, 0.08, 0.6), overLife(0.2, 0.08, 0.6)], color: MAGMA },
+  // Fire Wall (every pulse, every 1.5 blocks along the wall): tongues of flame leaping up, embers
+  wall_flames: { flipbook: [0, 1, 8], count: 7, sphere: 0.6, dir: [0, 1, 0], life: [0.55, 0.9], speed: [1.2, 2.6], accel: [0, 2, 0], drag: 1.8, spin: 60,
+    size: [overLife(0.75, 0.25, 0.4), overLife(1, 0.35, 0.4)], color: FIRE },
+  wall_embers: { cell: [7, 0], count: 4, sphere: 0.6, dir: [0, 1, 0], life: [0.8, 1.4], speed: [1, 3], accel: [0, 1, 0], drag: 1.2,
+    size: [overLife(0.08, 0.03, 0.5), overLife(0.08, 0.03, 0.5)], color: MAGMA },
+  // Scorched Earth (every pulse, over the zone): low flames licking up from the glowing ground
+  scorch_flames: { flipbook: [0, 1, 8], count: 12, disc: true, dir: [0, 1, 0], life: [0.4, 0.7], speed: [0.3, 1], accel: [0, 1.5, 0], drag: 2, spin: 60,
+    size: [overLife(0.45, 0.15, 0.4), overLife(0.55, 0.2, 0.4)], color: FIRE_SOFT },
+  // Meteor and Fallen Sun in flight (every tick): a mane of flame and soot streaming back
+  meteor_trail: { flipbook: [0, 1, 8], count: 6, sphere: 0.5, dir: [0, 0, -1], life: [0.35, 0.65], speed: [0.5, 1.5], accel: [0, 1, 0], drag: 2, spin: 90,
+    size: [overLife(1, 0.35, 0.4), overLife(1.2, 0.4, 0.4)], color: FIRE },
+  meteor_smoke: { flipbook: [0, 2, 8], blend: true, count: 2, sphere: 0.6, life: [1, 1.6], speed: [0.1, 0.4], accel: [0, 0.5, 0], drag: 1.5, spin: 40,
+    size: [overLife(0.8, 2, 0.4), overLife(0.8, 2, 0.4)], color: SOOT },
+});
+Object.assign(MESHES, {
+  // Ember Spray (once) and Dragon's Breath (every pulse): a cone of churning flame
+  fire_cone: { shape: "cone", texture: E("flame"), life: 0.35, axis: "forward", segments: 20, rings: 4, radius: 0.15, radius_top: 2.2, height: 6, uv: [2, 2],
+    scroll: [0.3, -4], spin: 120, fresnel: 0.4, color: burst([1, 0.85, 0.45, 0.9], [0.8, 0.2, 0.04, 0]) },
+  // Scorching Ray (every pulse): a thin white-gold ray; Flame Lash: a thick, short-lived whip of fire
+  fire_ray: { shape: "cylinder", texture: E("flame"), life: 0.3, axis: "forward", stretch: true, segments: 12, rings: 3, radius: [[0, 0.06], [0.2, 0.16], [1, 0.04]],
+    height: 1, uv: [2, 6], scroll: [0, -8], spin: 160, fresnel: -0.7, color: burst([1, 0.95, 0.7, 1], [1, 0.45, 0.1, 0]) },
+  fire_lash: { shape: "cylinder", texture: E("flame"), life: 0.25, axis: "forward", stretch: true, segments: 14, rings: 3, radius: [[0, 0.3], [0.3, 0.22], [1, 0.02]],
+    height: 1, uv: [1, 4], scroll: [0, -10], spin: 300, fresnel: -0.4, color: burst([1, 0.7, 0.25, 1], [0.8, 0.2, 0.04, 0]) },
+  // Cinder Volley (every tick): a small glowing cinder
+  cinder_orb: { shape: "sphere", texture: E("flame"), life: 0.1, segments: 12, rings: 6, radius: 0.16, uv: [2, 1], scroll: [0.4, -2], spin: 200, fresnel: -0.8,
+    color: [[0, [1, 0.75, 0.35, 1]]] },
+  // Blazing Ring: a ring of flame racing out along the ground
+  flame_ring: { shape: "ring", texture: E("flame"), life: 0.6, segments: 48, radius: [[0, 0.5], [1, 4]], thickness: [[0, 1.6], [1, 0.6]], uv: [8, 1],
+    scroll: [1, -1.5], spin: 60, color: burst([1, 0.8, 0.35, 1], [0.8, 0.2, 0.04, 0]), shake: { strength: 0.6, radius: 10, time: 0.25 } },
+  // Ember Ward: a rim of embers closing around the caster
+  ember_shroud: { shape: "sphere", texture: E("flame"), life: 0.8, segments: 28, rings: 14, radius: [[0, 1.6], [0.3, 1.05], [1, 1.1]], uv: [3, 1.5],
+    scroll: [0.3, -1.2], spin: 90, fresnel: 2, color: hold([1, 0.5, 0.12, 0.85], 0.15, 0.6) },
+  // Scorched Earth (every pulse): the ground glowing red-hot
+  scorch_floor: { shape: "ring", texture: E("flame"), life: 0.55, segments: 40, radius: 1.25, thickness: 2.5, uv: [6, 2], scroll: [0.2, -0.6], spin: 20,
+    color: hold([1, 0.38, 0.08, 0.6], 0.2, 0.75) },
+  // Immolation (every pulse, at the caster): a mantle of flame
+  immolation_mantle: { shape: "cylinder", texture: E("flame"), life: 0.55, segments: 28, rings: 6, radius: [[0, 0.9], [1, 1.05]], height: 2.3, uv: [3, 1.5],
+    scroll: [0, -2.5], spin: 140, fresnel: 1.4, color: hold([1, 0.55, 0.15, 0.75], 0.2, 0.75) },
+  // Meteor in flight (every tick): a boulder of churning fire; Fallen Sun: a small white-gold sun
+  meteor_core: { shape: "sphere", texture: E("flame"), life: 0.1, segments: 24, rings: 12, radius: 0.9, uv: [2, 1], scroll: [0.3, -1.5], spin: 120, fresnel: -0.6,
+    color: [[0, [1, 0.55, 0.18, 1]]] },
+  sun_core: { shape: "sphere", texture: E("flame"), life: 0.1, segments: 32, rings: 16, radius: 1.8, uv: [3, 1.5], scroll: [0.4, -1.2], spin: 90, fresnel: -0.8,
+    color: [[0, [1, 0.92, 0.6, 1]]] },
+});
+
 for (const [id, m] of Object.entries(MESHES)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify({ "orbisarcana:mesh": m }, null, "\t") + "\n");
 
 for (const [id, o] of Object.entries(EFFECTS)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify(effect(id, o), null, "\t") + "\n");

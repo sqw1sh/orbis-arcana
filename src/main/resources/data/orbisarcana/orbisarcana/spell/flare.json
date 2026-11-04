@@ -1,0 +1,56 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:uncommon",
+  "behavior": "orbisarcana:composite",
+  "targeting": "target",
+  "cast": {
+    "mode": "charged",
+    "ticks": 15,
+    "min_ticks": 9
+  },
+  "cost": 15,
+  "cooldown_ticks": 120,
+  "primary_stat": "blind_ticks",
+  "params": {
+    "blind_ticks": 40,
+    "ignite_ticks": 60
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "blind_ticks": 60
+      }
+    },
+    "10": {
+      "params": {
+        "ignite_ticks": 100
+      }
+    },
+    "15": {
+      "params": {
+        "blind_ticks": 100,
+        "ignite_ticks": 140
+      }
+    }
+  },
+  "circle": "orbisarcana:flare",
+  "xp_category": "control",
+  "compose": {
+    "shape": "target",
+    "effects": [
+      {
+        "type": "blind"
+      },
+      {
+        "type": "ignite"
+      }
+    ],
+    "visuals": {
+      "impact": [
+        "orbisarcana:flare_flash",
+        "orbisarcana:fireball_sparks"
+      ],
+      "tint": 0
+    }
+  }
+}

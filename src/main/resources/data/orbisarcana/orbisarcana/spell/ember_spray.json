@@ -1,0 +1,55 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:composite",
+  "targeting": "directional",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 10,
+  "cooldown_ticks": 40,
+  "primary_stat": "damage",
+  "params": {
+    "range": 6,
+    "angle_deg": 50,
+    "damage": 5,
+    "ignite_ticks": 60
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "angle_deg": 70
+      }
+    },
+    "10": {
+      "params": {
+        "ignite_ticks": 90
+      }
+    },
+    "15": {
+      "params": {
+        "range": 9
+      }
+    }
+  },
+  "circle": "orbisarcana:ember_spray",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "cone",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "ignite"
+      }
+    ],
+    "visuals": {
+      "travel": [
+        "orbisarcana:fire_cone"
+      ],
+      "impact": [],
+      "tint": 0
+    }
+  }
+}

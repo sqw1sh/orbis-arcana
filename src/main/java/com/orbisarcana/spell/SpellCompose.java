@@ -13,12 +13,16 @@ import net.minecraft.resources.Identifier;
  * hit, effects applied to each of them, and the effects to show. The numbers stay in the spell's {@code params}, so
  * milestones and mastery scale them as for any spell: an effect reads its param by name (its default, or {@code param}).
  *
- * <pre>"compose": { "shape": "bolt|beam|cone|burst|nova|target|self", "affects": "enemies|allies|self",
+ * <pre>"compose": { "shape": "bolt|beam|cone|burst|nova|target|self|zone|aura|wall|meteor", "affects": "enemies|allies|self",
  *   "effects": [{ "type": "damage" }, { "type": "ignite" }, { "type": "slow", "param": "chill_ticks" }],
  *   "visuals": { "cast": [ids], "travel": [ids], "impact": [ids], "tint": 0xRRGGBB } }</pre>
  * Shape params: bolt — speed, range, count, spread_deg, pierce, chain, chain_range, explode_radius; beam — range,
- * pierce; cone — range, angle_deg; burst, nova — radius. Effect params (defaults): damage, ignite_ticks, slow_ticks
- * (+ slow_level), freeze_ticks, knockback, pull, lift, weaken_ticks, blind_ticks, heal.
+ * pierce; cone — range, angle_deg; burst, nova — radius (+ ground_fire_ticks: burning ground left behind); zone (at the
+ * ground point), aura (follows the caster) — radius, duration_ticks, pulse_ticks; wall (across the aim) — length, width,
+ * height, duration_ticks, pulse_ticks; meteor — explode_radius, ground_fire_ticks. Lasting shapes play their travel
+ * effects and apply the effects every pulse, the impact at the end. Channelled spells repeat the shape every pulse_ticks.
+ * Effect params (defaults): damage, ignite_ticks, slow_ticks (+ slow_level), freeze_ticks, knockback, pull, lift,
+ * weaken_ticks, blind_ticks, heal, shield, speed_ticks.
  */
 public record SpellCompose(String shape, String affects, List<Effect> effects, Visuals visuals) {
     public record Effect(String type, Optional<String> param) {
@@ -35,6 +39,7 @@ public record SpellCompose(String shape, String affects, List<Effect> effects, V
                 case "freeze" -> "freeze_ticks";
                 case "weaken" -> "weaken_ticks";
                 case "blind" -> "blind_ticks";
+                case "speed" -> "speed_ticks";
                 default -> type;
             });
         }
@@ -51,7 +56,7 @@ public record SpellCompose(String shape, String affects, List<Effect> effects, V
         ).apply(i, Visuals::new));
     }
 
-    public static final List<String> SHAPES = List.of("bolt", "beam", "cone", "burst", "nova", "target", "self");
+    public static final List<String> SHAPES = List.of("bolt", "beam", "cone", "burst", "nova", "target", "self", "zone", "aura", "wall", "meteor");
 
     public static final Codec<SpellCompose> CODEC = RecordCodecBuilder.<SpellCompose>create(i -> i.group(
             Codec.STRING.fieldOf("shape").forGetter(SpellCompose::shape),

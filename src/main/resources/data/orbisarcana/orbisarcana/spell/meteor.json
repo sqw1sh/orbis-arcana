@@ -1,0 +1,71 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 25,
+    "min_ticks": 15
+  },
+  "cost": 30,
+  "cooldown_ticks": 300,
+  "primary_stat": "damage",
+  "params": {
+    "range": 30,
+    "explode_radius": 3.5,
+    "damage": 11,
+    "ignite_ticks": 60,
+    "knockback": 1,
+    "ground_fire_ticks": 0
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "explode_radius": 4.5
+      }
+    },
+    "10": {
+      "params": {
+        "ground_fire_ticks": 60
+      }
+    },
+    "15": {
+      "params": {
+        "explode_radius": 5.5,
+        "damage": 13
+      }
+    }
+  },
+  "circle": "orbisarcana:meteor",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "meteor",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "ignite"
+      },
+      {
+        "type": "knockback"
+      }
+    ],
+    "visuals": {
+      "travel": [
+        "orbisarcana:meteor_core",
+        "orbisarcana:meteor_trail",
+        "orbisarcana:meteor_smoke"
+      ],
+      "impact": [
+        "orbisarcana:fireball_nova",
+        "orbisarcana:fireball_wave",
+        "orbisarcana:fireball_blast",
+        "orbisarcana:fireball_sparks",
+        "orbisarcana:fireball_column"
+      ],
+      "tint": 0
+    }
+  }
+}

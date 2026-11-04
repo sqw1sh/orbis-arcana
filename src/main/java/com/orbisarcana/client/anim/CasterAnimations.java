@@ -45,10 +45,14 @@ public final class CasterAnimations {
     private record Running(int casterId, Identifier spell, Targeting targeting, boolean channel) {}
 
     /** Spells with a release pose of their own (tools/caster-poses.cjs); the others use their placement's release. */
-    private static final Map<String, String> POSES = Map.of(
-            "flame_dash", "release_dash", "wind_step", "release_dash", "shadow_step", "release_step",
-            "healing_dew", "release_heal", "heavens_judgment", "release_judgment", "granite_oath", "release_guard",
-            "gust_dome", "release_dome", "discharge", "release_thrust");
+    private static final Map<String, String> POSES = Map.ofEntries(
+            Map.entry("flame_dash", "release_dash"), Map.entry("wind_step", "release_dash"), Map.entry("shadow_step", "release_step"),
+            Map.entry("healing_dew", "release_heal"), Map.entry("heavens_judgment", "release_judgment"), Map.entry("granite_oath", "release_guard"),
+            Map.entry("gust_dome", "release_dome"), Map.entry("discharge", "release_thrust"),
+            // V10 fire pack: calling down the sky, flaring out around oneself, lashing and flashing forward, a guard
+            Map.entry("meteor", "release_judgment"), Map.entry("fallen_sun", "release_judgment"), Map.entry("immolation", "release_dome"),
+            Map.entry("heat_wave", "release_dome"), Map.entry("blazing_ring", "release_dome"), Map.entry("flame_lash", "release_thrust"),
+            Map.entry("flare", "release_thrust"), Map.entry("ember_ward", "release_guard"));
     public static final Identifier TOGGLE_ON = anim("toggle_on");
 
     private static final Map<Integer, Running> RUNNING = new HashMap<>();

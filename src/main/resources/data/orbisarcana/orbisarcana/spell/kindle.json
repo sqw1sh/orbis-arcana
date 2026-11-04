@@ -1,0 +1,57 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:composite",
+  "targeting": "target",
+  "cast": {
+    "mode": "charged",
+    "ticks": 10,
+    "min_ticks": 6
+  },
+  "cost": 10,
+  "cooldown_ticks": 40,
+  "primary_stat": "damage",
+  "params": {
+    "damage": 6,
+    "ignite_ticks": 60
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "ignite_ticks": 100
+      }
+    },
+    "10": {
+      "params": {
+        "damage": 8
+      }
+    },
+    "15": {
+      "params": {
+        "ignite_ticks": 160,
+        "damage": 9
+      }
+    }
+  },
+  "circle": "orbisarcana:kindle",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "target",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "ignite"
+      }
+    ],
+    "visuals": {
+      "impact": [
+        "orbisarcana:fireball_flash",
+        "orbisarcana:fireball_tongues",
+        "orbisarcana:fireball_cinders"
+      ],
+      "tint": 0
+    }
+  }
+}

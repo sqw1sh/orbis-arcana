@@ -6,7 +6,7 @@ Magic mod for **Minecraft Java 26.3 (NeoForge 26.3.0.100+)**. Spells are found a
 
 ## Features
 
-- **31 spells in 10 schools** — Fire, Earth, Water, Air, Ice, Lightning, Nature and the higher schools Light, Dark, Astral. Instant, charged, channelled and toggled casts; projectiles, beams, cones, waves, zones, walls, traps, dashes, teleports, auras, curses, summons.
+- **48 spells in 10 schools** — Fire, Earth, Water, Air, Ice, Lightning, Nature and the higher schools Light, Dark, Astral. Instant, charged, channelled and toggled casts; projectiles, beams, cones, waves, zones, walls, traps, dashes, teleports, auras, curses, summons.
 - **Mastery** — useful casts (damage, healing, control) level a spell from 1 to 15; milestones at 5/10/15 add new effects.
 - **Schools and resonance** — bind to a school at the Resonance Altar; resonance unlocks talents and the school's **Echo**, a passive power of its own (Heat, Flow, Bulwark, Impulse, Frost, Conductivity, Sprouting, Radiance, Dusk, Constellation).
 - **Spell visuals** — a particle and volumetric effects engine: textured spheres, beams, cones, shockwave rings, spirals and ribbon trails with scrolling energy, plus camera shake on heavy hits. Each spell has its own effects, a release sound, an impact sound per school, and a casting pose seen in first and third person.
@@ -27,7 +27,7 @@ Magic mod for **Minecraft Java 26.3 (NeoForge 26.3.0.100+)**. Spells are found a
 
 ## For addon authors
 
-The API lives in `com.orbisarcana.api` (also published as the `orbisarcana-<version>-api.jar` artifact): services through `OrbisArcanaAPI.get()`, new schools with their own Echo (`School`, `SchoolEcho`), events (`SpellCastEvent`, `SpellLearnEvent`, `MasteryLevelUpEvent`, `AttunementChangeEvent`), the focus component. A spell made of existing behaviors is pure data: `data/<namespace>/orbisarcana/spell/<id>.json`. The `orbisarcana:composite` behavior builds a spell from parts. It takes a shape (bolt, beam, cone, burst, nova, target, self), a list of effects (damage, ignite, slow, freeze, knockback, pull, lift, weaken, blind, heal) and its visuals. `node tools/new-spell.cjs` scaffolds such a spell: the JSON, a magic circle and the names. See [`example-addon/`](example-addon/) for a complete addon with a school, an Echo, a custom behavior and a spell.
+The API lives in `com.orbisarcana.api` (also published as the `orbisarcana-<version>-api.jar` artifact): services through `OrbisArcanaAPI.get()`, new schools with their own Echo (`School`, `SchoolEcho`), events (`SpellCastEvent`, `SpellLearnEvent`, `MasteryLevelUpEvent`, `AttunementChangeEvent`), the focus component. A spell made of existing behaviors is pure data: `data/<namespace>/orbisarcana/spell/<id>.json`. The `orbisarcana:composite` behavior builds a spell from parts. It takes a shape (bolt, beam, cone, burst, nova, target, self, zone, aura, wall, meteor), a list of effects (damage, ignite, slow, freeze, knockback, pull, lift, weaken, blind, heal, shield, speed) and its visuals. `node tools/new-spell.cjs` scaffolds such a spell: the JSON, a magic circle and the names. See [`example-addon/`](example-addon/) for a complete addon with a school, an Echo, a custom behavior and a spell.
 
 ## Building
 

@@ -1,0 +1,62 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:epic",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 25,
+    "min_ticks": 15
+  },
+  "cost": 30,
+  "cooldown_ticks": 300,
+  "primary_stat": "damage",
+  "params": {
+    "radius": 3,
+    "damage": 10,
+    "ignite_ticks": 60,
+    "lift": 0.6
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 4
+      }
+    },
+    "10": {
+      "params": {
+        "ignite_ticks": 90
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 5
+      }
+    }
+  },
+  "circle": "orbisarcana:inferno_pillar",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "burst",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "ignite"
+      },
+      {
+        "type": "lift"
+      }
+    ],
+    "visuals": {
+      "impact": [
+        "orbisarcana:fire_column",
+        "orbisarcana:fire_pillar",
+        "orbisarcana:fireball_sparks",
+        "orbisarcana:fireball_ring"
+      ],
+      "tint": 0
+    }
+  }
+}

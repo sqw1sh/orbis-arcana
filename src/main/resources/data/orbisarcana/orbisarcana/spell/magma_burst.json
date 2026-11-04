@@ -1,0 +1,58 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:uncommon",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 15,
+    "min_ticks": 9
+  },
+  "cost": 15,
+  "cooldown_ticks": 120,
+  "primary_stat": "damage",
+  "params": {
+    "radius": 3,
+    "damage": 6,
+    "slow_ticks": 60,
+    "slow_level": 2
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 4
+      }
+    },
+    "10": {
+      "params": {
+        "slow_ticks": 90
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 5
+      }
+    }
+  },
+  "circle": "orbisarcana:magma_burst",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "burst",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "slow"
+      }
+    ],
+    "visuals": {
+      "impact": [
+        "orbisarcana:magma_spout",
+        "orbisarcana:magma_globs",
+        "orbisarcana:fireball_ring"
+      ],
+      "tint": 0
+    }
+  }
+}

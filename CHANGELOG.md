@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fire school pack
+- 17 new Fire spells (21 in all): Ember Spray, Kindle, Heat Wave, Flame Lash, Cinder Volley, Magma Burst, Scorching Ray, Flare, Blazing Ring, Ember Ward, Fire Wall, Scorched Earth, Dragon's Breath, Meteor, Immolation, Inferno Pillar, Fallen Sun. Each has its own effects and three milestones.
+- Composite spells can now be zones, auras that follow the caster, walls, meteors and channels, can leave burning ground, and can grant a shield or speed.
+
 ## 1.1.0 — visual overhaul
 
 For Minecraft 26.3, NeoForge 26.3.0.100+. **New required dependencies:** GeckoLib 5.5.7+ and Player Animation Library 1.2.8+.

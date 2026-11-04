@@ -1,0 +1,67 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:uncommon",
+  "behavior": "orbisarcana:composite",
+  "targeting": "directional",
+  "cast": {
+    "mode": "charged",
+    "ticks": 15,
+    "min_ticks": 9
+  },
+  "cost": 15,
+  "cooldown_ticks": 120,
+  "primary_stat": "damage",
+  "params": {
+    "speed": 1.6,
+    "range": 28,
+    "count": 3,
+    "spread_deg": 12,
+    "pierce": 0,
+    "chain": 0,
+    "chain_range": 5,
+    "explode_radius": 0,
+    "damage": 2.5,
+    "ignite_ticks": 60
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "count": 5,
+        "spread_deg": 9
+      }
+    },
+    "10": {
+      "params": {
+        "ignite_ticks": 90
+      }
+    },
+    "15": {
+      "params": {
+        "explode_radius": 2
+      }
+    }
+  },
+  "circle": "orbisarcana:cinder_volley",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "bolt",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "ignite"
+      }
+    ],
+    "visuals": {
+      "travel": [
+        "orbisarcana:cinder_orb",
+        "orbisarcana:cinder_trail"
+      ],
+      "impact": [
+        "orbisarcana:cinder_pop"
+      ],
+      "tint": 0
+    }
+  }
+}

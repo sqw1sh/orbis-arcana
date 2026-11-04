@@ -1,0 +1,57 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:common",
+  "behavior": "orbisarcana:composite",
+  "targeting": "directional",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 10,
+  "cooldown_ticks": 40,
+  "primary_stat": "damage",
+  "params": {
+    "range": 10,
+    "pierce": 0,
+    "damage": 6,
+    "pull": 0.8
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "pierce": 2
+      }
+    },
+    "10": {
+      "params": {
+        "pull": 1.2
+      }
+    },
+    "15": {
+      "params": {
+        "pierce": 4
+      }
+    }
+  },
+  "circle": "orbisarcana:flame_lash",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "beam",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "pull"
+      }
+    ],
+    "visuals": {
+      "travel": [
+        "orbisarcana:fire_lash"
+      ],
+      "impact": [
+        "orbisarcana:cinder_pop"
+      ],
+      "tint": 0
+    }
+  }
+}

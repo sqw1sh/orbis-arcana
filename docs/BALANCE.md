@@ -18,8 +18,25 @@
 | granite_oath | earth | uncommon | instant | 0 | 8 | 14 | — | — | роль: cast |
 | stone_spear | earth | common | charged | 0.7 | 2.5 | 10 | 6 | 19.2 |  |
 | ash_spiral | fire | epic | charged | 1.3 | 15 | 30 | 12.8 | 21.3 |  |
+| blazing_ring | fire | uncommon | charged | 0.8 | 6 | 15 | 9 | 12.5 |  |
+| cinder_volley | fire | uncommon | charged | 0.8 | 6 | 15 | 10.5 | 21.1 |  |
+| ember_spray | fire | common | instant | 0 | 2 | 10 | 8 | 11.2 |  |
+| ember_ward | fire | uncommon | instant | 0 | 6 | 15 | — | — | роль: cast |
+| fallen_sun | fire | mythic | charged | 2.5 | 45 | 47 | 18 | 26.9 |  |
+| fire_wall | fire | rare | charged | 0.9 | 9 | 20 | 12.6 | 23.7 |  |
 | fireball | fire | common | charged | 0.7 | 2 | 10 | 9 | 19 |  |
+| flame_breath | fire | rare | channel | 3 | 9 | 15 | 10.2 | 14.1 |  |
 | flame_dash | fire | rare | instant | 0 | 8 | 18 | — | — | роль: cast |
+| flame_lash | fire | common | instant | 0 | 2 | 10 | 6 | 8 |  |
+| flare | fire | uncommon | charged | 0.8 | 6 | 15 | — | — |  |
+| heat_wave | fire | common | instant | 0 | 2 | 10 | 5 | 6.7 |  |
+| immolation | fire | epic | instant | 0 | 15 | 30 | 15.8 | 21.5 | роль: cast |
+| inferno_pillar | fire | epic | charged | 1.3 | 15 | 30 | 13 | 17.8 |  |
+| kindle | fire | common | charged | 0.5 | 2 | 10 | 9 | 20 |  |
+| magma_burst | fire | uncommon | charged | 0.8 | 6 | 15 | 6 | 8 |  |
+| meteor | fire | epic | charged | 1.3 | 15 | 30 | 14 | 20.3 |  |
+| scorched_earth | fire | rare | charged | 0.9 | 9 | 20 | 10 | 13.3 |  |
+| scorching_ray | fire | uncommon | channel | 3 | 6 | 12 | 10.2 | 14.1 |  |
 | searing_bolt | fire | common | instant | 0 | 2 | 10 | 9 | 20.5 |  |
 | frost_pattern | ice | epic | charged | 1.2 | 15 | 28 | — | — |  |
 | ice_bastion | ice | rare | charged | 0.9 | 12 | 20 | — | — |  |
@@ -41,7 +58,7 @@
 
 | Школа | DPS | % от меча | Касты |
 |---|---:|---:|---|
-| fire | 9.3 | 96% | searing_bolt×17, fireball×6, ash_spiral×1 |
+| fire | 8.0 | 83% | immolation×1, searing_bolt×15, ember_spray×2, flame_lash×2, kindle×1, heat_wave×1, fire_wall×1 |
 | astral | 3.0 | 31% | constellation_shift×2, star_spike×8 |
 | lightning | 3.6 | 38% | storm_anchor×4, discharge×22 |
 | light | 4.4 | 46% | heavens_judgment×2, dawn_ray×6 |

@@ -49,7 +49,7 @@ public final class SpellBehaviors {
     public static final Supplier<SpellBehavior> ORBIT = BEHAVIORS.register("orbit", () -> OrbitBehavior::release);
     public static final Supplier<SpellBehavior> SHIFT = BEHAVIORS.register("shift", () -> ShiftBehavior::release);
     /** Spells assembled in JSON from a shape, effects and visuals (roadmap V9). */
-    public static final Supplier<SpellBehavior> COMPOSITE = BEHAVIORS.register("composite", () -> CompositeBehavior::release);
+    public static final Supplier<SpellBehavior> COMPOSITE = BEHAVIORS.register("composite", () -> CompositeBehavior.INSTANCE);
 
     public static void register(IEventBus modBus) {
         modBus.addListener((NewRegistryEvent event) -> event.register(REGISTRY));

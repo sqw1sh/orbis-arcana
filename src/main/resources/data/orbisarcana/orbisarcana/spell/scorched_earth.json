@@ -1,0 +1,63 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:rare",
+  "behavior": "orbisarcana:composite",
+  "targeting": "ground",
+  "cast": {
+    "mode": "charged",
+    "ticks": 18,
+    "min_ticks": 11
+  },
+  "cost": 20,
+  "cooldown_ticks": 180,
+  "primary_stat": "damage",
+  "params": {
+    "range": 20,
+    "radius": 3,
+    "duration_ticks": 100,
+    "pulse_ticks": 10,
+    "damage": 1,
+    "slow_ticks": 60,
+    "slow_level": 2
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "radius": 4
+      }
+    },
+    "10": {
+      "params": {
+        "slow_ticks": 90
+      }
+    },
+    "15": {
+      "params": {
+        "radius": 5
+      }
+    }
+  },
+  "circle": "orbisarcana:scorched_earth",
+  "xp_category": "attack",
+  "compose": {
+    "shape": "zone",
+    "effects": [
+      {
+        "type": "damage"
+      },
+      {
+        "type": "slow"
+      }
+    ],
+    "visuals": {
+      "travel": [
+        "orbisarcana:scorch_floor",
+        "orbisarcana:scorch_flames"
+      ],
+      "impact": [
+        "orbisarcana:ash_flakes"
+      ],
+      "tint": 0
+    }
+  }
+}

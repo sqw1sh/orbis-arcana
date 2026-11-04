@@ -1,0 +1,56 @@
+{
+  "school": "orbisarcana:fire",
+  "rarity": "orbisarcana:uncommon",
+  "behavior": "orbisarcana:composite",
+  "targeting": "self",
+  "cast": {
+    "mode": "instant"
+  },
+  "cost": 15,
+  "cooldown_ticks": 120,
+  "primary_stat": "shield",
+  "params": {
+    "shield": 6,
+    "speed_ticks": 100
+  },
+  "milestones": {
+    "5": {
+      "params": {
+        "speed_ticks": 160
+      }
+    },
+    "10": {
+      "params": {
+        "shield": 9
+      }
+    },
+    "15": {
+      "params": {
+        "shield": 12,
+        "speed_ticks": 240
+      }
+    }
+  },
+  "circle": "orbisarcana:ember_ward",
+  "xp_category": "support",
+  "allow_self": true,
+  "compose": {
+    "shape": "self",
+    "affects": "self",
+    "effects": [
+      {
+        "type": "shield"
+      },
+      {
+        "type": "speed"
+      }
+    ],
+    "visuals": {
+      "impact": [
+        "orbisarcana:ember_shroud",
+        "orbisarcana:fireball_cinders"
+      ],
+      "tint": 0
+    }
+  }
+}

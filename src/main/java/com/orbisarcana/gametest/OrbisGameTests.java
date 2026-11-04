@@ -168,6 +168,7 @@ public final class OrbisGameTests {
         test("focus_component_on_any_item", 20, OrbisGameTests::focusComponent);
         test("composite_shapes_hit", 60, OrbisGameTests::compositeShapes);
         test("milestones_change_params", 20, OrbisGameTests::milestonesChangeParams);
+        test("composite_lasting_and_channel", 100, OrbisGameTests::compositeLastingAndChannel);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1613,6 +1614,45 @@ public final class OrbisGameTests {
                     Optional.of(compose));
             var ctx = new com.orbisarcana.spell.behavior.CastContext(p, OrbisArcana.id("test_" + shapes[i]), 9000 + i, def, 1, params, 1.0, at, pig);
             com.orbisarcana.spell.behavior.SpellBehaviors.COMPOSITE.get().release(ctx);
+        }
+        succeedWhen(h, p, () -> {
+            for (int i = 0; i < pigs.size(); i++) {
+                h.assertTrue(pigs.get(i).getHealth() < pigs.get(i).getMaxHealth(), "the " + shapes[i] + " shape should hurt its pig");
+            }
+        });
+    }
+
+    /** Roadmap V10: the lasting shapes (zone, aura, wall), the meteor and a channelled cone hurt their pigs; a channel does nothing on release. */
+    private static void compositeLastingAndChannel(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 0f);
+        List<Pig> pigs = new ArrayList<>();
+        String[] shapes = {"zone", "aura", "wall", "meteor", "channel"};
+        java.util.Map<String, Double> params = java.util.Map.of("damage", 2.0, "range", 8.0, "radius", 1.5, "angle_deg", 40.0,
+                "duration_ticks", 40.0, "pulse_ticks", 10.0, "length", 3.0, "explode_radius", 1.5);
+        for (int i = 0; i < shapes.length; i++) {
+            Pig pig = h.spawn(EntityTypes.PIG, new Vec3(3.5, 1, 0.5 + i * 2));
+            pig.setNoAi(true);
+            pigs.add(pig);
+            Vec3 at = pig.position();
+            p.setPos(at.x - 2, at.y, at.z);
+            p.setYRot(-90f);
+            p.setYHeadRot(-90f);
+            p.setXRot(28f);
+            boolean channel = shapes[i].equals("channel");
+            var compose = new com.orbisarcana.spell.SpellCompose(channel ? "cone" : shapes[i], "enemies",
+                    List.of(new com.orbisarcana.spell.SpellCompose.Effect("damage", Optional.empty())), com.orbisarcana.spell.SpellCompose.Visuals.NONE);
+            var def = new com.orbisarcana.spell.SpellDefinition(Schools.FIRE, com.orbisarcana.core.Rarity.COMMON, OrbisArcana.id("composite"),
+                    com.orbisarcana.core.Targeting.GROUND, new com.orbisarcana.spell.SpellDefinition.Cast(
+                            channel ? com.orbisarcana.core.CastMode.CHANNEL : com.orbisarcana.core.CastMode.INSTANT, channel ? 40 : 0, 0),
+                    0, 0, "damage", params, java.util.Map.of(), Optional.empty(), Optional.empty(), com.orbisarcana.core.XpCategory.ATTACK, false, true,
+                    Optional.of(compose));
+            var ctx = new com.orbisarcana.spell.behavior.CastContext(p, OrbisArcana.id("test_" + shapes[i]), 9100 + i, def, 1, params, 1.0, at, pig);
+            var behavior = (com.orbisarcana.spell.behavior.ChannelBehavior) com.orbisarcana.spell.behavior.SpellBehaviors.COMPOSITE.get();
+            behavior.release(ctx);
+            if (channel) {
+                h.assertTrue(pig.getHealth() == pig.getMaxHealth(), "a channelled composite spell acts on its pulses, not on release");
+                behavior.channelTick(ctx, 0);
+            }
         }
         succeedWhen(h, p, () -> {
             for (int i = 0; i < pigs.size(); i++) {
