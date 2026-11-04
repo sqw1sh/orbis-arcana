@@ -1,5 +1,7 @@
 package com.orbisarcana.entity;
 
+import java.util.List;
+
 import org.jspecify.annotations.Nullable;
 
 import com.orbisarcana.OrbisArcana;
@@ -32,14 +34,20 @@ import net.minecraft.world.phys.Vec3;
  * Not saved: spell projectiles are short-lived and discarded on unload.
  */
 public class SpellProjectile extends ThrowableProjectile {
-    private static final Identifier TRAIL = Vfx.id("fire_trail"), BURST = Vfx.id("fire_burst"), SPARKS = Vfx.id("fire_sparks"),
-            SMOKE = Vfx.id("smoke_puff");
+    /** In flight: white-hot core, mane of flame, dripping embers, soot (tools/vfx-effects.cjs). */
+    private static final List<Identifier> FLIGHT = List.of(Vfx.id("fireball_core"), Vfx.id("fireball_flames"), Vfx.id("fireball_embers"),
+            Vfx.id("fireball_smoke"));
+    /** On impact: flash, burst of flame, ground ring, sparks thrown far; the explosion adds a smoke column and cinders. */
+    private static final List<Identifier> IMPACT = List.of(Vfx.id("fireball_flash"), Vfx.id("fireball_blast"), Vfx.id("fireball_tongues"),
+            Vfx.id("fireball_ring"), Vfx.id("fireball_sparks")), EXPLOSION = List.of(Vfx.id("fireball_column"), Vfx.id("fireball_cinders"));
     private Identifier school = Schools.FIRE;
     private float damage;
     private int igniteTicks;
     private float explodeRadius;
     private int groundFireTicks;
     private int maxAge = 100;
+    /** Size of the effects: the spell's {@code size} param relative to the base 0.5. */
+    private float look = 1;
     private static final double GROUND_FIRE_RADIUS = 1.5;
     /** Spell and cast that fired this projectile, for mastery XP. */
     private @Nullable Identifier spell;
@@ -63,6 +71,12 @@ public class SpellProjectile extends ThrowableProjectile {
         return p;
     }
 
+    /** Scales the projectile's look (milestone 10: bigger balls). */
+    public SpellProjectile look(float scale) {
+        this.look = scale;
+        return this;
+    }
+
     public SpellProjectile attribute(Identifier spell, int castId) {
         this.spell = spell;
         this.castId = castId;
@@ -81,7 +95,7 @@ public class SpellProjectile extends ThrowableProjectile {
     public void tick() {
         super.tick();
         if (level() instanceof ServerLevel server) {
-            if (tickCount == 1) Vfx.attach(this, TRAIL, tint(), 1f);
+            if (tickCount == 1) for (Identifier fx : FLIGHT) Vfx.attach(this, fx, tint(), look);
             if (tickCount > maxAge) discard();
         }
     }
@@ -97,7 +111,7 @@ public class SpellProjectile extends ThrowableProjectile {
             Vec3 at = direct != null ? direct.position() : hit.getLocation();
             BurningGround.spawn(server, at, GROUND_FIRE_RADIUS, groundFireTicks, player, school, spell, castId);
         }
-        impact(server, explodeRadius > 0 ? 1.6f : 1f);
+        impact(server, look, explodeRadius > 0);
         discard();
     }
 
@@ -122,13 +136,12 @@ public class SpellProjectile extends ThrowableProjectile {
         }
     }
 
-    /** Burst of flames, sparks flying off, a puff of smoke (VFX, roadmap V4) and the school's impact sound (V6). */
-    private void impact(ServerLevel server, float scale) {
+    /** The impact effects (bigger and with a smoke column when it explodes) and the school's impact sound (V6). */
+    private void impact(ServerLevel server, float look, boolean explosion) {
         Vec3 at = position();
-        Vec3 back = getDeltaMovement().lengthSqr() > 1.0E-6 ? getDeltaMovement().normalize().scale(-1) : Vec3.ZERO;
-        Vfx.play(server, BURST, at, back, tint(), scale);
-        Vfx.play(server, SPARKS, at, back, tint(), scale);
-        Vfx.play(server, SMOKE, at, Vec3.ZERO, 0, scale);
+        float scale = look * (explosion ? 1.6f : 1f);
+        for (Identifier fx : IMPACT) Vfx.play(server, fx, at, Vec3.ZERO, tint(), scale);
+        if (explosion) for (Identifier fx : EXPLOSION) Vfx.play(server, fx, at, Vec3.ZERO, tint(), scale);
         server.playSound(null, at.x, at.y, at.z, com.orbisarcana.registry.ModSounds.impact(school), net.minecraft.sounds.SoundSource.PLAYERS,
                 2f * scale, 0.95f + random.nextFloat() * 0.1f); // ~32 blocks, more for the milestone explosion
     }

@@ -1,4 +1,4 @@
-// Writes the stock VFX effects (roadmap V8) as Snowstorm particle files into art/vfx/particles (Blockbench opens them;
+// Writes the stock VFX effects and the spells' signature effects (roadmap V8) as Snowstorm particle files into art/vfx/particles (Blockbench opens them;
 // node tools/art.cjs copies them into the mod). Each sends 10 particles from a box of half-size 1 in white, so the
 // server (spell/Fx) scales count and spread like a vanilla burst and tints them. Sprites: textures/vfx/sheet.png,
 // 64x64 cells (tools/vfx.cjs). Run from the project root: node tools/vfx-effects.cjs
@@ -21,9 +21,17 @@ function gradient(stops) {
 
 function effect(id, o) {
   const c = {};
-  c["minecraft:emitter_rate_instant"] = { num_particles: o.count ?? 10 };
-  c["minecraft:emitter_lifetime_once"] = { active_time: 0.05 };
-  if (o.disc) c["minecraft:emitter_shape_disc"] = { radius: 1, plane_normal: [0, 1, 0], surface_only: !!o.ringOnly, direction: o.dir ?? "outwards" };
+  if (o.steady) {
+    // a looping stream (attached effects: it runs while its entity lives)
+    c["minecraft:emitter_rate_steady"] = { spawn_rate: o.steady[0], max_particles: o.steady[1] };
+    c["minecraft:emitter_lifetime_looping"] = { active_time: 1 };
+  } else {
+    c["minecraft:emitter_rate_instant"] = { num_particles: o.count ?? 10 };
+    c["minecraft:emitter_lifetime_once"] = { active_time: 0.05 };
+  }
+  if (o.local) c["minecraft:emitter_local_space"] = { position: true, rotation: false };
+  if (o.sphere !== undefined) c["minecraft:emitter_shape_sphere"] = { radius: o.sphere, direction: o.dir ?? "outwards" };
+  else if (o.disc) c["minecraft:emitter_shape_disc"] = { radius: 1, plane_normal: [0, 1, 0], surface_only: !!o.ringOnly, direction: o.dir ?? "outwards" };
   else c["minecraft:emitter_shape_box"] = { half_dimensions: [1, 1, 1], direction: o.dir ?? "outwards" };
   c["minecraft:particle_lifetime_expression"] = { max_lifetime: rnd(...o.life) };
   c["minecraft:particle_initial_speed"] = typeof o.speed === "string" ? o.speed : rnd(...o.speed);
@@ -92,5 +100,42 @@ const EFFECTS = {
     size: [overLife(0.3, 0.5), overLife(0.3, 0.5)], color: [[0, 0], [0.2, 1], [0.7, 0.7], [1, 0]] },
 };
 
+// ---- signature effects of single spells (roadmap V8): played by their behaviour, in their own colours ----
+const FIRE = [[0, 1, 0.97, 0.82, 1], [0.25, 1, 0.75, 0.3, 0.95], [0.6, 0.95, 0.38, 0.08, 0.7], [1, 0.45, 0.08, 0.02, 0]];
+/** The same, gentler: many of these overlap in a trail without burning out to white. */
+const FIRE_SOFT = [[0, 1, 0.9, 0.6, 0.55], [0.25, 1, 0.62, 0.2, 0.5], [0.6, 0.9, 0.3, 0.06, 0.35], [1, 0.4, 0.07, 0.02, 0]];
+const SOOT = [[0, 0.32, 0.27, 0.24, 0], [0.15, 0.26, 0.22, 0.2, 0.75], [0.7, 0.16, 0.14, 0.13, 0.45], [1, 0.1, 0.09, 0.09, 0]];
+Object.assign(EFFECTS, {
+  // Fireball in flight: a white-hot core that rides with it, a mane of flame streaming back, dripping embers, soot
+  fireball_core: { cell: [1, 0], local: true, steady: [40, 10], sphere: 0.02, life: [0.1, 0.18], speed: [0, 0.05],
+    size: [overLife(0.55, 0.42, 0.15), overLife(0.55, 0.42, 0.15)], color: [[0, 1, 0.95, 0.75, 0.9], [0.5, 1, 0.7, 0.3, 0.7], [1, 1, 0.5, 0.12, 0]] },
+  fireball_flames: { flipbook: [0, 1, 8], steady: [90, 90], sphere: 0.22, life: [0.3, 0.55], speed: [0.2, 0.6], accel: [0, 0.8, 0], drag: 2.5, spin: 60,
+    size: [overLife(0.5, 0.14, 0.4), overLife(0.58, 0.18, 0.4)], color: FIRE_SOFT },
+  fireball_embers: { cell: [7, 0], steady: [30, 40], sphere: 0.3, life: [0.5, 1], speed: [0.6, 1.8], accel: [0, -3, 0], drag: 1.2,
+    size: [overLife(0.1, 0.03, 0.5), overLife(0.1, 0.03, 0.5)], color: [[0, 1, 0.9, 0.55, 1], [0.6, 1, 0.5, 0.12, 0.9], [1, 0.6, 0.15, 0.03, 0]] },
+  fireball_smoke: { flipbook: [0, 2, 8], blend: true, steady: [12, 20], sphere: 0.25, life: [0.9, 1.4], speed: [0.1, 0.3], accel: [0, 0.6, 0], drag: 1.5, spin: 40,
+    size: [overLife(0.3, 0.9, 0.4), overLife(0.3, 0.9, 0.4)], color: SOOT },
+  // Fireball impact: a flash, a ball of flame bursting out, a ring along the ground, sparks thrown far, a column of
+  // smoke and cinders settling
+  fireball_flash: { cell: [1, 0], count: 1, sphere: 0, life: [0.12, 0.14], speed: [0, 0],
+    size: [overLife(1, 3.4), overLife(1, 3.4)], color: [[0, 1, 0.97, 0.85, 0.85], [0.4, 1, 0.7, 0.3, 0.5], [1, 1, 0.45, 0.1, 0]] },
+  // the ball of fire: soft glows, not overlapping into white, cooling from gold to ember red
+  fireball_blast: { cell: [1, 0], count: 26, sphere: 0.35, life: [0.45, 0.8], speed: [2.5, 6], accel: [0, 2, 0], drag: 4.5,
+    size: [overLife(1.1, 0.5, 0.5), overLife(1.1, 0.5, 0.5)],
+    color: [[0, 1, 0.82, 0.45, 0.5], [0.3, 1, 0.48, 0.1, 0.45], [0.7, 0.75, 0.18, 0.04, 0.28], [1, 0.3, 0.05, 0.02, 0]] },
+  // tongues of flame licking out of it
+  fireball_tongues: { flipbook: [0, 1, 8], count: 16, sphere: 0.4, life: [0.35, 0.6], speed: [2, 4.5], accel: [0, 3, 0], drag: 4, spin: 90,
+    size: [overLife(0.5, 0.18, 0.4), overLife(0.6, 0.22, 0.4)], color: FIRE },
+  fireball_ring: { cell: [4, 0], count: 2, sphere: 0, life: [0.42, 0.5], speed: [0, 0], facing: "emitter_transform_xz",
+    size: [overLife(0.6, 6), overLife(0.6, 6)], color: [[0, 1, 0.85, 0.5, 1], [0.5, 1, 0.45, 0.1, 0.6], [1, 0.6, 0.15, 0.02, 0]] },
+  fireball_sparks: { cell: [2, 0], count: 36, sphere: 0.3, life: [0.45, 0.95], speed: [6, 13], accel: [0, -9, 0], drag: 1.8, facing: "lookat_direction",
+    size: [overLife(0.07, 0.03), overLife(0.6, 0.15, 0.5)], color: [[0, 1, 0.95, 0.7, 1], [0.6, 1, 0.55, 0.15, 0.9], [1, 0.8, 0.2, 0.03, 0]] },
+  fireball_column: { flipbook: [0, 2, 8], blend: true, count: 16, sphere: 0.6, life: [1.6, 2.4], speed: [0.4, 1.4], dir: [0, 1, 0], accel: [0, 1.4, 0], drag: 1.3, spin: 30,
+    size: [overLife(0.8, 2.3, 0.4), overLife(0.8, 2.3, 0.4)], color: SOOT },
+  fireball_cinders: { cell: [7, 0], count: 26, sphere: 1, life: [1.4, 2.4], speed: [0.1, 0.5], accel: [0, 0.5, 0], drag: 1.5,
+    size: [`0.07 * (0.6 + 0.4 * math.sin(variable.particle_age * 900 * variable.particle_random_2))`, `0.07 * (0.6 + 0.4 * math.sin(variable.particle_age * 900 * variable.particle_random_2))`],
+    color: [[0, 1, 0.75, 0.3, 0], [0.1, 1, 0.7, 0.25, 1], [0.8, 0.9, 0.3, 0.05, 0.8], [1, 0.5, 0.1, 0.02, 0]] },
+});
+
 for (const [id, o] of Object.entries(EFFECTS)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify(effect(id, o), null, "\t") + "\n");
-console.log(`${Object.keys(EFFECTS).length} stock effects written`);
+console.log(`${Object.keys(EFFECTS).length} effects written`);

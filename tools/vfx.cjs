@@ -51,7 +51,7 @@ for (let f = 0; f < 8; f++) {
     const width = (0.55 - 0.25 * t) * Math.pow(y, 0.6) * (1.2 - 0.5 * t);
     const sway = 0.12 * Math.sin(y * 6 + f * 1.3);
     const d = Math.abs(u - sway * (1 - y)) / Math.max(0.02, width);
-    const body = Math.max(0, 1 - d) * Math.min(1, y * 3) * (1 - t * 0.6);
+    const body = Math.max(0, 1 - d) * Math.min(1, y * 3) * Math.min(1, (1 - y) * 5) * (1 - t * 0.6); // fades out before the cell edges: no hard rim when drawn large
     return body * (0.65 + 0.35 * fbm(u * 3, v * 3 - f * 0.7, 21));
   });
 }

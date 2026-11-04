@@ -149,9 +149,16 @@ public final class VfxManager {
                 } else if (entity == null || !entity.isAlive()) {
                     e.stopped = true;
                 } else {
-                    e.x = entity.getX();
-                    e.y = entity.getY() + entity.getBbHeight() / 2;
-                    e.z = entity.getZ();
+                    double nx = entity.getX(), ny = entity.getY() + entity.getBbHeight() / 2, nz = entity.getZ();
+                    // local space: the particles ride along (only the current position moves, so they glide between ticks)
+                    if (e.fx.localSpace) for (Particle p : e.particles) {
+                        p.x += nx - e.x;
+                        p.y += ny - e.y;
+                        p.z += nz - e.z;
+                    }
+                    e.x = nx;
+                    e.y = ny;
+                    e.z = nz;
                 }
             }
             tickEmitter(e, q.spawnScale, cap - particleCount);

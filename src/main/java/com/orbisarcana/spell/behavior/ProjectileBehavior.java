@@ -17,7 +17,8 @@ final class ProjectileBehavior {
             double yawOffset = count == 1 ? 0 : spread * (i - (count - 1) / 2.0);
             SpellProjectile p = SpellProjectile.create(ctx.level(), ctx.caster(), ctx.spell().school(),
                     (float) ctx.scaled("damage"), (int) Math.round(ctx.param("ignite_ticks") * TalentEffects.igniteMult(ctx.caster())), (float) ctx.param("explode_radius"),
-                    ctx.ticks("ground_fire_ticks"), maxAge).attribute(ctx.spellId(), ctx.castId());
+                    ctx.ticks("ground_fire_ticks"), maxAge).attribute(ctx.spellId(), ctx.castId())
+                    .look((float) Math.max(0.2, ctx.param("size") / 0.5));
             Vec3 dir = ctx.caster().getLookAngle().yRot((float) Math.toRadians(-yawOffset));
             p.shoot(dir.x, dir.y, dir.z, speed, 0.0f);
             ctx.level().addFreshEntity(p);

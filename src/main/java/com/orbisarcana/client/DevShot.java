@@ -83,6 +83,27 @@ public final class DevShot {
                             new org.joml.Vector3f(0.35f, 0.35f, 0.35f), 2f);
                 }
             }),
+            new Scene("fireball", () -> {
+                // a slow fireball crossing the view from right to left (flight effects), the impact effects on the left before the shot
+                Minecraft mc = Minecraft.getInstance();
+                mc.gui.setScreen(null);
+                mc.player.setYRot(0);
+                mc.player.setXRot(8);
+                var server = mc.getSingleplayerServer();
+                if (server != null) server.execute(() -> {
+                    ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+                    if (sp == null) return;
+                    var p = com.orbisarcana.entity.SpellProjectile.create(sp.level(), sp, com.orbisarcana.school.Schools.FIRE, 0, 0, 0, 0, 400).look(1.6f);
+                    p.setPos(sp.getX() - 3.5, sp.getEyeY() - 0.3, sp.getZ() + 6);
+                    p.shoot(1, 0, 0, 0.07f, 0);
+                    sp.level().addFreshEntity(p);
+                });
+            }, () -> {
+                Minecraft mc = Minecraft.getInstance();
+                var at = mc.player.position().add(4.5, 0.2, 8);
+                for (String fx : new String[] {"fireball_flash", "fireball_blast", "fireball_tongues", "fireball_ring", "fireball_sparks", "fireball_column", "fireball_cinders"})
+                    com.orbisarcana.client.vfx.VfxManager.spawn(OrbisArcana.id(fx), at, net.minecraft.world.phys.Vec3.ZERO, 0, 1.6f, -1);
+            }),
             new Scene("cast_anim", () -> fakeCast(true)),
             new Scene("cast_anim_fp", () -> fakeCast(false)),
             new Scene("vfx_cleanup", () -> {
