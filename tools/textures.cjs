@@ -1,6 +1,6 @@
 // Generates the 16x16 textures of Orbis Arcana. Run from the project root: node tools/textures.cjs
-// Items are drawn as ASCII grids with per-sprite palettes (tiers are palette swaps); blocks are procedural stone with
-// overlays. Output: src/main/resources/assets/orbisarcana/textures/{item,block}/*.png
+// Blocks are procedural stone with overlays, entities are painted over vanilla UV layouts; item textures come from the
+// 3D models. Output: src/main/resources/assets/orbisarcana/textures/{block,entity}/*.png
 const fs = require("fs");
 
 const OUT = "src/main/resources/assets/orbisarcana/textures/";
@@ -16,169 +16,10 @@ class Img {
   save(path) { fs.writeFileSync(OUT + path + ".png", png(this.w, this.h, this.px)); }
 }
 /** An ASCII sprite: rows are padded to 16 with '.', which is transparent. */
-function sprite(rows, palette) {
-  if (rows.length > 16) throw new Error("too many rows");
-  const img = new Img();
-  rows.forEach((row, y) => {
-    if (row.length > 16) throw new Error("row too long: " + row);
-    [...row].forEach((ch, x) => { if (ch !== "." && ch !== " ") { if (!(ch in palette)) throw new Error("no colour for " + ch); img.set(x, y, palette[ch]); } });
-  });
-  return img;
-}
 const hash = (x, y, s) => { let h = (x * 374761393 + y * 668265263 + s * 974711) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
 const pick = (list, r) => list[Math.min(list.length - 1, Math.floor(r * list.length))];
 
-// ---- item sprites ----
-const WAND = [
-  "................",
-  "............gG..",
-  "...........gGGG.",
-  "...........GGGd.",
-  "..........mmGd..",
-  ".........WSm....",
-  "........WS......",
-  ".......WS.......",
-  "......WS........",
-  ".....WS.........",
-  "....HH..........",
-  "...HHh..........",
-  "..WSh...........",
-  ".WS.............",
-  ".S..............",
-];
-const STAFF = [
-  "...........gGG..",
-  "..........gGGGd.",
-  "..........GGGGd.",
-  "...........Gdd..",
-  "..........mmm...",
-  ".........WSm....",
-  "........WS......",
-  ".......WS.......",
-  "......WS........",
-  ".....HH.........",
-  "....HHh.........",
-  "...WS...........",
-  "..WS............",
-  ".WS.............",
-  "WS..............",
-  "S...............",
-];
-const TOME = [
-  "................",
-  "..CCCCCCCCCCC...",
-  "..CcccccccccCP..",
-  "..Cc..rrrr.cCP..",
-  "..Cc.r....rcCP..",
-  "..Cc.r.gG.rcCP..",
-  "..Cc.r.Gd.rcCP..",
-  "..Cc.r....rcCP..",
-  "..Cc..rrrr.cCP..",
-  "..Cc.......cCP..",
-  "..CcccccccccCP..",
-  "..CCCCCCCCCCCP..",
-  "...PPPPPPPPPPp..",
-  "....pppppppppp..",
-];
-const FOCUS_TIERS = {
-  apprentice: { W: "#8a6239", S: "#5c3f22", H: "#3d2a19", h: "#2a1c10", m: "#a8a8a8", G: "#8fd8ff", g: "#e6f8ff", d: "#4a8fb8",
-    C: "#6b4428", c: "#8a5a35", P: "#efe6cf", p: "#c9bc9a", r: "#bfe8ff" },
-  amethyst: { W: "#d9b44a", S: "#a07d24", H: "#4b2d6b", h: "#2f1a45", m: "#f2d478", G: "#b26ae6", g: "#f0d9ff", d: "#6a3896",
-    C: "#4b2d6b", c: "#6c44a0", P: "#f3ead6", p: "#cdbf9f", r: "#e3b4ff" },
-  netherite: { W: "#4a4448", S: "#2b2629", H: "#5e1f1f", h: "#3a1010", m: "#7a6f75", G: "#ff6a3d", g: "#ffe0c9", d: "#a83218",
-    C: "#2e2a2d", c: "#4a4448", P: "#e8dfc8", p: "#b9ab88", r: "#ff9b73" },
-};
-
-const SCROLL = [
-  "................",
-  "................",
-  "...RRRRRRRRRR...",
-  "..RrPPPPPPPPrR..",
-  "...pPPPPPPPPp...",
-  "...pPllllllPp...",
-  "...pPPPPPPPPp...",
-  "...pPlllPllPp...",
-  "...pPPPPPPPPp...",
-  "...pPllllPPPp...",
-  "...pPPPPPPPPp...",
-  "...pPPPBBPPPp...",
-  "..RrPPPBbPPPrR..",
-  "...RRRRBBRRRR...",
-  ".......B.B......",
-];
-const SHARD = [
-  "................",
-  ".........A......",
-  "........AaA.....",
-  "........AaA.....",
-  ".......AaaD..A..",
-  ".......AaaD.AaD.",
-  "...A...AaaD.AaD.",
-  "..AaD..AaaDAaaD.",
-  "..AaaD.AaaDAaD..",
-  "..AaaDAaaaDaaD..",
-  "...AaaAaaaDaD...",
-  "....AaaaaaaD....",
-  ".....DDDDDD.....",
-];
-const BOTTLE = [
-  "......kk........",
-  ".....kKKk.......",
-  "......gg........",
-  "......gg........",
-  ".....g..g.......",
-  "....g....g......",
-  "...gLLLLLLg.....",
-  "...gLlLLLLg.....",
-  "...gLLLLLLg.....",
-  "...gLLLLLDg.....",
-  "....gLLLDg......",
-  ".....gggg.......",
-].map(r => ("  " + r).slice(0, 16));
-const SEAL = [
-  "................",
-  ".....WWWWW......",
-  "...WWwwwwwWW....",
-  "..WwwwwwwwwdW...",
-  "..WwwwSSSwwdW...",
-  ".WwwwSwwwSwwdW..",
-  ".WwwSwwSwwSwdW..",
-  ".WwwSwSSSwSwdW..",
-  ".WwwSwwSwwSwdW..",
-  ".WwwwSwwwSwddW..",
-  "..WwwwSSSwwdW...",
-  "..WwwwwwwwddW...",
-  "...WWdddddWW....",
-  ".....WWWWW......",
-];
-const BOOK = [
-  "................",
-  "..BBBBBBBBBBB...",
-  "..BbbbbbbbbbBP..",
-  "..Bb.......bBP..",
-  "..Bb.GGGGG.bBP..",
-  "..Bb.G...G.bBP..",
-  "..Bb.G.G.G.bBP..",
-  "..Bb.G...G.bBP..",
-  "..Bb.GGGGG.bBP..",
-  "..Bb.......bBP..",
-  "..BbbbbbbbbbBP..",
-  "..BBBBBBBBBBBP..",
-  "...PPPPPPPPPPp..",
-  "....pppppppppp..",
-];
-function items() {
-  // foci are 3D GeckoLib models now (art/specs, tools/blockbench/build-model.js); their textures come from the .bbmodel
-  sprite(SCROLL, { R: "#c9a46a", r: "#a07d45", P: "#f4e9cc", p: "#d8c7a0", l: "#9a8a6a", B: "#8a2be2", b: "#c08aff" }).save("item/spell_scroll");
-  sprite(SHARD, { A: "#5fe0e8", a: "#c8fbff", D: "#2a8a9a" }).save("item/aether_shard");
-  sprite(BOTTLE, { k: "#8a5a35", K: "#b07a4a", g: "#d6eef5", L: "#5a2a9a", l: "#b98aff", D: "#3a1a66" }).save("item/aether_ink");
-  sprite(BOTTLE, { k: "#8a5a35", K: "#b07a4a", g: "#d6eef5", L: "#2f5cff", l: "#a8c4ff", D: "#1a2e9a" }).save("item/mana_potion");
-  const seals = { light: ["#f2d36b", "#fff6c8", "#b8902a", "#ffffff"], dark: ["#4a2a6b", "#7a4aa8", "#26123a", "#d0a0ff"],
-    astral: ["#2a3f8f", "#5a7ae0", "#141f4f", "#bfe0ff"] };
-  for (const [s, [W, w, d, S]] of Object.entries(seals)) sprite(SEAL, { W: d, w: W, d, S }).save(`item/seal_${s}`);
-  sprite(BOOK, { B: "#5a2a2a", b: "#7a3a3a", P: "#f0e6cc", p: "#c8b994", G: "#e8c047" }).save("item/first_seals");
-  // rings and amulets are 3D too (tools/specs/accessories.cjs)
-}
+// item textures come from the 3D models (art/specs, tools/specs/*.cjs, tools/art.cjs)
 
 // ---- blocks ----
 const STONE = ["#6f6f6f", "#7a7a7a", "#7f7f7f", "#868686", "#747474"];
@@ -289,6 +130,5 @@ treant();
 decoy();
 fs.mkdirSync(OUT + "item", { recursive: true });
 fs.mkdirSync(OUT + "block", { recursive: true });
-items();
 blocks();
 console.log("textures written");

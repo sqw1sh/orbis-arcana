@@ -1,0 +1,46 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.idle": {
+			"loop": true,
+			"animation_length": 3,
+			"bones": {
+				"flask": {
+					"rotation": {
+						"0.0": {
+							"post": {
+								"vector": [
+									0,
+									0,
+									-3
+								]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"1.5": {
+							"post": {
+								"vector": [
+									0,
+									0,
+									3
+								]
+							},
+							"lerp_mode": "catmullrom"
+						},
+						"3.0": {
+							"post": {
+								"vector": [
+									0,
+									0,
+									-3
+								]
+							},
+							"lerp_mode": "catmullrom"
+						}
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

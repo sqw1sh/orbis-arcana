@@ -1,6 +1,9 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "orbisarcana:item/first_seals"
+    "type": "minecraft:special",
+    "base": "orbisarcana:item/first_seals",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
   }
 }

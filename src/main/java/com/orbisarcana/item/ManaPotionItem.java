@@ -4,6 +4,9 @@ import java.util.function.Consumer;
 
 import com.orbisarcana.mana.ManaService;
 
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.util.GeckoLibUtil;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -15,7 +18,8 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 
 /** Mana Potion (§11.4): drinking restores {@code mana} at once. Drink time and the bottle left behind come from components. */
-public class ManaPotionItem extends Item {
+public class ManaPotionItem extends Item implements ModelItem {
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final double mana;
 
     public ManaPotionItem(Properties properties, double mana) {
@@ -32,5 +36,10 @@ public class ManaPotionItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> out, TooltipFlag flag) {
         out.accept(Component.translatable("item.orbisarcana.mana_potion.tip", (int) mana).withStyle(ChatFormatting.BLUE));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 }

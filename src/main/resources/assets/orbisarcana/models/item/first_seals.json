@@ -1,6 +1,126 @@
 {
-  "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "orbisarcana:item/first_seals"
+    "particle": "orbisarcana:item/first_seals"
+  },
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        180,
+        90,
+        0
+      ],
+      "translation": [
+        0,
+        3.9,
+        -3.2
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        180,
+        -90,
+        0
+      ],
+      "translation": [
+        0,
+        3.9,
+        -3.2
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        -70,
+        10
+      ],
+      "translation": [
+        1,
+        -1,
+        0
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        70,
+        -10
+      ],
+      "translation": [
+        -1,
+        -1,
+        0
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "gui": {
+      "rotation": [
+        15,
+        -25,
+        0
+      ],
+      "translation": [
+        0,
+        -5.6,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        -5.5,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    }
   }
 }

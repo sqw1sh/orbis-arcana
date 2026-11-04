@@ -5,6 +5,8 @@ import java.util.Map;
 import com.orbisarcana.OrbisArcana;
 import com.orbisarcana.core.FocusRules;
 import com.orbisarcana.item.AccessoryItem;
+import com.orbisarcana.item.ArtItem;
+import com.orbisarcana.item.FirstSealsItem;
 import com.orbisarcana.item.FocusItem;
 import com.orbisarcana.item.ManaPotionItem;
 import com.orbisarcana.item.SpellScrollItem;
@@ -24,17 +26,17 @@ public final class ModItems {
             "spell_scroll", SpellScrollItem::new, p -> p.stacksTo(16));
 
     /** Aether Shard (§11.4): from Aether Crystal ore, the base of magic crafting. */
-    public static final DeferredItem<Item> AETHER_SHARD = ModRegistries.ITEMS.registerSimpleItem("aether_shard", p -> p);
+    public static final DeferredItem<ArtItem> AETHER_SHARD = ModRegistries.ITEMS.registerItem("aether_shard", ArtItem::new, p -> p);
 
     /** Aether Ink (§11.4): currency of altar rituals. Comes from taking duplicate scrolls apart on the altar and from crafting. */
-    public static final DeferredItem<Item> AETHER_INK = ModRegistries.ITEMS.registerSimpleItem("aether_ink", p -> p.rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<ArtItem> AETHER_INK = ModRegistries.ITEMS.registerItem("aether_ink", ArtItem::new, p -> p.rarity(Rarity.UNCOMMON));
 
     /** Seal of Comprehension (§11.4): key to a higher school, consumed by its first scroll. Recipes in S7. */
-    public static final DeferredItem<Item> SEAL_LIGHT = seal("light");
-    public static final DeferredItem<Item> SEAL_DARK = seal("dark");
-    public static final DeferredItem<Item> SEAL_ASTRAL = seal("astral");
+    public static final DeferredItem<ArtItem> SEAL_LIGHT = seal("light");
+    public static final DeferredItem<ArtItem> SEAL_DARK = seal("dark");
+    public static final DeferredItem<ArtItem> SEAL_ASTRAL = seal("astral");
 
-    public static final Map<Identifier, DeferredItem<Item>> SEALS = Map.of(
+    public static final Map<Identifier, DeferredItem<ArtItem>> SEALS = Map.of(
             Schools.LIGHT, SEAL_LIGHT, Schools.DARK, SEAL_DARK, Schools.ASTRAL, SEAL_ASTRAL);
 
     // Foci (§11.1): three tiers of each type
@@ -49,8 +51,8 @@ public final class ModItems {
     public static final DeferredItem<FocusItem> NETHERITE_TOME = focus("netherite_tome", FocusRules.Type.TOME, 3, Rarity.RARE);
 
     /** "First Seals" (§4): the tutorial book, a written book whose pages are translated on the client. */
-    public static final DeferredItem<net.minecraft.world.item.WrittenBookItem> FIRST_SEALS = ModRegistries.ITEMS.registerItem("first_seals",
-            net.minecraft.world.item.WrittenBookItem::new, p -> p.stacksTo(1)
+    public static final DeferredItem<FirstSealsItem> FIRST_SEALS = ModRegistries.ITEMS.registerItem("first_seals",
+            FirstSealsItem::new, p -> p.stacksTo(1)
                     .component(net.minecraft.core.component.DataComponents.WRITTEN_BOOK_CONTENT, com.orbisarcana.progression.Onboarding.book()));
 
     /** Mana Potion (§11.4): +40 mana, 10 s cooldown so it tops up rather than replaces regeneration. */
@@ -111,8 +113,8 @@ public final class ModItems {
         });
     }
 
-    private static DeferredItem<Item> seal(String school) {
-        return ModRegistries.ITEMS.registerSimpleItem("seal_" + school, p -> p.rarity(Rarity.RARE));
+    private static DeferredItem<ArtItem> seal(String school) {
+        return ModRegistries.ITEMS.registerItem("seal_" + school, ArtItem::new, p -> p.rarity(Rarity.RARE));
     }
 
     /** Blockbench → GeckoLib pipeline check (art/models/debug_orb.bbmodel); not in the creative tab. */

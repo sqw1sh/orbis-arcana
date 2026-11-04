@@ -1,6 +1,9 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "orbisarcana:item/spell_scroll"
+    "type": "minecraft:special",
+    "base": "orbisarcana:item/spell_scroll",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
   }
 }

@@ -4,14 +4,8 @@ import java.util.function.Consumer;
 
 import org.jspecify.annotations.Nullable;
 
-import com.geckolib.animatable.GeoItem;
-import com.geckolib.animatable.client.GeoRenderProvider;
 import com.geckolib.animatable.instance.AnimatableInstanceCache;
-import com.geckolib.animatable.manager.AnimatableManager;
-import com.geckolib.animation.AnimationController;
-import com.geckolib.animation.RawAnimation;
 import com.geckolib.util.GeckoLibUtil;
-import com.orbisarcana.client.model.GeoModels;
 import com.orbisarcana.school.Schools;
 
 import net.minecraft.ChatFormatting;
@@ -26,8 +20,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
  * A ring or amulet (§11.2). Worn only through Curios, which is optional: without it these items have no slot and are
  * neither crafted nor found. What they do is read by {@link Accessories}. Drawn as an animated GeckoLib model (roadmap V7).
  */
-public class AccessoryItem extends Item implements GeoItem {
-    private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.idle");
+public class AccessoryItem extends Item implements ModelItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public enum Kind {
         /** +10% power of {@link #school}. */
@@ -50,21 +43,12 @@ public class AccessoryItem extends Item implements GeoItem {
         this.school = school;
     }
 
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>("idle", test -> test.setAndContinue(IDLE)));
-    }
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return cache;
     }
 
-    @Override
-    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
-        // only called on the client, when the item is first rendered
-        consumer.accept(GeoModels.item(this));
-    }
 
     public Kind kind() {
         return kind;

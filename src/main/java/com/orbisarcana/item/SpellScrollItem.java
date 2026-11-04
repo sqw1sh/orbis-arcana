@@ -11,6 +11,9 @@ import com.orbisarcana.registry.ModItems;
 import com.orbisarcana.spell.SpellDefinition;
 import com.orbisarcana.spell.SpellRegistry;
 
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.util.GeckoLibUtil;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
@@ -31,7 +34,8 @@ import net.minecraft.world.level.Level;
  * Spell scroll (§6): hold right-click ~2 s to learn the spell forever (the scroll is consumed);
  * releasing early keeps it. Shift + right-click dissolves a duplicate into mastery XP (§6.3).
  */
-public class SpellScrollItem extends Item {
+public class SpellScrollItem extends Item implements ModelItem {
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     public static final int READ_TICKS = 40;
 
     public SpellScrollItem(Properties properties) {
@@ -114,5 +118,10 @@ public class SpellScrollItem extends Item {
                 (int) d.cost(), String.format("%.1f", d.cooldownTicks() / 20.0)).withStyle(ChatFormatting.DARK_GRAY));
         out.accept(Component.translatable("spell." + id.get().getNamespace() + "." + id.get().getPath() + ".desc").withStyle(ChatFormatting.GRAY));
         out.accept(Component.translatable("tooltip.orbisarcana.scroll.hint").withStyle(ChatFormatting.DARK_PURPLE));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 }

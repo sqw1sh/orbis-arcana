@@ -1,6 +1,9 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "orbisarcana:item/mana_potion"
+    "type": "minecraft:special",
+    "base": "orbisarcana:item/mana_potion",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
   }
 }

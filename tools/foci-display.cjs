@@ -33,15 +33,18 @@ for (const tier of ["apprentice", "amethyst", "netherite"]) for (const [type, di
   fs.writeFileSync(`src/main/resources/assets/orbisarcana/models/item/${id}.json`,
     JSON.stringify({ textures: { particle: `orbisarcana:item/${id}` }, display }, null, 2) + "\n");
 }
-// rings and amulets are centred on the origin: a small trinket in the fist, a turned 3D view in the slot
+// the other 3D items are centred on the origin: a small trinket in the fist, a turned 3D view in the slot
 const trinket = (gui) => set(both([90, 0, 0], [0, 1, -0.5], 0.45), both([0, -20, 0], [1, 3, 0], 0.55),
   { rotation: [15, -25, 0], translation: [0, 0, 0], scale: [gui, gui, gui] },
   { rotation: [0, 0, 0], translation: [0, 2, 0], scale: [0.45, 0.45, 0.45] },
   { rotation: [0, 0, 0], translation: [0, 0, 0], scale: [gui, gui, gui] });
-const ACCESSORIES = { ring: ["ring_of_flame", "ring_of_stone", "ring_of_tide", "ring_of_wind", "ring_of_frost", "ring_of_storm",
-  "ring_of_leaf", "ring_of_echo", "scribe_ring"], amulet: ["mana_amulet", "flow_amulet", "focus_amulet"] };
-for (const [kind, ids] of Object.entries(ACCESSORIES)) for (const id of ids) {
-  fs.writeFileSync(`src/main/resources/assets/orbisarcana/models/item/${id}.json`,
-    JSON.stringify({ textures: { particle: `orbisarcana:item/${id}` }, display: trinket(kind === "ring" ? 1.5 : 1.4) }, null, 2) + "\n");
-}
-console.log("foci and accessory display models written");
+// slot scale per item, so that each fits into the 16x16 icon
+const TRINKETS = { ring_of_flame: 1.5, ring_of_stone: 1.5, ring_of_tide: 1.5, ring_of_wind: 1.5, ring_of_frost: 1.5, ring_of_storm: 1.5,
+  ring_of_leaf: 1.5, ring_of_echo: 1.5, scribe_ring: 1.5, mana_amulet: 1.4, flow_amulet: 1.4, focus_amulet: 1.4,
+  spell_scroll: 1.15, aether_shard: 1.5, aether_ink: 1.5, mana_potion: 1.4, seal_light: 1.45, seal_dark: 1.45, seal_astral: 1.45 };
+const write = (id, display) => fs.writeFileSync(`src/main/resources/assets/orbisarcana/models/item/${id}.json`,
+  JSON.stringify({ textures: { particle: `orbisarcana:item/${id}` }, display }, null, 2) + "\n");
+for (const [id, gui] of Object.entries(TRINKETS)) write(id, trinket(gui));
+// "First Seals" has the tome's shape
+write("first_seals", D.tome);
+console.log("display models written");
