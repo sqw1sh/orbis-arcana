@@ -5,13 +5,16 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Talent tree of a school (§10.4): a free root passive plus two branches of two nodes. The second
- * node of a branch needs the first. Three points (resonance 3/6/9) for four nodes: you cannot take all.
+ * Talent tree of a school (§10.4): a free root passive plus two branches of two nodes; a school pack (roadmap V10+)
+ * adds a third node to each branch. Each node of a branch needs the one before it. Three points (resonance 3/6/9):
+ * one whole deep branch, or both branches halfway — never everything.
  */
 public final class TalentRules {
     public static final String ROOT = "root";
-    public static final String A1 = "a1", A2 = "a2", B1 = "b1", B2 = "b2";
-    public static final List<String> NODES = List.of(A1, A2, B1, B2);
+    public static final String A1 = "a1", A2 = "a2", A3 = "a3", B1 = "b1", B2 = "b2", B3 = "b3";
+    public static final List<String> NODES = List.of(A1, A2, A3, B1, B2, B3);
+    /** The third nodes, present only in schools whose pack added them. */
+    public static final List<String> DEEP = List.of(A3, B3);
     /** Aether Ink to reset a school's talents at the altar (prototype). */
     public static final int RESET_INK = 2;
 
@@ -38,7 +41,9 @@ public final class TalentRules {
     public static Optional<String> prerequisite(String node) {
         return switch (node) {
             case A2 -> Optional.of(A1);
+            case A3 -> Optional.of(A2);
             case B2 -> Optional.of(B1);
+            case B3 -> Optional.of(B2);
             default -> Optional.empty();
         };
     }

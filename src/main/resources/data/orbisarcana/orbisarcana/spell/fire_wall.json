@@ -51,12 +51,19 @@
       }
     ],
     "visuals": {
+      "cast": [
+        "orbisarcana:hand_flare"
+      ],
       "travel": [
         "orbisarcana:wall_flames",
         "orbisarcana:wall_embers"
       ],
       "impact": [],
-      "tint": 0
+      "apogee_travel": [
+        "orbisarcana:fireball_tongues"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.fire_wall.release"
     }
   }
 }

@@ -169,6 +169,7 @@ public final class OrbisGameTests {
         test("composite_shapes_hit", 60, OrbisGameTests::compositeShapes);
         test("milestones_change_params", 20, OrbisGameTests::milestonesChangeParams);
         test("composite_lasting_and_channel", 100, OrbisGameTests::compositeLastingAndChannel);
+        test("fire_deep_talents", 40, OrbisGameTests::fireDeepTalents);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1659,6 +1660,28 @@ public final class OrbisGameTests {
                 h.assertTrue(pigs.get(i).getHealth() < pigs.get(i).getMaxHealth(), "the " + shapes[i] + " shape should hurt its pig");
             }
         });
+    }
+
+    /** Roadmap V10: the Fire third nodes. Flame Skin burns a melee attacker; a school without third nodes denies them. */
+    private static void fireDeepTalents(GameTestHelper h) {
+        ServerPlayer p = boundTo(h, Schools.FIRE, FIREBALL, 9);
+        h.assertTrue(AttunementService.pickTalent(p, Schools.FIRE, "b3").isPresent(), "b3 needs b2 first");
+        for (String n : new String[] {"b1", "b2", "b3"}) h.assertTrue(AttunementService.pickTalent(p, Schools.FIRE, n).isEmpty(), "picks " + n);
+        p.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        p.connection.markClientLoaded();
+        var zombie = h.spawn(EntityTypes.ZOMBIE, new Vec3(6.5, 1, 4.5));
+        zombie.setNoAi(true);
+        p.hurtServer(h.getLevel(), h.getLevel().damageSources().mobAttack(zombie), 1f);
+        h.assertTrue(zombie.isOnFire(), "Flame Skin sets the melee attacker on fire");
+        h.assertTrue(zombie.getHealth() < zombie.getMaxHealth(), "and burns it");
+        ServerPlayer w = boundTo(h, Schools.WATER, HEALING_DEW, 9);
+        for (String n : new String[] {"a1", "a2"}) AttunementService.pickTalent(w, Schools.WATER, n);
+        h.assertTrue(AttunementService.pickTalent(w, Schools.WATER, "a3").filter(d -> d == com.orbisarcana.core.TalentRules.Denial.UNKNOWN_NODE).isPresent(),
+                "water has no third node yet");
+        zombie.discard();
+        cleanup(h, w);
+        cleanup(h, p);
+        h.succeed();
     }
 
     /** Roadmap V9: a milestone that sets a param to its base value does nothing — every milestone of every spell changes something. */

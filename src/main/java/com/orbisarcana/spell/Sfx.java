@@ -31,6 +31,16 @@ public final class Sfx {
                 0.95f + level.getRandom().nextFloat() * 0.1f);
     }
 
+    /** A spell's own heavy impact (sound event {@code id}) at {@code at}. */
+    public static void impactSound(ServerLevel level, Vec3 at, Identifier id, float scale) {
+        level.playSound(null, at.x, at.y, at.z, event(id), SoundSource.PLAYERS, 1.6f * scale, 0.95f + level.getRandom().nextFloat() * 0.1f);
+    }
+
+    /** The sound event of {@code id} (a direct holder: the client looks the sound up in sounds.json by id). */
+    public static net.minecraft.sounds.SoundEvent event(Identifier id) {
+        return net.minecraft.sounds.SoundEvent.createVariableRangeEvent(id);
+    }
+
     @SubscribeEvent
     static void onDamage(LivingDamageEvent.Post event) {
         LivingEntity victim = event.getEntity();

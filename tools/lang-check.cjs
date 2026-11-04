@@ -43,11 +43,14 @@ for (const f of fs.readdirSync("src/main/resources/data/orbisarcana/orbisarcana/
   for (const lvl of Object.keys(def.milestones || {})) need(`spell.orbisarcana.${id}.m${lvl}`);
   need(`stat.orbisarcana.${def.primary_stat || "damage"}`);
 }
-// schools and their talent trees
+// schools and their talent trees; DEEP — the schools whose pack added the third nodes
+const DEEP = { fire: ["a3", "b3"] };
 const schools = ["fire", "earth", "water", "air", "ice", "lightning", "nature", "light", "dark", "astral"];
 for (const s of schools) {
   need(`school.orbisarcana.${s}`);
   for (const node of ["echo", "root", "a1", "a2", "b1", "b2"]) { need(`talent.orbisarcana.${s}.${node}`); need(`talent.orbisarcana.${s}.${node}.desc`); }
+  // third nodes of the school packs (roadmap V10+)
+  for (const node of DEEP[s] || []) { need(`talent.orbisarcana.${s}.${node}`); need(`talent.orbisarcana.${s}.${node}.desc`); }
 }
 // registered items, blocks and entities
 const reg = fs.readFileSync("src/main/java/com/orbisarcana/registry/ModItems.java", "utf8")

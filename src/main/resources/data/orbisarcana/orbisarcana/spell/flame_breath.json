@@ -47,11 +47,18 @@
       }
     ],
     "visuals": {
+      "cast": [
+        "orbisarcana:hand_flare"
+      ],
       "travel": [
         "orbisarcana:fire_cone"
       ],
       "impact": [],
-      "tint": 0
+      "apogee_travel": [
+        "orbisarcana:fireball_sparks"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.flame_breath.release"
     }
   }
 }

@@ -53,6 +53,9 @@
       }
     ],
     "visuals": {
+      "cast": [
+        "orbisarcana:hand_flare"
+      ],
       "travel": [
         "orbisarcana:meteor_core",
         "orbisarcana:meteor_trail",
@@ -65,7 +68,16 @@
         "orbisarcana:fireball_sparks",
         "orbisarcana:fireball_column"
       ],
-      "tint": 0
+      "apogee_travel": [
+        "orbisarcana:cinder_trail"
+      ],
+      "apogee_impact": [
+        "orbisarcana:fire_column",
+        "orbisarcana:apogee_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.meteor.release",
+      "impact_sound": "orbisarcana:spell.meteor.impact"
     }
   }
 }

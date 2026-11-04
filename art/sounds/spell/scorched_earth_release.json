@@ -1,0 +1,46 @@
+{
+  "length": 2,
+  "loudness": -11,
+  "variants": 2,
+  "layers": [
+    {
+      "type": "sine",
+      "freq": [
+        50,
+        25
+      ],
+      "start": 0,
+      "length": 1.2,
+      "attack": 0.003,
+      "decay": 0.42,
+      "gain": 0.8,
+      "drive": 3
+    },
+    {
+      "type": "crackle",
+      "density": 400,
+      "highpass": 3000,
+      "start": 0.1,
+      "length": 1.7,
+      "attack": 0.05,
+      "decay": 0.85,
+      "gain": 0.5
+    },
+    {
+      "type": "noise",
+      "lowpass": 600,
+      "start": 0.1,
+      "length": 1.4,
+      "attack": 0.27999999999999997,
+      "decay": 0.63,
+      "gain": 0.5,
+      "drive": 2.2
+    }
+  ],
+  "compress": {
+    "threshold": -14,
+    "ratio": 3,
+    "attack": 0.003,
+    "release": 0.12
+  }
+}

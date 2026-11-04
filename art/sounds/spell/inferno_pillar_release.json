@@ -1,0 +1,40 @@
+{
+  "length": 1.4,
+  "loudness": -11,
+  "variants": 2,
+  "layers": [
+    {
+      "type": "saw",
+      "freq": [
+        40,
+        90
+      ],
+      "lowpass": 500,
+      "start": 0,
+      "length": 1.1,
+      "attack": 0.02,
+      "decay": 0.44000000000000006,
+      "gain": 0.4,
+      "drive": 2.5
+    },
+    {
+      "type": "sine",
+      "freq": [
+        45,
+        60
+      ],
+      "start": 0,
+      "length": 1.1,
+      "attack": 0.003,
+      "decay": 0.385,
+      "gain": 0.5,
+      "drive": 2.4
+    }
+  ],
+  "compress": {
+    "threshold": -14,
+    "ratio": 3,
+    "attack": 0.003,
+    "release": 0.12
+  }
+}

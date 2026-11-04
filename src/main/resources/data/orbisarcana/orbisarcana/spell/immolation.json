@@ -46,6 +46,9 @@
       }
     ],
     "visuals": {
+      "cast": [
+        "orbisarcana:hand_flare"
+      ],
       "travel": [
         "orbisarcana:immolation_mantle",
         "orbisarcana:ash_ring"
@@ -53,7 +56,11 @@
       "impact": [
         "orbisarcana:fireball_wave"
       ],
-      "tint": 0
+      "apogee_travel": [
+        "orbisarcana:apogee_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.immolation.release"
     }
   }
 }

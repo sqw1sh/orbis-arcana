@@ -54,6 +54,9 @@
       }
     ],
     "visuals": {
+      "cast": [
+        "orbisarcana:hand_flare"
+      ],
       "travel": [
         "orbisarcana:cinder_orb",
         "orbisarcana:cinder_trail"
@@ -61,7 +64,13 @@
       "impact": [
         "orbisarcana:cinder_pop"
       ],
-      "tint": 0
+      "apogee_impact": [
+        "orbisarcana:fireball_flash",
+        "orbisarcana:fireball_ring"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.cinder_volley.release",
+      "impact_sound": "orbisarcana:spell.cinder_volley.impact"
     }
   }
 }

@@ -46,12 +46,21 @@
       }
     ],
     "visuals": {
+      "cast": [
+        "orbisarcana:hand_flare"
+      ],
       "impact": [
         "orbisarcana:fireball_flash",
         "orbisarcana:fireball_tongues",
         "orbisarcana:fireball_cinders"
       ],
-      "tint": 0
+      "apogee_impact": [
+        "orbisarcana:apogee_crown",
+        "orbisarcana:fireball_sparks"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.kindle.release",
+      "impact_sound": "orbisarcana:spell.kindle.impact"
     }
   }
 }

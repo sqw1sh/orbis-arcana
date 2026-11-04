@@ -486,6 +486,18 @@ Object.assign(MESHES, {
     color: [[0, [1, 0.92, 0.6, 1]]] },
 });
 
+// V10 fire pack: a flare at the hand on release, and the apogee (mastery 15) — a golden crown of flame and a golden star
+Object.assign(EFFECTS, {
+  hand_flare: { cell: [2, 0], count: 10, sphere: 0.1, dir: [0, 0, 1], life: [0.15, 0.3], speed: [2, 5], drag: 5, facing: "lookat_direction",
+    size: [overLife(0.06, 0.02), overLife(0.45, 0.1)], color: [[0, 1, 0.95, 0.7, 1], [0.6, 1, 0.55, 0.15, 0.8], [1, 0.6, 0.15, 0.02, 0]] },
+  apogee_flare: { cell: [3, 0], count: 3, sphere: 0, life: [0.35, 0.45], speed: [0, 0], spin: 60,
+    size: [overLife(0.8, 4.5), overLife(0.8, 4.5)], color: [[0, 1, 0.95, 0.6, 1], [0.4, 1, 0.8, 0.3, 0.8], [1, 1, 0.55, 0.1, 0]] },
+});
+Object.assign(MESHES, {
+  apogee_crown: { shape: "cylinder", texture: E("flame"), life: 0.7, segments: 32, rings: 4, radius: [[0, 0.6], [1, 2.6]], height: [[0, 0.2], [0.3, 1.2], [1, 0.3]],
+    uv: [6, 1], scroll: [0.6, -2], spin: 90, fresnel: 1.2, color: burst([1, 0.85, 0.35, 1], [1, 0.45, 0.05, 0]) },
+});
+
 for (const [id, m] of Object.entries(MESHES)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify({ "orbisarcana:mesh": m }, null, "\t") + "\n");
 
 for (const [id, o] of Object.entries(EFFECTS)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify(effect(id, o), null, "\t") + "\n");

@@ -236,7 +236,8 @@ public final class CastService {
         ActiveCast core = cast.core();
 
         if (outcome == Outcome.RELEASED) {
-            playAt(player, ModSounds.release(cast.spell().school()));
+            playAt(player, cast.spell().compose().flatMap(c -> c.visuals().releaseSound()).map(Sfx::event)
+                    .orElseGet(() -> ModSounds.release(cast.spell().school())));
             CastContext ctx = context(player, cast, now);
             SpellBehaviors.get(cast.spell().behavior()).ifPresent(b -> b.release(ctx));
             EchoService.onCastReleased(ctx);

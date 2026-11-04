@@ -116,7 +116,9 @@ public final class AttunementService {
     public static Optional<TalentRules.Denial> pickTalent(ServerPlayer player, Identifier school, String node) {
         Attunement a = attunement(player);
         Attunement.SchoolProgress p = a.school(school);
-        Optional<TalentRules.Denial> denial = TalentRules.check(a.dominant().filter(school::equals).isPresent(), node, p.talents(), p.resonance());
+        Optional<TalentRules.Denial> denial = TalentRules.DEEP.contains(node) && !TalentEffects.implemented(school.getPath(), node)
+                ? Optional.of(TalentRules.Denial.UNKNOWN_NODE)
+                : TalentRules.check(a.dominant().filter(school::equals).isPresent(), node, p.talents(), p.resonance());
         if (denial.isEmpty()) {
             p.talents().add(node);
             player.syncData(ModAttachments.ATTUNEMENT);

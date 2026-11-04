@@ -50,7 +50,11 @@
         "orbisarcana:ember_shroud",
         "orbisarcana:fireball_cinders"
       ],
-      "tint": 0
+      "apogee_impact": [
+        "orbisarcana:apogee_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.ember_ward.release"
     }
   }
 }

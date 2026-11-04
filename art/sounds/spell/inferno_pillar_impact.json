@@ -1,0 +1,62 @@
+{
+  "length": 2.8,
+  "loudness": -9,
+  "variants": 2,
+  "layers": [
+    {
+      "type": "noise",
+      "highpass": 2500,
+      "start": 0,
+      "length": 0.05,
+      "attack": 0.0008,
+      "decay": 0.012,
+      "gain": 0.8
+    },
+    {
+      "type": "noise",
+      "bandpass": [
+        200,
+        5000
+      ],
+      "q": 0.6,
+      "start": 0,
+      "length": 1.6,
+      "attack": 0.48,
+      "release": 0.8,
+      "gain": 0.9
+    },
+    {
+      "type": "noise",
+      "lowpass": 2500,
+      "start": 0,
+      "length": 2.4,
+      "attack": 0.48,
+      "decay": 1.08,
+      "gain": 0.95,
+      "drive": 3
+    },
+    {
+      "type": "sine",
+      "freq": [
+        65,
+        25
+      ],
+      "start": 0,
+      "length": 1.6,
+      "attack": 0.003,
+      "decay": 0.5599999999999999,
+      "gain": 1,
+      "drive": 3
+    }
+  ],
+  "reverb": {
+    "size": 0.5,
+    "mix": 0.2
+  },
+  "compress": {
+    "threshold": -14,
+    "ratio": 3,
+    "attack": 0.003,
+    "release": 0.12
+  }
+}

@@ -15,7 +15,8 @@ import net.minecraft.resources.Identifier;
  *
  * <pre>"compose": { "shape": "bolt|beam|cone|burst|nova|target|self|zone|aura|wall|meteor", "affects": "enemies|allies|self",
  *   "effects": [{ "type": "damage" }, { "type": "ignite" }, { "type": "slow", "param": "chill_ticks" }],
- *   "visuals": { "cast": [ids], "travel": [ids], "impact": [ids], "tint": 0xRRGGBB } }</pre>
+ *   "visuals": { "cast": [ids], "travel": [ids], "impact": [ids], "tint": 0xRRGGBB,
+ *     "release_sound": id, "impact_sound": id, "apogee_travel": [ids], "apogee_impact": [ids] } }</pre>
  * Shape params: bolt — speed, range, count, spread_deg, pierce, chain, chain_range, explode_radius; beam — range,
  * pierce; cone — range, angle_deg; burst, nova — radius (+ ground_fire_ticks: burning ground left behind); zone (at the
  * ground point), aura (follows the caster) — radius, duration_ticks, pulse_ticks; wall (across the aim) — length, width,
@@ -45,14 +46,23 @@ public record SpellCompose(String shape, String affects, List<Effect> effects, V
         }
     }
 
-    /** Effects played at the hand, along the way (each bolt tick, the beam, the cone) and where it lands; tinted. */
-    public record Visuals(List<Identifier> cast, List<Identifier> travel, List<Identifier> impact, int tint) {
-        public static final Visuals NONE = new Visuals(List.of(), List.of(), List.of(), 0);
+    /**
+     * Effects played at the hand, along the way (each bolt tick, the beam, the cone) and where it lands; tinted. The sounds
+     * (sound event ids) replace the school's release and impact sounds; at mastery 15 (the apogee) the apogee effects are
+     * played on top of the travel and impact ones.
+     */
+    public record Visuals(List<Identifier> cast, List<Identifier> travel, List<Identifier> impact, int tint,
+                          Optional<Identifier> releaseSound, Optional<Identifier> impactSound, List<Identifier> apogeeTravel, List<Identifier> apogeeImpact) {
+        public static final Visuals NONE = new Visuals(List.of(), List.of(), List.of(), 0, Optional.empty(), Optional.empty(), List.of(), List.of());
         public static final Codec<Visuals> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Identifier.CODEC.listOf().optionalFieldOf("cast", List.of()).forGetter(Visuals::cast),
                 Identifier.CODEC.listOf().optionalFieldOf("travel", List.of()).forGetter(Visuals::travel),
                 Identifier.CODEC.listOf().optionalFieldOf("impact", List.of()).forGetter(Visuals::impact),
-                Codec.INT.optionalFieldOf("tint", 0).forGetter(Visuals::tint)
+                Codec.INT.optionalFieldOf("tint", 0).forGetter(Visuals::tint),
+                Identifier.CODEC.optionalFieldOf("release_sound").forGetter(Visuals::releaseSound),
+                Identifier.CODEC.optionalFieldOf("impact_sound").forGetter(Visuals::impactSound),
+                Identifier.CODEC.listOf().optionalFieldOf("apogee_travel", List.of()).forGetter(Visuals::apogeeTravel),
+                Identifier.CODEC.listOf().optionalFieldOf("apogee_impact", List.of()).forGetter(Visuals::apogeeImpact)
         ).apply(i, Visuals::new));
     }
 

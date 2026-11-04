@@ -614,5 +614,302 @@
       }
     ],
     "subtitle": "subtitles.orbisarcana.cast.hit"
+  },
+  "spell.ember_spray.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/ember_spray_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/ember_spray_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.ember_spray.release"
+  },
+  "spell.kindle.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/kindle_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/kindle_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.kindle.release"
+  },
+  "spell.kindle.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/kindle_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/kindle_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.kindle.impact"
+  },
+  "spell.heat_wave.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/heat_wave_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/heat_wave_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.heat_wave.release"
+  },
+  "spell.heat_wave.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/heat_wave_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/heat_wave_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.heat_wave.impact"
+  },
+  "spell.flame_lash.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/flame_lash_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/flame_lash_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.flame_lash.release"
+  },
+  "spell.flame_lash.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/flame_lash_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/flame_lash_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.flame_lash.impact"
+  },
+  "spell.cinder_volley.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/cinder_volley_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/cinder_volley_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.cinder_volley.release"
+  },
+  "spell.cinder_volley.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/cinder_volley_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/cinder_volley_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.cinder_volley.impact"
+  },
+  "spell.magma_burst.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/magma_burst_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/magma_burst_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.magma_burst.release"
+  },
+  "spell.magma_burst.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/magma_burst_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/magma_burst_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.magma_burst.impact"
+  },
+  "spell.scorching_ray.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/scorching_ray_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/scorching_ray_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.scorching_ray.release"
+  },
+  "spell.flare.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/flare_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/flare_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.flare.release"
+  },
+  "spell.flare.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/flare_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/flare_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.flare.impact"
+  },
+  "spell.blazing_ring.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/blazing_ring_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/blazing_ring_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.blazing_ring.release"
+  },
+  "spell.blazing_ring.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/blazing_ring_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/blazing_ring_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.blazing_ring.impact"
+  },
+  "spell.ember_ward.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/ember_ward_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/ember_ward_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.ember_ward.release"
+  },
+  "spell.fire_wall.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/fire_wall_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/fire_wall_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.fire_wall.release"
+  },
+  "spell.scorched_earth.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/scorched_earth_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/scorched_earth_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.scorched_earth.release"
+  },
+  "spell.flame_breath.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/flame_breath_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/flame_breath_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.flame_breath.release"
+  },
+  "spell.meteor.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/meteor_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/meteor_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.meteor.release"
+  },
+  "spell.meteor.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/meteor_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/meteor_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.meteor.impact"
+  },
+  "spell.immolation.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/immolation_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/immolation_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.immolation.release"
+  },
+  "spell.inferno_pillar.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/inferno_pillar_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/inferno_pillar_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.inferno_pillar.release"
+  },
+  "spell.inferno_pillar.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/inferno_pillar_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/inferno_pillar_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.inferno_pillar.impact"
+  },
+  "spell.fallen_sun.release": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/fallen_sun_release_1"
+      },
+      {
+        "name": "orbisarcana:spell/fallen_sun_release_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.fallen_sun.release"
+  },
+  "spell.fallen_sun.impact": {
+    "sounds": [
+      {
+        "name": "orbisarcana:spell/fallen_sun_impact_1"
+      },
+      {
+        "name": "orbisarcana:spell/fallen_sun_impact_2"
+      }
+    ],
+    "subtitle": "subtitles.orbisarcana.spell.fallen_sun.impact"
   }
 }

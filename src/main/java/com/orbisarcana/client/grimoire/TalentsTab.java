@@ -30,7 +30,9 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 class TalentsTab extends GrimoireTab {
     private static final int SIDE_W = 132, NODE = 30;
     private static final String ECHO = "echo";
-    private static final List<String> ALL = List.of(ECHO, TalentRules.ROOT, TalentRules.A1, TalentRules.A2, TalentRules.B1, TalentRules.B2);
+    private static final List<String> ALL = List.of(ECHO, TalentRules.ROOT, TalentRules.A1, TalentRules.A2, TalentRules.A3, TalentRules.B1, TalentRules.B2, TalentRules.B3);
+    /** The school shown has the third nodes (its pack added them): four columns instead of three. */
+    private boolean deep;
 
     private static String focused = TalentRules.ROOT;
     private @Nullable String hovered;
@@ -67,13 +69,16 @@ class TalentsTab extends GrimoireTab {
     private int[] pos(String node) {
         int gx = x, gw = w - SIDE_W - 14, gy = graphTop(), gh = y + h - gy;
         int mid = gy + gh / 2 - 6, off = Math.max(34, Math.min(50, gh / 2 - 26));
+        float c1 = deep ? 0.46f : 0.55f, c2 = deep ? 0.69f : 0.88f, c3 = 0.91f;
         return switch (node) {
             case ECHO -> new int[] {gx + (int) (gw * 0.08), mid};
-            case TalentRules.ROOT -> new int[] {gx + (int) (gw * 0.29), mid};
-            case TalentRules.A1 -> new int[] {gx + (int) (gw * 0.55), mid - off};
-            case TalentRules.A2 -> new int[] {gx + (int) (gw * 0.88), mid - off};
-            case TalentRules.B1 -> new int[] {gx + (int) (gw * 0.55), mid + off};
-            default -> new int[] {gx + (int) (gw * 0.88), mid + off};
+            case TalentRules.ROOT -> new int[] {gx + (int) (gw * (deep ? 0.26 : 0.29)), mid};
+            case TalentRules.A1 -> new int[] {gx + (int) (gw * c1), mid - off};
+            case TalentRules.A2 -> new int[] {gx + (int) (gw * c2), mid - off};
+            case TalentRules.A3 -> new int[] {gx + (int) (gw * c3), mid - off};
+            case TalentRules.B1 -> new int[] {gx + (int) (gw * c1), mid + off};
+            case TalentRules.B2 -> new int[] {gx + (int) (gw * c2), mid + off};
+            default -> new int[] {gx + (int) (gw * c3), mid + off};
         };
     }
 
@@ -106,11 +111,13 @@ class TalentsTab extends GrimoireTab {
         g.text(font, Component.translatable("screen.orbisarcana.schools.points", TalentRules.pointsLeft(st.resonance(), st.picked())), x + w - SIDE_W, y + 6, Ui.GOLD, false);
 
         // branch captions
+        deep = TalentEffects.implemented(st.school().getPath(), TalentRules.A3);
         int[] a1 = pos(TalentRules.A1), a2 = pos(TalentRules.A2), b1 = pos(TalentRules.B1), b2 = pos(TalentRules.B2);
+        int[] aEnd = deep ? pos(TalentRules.A3) : a2, bEnd = deep ? pos(TalentRules.B3) : b2;
         Component ca = Component.translatable("screen.orbisarcana.talents.branch_a"), cb = Component.translatable("screen.orbisarcana.talents.branch_b");
-        g.centeredText(font, ca, (a1[0] + a2[0]) / 2, a1[1] - NODE / 2 - 12, Ui.TEXT_DIM);
+        g.centeredText(font, ca, (a1[0] + aEnd[0]) / 2, a1[1] - NODE / 2 - 12, Ui.TEXT_DIM);
         // branch B caption above its row too: below, the two-line names would hit it
-        g.centeredText(font, cb, (b1[0] + b2[0]) / 2, b1[1] - NODE / 2 - 12, Ui.TEXT_DIM);
+        g.centeredText(font, cb, (b1[0] + bEnd[0]) / 2, b1[1] - NODE / 2 - 12, Ui.TEXT_DIM);
 
         // connectors, drawn under the nodes
         link(g, pos(ECHO), pos(TalentRules.ROOT), Math.min(status(st, ECHO), status(st, TalentRules.ROOT)));
@@ -118,10 +125,15 @@ class TalentsTab extends GrimoireTab {
         link(g, a1, a2, status(st, TalentRules.A2));
         link(g, pos(TalentRules.ROOT), b1, status(st, TalentRules.B1));
         link(g, b1, b2, status(st, TalentRules.B2));
+        if (deep) {
+            link(g, a2, aEnd, status(st, TalentRules.A3));
+            link(g, b2, bEnd, status(st, TalentRules.B3));
+        }
 
         hovered = null;
         int color = Ui.opaque(Schools.color(st.school()));
         for (String node : ALL) {
+            if (!deep && TalentRules.DEEP.contains(node)) continue;
             int[] p = pos(node);
             int status = status(st, node);
             int nx = p[0] - NODE / 2, ny = p[1] - NODE / 2;
@@ -136,7 +148,7 @@ class TalentsTab extends GrimoireTab {
             Ui.sigil(g, st.school(), p[0] - 8, p[1] - 8, 16, status == 2 ? 0xFF : status == 1 ? 0xC0 : 0x50);
             String name = Component.translatable(nodeKey(st.school(), node)).getString();
             // names must not run into the neighbour node in the same row
-            int gw = w - SIDE_W - 14, maxW = node.equals(ECHO) || node.equals(TalentRules.ROOT) ? (int) (gw * 0.2) : (int) (gw * 0.31);
+            int gw = w - SIDE_W - 14, maxW = node.equals(ECHO) || node.equals(TalentRules.ROOT) ? (int) (gw * 0.2) : (int) (gw * (deep ? 0.21 : 0.31));
             // up to two lines under the node (split at a space), the full text is in the side panel
             String first = name, rest = "";
             if (font.width(name) > maxW) {
@@ -174,7 +186,7 @@ class TalentsTab extends GrimoireTab {
         Component kind = switch (node) {
             case ECHO -> Component.translatable("screen.orbisarcana.schools.echo", SchoolRules.echoTier(st.dominant() ? st.resonance() : 0));
             case TalentRules.ROOT -> Component.translatable("screen.orbisarcana.schools.root");
-            case TalentRules.A1, TalentRules.A2 -> Component.translatable("screen.orbisarcana.schools.branch_a");
+            case TalentRules.A1, TalentRules.A2, TalentRules.A3 -> Component.translatable("screen.orbisarcana.schools.branch_a");
             default -> Component.translatable("screen.orbisarcana.schools.branch_b");
         };
         sy = wrap(g, kind, sx, sy, sw, Ui.TEXT_DIM, 2) + 4;
@@ -215,6 +227,7 @@ class TalentsTab extends GrimoireTab {
             }
         }
         for (String node : ALL) {
+            if (!deep && TalentRules.DEEP.contains(node)) continue;
             int[] p = pos(node);
             if (inside(mx, my, p[0] - NODE / 2, p[1] - NODE / 2, NODE, NODE)) {
                 focused = node;

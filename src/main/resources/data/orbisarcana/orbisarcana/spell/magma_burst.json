@@ -47,12 +47,21 @@
       }
     ],
     "visuals": {
+      "cast": [
+        "orbisarcana:hand_flare"
+      ],
       "impact": [
         "orbisarcana:magma_spout",
         "orbisarcana:magma_globs",
         "orbisarcana:fireball_ring"
       ],
-      "tint": 0
+      "apogee_impact": [
+        "orbisarcana:fireball_column",
+        "orbisarcana:apogee_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.magma_burst.release",
+      "impact_sound": "orbisarcana:spell.magma_burst.impact"
     }
   }
 }

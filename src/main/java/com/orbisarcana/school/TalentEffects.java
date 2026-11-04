@@ -38,7 +38,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 public final class TalentEffects {
     /** "school/node" keys whose effect is live (Water A1/A2 work through the Tidal Stream cone). */
     public static final Set<String> IMPLEMENTED = Set.of(
-            "fire/echo", "fire/root", "fire/a1", "fire/a2", "fire/b1", "fire/b2",
+            "fire/echo", "fire/root", "fire/a1", "fire/a2", "fire/a3", "fire/b1", "fire/b2", "fire/b3",
             "water/echo", "water/root", "water/a1", "water/a2", "water/b1", "water/b2",
             "earth/echo", "earth/root", "earth/a1", "earth/a2", "earth/b1", "earth/b2",
             "air/echo", "air/root", "air/a1", "air/a2", "air/b1", "air/b2",
@@ -55,12 +55,18 @@ public final class TalentEffects {
     public static final float ASH_SHIELD = 4f;
     public static final long ASH_SHIELD_COOLDOWN = 20 * 20;
     public static final int ASH_SHIELD_TICKS = 10 * 20;
+    public static final double CINDERFIELD_RADIUS = 2.0;
+    public static final int CINDERFIELD_TICKS = 3 * 20;
+    public static final float FLAME_SKIN_DAMAGE = 2f;
+    public static final int FLAME_SKIN_IGNITE = 3 * 20;
+    public static final long FLAME_SKIN_GAP = 20;
     public static final double WELLSPRING_SHARE = 0.3;
     public static final double WELLSPRING_RADIUS = 6.0;
     public static final long TIDAL_MERCY_COOLDOWN = 10 * 20;
 
     private static final Map<UUID, Integer> FIRE_CASTS = new HashMap<>();
     private static final Map<UUID, Long> ASH_READY = new HashMap<>();
+    private static final Map<LivingEntity, Long> FLAME_SKIN_LAST = new java.util.WeakHashMap<>();
     private static final Map<UUID, Long> MERCY_READY = new HashMap<>();
 
     public static boolean implemented(String school, String node) {
@@ -98,6 +104,29 @@ public final class TalentEffects {
         if (now < ASH_READY.getOrDefault(p.getUUID(), 0L)) return;
         ASH_READY.put(p.getUUID(), now + ASH_SHIELD_COOLDOWN);
         Shields.grant(p, ASH_SHIELD, ASH_SHIELD_TICKS, null);
+    }
+
+    /** A3 "Cinderfield": a creature killed by your fire magic leaves burning ground (r2, 3 s) where it fell. */
+    @SubscribeEvent
+    static void onFireKill(LivingDeathEvent event) {
+        if (!(event.getSource().getEntity() instanceof ServerPlayer caster) || !(event.getEntity().level() instanceof net.minecraft.server.level.ServerLevel level)) return;
+        if (!event.getSource().is(com.orbisarcana.registry.ModDamageTypes.forSchool(Schools.FIRE))) return;
+        if (!AttunementService.hasTalent(caster, Schools.FIRE, TalentRules.A3)) return;
+        com.orbisarcana.spell.behavior.BurningGround.spawn(level, event.getEntity().position(), CINDERFIELD_RADIUS, CINDERFIELD_TICKS, caster, Schools.FIRE,
+                com.orbisarcana.OrbisArcana.id("cinderfield"), 0);
+    }
+
+    /** B3 "Flame Skin": whoever strikes you in melee catches fire for 3 s and takes 2 fire damage (once a second per attacker). */
+    @SubscribeEvent
+    static void onMeleeHit(LivingDamageEvent.Post event) {
+        if (!(event.getEntity() instanceof ServerPlayer p) || event.getHealthDamage() <= 0) return;
+        if (!(event.getSource().getDirectEntity() instanceof LivingEntity attacker) || event.getSource().getEntity() != attacker || attacker == p) return;
+        if (!AttunementService.hasTalent(p, Schools.FIRE, TalentRules.B3)) return;
+        long now = p.level().getGameTime();
+        if (now - FLAME_SKIN_LAST.getOrDefault(attacker, -FLAME_SKIN_GAP) < FLAME_SKIN_GAP) return;
+        FLAME_SKIN_LAST.put(attacker, now);
+        attacker.igniteForTicks(FLAME_SKIN_IGNITE);
+        attacker.hurtServer(p.level(), com.orbisarcana.registry.ModDamageTypes.source(attacker, Schools.FIRE, null, p), FLAME_SKIN_DAMAGE);
     }
 
     // ---- Earth ----

@@ -46,12 +46,21 @@
       }
     ],
     "visuals": {
+      "cast": [
+        "orbisarcana:hand_flare"
+      ],
       "impact": [
         "orbisarcana:flame_ring",
         "orbisarcana:ash_ring",
         "orbisarcana:fireball_flash"
       ],
-      "tint": 0
+      "apogee_impact": [
+        "orbisarcana:apogee_crown",
+        "orbisarcana:fireball_wave"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.blazing_ring.release",
+      "impact_sound": "orbisarcana:spell.blazing_ring.impact"
     }
   }
 }

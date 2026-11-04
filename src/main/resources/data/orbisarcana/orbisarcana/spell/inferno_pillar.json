@@ -50,13 +50,23 @@
       }
     ],
     "visuals": {
+      "cast": [
+        "orbisarcana:hand_flare"
+      ],
       "impact": [
         "orbisarcana:fire_column",
         "orbisarcana:fire_pillar",
         "orbisarcana:fireball_sparks",
         "orbisarcana:fireball_ring"
       ],
-      "tint": 0
+      "apogee_impact": [
+        "orbisarcana:apogee_crown",
+        "orbisarcana:fireball_cinders",
+        "orbisarcana:fireball_wave"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.inferno_pillar.release",
+      "impact_sound": "orbisarcana:spell.inferno_pillar.impact"
     }
   }
 }

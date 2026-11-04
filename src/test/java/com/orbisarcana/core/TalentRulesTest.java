@@ -17,6 +17,10 @@ class TalentRulesTest {
         assertEquals(Optional.of(Denial.NEEDS_FIRST_NODE), TalentRules.check(true, "a2", Set.of(), 6));
         assertEquals(Optional.empty(), TalentRules.check(true, "a2", Set.of("a1"), 6));
         assertEquals(Optional.empty(), TalentRules.check(true, "b1", Set.of("a1", "a2"), 9));
+        // third nodes need the second; a whole deep branch takes all three points
+        assertEquals(Optional.of(Denial.NEEDS_FIRST_NODE), TalentRules.check(true, "a3", Set.of("a1"), 9));
+        assertEquals(Optional.empty(), TalentRules.check(true, "a3", Set.of("a1", "a2"), 9));
+        assertEquals(Optional.of(Denial.NO_POINTS), TalentRules.check(true, "b1", Set.of("a1", "a2", "a3"), 10));
         assertEquals(Optional.of(Denial.NO_POINTS), TalentRules.check(true, "b2", Set.of("a1", "a2", "b1"), 10));
     }
 

@@ -1,0 +1,53 @@
+{
+  "length": 1,
+  "loudness": -11,
+  "variants": 2,
+  "layers": [
+    {
+      "type": "noise",
+      "highpass": [
+        5000,
+        3000
+      ],
+      "start": 0,
+      "length": 0.8,
+      "attack": 0.03,
+      "release": 0.1,
+      "gain": 0.6,
+      "tremolo": [
+        18,
+        0.35
+      ]
+    },
+    {
+      "type": "fm",
+      "freq": 1800,
+      "ratio": 2.01,
+      "index": [
+        3,
+        0.2
+      ],
+      "start": 0,
+      "length": 0.6,
+      "attack": 0.002,
+      "decay": 0.18,
+      "gain": 0.35
+    },
+    {
+      "type": "crackle",
+      "density": 400,
+      "highpass": 3000,
+      "start": 0.05,
+      "length": 0.8,
+      "attack": 0.05,
+      "decay": 0.4,
+      "gain": 0.4
+    }
+  ],
+  "compress": {
+    "threshold": -14,
+    "ratio": 3,
+    "attack": 0.003,
+    "release": 0.12
+  }
+}

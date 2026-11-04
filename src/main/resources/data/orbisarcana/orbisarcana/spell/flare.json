@@ -46,11 +46,20 @@
       }
     ],
     "visuals": {
+      "cast": [
+        "orbisarcana:hand_flare"
+      ],
       "impact": [
         "orbisarcana:flare_flash",
         "orbisarcana:fireball_sparks"
       ],
-      "tint": 0
+      "apogee_impact": [
+        "orbisarcana:apogee_flare",
+        "orbisarcana:apogee_crown"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.flare.release",
+      "impact_sound": "orbisarcana:spell.flare.impact"
     }
   }
 }

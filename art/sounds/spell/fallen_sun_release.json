@@ -1,0 +1,89 @@
+{
+  "length": 3,
+  "loudness": -11,
+  "variants": 2,
+  "layers": [
+    {
+      "type": "fm",
+      "freq": 220,
+      "ratio": 2.01,
+      "index": [
+        3,
+        0.2
+      ],
+      "start": 0,
+      "length": 2.6,
+      "attack": 0.002,
+      "decay": 0.78,
+      "gain": 0.45
+    },
+    {
+      "type": "fm",
+      "freq": 330,
+      "ratio": 2.01,
+      "index": [
+        3,
+        0.2
+      ],
+      "start": 0.05,
+      "length": 2.4,
+      "attack": 0.002,
+      "decay": 0.72,
+      "gain": 0.35
+    },
+    {
+      "type": "fm",
+      "freq": 440,
+      "ratio": 2.01,
+      "index": [
+        3,
+        0.2
+      ],
+      "start": 0.1,
+      "length": 2.2,
+      "attack": 0.002,
+      "decay": 0.66,
+      "gain": 0.3
+    },
+    {
+      "type": "saw",
+      "freq": [
+        55,
+        110
+      ],
+      "lowpass": [
+        300,
+        1200
+      ],
+      "start": 0,
+      "length": 2.8,
+      "attack": 1.2,
+      "release": 0.6,
+      "gain": 0.35,
+      "drive": 2
+    },
+    {
+      "type": "noise",
+      "bandpass": [
+        4000,
+        400
+      ],
+      "q": 0.7,
+      "start": 0.8,
+      "length": 2,
+      "attack": 0.6,
+      "release": 1,
+      "gain": 0.6
+    }
+  ],
+  "reverb": {
+    "size": 0.8,
+    "mix": 0.35
+  },
+  "compress": {
+    "threshold": -14,
+    "ratio": 3,
+    "attack": 0.003,
+    "release": 0.12
+  }
+}

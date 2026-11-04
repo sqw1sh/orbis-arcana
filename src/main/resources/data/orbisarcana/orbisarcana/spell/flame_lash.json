@@ -45,13 +45,21 @@
       }
     ],
     "visuals": {
+      "cast": [
+        "orbisarcana:hand_flare"
+      ],
       "travel": [
         "orbisarcana:fire_lash"
       ],
       "impact": [
         "orbisarcana:cinder_pop"
       ],
-      "tint": 0
+      "apogee_travel": [
+        "orbisarcana:fire_ray"
+      ],
+      "tint": 0,
+      "release_sound": "orbisarcana:spell.flame_lash.release",
+      "impact_sound": "orbisarcana:spell.flame_lash.impact"
     }
   }
 }

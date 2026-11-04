@@ -4,6 +4,9 @@
 
 ### Fire school pack
 - 17 new Fire spells (21 in all): Ember Spray, Kindle, Heat Wave, Flame Lash, Cinder Volley, Magma Burst, Scorching Ray, Flare, Blazing Ring, Ember Ward, Fire Wall, Scorched Earth, Dragon's Breath, Meteor, Immolation, Inferno Pillar, Fallen Sun. Each has its own effects and three milestones.
+- Every new Fire spell has its own magic circle, its own release and impact sounds, and an apogee look at mastery 15.
+- Fire talent tree: third nodes Cinderfield (enemies killed by your fire leave burning ground) and Flame Skin (melee attackers catch fire). Still three points: one deep branch or two halves.
+- Fix: composite spells now respect the Embers talent (+30% burning).
 - Composite spells can now be zones, auras that follow the caster, walls, meteors and channels, can leave burning ground, and can grant a shield or speed.
 
 ## 1.1.0 — visual overhaul

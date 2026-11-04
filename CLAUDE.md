@@ -28,7 +28,7 @@
 - `node tools/lang-check.cjs` — аудит локализации RU/EN (запускать после добавления текстов).
 - `node tools/textures.cjs` — пересобрать PNG-текстуры предметов и блоков.
 - `node tools/art.cjs [--check]` — Blockbench → ресурсы: текстуры и item-JSON из `art/models/*.bbmodel`, проверка, что экспорт GeckoLib не устарел (конвейер — `docs/ART.md`).
-- `node tools/sfx.cjs [группа|группа/имя]` — синтез звуков по рецептам `art/sounds/<группа>/*.json` → WAV → OGG (ffmpeg из PATH, env `FFMPEG` или winget-ссылки). Группы: charge, release, impact, hit (по школам), cast, toggle, ui, mastery; звук попадания играет сам хук урона `spell/Sfx`, тяжёлый удар — `Sfx.impact(level, pos, school, scale)`; новые события — в `sounds.json` и `ModSounds`.
+- `node tools/sfx.cjs [группа|группа/имя]` — синтез звуков по рецептам `art/sounds/<группа>/*.json` → WAV → OGG (ffmpeg из PATH, env `FFMPEG` или winget-ссылки). Группы: charge, release, impact, hit (по школам), spell (свои звуки заклинаний, `release_sound`/`impact_sound` в `compose.visuals`), cast, toggle, ui, mastery; звук попадания играет сам хук урона `spell/Sfx`, тяжёлый удар — `Sfx.impact(level, pos, school, scale)`; новые события — в `sounds.json` и `ModSounds`.
 - `./gradlew :runClientShot -Pshots=geckolib,pose` — проверка GeckoLib-модели в руке и позы PAL.
 - `node tools/caster-poses.cjs` — позы выпуска отдельных заклинаний и тогглов (в `caster.json` и риг `caster.bbmodel`); какому заклинанию какая — `CasterAnimations.POSES`.
 - `node tools/gui.cjs` — пересобрать спрайты UI-кита (`textures/gui/sprites/ui`, стиль подсказок `arcane`).
@@ -40,7 +40,7 @@
 - `node tools/vfx-effects.cjs` — объёмные эффекты (раздел MESHES: sphere/cylinder/cone/ring/spiral/trail, `client/vfx/VfxMesh`) и стоковые эффекты (`art/vfx/particles`, затем `node tools/art.cjs`); на сервере — `Fx.<ВИД>.play(level, x, y, z, count, dx, dy, dz[, tint])` вместо `sendParticles`. Проверка: `-Pshots=gallery_setup,stock`.
 - 3D-модели: спецификации `art/specs/<id>.json` (генераторы `node tools/specs/<foci|accessories|misc|world>.cjs`, общие помощники — `tools/specs/lib.cjs`) → в Blockbench (MCP `risky_eval`) `eval(require('fs').readFileSync('<repo>/tools/blockbench/build-model.js','utf8'))('<repo>','<id>')` → `.bbmodel` + GeckoLib-экспорт → `node tools/art.cjs`. Положения 3D-предметов в руке/GUI — `node tools/foci-display.cjs`.
 - `node tools/structures.cjs` — пересобрать NBT-шаблоны структур (обсерватория, скрипторий).
-- `./gradlew :runGameTestServer` — GameTest-ы мода; без `:` запускаются и тесты `example-addon` (мод + аддон, 95).
+- `./gradlew :runGameTestServer` — GameTest-ы мода; без `:` запускаются и тесты `example-addon` (мод + аддон, 96).
 - `./gradlew runGameTestServer` — все GameTest-ы (`gametest/OrbisGameTests`), код выхода ≠ 0 при падении. Итог в логе: `All N required tests passed`.
 
 ## Особенности API 26.3 (найдено на практике)

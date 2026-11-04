@@ -65,7 +65,7 @@ final class CompositeBehavior {
 
     /** What a cast needs once its context is gone: who, which spell, its params and parts. */
     private record Cast(ServerLevel level, UUID caster, Identifier spell, Identifier school, int castId, SpellCompose compose,
-                        java.util.Map<String, Double> params, double power) {
+                        java.util.Map<String, Double> params, double power, int mastery) {
         double p(String name) {
             return params.getOrDefault(name, 0.0);
         }
@@ -123,7 +123,7 @@ final class CompositeBehavior {
         SpellCompose c = ctx.spell().compose().orElse(null);
         if (c == null) return;
         ServerPlayer caster = ctx.caster();
-        Cast cast = new Cast(ctx.level(), caster.getUUID(), ctx.spellId(), ctx.spell().school(), ctx.castId(), c, ctx.params(), ctx.power());
+        Cast cast = new Cast(ctx.level(), caster.getUUID(), ctx.spellId(), ctx.spell().school(), ctx.castId(), c, ctx.params(), ctx.power(), ctx.mastery());
         Vec3 hand = caster.getEyePosition().add(caster.getLookAngle().scale(0.6)).add(0, -0.25, 0);
         c.visuals().cast().forEach(id -> Vfx.play(ctx.level(), id, hand, caster.getLookAngle(), c.visuals().tint(), 1f));
         switch (c.shape()) {
@@ -170,6 +170,18 @@ final class CompositeBehavior {
         return ctx.groundPoint() != null ? ctx.groundPoint() : ctx.caster().position();
     }
 
+    /** The travel effects, with the apogee ones on top at mastery 15. */
+    private static List<Identifier> travel(Cast c) {
+        return withApogee(c, c.compose().visuals().travel(), c.compose().visuals().apogeeTravel());
+    }
+
+    private static List<Identifier> withApogee(Cast c, List<Identifier> base, List<Identifier> apogee) {
+        if (apogee.isEmpty() || c.mastery() < 15) return base;
+        List<Identifier> all = new ArrayList<>(base);
+        all.addAll(apogee);
+        return all;
+    }
+
     private static void lasting(Cast c, String shape, Vec3 center, @Nullable Vec3 a, @Nullable Vec3 b) {
         long ticks = Math.max(1, Math.round(c.p("duration_ticks")));
         LASTING.add(new Lasting(c, shape, center, a, b, c.level().getGameTime() + ticks));
@@ -188,7 +200,7 @@ final class CompositeBehavior {
         if (line.size() > keep) line = line.subList(0, keep);
         Vec3 last = line.isEmpty() ? stop : line.getLast().getBoundingBox().getCenter();
         Vec3 d = last.subtract(hand);
-        c.compose().visuals().travel().forEach(id -> Vfx.play(c.level(), id, hand, d, c.compose().visuals().tint(), (float) Math.max(0.3, d.length())));
+        travel(c).forEach(id -> Vfx.play(c.level(), id, hand, d, c.compose().visuals().tint(), (float) Math.max(0.3, d.length())));
         apply(c, caster, line, last);
     }
 
@@ -197,7 +209,7 @@ final class CompositeBehavior {
         double range = Math.max(1, c.p("range")), cos = Math.cos(Math.toRadians(Math.max(5, c.p("angle_deg")) / 2));
         List<LivingEntity> in = c.level().getEntitiesOfClass(LivingEntity.class, caster.getBoundingBox().inflate(range),
                 e -> affected(c, caster, e) && within(eye, look, e.getBoundingBox().getCenter(), range, cos));
-        c.compose().visuals().travel().forEach(id -> Vfx.play(c.level(), id, eye.add(0, -0.25, 0).add(look.scale(0.6)), look,
+        travel(c).forEach(id -> Vfx.play(c.level(), id, eye.add(0, -0.25, 0).add(look.scale(0.6)), look,
                 c.compose().visuals().tint(), (float) (range / 6)));
         apply(c, caster, in, eye.add(look.scale(range / 2)));
     }
@@ -253,13 +265,13 @@ final class CompositeBehavior {
             double len = ab.length();
             for (double t = 0; t <= len + 1.0E-3; t += 1.5) {
                 Vec3 at = z.a.add(ab.scale(len < 1.0E-3 ? 0 : t / len));
-                vis.travel().forEach(id -> Vfx.play(c.level(), id, at, Vec3.ZERO, vis.tint(), (float) (h / 3)));
+                travel(c).forEach(id -> Vfx.play(c.level(), id, at, Vec3.ZERO, vis.tint(), (float) (h / 3)));
             }
             in = c.level().getEntitiesOfClass(LivingEntity.class, new AABB(z.a, z.b).inflate(half + 1, h, half + 1),
                     e -> affected(c, caster, e) && e.getY() >= z.center.y - 1 && e.getY() <= z.center.y + h
                             && distanceToSegment(e.position().multiply(1, 0, 1), z.a.multiply(1, 0, 1), z.b.multiply(1, 0, 1)) <= half + e.getBbWidth() / 2);
         } else {
-            vis.travel().forEach(id -> Vfx.play(c.level(), id, z.center.add(0, 0.1, 0), Vec3.ZERO, vis.tint(), (float) Math.max(0.5, r / 2.5)));
+            travel(c).forEach(id -> Vfx.play(c.level(), id, z.center.add(0, 0.1, 0), Vec3.ZERO, vis.tint(), (float) Math.max(0.5, r / 2.5)));
             in = c.level().getEntitiesOfClass(LivingEntity.class, new AABB(z.center, z.center).inflate(r, 2, r),
                     e -> affected(c, caster, e) && e.position().distanceTo(z.center) <= r + e.getBbWidth() / 2);
         }
@@ -286,7 +298,7 @@ final class CompositeBehavior {
                         e -> affected(c, caster, e) && !b.hit.contains(e.getUUID()) && e.getBoundingBox().inflate(HIT_INFLATE).clip(from, to).isPresent())
                 .stream().min(Comparator.comparingDouble(e -> e.distanceToSqr(from))).orElse(null);
         Vec3 trail = to.subtract(from);
-        c.compose().visuals().travel().forEach(id -> Vfx.play(c.level(), id, from.add(trail.scale(0.5)), trail, c.compose().visuals().tint(), 1f));
+        travel(c).forEach(id -> Vfx.play(c.level(), id, from.add(trail.scale(0.5)), trail, c.compose().visuals().tint(), 1f));
         b.pos = target != null ? target.getBoundingBox().getCenter() : to;
         b.travelled += from.distanceTo(b.pos);
         if (target != null) {
@@ -322,7 +334,7 @@ final class CompositeBehavior {
                     .stream().min(Comparator.comparingDouble(e -> e.distanceToSqr(last))).orElse(null);
             if (next == null) return;
             Vec3 a = at.getBoundingBox().getCenter(), d = next.getBoundingBox().getCenter().subtract(a);
-            c.compose().visuals().travel().forEach(id -> Vfx.play(c.level(), id, a.add(d.scale(0.5)), d, c.compose().visuals().tint(), 1f));
+            travel(c).forEach(id -> Vfx.play(c.level(), id, a.add(d.scale(0.5)), d, c.compose().visuals().tint(), 1f));
             hit.add(next.getUUID());
             hitWithBolt(c, caster, next);
             at = next;
@@ -351,9 +363,13 @@ final class CompositeBehavior {
     }
 
     private static void impact(Cast c, Vec3 at, float scale) {
-        if (c.compose().visuals().impact().isEmpty()) return;
-        c.compose().visuals().impact().forEach(id -> Vfx.play(c.level(), id, at, Vec3.ZERO, c.compose().visuals().tint(), scale));
-        Sfx.impact(c.level(), at, c.school(), Math.min(1.5f, 0.6f + 0.3f * scale));
+        List<Identifier> impact = withApogee(c, c.compose().visuals().impact(), c.compose().visuals().apogeeImpact());
+        if (impact.isEmpty()) return;
+        impact.forEach(id -> Vfx.play(c.level(), id, at, Vec3.ZERO, c.compose().visuals().tint(), scale));
+        float volume = Math.min(1.5f, 0.6f + 0.3f * scale);
+        var own = c.compose().visuals().impactSound();
+        if (own.isPresent()) Sfx.impactSound(c.level(), at, own.get(), volume);
+        else Sfx.impact(c.level(), at, c.school(), volume);
     }
 
     private static void effect(Cast c, ServerPlayer caster, LivingEntity e, SpellCompose.Effect fx, Vec3 at) {
@@ -377,7 +393,7 @@ final class CompositeBehavior {
                 MasteryService.onHeal(caster, c.spell(), c.castId(), e, healed);
                 EchoService.onSupport(caster, healed);
             }
-            case "ignite" -> e.igniteForTicks(ticks);
+            case "ignite" -> e.igniteForTicks((int) Math.round(ticks * com.orbisarcana.school.TalentEffects.igniteMult(caster)));
             case "slow" -> control(c, caster, e, new MobEffectInstance(MobEffects.SLOWNESS, ticks, Math.max(0, (int) c.p("slow_level") - 1)));
             case "weaken" -> control(c, caster, e, new MobEffectInstance(MobEffects.WEAKNESS, ticks, 0));
             case "blind" -> control(c, caster, e, new MobEffectInstance(MobEffects.BLINDNESS, ticks, 0));

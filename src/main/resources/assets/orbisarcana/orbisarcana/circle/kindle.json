@@ -1,14 +1,59 @@
 {
   "layers": [
-    { "type": "ring", "radius": 0.82, "width": 0.03 },
-    { "type": "polygon", "sides": 3, "radius": 0.78, "width": 0.035, "rotate_speed": 30, "count": 2 },
-    { "type": "glyph_ring", "radius": 0.6, "count": 8, "size": 0.09, "progress": true, "rotate_speed": -20 },
-    { "type": "polygon", "sides": 3, "radius": 0.32, "width": 0.04, "rotate_speed": -60 }
+    {
+      "type": "ring",
+      "radius": 0.6,
+      "width": 0.03,
+      "progress": true
+    },
+    {
+      "type": "glyph_ring",
+      "radius": 0.45,
+      "count": 5,
+      "size": 0.1,
+      "rotate_speed": 40
+    },
+    {
+      "type": "polygon",
+      "sides": 3,
+      "radius": 0.22,
+      "width": 0.05,
+      "rotate_speed": -120
+    }
   ],
   "milestone_layers": {
-    "5":  [{ "type": "satellite", "count": 2, "radius": 1.15, "size": 0.07, "rotate_speed": 90 }],
-    "10": [{ "type": "polygon", "sides": 6, "radius": 0.45, "width": 0.02, "rotate_speed": 45 }],
-    "15": [{ "type": "ring", "radius": 1.25, "width": 0.03, "color": "#FFC040" },
-           { "type": "glyph_ring", "radius": 1.25, "count": 12, "size": 0.07, "rotate_speed": 15, "color": "#FFC040" }]
+    "5": [
+      {
+        "type": "ring",
+        "radius": 0.8,
+        "width": 0.015
+      }
+    ],
+    "10": [
+      {
+        "type": "polygon",
+        "sides": 3,
+        "radius": 0.8,
+        "width": 0.02,
+        "rotate_speed": 30,
+        "count": 2
+      }
+    ],
+    "15": [
+      {
+        "type": "ring",
+        "radius": 1,
+        "width": 0.02,
+        "color": "#FFC040"
+      },
+      {
+        "type": "glyph_ring",
+        "radius": 1,
+        "count": 8,
+        "size": 0.07,
+        "rotate_speed": -20,
+        "color": "#FFC040"
+      }
+    ]
   }
 }
