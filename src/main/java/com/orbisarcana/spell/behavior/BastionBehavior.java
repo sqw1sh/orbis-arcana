@@ -12,6 +12,7 @@ import com.orbisarcana.registry.ModBlocks;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.spell.Frost;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
@@ -36,6 +37,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class BastionBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): frost bursting where the wall rises and when it shatters. */
+    private static final Identifier FLASH = Vfx.id("ice_flash"), SHATTER = Vfx.id("ice_shatter"), PUFF = Vfx.id("ice_puff");
     private static final double SLOW_REACH = 1.5;
     private static final int SLOW_TICKS = 40;
     private static final int WING_LENGTH = 3;
@@ -78,6 +81,7 @@ final class BastionBehavior {
             }
         }
         Fx.FROST.play(level, point.x, point.y + 1, point.z, 50, half / 2 + 0.5, 0.8, half / 2 + 0.5);
+        Vfx.play(level, PUFF, point.add(0, 0.5, 0), Vec3.ZERO, 0, 1f, (float) half / 2 + 0.5f, 0.5f, (float) half / 2 + 0.5f, 2);
         WALLS.add(new Wall(level, caster.getUUID(), ctx.spellId(), ctx.spell().school(), ctx.castId(), placed, point,
                 ctx.param("attacker_slow") > 0, (float) ctx.scaled("shatter_damage"), level.getGameTime() + duration));
     }
@@ -124,8 +128,11 @@ final class BastionBehavior {
             e.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, SLOW_TICKS, 1), caster);
             if (caster != null && e.getHealth() < before) MasteryService.onHit(caster, w.spell(), w.castId(), e, !e.isAlive());
         }
-        Fx.FROST.play(w.level(), c.x, c.y + 1.2, c.z, 120, 2, 1, 2);
-        Fx.FROST.play(w.level(), c.x, c.y + 1.2, c.z, 60, 2.5, 1, 2.5);
+        Fx.FROST.play(w.level(), c.x, c.y + 1.2, c.z, 60, 2, 1, 2);
+        Vfx.play(w.level(), FLASH, c.add(0, 1.2, 0), Vec3.ZERO, 0, 2f);
+        Vfx.play(w.level(), SHATTER, c.add(0, 1.2, 0), Vec3.ZERO, 0, 1.6f, 1.5f, 1, 1.5f, 3);
+        Vfx.play(w.level(), PUFF, c.add(0, 1, 0), Vec3.ZERO, 0, 2f);
+        com.orbisarcana.spell.Sfx.impact(w.level(), c, com.orbisarcana.school.Schools.ICE, 1.3f);
     }
 
     @SubscribeEvent

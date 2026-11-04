@@ -12,13 +12,11 @@ import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.spell.Arcs;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
@@ -35,6 +33,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class AnchorBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): the rune on the ground while the anchor waits. */
+    private static final Identifier RUNE = Vfx.id("anchor_rune");
     private static final int ARM_TICKS = 10;
     private static final int PULSE_TICKS = 10;
     private static final double ARC_MAX_LENGTH = 12;
@@ -78,7 +78,8 @@ final class AnchorBehavior {
                 ANCHORS.remove(a);
                 continue;
             }
-            if (now % 8 == 0) Fx.ARC.play(level, a.pos().x, a.pos().y + 0.15, a.pos().z, 2, 0.15, 0.05, 0.15);
+            if (now % 8 == 0) Vfx.play(level, RUNE, a.pos().add(0, 0.06, 0), Vec3.ZERO, 0, 1f);
+            if (now % 16 == 0) Fx.ARC.play(level, a.pos().x, a.pos().y + 0.15, a.pos().z, 2, 0.15, 0.05, 0.15);
             if (now < a.armedAt()) continue;
             List<LivingEntity> near = enemies(a, caster, a.radius());
             if (!near.isEmpty()) {
@@ -101,18 +102,23 @@ final class AnchorBehavior {
             if (now % 2 == 0) {
                 var rnd = level.getRandom();
                 Fx.ARC.play(level, c.x + (rnd.nextDouble() - 0.5) * STORM_RADIUS * 2, c.y + 0.2 + rnd.nextDouble() * 2.5, c.z + (rnd.nextDouble() - 0.5) * STORM_RADIUS * 2, 2, 0, 0, 0);
+                // now and then a bolt from the storm cloud to the ground
+                if (now % 6 == 0) Arcs.draw(level, c.add((rnd.nextDouble() - 0.5) * STORM_RADIUS, 3.5, (rnd.nextDouble() - 0.5) * STORM_RADIUS),
+                        c.add((rnd.nextDouble() - 0.5) * STORM_RADIUS * 2, 0.1, (rnd.nextDouble() - 0.5) * STORM_RADIUS * 2));
             }
             return false;
         });
     }
 
     private static void strike(Anchor a, @Nullable ServerPlayer caster) {
-        LightningBolt bolt = EntityTypes.LIGHTNING_BOLT.create(a.level(), EntitySpawnReason.TRIGGERED);
-        if (bolt != null) {
-            bolt.setVisualOnly(true);
-            bolt.setPos(a.pos());
-            a.level().addFreshEntity(bolt);
+        // the mod's own lightning from the sky: two jagged bolts, the strike's flash, the school's impact
+        var rnd = a.level().getRandom();
+        for (int i = 0; i < 2; i++) {
+            Vec3 sky = a.pos().add((rnd.nextDouble() - 0.5) * 3, 10 + rnd.nextDouble() * 3, (rnd.nextDouble() - 0.5) * 3);
+            Arcs.draw(a.level(), sky, a.pos().add(0, 0.1, 0));
         }
+        Arcs.strike(a.level(), a.pos().add(0, 0.5, 0));
+        com.orbisarcana.spell.Sfx.impact(a.level(), a.pos(), a.school(), 1.5f);
         for (LivingEntity e : enemies(a, caster, a.radius())) hurt(a, caster, e, a.damage());
         if (a.stormTicks() > 0) STORMS.add(new Storm(a, a.level().getGameTime() + a.stormTicks()));
     }

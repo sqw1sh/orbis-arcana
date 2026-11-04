@@ -7,7 +7,9 @@ import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.Schools;
 import com.orbisarcana.spell.CastService;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,6 +22,8 @@ import net.minecraft.world.phys.Vec3;
  * Velocity is tuned so the travelled distance roughly matches {@code distance} on flat ground.
  */
 final class DashBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): a stream of flame or wind that follows the caster for a moment. */
+    private static final Identifier FLAMES = Vfx.id("dash_flames"), WIND = Vfx.id("dash_wind");
     /** Horizontal speed per block of distance, compensating ground friction. */
     private static final double SPEED_PER_BLOCK = 0.16;
     private static final double ALLY_RADIUS = 2.5;
@@ -39,7 +43,9 @@ final class DashBehavior {
 
         player.setDeltaMovement(dir.x * speed, Math.max(player.getDeltaMovement().y, 0.25), dir.z * speed);
         player.syncVelocity = true;
-        Fx.CLOUD.play(ctx.level(), player.getX(), player.getY() + 0.5, player.getZ(), 15, 0.3, 0.3, 0.3);
+        boolean fire = ctx.spell().school().equals(Schools.FIRE);
+        Vfx.attach(player, fire ? FLAMES : WIND, 0, 1f);
+        (fire ? Fx.FLAME : Fx.CLOUD).play(ctx.level(), player.getX(), player.getY() + 0.5, player.getZ(), 15, 0.3, 0.3, 0.3);
 
         MasteryService.onMove(player, ctx.spellId(), distance);
         if (AttunementService.hasTalent(player, Schools.AIR, TalentRules.A2)) BladeBehavior.stormTrail(player, start, start.add(dir.scale(distance)));

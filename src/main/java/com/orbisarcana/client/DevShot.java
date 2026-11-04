@@ -183,6 +183,37 @@ public final class DevShot {
                         com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id(fx), o.add(-3, 1, 8), zero, 0, 1f);
                 });
             }),
+            new Scene("signatures4", () -> {
+                // V8 batch A: Ash Spiral ring with a fire pillar (left), Frost Pattern with its freezing ring (middle),
+                // Storm Anchor rune and a strike from the sky (right), Current Shell arcs and a flame dash stream (front)
+                Minecraft mc = Minecraft.getInstance();
+                mc.gui.setScreen(null);
+                mc.player.setYRot(0);
+                mc.player.setXRot(18);
+            }, () -> {
+                Minecraft mc = Minecraft.getInstance();
+                var server = mc.getSingleplayerServer();
+                if (server != null) server.execute(() -> {
+                    ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+                    if (sp == null) return;
+                    var level = sp.level();
+                    var o = sp.position();
+                    var zero = net.minecraft.world.phys.Vec3.ZERO;
+                    var ash = o.add(4, 0.1, 8);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("ash_ring"), ash, zero, 0, 1f, 2.5f, 1, 2.5f, 2);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("ash_flakes"), ash, zero, 0, 1f, 2, 1, 2, 2);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("fire_pillar"), ash.add(0, 0.3, 0), zero, 0, 1f);
+                    var frost = o.add(0, 0.08, 9);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("frost_field"), frost, zero, 0, 1f, 2.5f, 1, 2.5f, 2);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("frost_mist"), frost.add(0, 0.2, 0), zero, 0, 1f, 2.5f, 1, 2.5f, 2);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("frost_ring"), frost, zero, 0, 1f);
+                    var anchorAt = o.add(-4, 0.06, 8);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("anchor_rune"), anchorAt, zero, 0, 1f);
+                    com.orbisarcana.spell.Arcs.draw(level, anchorAt.add(1, 9, 0.5), anchorAt);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("shell_arcs"), o.add(-1.5, 1, 4.5), zero, 0, 1f, 0.7f, 1.4f, 0.7f, 2);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("dash_flames"), o.add(1.5, 0.6, 4.5), zero, 0, 1f);
+                });
+            }),
             new Scene("cast_anim", () -> fakeCast(true)),
             new Scene("cast_anim_fp", () -> fakeCast(false)),
             new Scene("vfx_cleanup", () -> {

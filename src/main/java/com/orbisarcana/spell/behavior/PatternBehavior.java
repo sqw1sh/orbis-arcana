@@ -11,6 +11,7 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.spell.Frost;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -34,6 +35,9 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class PatternBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): frost glinting on the ground, a cold mist, the freezing ring. */
+    private static final Identifier FIELD = Vfx.id("frost_field"), MIST = Vfx.id("frost_mist"), RING = Vfx.id("frost_ring"),
+            SHATTER = Vfx.id("ice_shatter");
     private static final int SLOW_TICKS = 20;
     private static final List<Pattern> PATTERNS = new ArrayList<>();
     /** Guards against shared damage sharing itself again. */
@@ -86,7 +90,10 @@ final class PatternBehavior {
             if (now >= p.endTick) {
                 if (p.freezeTicks > 0) {
                     for (LivingEntity e : p.inside(caster)) Frost.freeze(e, p.freezeTicks, caster);
-                    Fx.FROST.play(level, p.center.x, p.center.y + 0.3, p.center.z, 100, p.radius / 2, 0.3, p.radius / 2);
+                    Fx.FROST.play(level, p.center.x, p.center.y + 0.3, p.center.z, 40, p.radius / 2, 0.3, p.radius / 2);
+                    Vfx.play(level, RING, p.center.add(0, 0.1, 0), Vec3.ZERO, 0, (float) Math.max(1, p.radius / 3));
+                    Vfx.play(level, SHATTER, p.center.add(0, 0.5, 0), Vec3.ZERO, 0, 1f, (float) p.radius / 2, 0.3f, (float) p.radius / 2, 2.5f);
+                    com.orbisarcana.spell.Sfx.impact(level, p.center, com.orbisarcana.school.Schools.ICE, 1f);
                 }
                 return true;
             }
@@ -102,12 +109,10 @@ final class PatternBehavior {
     }
 
     private static void particles(Pattern p, long now) {
-        double spin = now * 0.02;
-        for (int arm = 0; arm < 6; arm++) {
-            double a = spin + arm * Math.PI / 3;
-            double r = p.radius * ((now / 3 + arm) % 6 + 1) / 6.0;
-            Fx.FROST.play(p.level, p.center.x + Math.cos(a) * r, p.center.y + 0.1, p.center.z + Math.sin(a) * r, 1, 0, 0, 0);
-        }
+        float r = (float) p.radius;
+        if (now % 6 == 0) Vfx.play(p.level, FIELD, p.center.add(0, 0.08, 0), Vec3.ZERO, 0, 1f, r, 1, r, 1);
+        if (now % 9 == 0) Vfx.play(p.level, MIST, p.center.add(0, 0.3, 0), Vec3.ZERO, 0, 1f, r, 1, r, 1);
+        // a glint running round the edge
         double a = now * 0.15;
         Fx.FROST.play(p.level, p.center.x + Math.cos(a) * p.radius, p.center.y + 0.1, p.center.z + Math.sin(a) * p.radius, 1, 0, 0, 0);
     }

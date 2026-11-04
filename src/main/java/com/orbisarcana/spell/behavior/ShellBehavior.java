@@ -11,6 +11,7 @@ import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.spell.Arcs;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -20,6 +21,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -34,6 +36,8 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class ShellBehavior implements ToggleBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): arcs crackling over the body, the burst's flash and ring. */
+    private static final Identifier ARCS = Vfx.id("shell_arcs"), RING = Vfx.id("shock_ring"), HIT = Vfx.id("discharge_hit");
     public static final ShellBehavior INSTANCE = new ShellBehavior();
     private static final Identifier SPEED_ID = OrbisArcana.id("current_shell");
     private static final long TRANSFER_COOLDOWN = 10 * 20;
@@ -53,13 +57,14 @@ public final class ShellBehavior implements ToggleBehavior {
         ServerPlayer p = ctx.caster();
         give(p, new Shell(p.getUUID(), ctx.spellId(), ctx.spell().school(), ctx.castId(), ctx.param("speed_bonus"),
                 (float) ctx.scaled("shock_damage"), (float) ctx.scaled("return_spark"), ctx.ticks("transfer_ticks"), Long.MAX_VALUE));
-        Fx.ARC.play(p.level(), p.getX(), p.getY() + 1, p.getZ(), 30, 0.4, 0.6, 0.4);
+        Fx.ARC.play(p.level(), p.getX(), p.getY() + 1, p.getZ(), 12, 0.4, 0.6, 0.4);
+        Vfx.play(p.level(), RING, p.position().add(0, 1, 0), Vec3.ZERO, 0, 0.6f);
     }
 
     @Override
     public void tick(CastContext ctx, int ticks) {
         ServerPlayer p = ctx.caster();
-        if (ticks % 4 == 0) Fx.ARC.play(p.level(), p.getX(), p.getY() + 1, p.getZ(), 2, 0.35, 0.6, 0.35);
+        if (ticks % 2 == 0) Vfx.play(p.level(), ARCS, p.position().add(0, 1, 0), Vec3.ZERO, 0, 1f, 0.7f, 1.4f, 0.7f, 1);
     }
 
     @Override
@@ -75,7 +80,10 @@ public final class ShellBehavior implements ToggleBehavior {
             hurt(level, p, ctx.spellId(), ctx.spell().school(), ctx.castId(), e, damage);
             Arcs.draw(level, Arcs.body(p), Arcs.body(e));
         }
-        Fx.ARC.play(level, p.getX(), p.getY() + 1, p.getZ(), 80, BURST_RADIUS / 2, 0.6, BURST_RADIUS / 2);
+        Fx.ARC.play(level, p.getX(), p.getY() + 1, p.getZ(), 30, BURST_RADIUS / 2, 0.6, BURST_RADIUS / 2);
+        Vfx.play(level, HIT, p.position().add(0, 1, 0), Vec3.ZERO, 0, 2f);
+        Vfx.play(level, RING, p.position().add(0, 1, 0), Vec3.ZERO, 0, (float) BURST_RADIUS / 2);
+        com.orbisarcana.spell.Sfx.impact(level, p.position(), ctx.spell().school(), 1.2f);
     }
 
     public static boolean has(LivingEntity e) {

@@ -22,9 +22,10 @@ function gradient(stops) {
 function effect(id, o) {
   const c = {};
   if (o.steady) {
-    // a looping stream (attached effects: it runs while its entity lives)
+    // a stream: looping (attached effects run while their entity lives) or, with "once", for that many seconds
     c["minecraft:emitter_rate_steady"] = { spawn_rate: o.steady[0], max_particles: o.steady[1] };
-    c["minecraft:emitter_lifetime_looping"] = { active_time: 1 };
+    if (o.once) c["minecraft:emitter_lifetime_once"] = { active_time: o.once };
+    else c["minecraft:emitter_lifetime_looping"] = { active_time: 1 };
   } else {
     c["minecraft:emitter_rate_instant"] = { num_particles: o.count ?? 10 };
     c["minecraft:emitter_lifetime_once"] = { active_time: 0.05 };
@@ -230,6 +231,40 @@ Object.assign(EFFECTS, {
   // Star Spike (once, along the whole line): a beam of starlight, white-lavender in a blue-violet haze, slower to fade
   star_core: beam(0.14, [0.35, 0.4], [[0, 1, 0.97, 1, 1], [0.5, 0.85, 0.8, 1, 0.8], [1, 0.6, 0.55, 1, 0]]),
   star_glow: beam(0.8, [0.45, 0.5], [[0, 0.55, 0.45, 1, 0.5], [0.5, 0.45, 0.35, 0.95, 0.35], [1, 0.3, 0.2, 0.8, 0]]),
+});
+
+const ASH = [[0, 0.3, 0.28, 0.27, 0], [0.15, 0.25, 0.23, 0.22, 0.8], [1, 0.18, 0.17, 0.16, 0]];
+const FROSTY = [[0, 0.85, 0.97, 1, 0], [0.2, 0.8, 0.95, 1, 0.9], [1, 0.6, 0.85, 1, 0]];
+const ELECTRIC = [[0, 1, 1, 1, 1], [0.4, 0.65, 0.85, 1, 0.9], [1, 0.35, 0.55, 1, 0]];
+Object.assign(EFFECTS, {
+  // Ash Spiral (every other tick, stretched over the vortex): a ring of flame licking up at its edge, embers and ash
+  // whirling up inside; the pillar of milestone 15 is a column of fire
+  ash_ring: { flipbook: [0, 1, 8], count: 10, disc: true, ringOnly: true, dir: [0, 1, 0], life: [0.4, 0.7], speed: [0.5, 1.5], accel: [0, 1.5, 0], drag: 2, spin: 60,
+    size: [overLife(0.5, 0.18, 0.4), overLife(0.65, 0.22, 0.4)], color: FIRE_SOFT },
+  ash_flakes: { cell: [6, 0], blend: true, count: 6, disc: true, dir: [0, 1, 0], life: [1, 1.6], speed: [0.8, 2], accel: [0, 0.6, 0], drag: 1.2, spin: 360,
+    size: [overLife(0.12, 0.08, 0.5), overLife(0.12, 0.08, 0.5)], color: ASH },
+  fire_pillar: { flipbook: [0, 1, 8], count: 40, sphere: 0.35, dir: ["math.random(-0.15, 0.15)", "1", "math.random(-0.15, 0.15)"], life: [0.5, 0.9],
+    speed: [4, 9], drag: 2.5, spin: 90, size: [overLife(0.8, 0.3, 0.4), overLife(1, 0.35, 0.4)], color: FIRE },
+  // Flame Dash and Wind Step: a stream for a third of a second that follows the caster (attached)
+  dash_flames: { flipbook: [0, 1, 8], steady: [70, 40], once: 0.35, sphere: 0.4, life: [0.3, 0.55], speed: [0.2, 0.6], accel: [0, 1.5, 0], drag: 2, spin: 60,
+    size: [overLife(0.5, 0.15, 0.4), overLife(0.6, 0.2, 0.4)], color: FIRE_SOFT },
+  dash_wind: { cell: [2, 0], steady: [50, 30], once: 0.35, sphere: 0.5, dir: [0, 0, -1], life: [0.2, 0.35], speed: [3, 6], drag: 3, facing: "lookat_direction",
+    size: [overLife(0.05, 0.02), overLife(0.8, 0.25, 0.4)], color: [[0, 0.9, 1, 0.95, 0.7], [1, 0.8, 1, 0.9, 0]] },
+  // Frost Pattern (every few ticks, stretched over the pattern): frost crystals lying flat and glinting, a cold mist;
+  // when it freezes, a white ring runs out over the ground
+  frost_field: { cell: [7, 3], count: 8, disc: true, life: [0.6, 1], speed: [0, 0], facing: "emitter_transform_xz", spin: 0,
+    size: [`0.35 * math.sin(${LIFE} * 180)`, `0.35 * math.sin(${LIFE} * 180)`], color: FROSTY },
+  frost_mist: { cell: [0, 0], count: 4, disc: true, life: [1, 1.6], speed: [0.05, 0.2], accel: [0, 0.1, 0], drag: 1,
+    size: [overLife(0.6, 1.2, 0.4), overLife(0.6, 1.2, 0.4)], color: [[0, 0.75, 0.92, 1, 0], [0.3, 0.75, 0.92, 1, 0.22], [1, 0.7, 0.9, 1, 0]] },
+  frost_ring: { cell: [4, 0], count: 1, sphere: 0, life: [0.5, 0.55], speed: [0, 0], facing: "emitter_transform_xz",
+    size: [overLife(0.5, 6), overLife(0.5, 6)], color: [[0, 0.95, 1, 1, 1], [1, 0.6, 0.85, 1, 0]] },
+  // Current Shell (every other tick, around the caster): short arcs crackling over the body; a blue ring when it bursts
+  shell_arcs: { cell: [2, 0], count: 3, sphere: 0.6, life: [0.08, 0.15], speed: [0.01, 0.01], facing: "lookat_direction",
+    size: [overLife(0.07, 0.04), overLife(0.55, 0.3, 0.5)], color: ELECTRIC },
+  shock_ring: { cell: [4, 0], count: 1, sphere: 0, life: [0.3, 0.35], speed: [0, 0], size: [overLife(0.6, 4.5), overLife(0.6, 4.5)], color: ELECTRIC },
+  // Storm Anchor: a rune glowing flat on the ground while it waits (re-sent every few ticks)
+  anchor_rune: { cell: [6, 3], count: 1, sphere: 0, life: [0.45, 0.5], speed: [0, 0], facing: "emitter_transform_xz", spin: 0,
+    size: [`0.9 + 0.1 * math.sin(${LIFE} * 180)`, `0.9 + 0.1 * math.sin(${LIFE} * 180)`], color: [[0, 0.5, 0.75, 1, 0], [0.3, 0.6, 0.85, 1, 0.8], [1, 0.4, 0.65, 1, 0]] },
 });
 
 for (const [id, o] of Object.entries(EFFECTS)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify(effect(id, o), null, "\t") + "\n");

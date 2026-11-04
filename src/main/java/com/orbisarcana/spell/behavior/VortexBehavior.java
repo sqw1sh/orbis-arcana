@@ -9,6 +9,7 @@ import com.orbisarcana.progression.MasteryService;
 import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -29,6 +30,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class VortexBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): the ring of flame, the whirling ash, the pillar of fire. */
+    private static final Identifier RING = Vfx.id("ash_ring"), ASH = Vfx.id("ash_flakes"), PILLAR = Vfx.id("fire_pillar");
     private static final int PULSE_TICKS = 10;
     private static final double PULL_STRENGTH = 0.18;
     private static final double FOLLOW_SPEED = 0.08;
@@ -107,21 +110,22 @@ final class VortexBehavior {
             for (LivingEntity e : inside) hurt(v, caster, e, v.damage);
         }
         if (now % 2 == 0) {
-            double a = now * 0.4;
-            for (int arm = 0; arm < 3; arm++) {
-                double ang = a + arm * Math.PI * 2 / 3;
-                for (double r = 0.4; r <= v.radius; r += 0.6) {
-                    double t = ang + r * 0.9;
-                    Fx.FLAME.play(v.level, v.center.x + Math.cos(t) * r, v.center.y + 0.15 + r * 0.25, v.center.z + Math.sin(t) * r, 1, 0, 0.02, 0);
-                }
+            float r = (float) v.radius;
+            Vfx.play(v.level, RING, v.center.add(0, 0.1, 0), Vec3.ZERO, 0, 1f, r, 1, r, 1);
+            Vfx.play(v.level, ASH, v.center.add(0, 0.2, 0), Vec3.ZERO, 0, 1f, r * 0.8f, 1, r * 0.8f, 1);
+            // one arm of the spiral, turning with time
+            double t = now * 0.4;
+            for (double d = 0.4; d <= v.radius; d += 0.9) {
+                Fx.FLAME.play(v.level, v.center.x + Math.cos(t + d * 0.9) * d, v.center.y + 0.15 + d * 0.25, v.center.z + Math.sin(t + d * 0.9) * d, 1, 0, 0.02, 0);
             }
         }
     }
 
     private static void pillar(Vortex v, ServerPlayer caster) {
         for (LivingEntity e : targets(v, caster, PILLAR_RADIUS)) hurt(v, caster, e, (float) (v.damage * PILLAR_MULT));
+        Vfx.play(v.level, PILLAR, v.center.add(0, 0.3, 0), Vec3.ZERO, 0, 1f);
         Fx.FLAME.play(v.level, v.center.x, v.center.y + 0.5, v.center.z, 25, 0.4, 1.2, 0.4);
-        Fx.FLAME.play(v.level, v.center.x, v.center.y + 1.5, v.center.z, 60, 0.3, 1.5, 0.3);
+        com.orbisarcana.spell.Sfx.impact(v.level, v.center, com.orbisarcana.school.Schools.FIRE, 1f);
     }
 
     private static List<LivingEntity> targets(Vortex v, ServerPlayer caster, double radius) {
