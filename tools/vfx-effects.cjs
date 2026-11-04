@@ -138,6 +138,12 @@ Object.assign(EFFECTS, {
     color: [[0, 1, 0.75, 0.3, 0], [0.1, 1, 0.7, 0.25, 1], [0.8, 0.9, 0.3, 0.05, 0.8], [1, 0.5, 0.1, 0.02, 0]] },
 });
 
+Object.assign(EFFECTS, {
+  tmpl_trail: { cell: [2, 0], count: 2, sphere: 0.05, dir: [0, 0, -1], life: [0.15, 0.25], speed: [0.5, 1.5], drag: 3, facing: "lookat_direction",
+    size: [overLife(0.14, 0.05), overLife(1.1, 0.4)], color: [[0, 1], [1, 0]] },
+  tmpl_burst: { cell: [1, 0], count: 14, sphere: 0.3, life: [0.3, 0.6], speed: [2, 5], drag: 4, size: [overLife(0.35, 0.08, 0.5), overLife(0.35, 0.08, 0.5)],
+    color: [[0, 1], [0.6, 0.7], [1, 0]] },
+});
 const ICE = [[0, 0.95, 1, 1, 1], [0.5, 0.7, 0.92, 1, 0.8], [1, 0.45, 0.75, 1, 0]];
 const STONE = [[0, 0.46, 0.42, 0.38, 1], [0.85, 0.4, 0.37, 0.33, 1], [1, 0.34, 0.31, 0.28, 0]];
 const DUST = [[0, 0.55, 0.47, 0.38, 0], [0.15, 0.5, 0.43, 0.35, 0.7], [1, 0.42, 0.36, 0.3, 0]];
@@ -409,6 +415,20 @@ Object.assign(MESHES, {
     color: burst([0.8, 0.75, 1, 1], [0.45, 0.3, 1, 0]) },
   astral_ring: { shape: "ring", texture: E("runes"), life: 0.7, segments: 40, radius: [[0, 0.5], [1, 3.5]], thickness: [[0, 0.6], [1, 0.3]], uv: [6, 1], spin: 60,
     color: burst([0.8, 0.7, 1, 1], [0.5, 0.35, 1, 0]), shake: { strength: 0.8, radius: 12, time: 0.3 } },
+});
+
+// ---- templates for spells made by tools/new-spell.cjs: white, tinted with the school's colour by the spell ----
+Object.assign(MESHES, {
+  tmpl_orb: { shape: "sphere", texture: E("energy"), life: 0.1, segments: 16, rings: 8, radius: 0.3, uv: [2, 1], scroll: [0.5, -2], spin: 200, fresnel: -0.8,
+    color: [[0, [1, 1, 1, 0.95]]] },
+  tmpl_beam: { shape: "cylinder", texture: E("energy"), life: 0.35, axis: "forward", stretch: true, segments: 14, rings: 3, radius: [[0, 0.1], [0.15, 0.3], [1, 0.05]],
+    height: 1, uv: [2, 5], scroll: [0, -6], spin: 120, fresnel: -0.6, color: burst([1, 1, 1, 1], [1, 1, 1, 0]) },
+  tmpl_cone: { shape: "cone", texture: E("energy"), life: 0.3, axis: "forward", segments: 18, rings: 3, radius: 0.15, radius_top: 2.4, height: 6, uv: [2, 2],
+    scroll: [0, -5], spin: 90, fresnel: 0.5, color: burst([1, 1, 1, 0.8], [1, 1, 1, 0]) },
+  tmpl_nova: { shape: "sphere", texture: E("energy"), life: 0.4, segments: 24, rings: 12, radius: [[0, 0.2], [1, 1.8]], uv: [2, 1], scroll: [0, -2], spin: 60,
+    fresnel: 0.8, color: burst([1, 1, 1, 1], [1, 1, 1, 0]) },
+  tmpl_wave: { shape: "ring", texture: E("energy"), life: 0.45, segments: 40, radius: [[0, 0.4], [1, 3.5]], thickness: [[0, 1], [1, 0.3]], uv: [6, 1],
+    scroll: [1, 0], color: burst([1, 1, 1, 1], [1, 1, 1, 0]) },
 });
 
 for (const [id, m] of Object.entries(MESHES)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify({ "orbisarcana:mesh": m }, null, "\t") + "\n");

@@ -19,7 +19,8 @@ import net.minecraft.resources.Identifier;
 
 /**
  * A spell as data (§15.4), loaded from {@code data/<ns>/orbisarcana/spell/<id>.json}.
- * Numbers live in {@code params}; milestones (5/10/15) override params.
+ * Numbers live in {@code params}; milestones (5/10/15) override params. Spells of the {@code composite} behaviour describe
+ * their shape and effects in {@code compose} ({@link SpellCompose}).
  */
 public record SpellDefinition(
         Identifier school,
@@ -36,7 +37,8 @@ public record SpellDefinition(
         Optional<Identifier> icon,
         XpCategory xpCategory,
         boolean allowSelf,
-        boolean enabled) {
+        boolean enabled,
+        Optional<SpellCompose> compose) {
 
     public static final int[] MILESTONE_LEVELS = {5, 10, 15};
 
@@ -88,7 +90,8 @@ public record SpellDefinition(
             Identifier.CODEC.optionalFieldOf("icon").forGetter(SpellDefinition::icon),
             enumCodec(XpCategory.values(), XpCategory::id).optionalFieldOf("xp_category", XpCategory.ATTACK).forGetter(SpellDefinition::xpCategory),
             Codec.BOOL.optionalFieldOf("allow_self", false).forGetter(SpellDefinition::allowSelf),
-            Codec.BOOL.optionalFieldOf("enabled", true).forGetter(SpellDefinition::enabled)
+            Codec.BOOL.optionalFieldOf("enabled", true).forGetter(SpellDefinition::enabled),
+            SpellCompose.CODEC.optionalFieldOf("compose").forGetter(SpellDefinition::compose)
     ).apply(i, SpellDefinition::new)).validate(SpellDefinition::validate);
 
     /** Milestones may only override params the spell declares (§15.4). */

@@ -613,5 +613,10 @@
   "subtitles.orbisarcana.cast.hit": "Попадание заклинания",
   "subtitles.orbisarcana.talent.learn": "Изучен талант",
   "subtitles.orbisarcana.mastery.up": "Мастерство растёт",
-  "subtitles.orbisarcana.mastery.milestone": "Веха мастерства"
+  "subtitles.orbisarcana.mastery.milestone": "Веха мастерства",
+  "spell.orbisarcana.searing_bolt": "Палящая стрела",
+  "spell.orbisarcana.searing_bolt.desc": "Быстрая огненная стрела, поджигает цель.",
+  "spell.orbisarcana.searing_bolt.m5": "2 снаряда веером",
+  "spell.orbisarcana.searing_bolt.m10": "поджог дольше (4.5 с)",
+  "spell.orbisarcana.searing_bolt.m15": "взрыв радиусом 2.5 при попадании"
 }

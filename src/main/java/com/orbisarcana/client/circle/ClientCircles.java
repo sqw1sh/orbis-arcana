@@ -187,7 +187,7 @@ public final class ClientCircles {
                 new SpellDefinition.Cast(com.orbisarcana.core.CastMode.CHARGED, ticks, 0), 0, 0, "radius",
                 java.util.Map.of("radius", radius), java.util.Map.of(),
                 java.util.Optional.of(circle), java.util.Optional.empty(),
-                com.orbisarcana.core.XpCategory.ATTACK, false, true);
+                com.orbisarcana.core.XpCategory.ATTACK, false, true, java.util.Optional.empty());
     }
 
     // ---- extract (game state -> render state) ----

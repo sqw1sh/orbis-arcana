@@ -166,6 +166,8 @@ public final class OrbisGameTests {
         test("shadow_decoy_lures_and_fades", 140, OrbisGameTests::shadowDecoy);
         test("api_services_and_events", 20, OrbisGameTests::apiAndEvents);
         test("focus_component_on_any_item", 20, OrbisGameTests::focusComponent);
+        test("composite_shapes_hit", 60, OrbisGameTests::compositeShapes);
+        test("milestones_change_params", 20, OrbisGameTests::milestonesChangeParams);
     }
 
     private static void test(String name, int maxTicks, Consumer<GameTestHelper> body) {
@@ -1581,6 +1583,55 @@ public final class OrbisGameTests {
             net.neoforged.neoforge.common.NeoForge.EVENT_BUS.unregister(veto);
         }
         cleanup(h, p);
+        h.succeed();
+    }
+
+/**
+     * Roadmap V9: every shape of the composite behaviour reaches a pig in front of (or around) the caster and applies its
+     * effects — spells built from the template work without code of their own.
+     */
+    private static void compositeShapes(GameTestHelper h) {
+        ServerPlayer p = player(h, new Vec3(1.5, 1, 4.5), -90f, 0f);
+        List<Pig> pigs = new ArrayList<>();
+        String[] shapes = {"bolt", "beam", "cone", "burst", "nova", "target"};
+        for (int i = 0; i < shapes.length; i++) {
+            // each shape gets a pig of its own, two blocks in front of where the caster stands for it
+            Pig pig = h.spawn(EntityTypes.PIG, new Vec3(3.5, 1, 1.5 + i * 1.3));
+            pig.setNoAi(true);
+            pigs.add(pig);
+            Vec3 at = pig.position();
+            p.setPos(at.x - 2, at.y, at.z);
+            p.setYRot(-90f);
+            p.setYHeadRot(-90f);
+            p.setXRot(28f);
+            var compose = new com.orbisarcana.spell.SpellCompose(shapes[i], "enemies",
+                    List.of(new com.orbisarcana.spell.SpellCompose.Effect("damage", Optional.empty())), com.orbisarcana.spell.SpellCompose.Visuals.NONE);
+            java.util.Map<String, Double> params = java.util.Map.of("damage", 3.0, "range", 8.0, "radius", 3.0, "angle_deg", 60.0, "speed", 2.0);
+            var def = new com.orbisarcana.spell.SpellDefinition(Schools.FIRE, com.orbisarcana.core.Rarity.COMMON, OrbisArcana.id("composite"),
+                    com.orbisarcana.core.Targeting.DIRECTIONAL, new com.orbisarcana.spell.SpellDefinition.Cast(com.orbisarcana.core.CastMode.INSTANT, 0, 0),
+                    0, 0, "damage", params, java.util.Map.of(), Optional.empty(), Optional.empty(), com.orbisarcana.core.XpCategory.ATTACK, false, true,
+                    Optional.of(compose));
+            var ctx = new com.orbisarcana.spell.behavior.CastContext(p, OrbisArcana.id("test_" + shapes[i]), 9000 + i, def, 1, params, 1.0, at, pig);
+            com.orbisarcana.spell.behavior.SpellBehaviors.COMPOSITE.get().release(ctx);
+        }
+        succeedWhen(h, p, () -> {
+            for (int i = 0; i < pigs.size(); i++) {
+                h.assertTrue(pigs.get(i).getHealth() < pigs.get(i).getMaxHealth(), "the " + shapes[i] + " shape should hurt its pig");
+            }
+        });
+    }
+
+    /** Roadmap V9: a milestone that sets a param to its base value does nothing — every milestone of every spell changes something. */
+    private static void milestonesChangeParams(GameTestHelper h) {
+        var registries = h.getLevel().registryAccess();
+        for (Identifier id : SpellRegistry.ids(registries)) {
+            var def = SpellRegistry.get(registries, id).orElseThrow();
+            for (var m : def.milestones().entrySet()) {
+                h.assertFalse(m.getValue().isEmpty(), id + ": milestone " + m.getKey() + " sets nothing");
+                boolean changes = m.getValue().entrySet().stream().anyMatch(e -> !e.getValue().equals(def.params().get(e.getKey())));
+                h.assertTrue(changes, id + ": milestone " + m.getKey() + " leaves every param at its base value");
+            }
+        }
         h.succeed();
     }
 

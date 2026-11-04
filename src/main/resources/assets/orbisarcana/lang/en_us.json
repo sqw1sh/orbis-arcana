@@ -613,5 +613,10 @@
   "subtitles.orbisarcana.cast.hit": "Spell hits",
   "subtitles.orbisarcana.talent.learn": "Talent learned",
   "subtitles.orbisarcana.mastery.up": "Mastery grows",
-  "subtitles.orbisarcana.mastery.milestone": "Mastery milestone"
+  "subtitles.orbisarcana.mastery.milestone": "Mastery milestone",
+  "spell.orbisarcana.searing_bolt": "Searing Bolt",
+  "spell.orbisarcana.searing_bolt.desc": "A swift bolt of fire that sets its target alight.",
+  "spell.orbisarcana.searing_bolt.m5": "2 bolts in a fan",
+  "spell.orbisarcana.searing_bolt.m10": "longer burning (4.5 s)",
+  "spell.orbisarcana.searing_bolt.m15": "explodes in a 2.5-block radius on hit"
 }

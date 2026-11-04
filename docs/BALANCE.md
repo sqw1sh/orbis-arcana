@@ -20,6 +20,7 @@
 | ash_spiral | fire | epic | charged | 1.3 | 15 | 30 | 12.8 | 21.3 |  |
 | fireball | fire | common | charged | 0.7 | 2 | 10 | 9 | 19 |  |
 | flame_dash | fire | rare | instant | 0 | 8 | 18 | — | — | роль: cast |
+| searing_bolt | fire | common | instant | 0 | 2 | 10 | 9 | 20.5 |  |
 | frost_pattern | ice | epic | charged | 1.2 | 15 | 28 | — | — |  |
 | ice_bastion | ice | rare | charged | 0.9 | 12 | 20 | — | — |  |
 | ice_shard | ice | common | instant | 0 | 1.5 | 8 | 4 | 16 | роль: dmg |
@@ -40,7 +41,7 @@
 
 | Школа | DPS | % от меча | Касты |
 |---|---:|---:|---|
-| fire | 8.1 | 84% | fireball×20, ash_spiral×2 |
+| fire | 9.3 | 96% | searing_bolt×17, fireball×6, ash_spiral×1 |
 | astral | 3.0 | 31% | constellation_shift×2, star_spike×8 |
 | lightning | 3.6 | 38% | storm_anchor×4, discharge×22 |
 | light | 4.4 | 46% | heavens_judgment×2, dawn_ray×6 |

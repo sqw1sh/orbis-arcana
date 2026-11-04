@@ -1,0 +1,64 @@
+package com.orbisarcana.spell;
+
+import java.util.List;
+import java.util.Optional;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import net.minecraft.resources.Identifier;
+
+/**
+ * A spell assembled from parts (roadmap V9), for the {@code orbisarcana:composite} behaviour: a shape that finds who is
+ * hit, effects applied to each of them, and the effects to show. The numbers stay in the spell's {@code params}, so
+ * milestones and mastery scale them as for any spell: an effect reads its param by name (its default, or {@code param}).
+ *
+ * <pre>"compose": { "shape": "bolt|beam|cone|burst|nova|target|self", "affects": "enemies|allies|self",
+ *   "effects": [{ "type": "damage" }, { "type": "ignite" }, { "type": "slow", "param": "chill_ticks" }],
+ *   "visuals": { "cast": [ids], "travel": [ids], "impact": [ids], "tint": 0xRRGGBB } }</pre>
+ * Shape params: bolt — speed, range, count, spread_deg, pierce, chain, chain_range, explode_radius; beam — range,
+ * pierce; cone — range, angle_deg; burst, nova — radius. Effect params (defaults): damage, ignite_ticks, slow_ticks
+ * (+ slow_level), freeze_ticks, knockback, pull, lift, weaken_ticks, blind_ticks, heal.
+ */
+public record SpellCompose(String shape, String affects, List<Effect> effects, Visuals visuals) {
+    public record Effect(String type, Optional<String> param) {
+        public static final Codec<Effect> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.STRING.fieldOf("type").forGetter(Effect::type),
+                Codec.STRING.optionalFieldOf("param").forGetter(Effect::param)
+        ).apply(i, Effect::new));
+
+        /** The param this effect reads: its own, or the default named after the type. */
+        public String paramName() {
+            return param.orElseGet(() -> switch (type) {
+                case "ignite" -> "ignite_ticks";
+                case "slow" -> "slow_ticks";
+                case "freeze" -> "freeze_ticks";
+                case "weaken" -> "weaken_ticks";
+                case "blind" -> "blind_ticks";
+                default -> type;
+            });
+        }
+    }
+
+    /** Effects played at the hand, along the way (each bolt tick, the beam, the cone) and where it lands; tinted. */
+    public record Visuals(List<Identifier> cast, List<Identifier> travel, List<Identifier> impact, int tint) {
+        public static final Visuals NONE = new Visuals(List.of(), List.of(), List.of(), 0);
+        public static final Codec<Visuals> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Identifier.CODEC.listOf().optionalFieldOf("cast", List.of()).forGetter(Visuals::cast),
+                Identifier.CODEC.listOf().optionalFieldOf("travel", List.of()).forGetter(Visuals::travel),
+                Identifier.CODEC.listOf().optionalFieldOf("impact", List.of()).forGetter(Visuals::impact),
+                Codec.INT.optionalFieldOf("tint", 0).forGetter(Visuals::tint)
+        ).apply(i, Visuals::new));
+    }
+
+    public static final List<String> SHAPES = List.of("bolt", "beam", "cone", "burst", "nova", "target", "self");
+
+    public static final Codec<SpellCompose> CODEC = RecordCodecBuilder.<SpellCompose>create(i -> i.group(
+            Codec.STRING.fieldOf("shape").forGetter(SpellCompose::shape),
+            Codec.STRING.optionalFieldOf("affects", "enemies").forGetter(SpellCompose::affects),
+            Effect.CODEC.listOf().optionalFieldOf("effects", List.of()).forGetter(SpellCompose::effects),
+            Visuals.CODEC.optionalFieldOf("visuals", Visuals.NONE).forGetter(SpellCompose::visuals)
+    ).apply(i, SpellCompose::new)).validate(c -> SHAPES.contains(c.shape())
+            ? com.mojang.serialization.DataResult.success(c)
+            : com.mojang.serialization.DataResult.error(() -> "Unknown compose shape '" + c.shape() + "', expected one of " + SHAPES));
+}

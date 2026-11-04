@@ -55,6 +55,12 @@ function damage(def, p, castTicks, direct = false) {
     case "vortex": return p.damage_per_pulse * p.duration_ticks / 10;
     case "curse": case "seed": case "shift": return p.damage_per_second * p.duration_ticks / 20 + (p.collapse_damage || 0);
     case "roots": case "prison": return (p.damage_per_second || 0) * p.hold_ticks / 20 || null;
+    // composite (V9): one target takes the damage once per bolt of a volley (pierce and chains hit others), burning after
+    case "composite": {
+      if (!(p.damage > 0)) return null;
+      const bolts = def.compose && def.compose.shape === "bolt" ? (p.count || 1) : 1;
+      return p.damage * bolts + (direct ? 0 : (p.ignite_ticks || 0) / 20 * BURN_DPS);
+    }
     default: return null;
   }
 }

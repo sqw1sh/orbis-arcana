@@ -1,0 +1,58 @@
+{
+	"orbisarcana:mesh": {
+		"shape": "sphere",
+		"texture": "textures/vfx/energy/energy",
+		"life": 0.4,
+		"segments": 24,
+		"rings": 12,
+		"radius": [
+			[
+				0,
+				0.2
+			],
+			[
+				1,
+				1.8
+			]
+		],
+		"uv": [
+			2,
+			1
+		],
+		"scroll": [
+			0,
+			-2
+		],
+		"spin": 60,
+		"fresnel": 0.8,
+		"color": [
+			[
+				0,
+				[
+					1,
+					1,
+					1,
+					1
+				]
+			],
+			[
+				0.5,
+				[
+					1,
+					1,
+					1,
+					0.6
+				]
+			],
+			[
+				1,
+				[
+					1,
+					1,
+					1,
+					0
+				]
+			]
+		]
+	}
+}
