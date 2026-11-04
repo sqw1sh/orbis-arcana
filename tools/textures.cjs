@@ -207,11 +207,7 @@ const GEMS = {
 const GOLD = { Y: "#e8c047", y: "#fff1a8", O: "#a87d1a", s: "#8a7a6a" };
 
 function items() {
-  for (const [tier, pal] of Object.entries(FOCUS_TIERS)) {
-    sprite(WAND, pal).save(`item/${tier}_wand`);
-    sprite(STAFF, pal).save(`item/${tier}_staff`);
-    sprite(TOME, pal).save(`item/${tier}_tome`);
-  }
+  // foci are 3D GeckoLib models now (art/specs, tools/blockbench/build-model.js); their textures come from the .bbmodel
   sprite(SCROLL, { R: "#c9a46a", r: "#a07d45", P: "#f4e9cc", p: "#d8c7a0", l: "#9a8a6a", B: "#8a2be2", b: "#c08aff" }).save("item/spell_scroll");
   sprite(SHARD, { A: "#5fe0e8", a: "#c8fbff", D: "#2a8a9a" }).save("item/aether_shard");
   sprite(BOTTLE, { k: "#8a5a35", K: "#b07a4a", g: "#d6eef5", L: "#5a2a9a", l: "#b98aff", D: "#3a1a66" }).save("item/aether_ink");

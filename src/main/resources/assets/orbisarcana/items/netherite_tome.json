@@ -1,6 +1,9 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "orbisarcana:item/netherite_tome"
+    "type": "minecraft:special",
+    "base": "orbisarcana:item/netherite_tome",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
   }
 }

@@ -54,7 +54,10 @@ public final class CasterAnimations {
     private static final class CasterController extends PlayerAnimationController {
         CasterController(Avatar avatar) {
             super(avatar, (controller, data, setter) -> PlayState.STOP);
-            this.firstPersonMode = c -> ClientConfig.FIRST_PERSON_ANIMATIONS.get() ? FirstPersonMode.THIRD_PERSON_MODEL : FirstPersonMode.NONE;
+            // a staff is two blocks long: on the animated arm it would fill the screen, so it keeps the vanilla first-person view
+            this.firstPersonMode = c -> !ClientConfig.FIRST_PERSON_ANIMATIONS.get() ? FirstPersonMode.NONE
+                    : avatar.getMainHandItem().getItem() instanceof com.orbisarcana.item.FocusItem focus
+                            && focus.type() == com.orbisarcana.core.FocusRules.Type.STAFF ? FirstPersonMode.VANILLA : FirstPersonMode.THIRD_PERSON_MODEL;
             this.firstPersonConfiguration = c -> new FirstPersonConfiguration(true, true, true, true);
         }
     }

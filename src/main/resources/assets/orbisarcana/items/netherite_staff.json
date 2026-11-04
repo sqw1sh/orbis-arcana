@@ -1,6 +1,9 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "orbisarcana:item/netherite_staff"
+    "type": "minecraft:special",
+    "base": "orbisarcana:item/netherite_staff",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
   }
 }

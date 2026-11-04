@@ -2,6 +2,14 @@ package com.orbisarcana.item;
 
 import java.util.function.Consumer;
 
+import com.geckolib.animatable.GeoItem;
+import com.geckolib.animatable.client.GeoRenderProvider;
+import com.geckolib.animatable.instance.AnimatableInstanceCache;
+import com.geckolib.animatable.manager.AnimatableManager;
+import com.geckolib.animation.AnimationController;
+import com.geckolib.animation.RawAnimation;
+import com.geckolib.util.GeckoLibUtil;
+import com.orbisarcana.client.model.GeoModels;
 import com.orbisarcana.core.FocusRules;
 
 import net.minecraft.ChatFormatting;
@@ -11,8 +19,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 
-/** A focus (§11.1): wand, staff or tome of a tier. Its bonuses are applied by {@link Foci} while held. */
-public class FocusItem extends Item {
+/**
+ * A focus (§11.1): wand, staff or tome of a tier. Its bonuses are applied by {@link Foci} while held. Rendered as a 3D
+ * GeckoLib model ({@code art/specs/<id>.json} → Blockbench, roadmap V7) whose crystal or emblem idles.
+ */
+public class FocusItem extends Item implements GeoItem {
+    private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.idle");
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final FocusRules.Type type;
     private final int tier;
 
@@ -20,6 +33,22 @@ public class FocusItem extends Item {
         super(properties);
         this.type = type;
         this.tier = tier;
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>("idle", test -> test.setAndContinue(IDLE)));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
+    }
+
+    @Override
+    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
+        // only called on the client, when the item is first rendered
+        consumer.accept(GeoModels.item(this));
     }
 
     public FocusRules.Type type() {

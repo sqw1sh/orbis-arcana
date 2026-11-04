@@ -34,6 +34,7 @@
 - `./gradlew :runClientShot -Pshots=gallery_setup,gallery` — галерея кругов всех редкостей (ночь, тёмная площадка).
 - `node tools/vfx.cjs` — пересобрать лист спрайтов эффектов (`textures/vfx/sheet.png`).
 - `./gradlew :runClientShot -Pshots=gallery_setup,vfx` — эффекты (VFX) на тёмной площадке.
+- 3D-модели: спецификации `art/specs/<id>.json` → в Blockbench (MCP `risky_eval`) `eval(require('fs').readFileSync('<repo>/tools/blockbench/build-model.js','utf8'))('<repo>','<id>')` → `.bbmodel` + GeckoLib-экспорт → `node tools/art.cjs`. Положения фокусов в руке/GUI — `node tools/foci-display.cjs`.
 - `node tools/structures.cjs` — пересобрать NBT-шаблоны структур (обсерватория, скрипторий).
 - `./gradlew :runGameTestServer` — GameTest-ы мода; без `:` запускаются и тесты `example-addon` (мод + аддон, 92).
 - `./gradlew runGameTestServer` — все GameTest-ы (`gametest/OrbisGameTests`), код выхода ≠ 0 при падении. Итог в логе: `All N required tests passed`.
@@ -73,6 +74,7 @@
 - GUI-спрайты: `assets/<ns>/textures/gui/sprites/<путь>.png` + `.png.mcmeta` `{"gui":{"scaling":{"type":"nine_slice","width","height","border","stretch_inner":true}}}`; рисовать `g.blitSprite(RenderPipelines.GUI_TEXTURED, id, x, y, w, h[, argb])`, частично — вариант `(id, texW, texH, u, v, x, y, w, h)`. Стиль подсказок предмета — компонент `DataComponents.TOOLTIP_STYLE` (спрайты `tooltip/<id>_background|_frame`, 100×100, бордер 9/10). Слои HUD при F1 скрываются сами (`options.hideGui` нет).
 - Свой мировой пайплайн с текстурой: `RenderPipeline.builder(GLOBALS_SNIPPET)` + `BindGroupLayouts.PROJECTION/DYNAMIC_TRANSFORMS/SAMPLER0`, шейдер `core/position_tex_color`, формат `POSITION_TEX_COLOR`; текстура — `RenderSetup.builder(p).withTexture("Sampler0", id)`. Под Iris: формат BLOCK + программа TEXTURED теряет цвет вершин, BEACON_BEAM — сильный блум. 3D-сцена в GUI — свой `PictureInPictureRenderer` + `RegisterPictureInPictureRenderersEvent`, `g.submitPictureInPictureRenderState`.
 - VFX (`client/vfx`): свой движок частиц, эффекты — Snowstorm JSON из Blockbench в `assets/<ns>/orbisarcana/vfx/`; сервер запускает их через `spell/Vfx.play/attach` (пакет `VfxPlay`). Камера в `SubmitCustomGeometryEvent`: `event.getLevelRenderState().cameraRenderState` (`pos`, `orientation`). Молanг-цвет 8 знаков в Bedrock — AARRGGBB.
+- Иконки предметов 26.3 рисуются в текстуру 16×16 и обрезаются: 3D-модель в GUI должна помещаться (длинные — по диагонали, голова в угол). PAL THIRD_PERSON_MODEL от первого лица рисует предмет с transforms третьего лица — для длинных (посох) лучше FirstPersonMode.VANILLA. В Blockbench JS: `Animator.buildFile(false, Animation.all.map(a => a.name))`, геометрия — `Codecs.bedrock.compile()`.
 - `new ClipContext(..., CollisionContext.empty())`, если сущности может не быть (ClipContext с null-entity падает).
 
 ## Архитектура (§15)
