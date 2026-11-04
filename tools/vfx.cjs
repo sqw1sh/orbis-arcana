@@ -5,7 +5,7 @@
 //   row 1: flame flipbook, 8 frames      row 2: smoke flipbook, 8 frames
 //   row 3: 0-3 shards, 4 leaf, 5 droplet, 6 rune circle, 7 cross spark
 //   row 4: lightning arc segments, 4 variants (2 cells wide each)
-//   row 5: 0 stone spike (shaded: grey facets, not only alpha)
+//   row 5: 0 stone spike (shaded: grey facets, not only alpha), 1 wind crescent (arc bulging to the top of the cell)
 // Run from the project root: node tools/vfx.cjs
 const fs = require("fs");
 const path = require("path");
@@ -95,6 +95,16 @@ for (let y = 0; y < C; y++) for (let x = 0; x < C; x++) {
   const facet = u < 0 ? 0.62 : 0.92, ridge = Math.exp(-u * u * 900) * 0.25, rim = edge < 0.05 ? -0.25 : 0;
   lum[i] = Math.max(0.2, Math.min(1, facet + ridge + rim + (hash(x >> 2, y >> 2, 51) - 0.5) * 0.18));
 }
+
+// row 5, cell 1: a crescent of wind: an arc bulging upwards (the direction of flight when drawn flat), thick in the
+// middle and thinning to sharp tips, soft-edged
+cell(1, 5, (u, v) => {
+  const r = Math.hypot(u, v - 0.55), a = Math.atan2(u, -(v - 0.55));     // centre below the cell middle; angle from straight up
+  if (Math.abs(a) > 1.25) return 0;
+  const thick = 0.22 * Math.cos(a / 1.25 * Math.PI / 2) ** 0.8;
+  const d = Math.abs(r - 0.95 + thick / 2) - thick / 2;
+  return d < 0 ? Math.min(1, -d * 30) * (0.75 + 0.25 * Math.cos(a)) : Math.exp(-d * 18) * 0.3 * Math.cos(a / 1.25 * Math.PI / 2);
+});
 
 const rgba = Buffer.alloc(N * N * 4, 255);
 for (let i = 0; i < N * N; i++) {

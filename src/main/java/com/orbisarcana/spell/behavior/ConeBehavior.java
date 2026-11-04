@@ -9,7 +9,9 @@ import com.orbisarcana.school.AttunementService;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.Schools;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -28,6 +30,8 @@ final class ConeBehavior implements ChannelBehavior {
     private static final int PULSE_TICKS = 5;
     private static final double SURF_MULT = 1.5;
     private static final int UNDERTOW_TICKS = 40;
+    /** Signature effects (tools/vfx-effects.cjs): the jet of water, its spray, the last wave. */
+    private static final Identifier JET = Vfx.id("water_jet"), SPRAY = Vfx.id("water_spray"), WAVE = Vfx.id("water_wave");
     private static final double WAVE_PUSH = 1.3;
     private static final double WAVE_DAMAGE_MULT = 3.0;
 
@@ -48,7 +52,8 @@ final class ConeBehavior implements ChannelBehavior {
         Vec3 eye = ctx.caster().getEyePosition();
         for (int i = 1; i <= 6; i++) {
             Vec3 p = eye.add(dir.scale(i));
-            Fx.SPLASH.play(ctx.level(), p.x, p.y - 0.3, p.z, 25, 0.6, 0.4, 0.6);
+            Vfx.play(ctx.level(), WAVE, p.add(0, -0.6, 0), Vec3.ZERO, 0, 1f, 0.6f, 1, 0.6f, 1);
+            Fx.SPLASH.play(ctx.level(), p.x, p.y - 0.3, p.z, 8, 0.6, 0.4, 0.6);
         }
     }
 
@@ -92,16 +97,11 @@ final class ConeBehavior implements ChannelBehavior {
     }
 
     private static void particles(CastContext ctx, Vec3 dir) {
-        Vec3 eye = ctx.caster().getEyePosition().add(0, -0.25, 0);
-        double range = ctx.param("range");
-        double spread = Math.tan(Math.toRadians(ctx.param("angle_deg") / 2));
-        for (int i = 0; i < 6; i++) {
-            double d = 1 + ctx.caster().getRandom().nextDouble() * (range - 1);
-            Vec3 p = eye.add(dir.scale(d));
-            double r = spread * d;
-            Fx.SPLASH.play(ctx.level(), p.x, p.y, p.z, 3, r * 0.4, r * 0.3, r * 0.4);
-            Fx.SPLASH.play(ctx.level(), p.x, p.y, p.z, 1, r * 0.3, r * 0.3, r * 0.3);
-        }
+        // the jet leaves the hand; its speed carries it about as far as the cone reaches
+        Vec3 hand = ctx.caster().getEyePosition().add(0, -0.25, 0).add(dir.scale(0.6));
+        float reach = (float) Math.max(0.5, ctx.param("range") / 6);
+        Vfx.play(ctx.level(), JET, hand, dir, 0, reach);
+        Vfx.play(ctx.level(), SPRAY, hand, dir, 0, reach);
     }
 
     private ConeBehavior() {}

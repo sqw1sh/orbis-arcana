@@ -172,5 +172,35 @@ Object.assign(EFFECTS, {
     size: [overLife(0.4, 1.1, 0.4), overLife(0.4, 1.1, 0.4)], color: DUST },
 });
 
+const WATER = [[0, 0.55, 0.82, 1, 0.85], [0.5, 0.3, 0.6, 1, 0.7], [1, 0.18, 0.42, 0.95, 0]];
+const LEAVES = [[0, 0.65, 1, 0.45, 1], [0.7, 0.4, 0.85, 0.3, 1], [1, 0.3, 0.6, 0.2, 0]];
+Object.assign(EFFECTS, {
+  // Tidal Stream (every other tick of the channel, pointing where the caster looks): fast streaks of water fanning out
+  // in a cone, and drops and spray that fall away
+  water_jet: { cell: [2, 0], count: 9, sphere: 0.1, dir: ["math.random(-0.22, 0.22)", "math.random(-0.18, 0.18)", "1"], life: [0.35, 0.5],
+    speed: [11, 15], drag: 1.5, accel: [0, -4, 0], facing: "lookat_direction", size: [overLife(0.1, 0.05), overLife(0.9, 0.5, 0.4)], color: WATER },
+  water_spray: { cell: [5, 3], count: 7, sphere: 0.15, dir: ["math.random(-0.3, 0.3)", "math.random(-0.2, 0.3)", "1"], life: [0.4, 0.7],
+    speed: [6, 11], drag: 1.2, accel: [0, -12, 0], size: [overLife(0.14, 0.08, 0.5), overLife(0.18, 0.1, 0.5)], color: WATER },
+  // ...its last wave: a wall of water bursting up and a ring
+  water_wave: { cell: [5, 3], count: 40, disc: true, dir: ["math.random(-0.5, 0.5)", "1", "math.random(-0.5, 0.5)"], life: [0.6, 1],
+    speed: [3, 6], accel: [0, -14, 0], drag: 0.5, size: [overLife(0.22, 0.12, 0.5), overLife(0.28, 0.14, 0.5)], color: WATER },
+  // Wind Blade (every tick at the blade, flat, pointing along its flight): a pale crescent and wisps peeling off
+  wind_crescent: { cell: [1, 5], count: 1, sphere: 0, dir: [0, 0, 1], life: [0.1, 0.12], speed: [0.01, 0.01], facing: "emitter_transform_xz",
+    size: ["1.6", "1.6"], color: [[0, 0.92, 1, 0.97, 0.85], [1, 0.8, 1, 0.92, 0]] },
+  wind_wisps: { cell: [2, 0], count: 4, sphere: 0.5, dir: [0, 0, -1], life: [0.2, 0.35], speed: [2, 4], drag: 3, facing: "lookat_direction",
+    size: [overLife(0.05, 0.02), overLife(0.7, 0.2, 0.4)], color: [[0, 0.9, 1, 0.95, 0.6], [1, 0.8, 1, 0.9, 0]] },
+  // Thorn Seed: a glowing seed shedding leaves in flight; where it lands, a green flash, leaves bursting up and thorns
+  // spearing out of the ground
+  seed_glow: { cell: [1, 0], count: 2, sphere: 0, life: [0.1, 0.12], speed: [0, 0], size: ["0.45", "0.45"],
+    color: [[0, 0.75, 1, 0.5, 0.9], [1, 0.5, 0.9, 0.3, 0]] },
+  bloom_burst: { cell: [4, 3], blend: true, count: 30, sphere: 0.4, dir: ["math.random(-0.6, 0.6)", "1", "math.random(-0.6, 0.6)"], life: [0.9, 1.6],
+    speed: [2, 5], accel: [0, -4, 0], drag: 2, spin: 300, size: [overLife(0.24, 0.16, 0.5), overLife(0.24, 0.16, 0.5)], color: LEAVES },
+  bloom_flash: { cell: [1, 0], count: 1, sphere: 0, life: [0.2, 0.24], speed: [0, 0], size: [overLife(0.8, 3.2), overLife(0.8, 3.2)],
+    color: [[0, 0.75, 1, 0.55, 0.8], [1, 0.4, 0.9, 0.3, 0]] },
+  thorn_spikes: { cell: [0, 5], blend: true, count: 5, disc: true, life: [0.8, 1.1], speed: [0, 0], facing: "lookat_y",
+    size: [`0.45 * math.min(1, ${LIFE} * 6) * (1 - math.max(0, ${LIFE} - 0.8) * 5)`, `1.3 * math.min(1, ${LIFE} * 6) * (1 - math.max(0, ${LIFE} - 0.8) * 5)`],
+    color: [[0, 0.42, 0.55, 0.25, 1], [0.85, 0.36, 0.45, 0.2, 1], [1, 0.3, 0.38, 0.18, 0]] },
+});
+
 for (const [id, o] of Object.entries(EFFECTS)) fs.writeFileSync(path.join(OUT, id + ".json"), JSON.stringify(effect(id, o), null, "\t") + "\n");
 console.log(`${Object.keys(EFFECTS).length} effects written`);

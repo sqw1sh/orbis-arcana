@@ -13,6 +13,7 @@ import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.Schools;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -36,6 +37,8 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 public final class BladeBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): the flying crescent of wind and its wisps. */
+    private static final Identifier CRESCENT = Vfx.id("wind_crescent"), WISPS = Vfx.id("wind_wisps");
     private static final int MAX_LIFE_TICKS = 100;
     private static final double CATCH_DISTANCE = 1.5;
     private static final double TORNADO_RADIUS = 1.8;
@@ -146,14 +149,9 @@ public final class BladeBehavior {
         }
 
         private void particles() {
-            Fx.SLASH.play(level, pos.x, pos.y, pos.z, 1, 0, 0, 0);
-            Vec3 side = dir.cross(new Vec3(0, 1, 0));
-            if (side.lengthSqr() < 1.0E-4) side = new Vec3(1, 0, 0);
-            side = side.normalize();
-            for (double s = -width; s <= width; s += width / 2) {
-                Vec3 p = pos.add(side.scale(s)).subtract(dir.scale(Math.abs(s) * 0.4));
-                Fx.CLOUD.play(level, p.x, p.y, p.z, 1, 0, 0, 0);
-            }
+            // the crescent lies flat along the flight, as wide as the blade; wisps peel off behind it
+            Vfx.play(level, CRESCENT, pos, dir, 0, (float) Math.max(0.6, width));
+            Vfx.play(level, WISPS, pos, dir, 0, (float) Math.max(0.6, width));
         }
     }
 

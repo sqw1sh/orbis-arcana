@@ -15,6 +15,7 @@ import com.orbisarcana.registry.ModDamageTypes;
 import com.orbisarcana.school.EchoService;
 import com.orbisarcana.school.TalentEffects;
 import com.orbisarcana.spell.Fx;
+import com.orbisarcana.spell.Vfx;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -48,6 +49,9 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
  */
 @EventBusSubscriber(modid = OrbisArcana.MODID)
 final class SeedBehavior {
+    /** Signature effects (tools/vfx-effects.cjs): the glowing seed, and the flash, leaves and thorns where it lands. */
+    private static final Identifier GLOW = Vfx.id("seed_glow"), FLASH = Vfx.id("bloom_flash"), BURST = Vfx.id("bloom_burst"),
+            THORNS = Vfx.id("thorn_spikes");
     private static final double GRAVITY = 0.03;
     private static final int PULSE_TICKS = 20;
     private static final double SPIKE_RADIUS = 5;
@@ -114,6 +118,7 @@ final class SeedBehavior {
             sprout(c, owner, e.position(), now);
             return false;
         }
+        Vfx.play(c.level(), GLOW, next, Vec3.ZERO, 0, 1f);
         Fx.LEAF.play(c.level(), next.x, next.y, next.z, 1, 0, 0, 0);
         s.travelled += s.pos.distanceTo(next);
         s.pos = next;
@@ -130,7 +135,11 @@ final class SeedBehavior {
         var floor = c.level().clip(new ClipContext(at.add(0, 0.5, 0), at.add(0, -6, 0), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, CollisionContext.empty()));
         Vec3 center = floor.getType() == HitResult.Type.MISS ? at : floor.getLocation();
         THICKETS.add(new Thicket(c, center, now + c.duration()));
-        Fx.LEAF.play(c.level(), center.x, center.y + 0.5, center.z, 40, c.radius() / 2, 0.4, c.radius() / 2);
+        // the seed bursts: a green flash, leaves thrown up, thorns spearing out of the ground over the thicket
+        float reach = (float) Math.max(1, c.radius());
+        Vfx.play(c.level(), FLASH, center.add(0, 0.5, 0), Vec3.ZERO, 0, 1f);
+        Vfx.play(c.level(), BURST, center.add(0, 0.4, 0), Vec3.ZERO, 0, 1f, reach * 0.5f, 1, reach * 0.5f, 1.5f);
+        Vfx.play(c.level(), THORNS, center.add(0, 0.55, 0), Vec3.ZERO, 0, 1f, reach * 0.7f, 1, reach * 0.7f, 2.5f);
         if (owner != null) EchoService.onEffectiveCast(owner, c.school(), center, c.castId());
 
         if (c.barrier()) {

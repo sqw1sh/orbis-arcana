@@ -131,6 +131,32 @@ public final class DevShot {
                     }
                 });
             }),
+            new Scene("signatures2", () -> {
+                // V8 signature effects: a Tidal Stream jet sweeping right to left (left), its last wave (middle), a Thorn
+                // Seed bursting (right)
+                Minecraft mc = Minecraft.getInstance();
+                mc.gui.setScreen(null);
+                mc.player.setYRot(0);
+                mc.player.setXRot(10);
+            }, () -> {
+                Minecraft mc = Minecraft.getInstance();
+                var server = mc.getSingleplayerServer();
+                if (server != null) server.execute(() -> {
+                    ServerPlayer sp = server.getPlayerList().getPlayer(mc.player.getUUID());
+                    if (sp == null) return;
+                    var level = sp.level();
+                    var o = sp.position();
+                    var zero = net.minecraft.world.phys.Vec3.ZERO;
+                    var dir = new net.minecraft.world.phys.Vec3(1, 0.05, 0.3).normalize();
+                    for (String fx : new String[] {"water_jet", "water_spray"})
+                        com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id(fx), o.add(1, 1.4, 6), dir, 0, 1f);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("water_wave"), o.add(0, 0.4, 8), zero, 0, 1f, 0.6f, 1, 0.6f, 1);
+                    var seed = o.add(-3.5, 0.4, 7);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("bloom_flash"), seed.add(0, 0.1, 0), zero, 0, 1f);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("bloom_burst"), seed, zero, 0, 1f, 1, 1, 1, 1.5f);
+                    com.orbisarcana.spell.Vfx.play(level, OrbisArcana.id("thorn_spikes"), seed.add(0, 0.15, 0), zero, 0, 1f, 1.4f, 1, 1.4f, 2.5f);
+                });
+            }),
             new Scene("cast_anim", () -> fakeCast(true)),
             new Scene("cast_anim_fp", () -> fakeCast(false)),
             new Scene("vfx_cleanup", () -> {
